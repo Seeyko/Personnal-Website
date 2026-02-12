@@ -38,8 +38,6 @@ My old WordPress site did the job. But it was bland. It didn't allow me to expre
 
 So with my new colleague Claude, I rebuilt it from scratch. Vanilla JS, a small Go backend for articles. Nothing fancy. Still room for improvement, but it's here. And it suits me.
 
----
-
 ## Why start writing articles?
 
 Honestly? Because I've always wanted to. But I couldn't see what it would bring. I convinced myself I couldn't write. Because I never wrote. (Yet I got 18/20 on the creative writing exam in my French baccalaureate. One of my absolute joys.) The truth? I never really tried. And if I don't try, no one will do it for me.
@@ -48,13 +46,9 @@ This year, something changed. I'm growing in my career. Becoming a lead. Manager
 
 My ideas aren't revolutionary. But they're mine. And more often than I think, people share them or are willing to listen. It can resonate with them too. They want to share, listen, debate. These conversations are among the most rewarding aspects of my work and my life. Life is made of exchanges. Every word can change the trajectory of a life. So I thought: why not keep a record?
 
----
-
 ## What is this really about?
 
 These articles are an attempt to leave a trace. A testimony. Who I am, my era, my way of seeing things. Not for glory or for followers. Just because I exist, because I think about things, and maybe someone will read it and it will resonate with them.
-
----
 
 ## What to expect
 
@@ -64,7 +58,5 @@ In this spirit, I'll write about:
 - **AI and development** — What I'm learning in this new agentic world
 - **Leadership** — Collaborating, communicating, growing with others
 - **Random stuff** — Because not everything needs to be categorized
-
----
 
 Thanks for being here. Let's see where this takes us.

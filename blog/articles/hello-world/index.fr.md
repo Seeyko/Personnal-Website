@@ -38,8 +38,6 @@ Mon vieux site WordPress faisait le taff. Mais il était bateau. Il ne me permet
 
 Alors avec mon nouveau collègue Claude, je l'ai reconstruit from scratch. Vanilla JS, un petit backend en Go pour les articles. Rien de fancy. Encore des progrès à faire, mais il est là. Et il me correspond.
 
----
-
 ## Pourquoi commencer à écrire des articles ?
 
 Honnêtement ? Parce que j'ai toujours voulu le faire. Mais je ne voyais pas ce que ça apporterait. Je me suis convaincu que je ne savais pas écrire. Parce que je n'écrivais jamais. (Pourtant j'ai eu 18 à l'épreuve d'invention au bac de français. Un de mes kiffs absolus.) La vérité ? Je n'ai jamais vraiment essayé. Et si je n'essaie pas, personne ne le fera à ma place.
@@ -48,13 +46,9 @@ Cette année, quelque chose a changé. Je grandis dans ma carrière. Devenir lea
 
 Mes idées ne sont pas révolutionnaires. Mais ce sont les miennes. Et plus souvent que je ne le pense, des gens les partagent ou sont prêts à les écouter. Ça peut résonner en eux aussi. Ils ont envie de partager, d'écouter, de débattre. Ces conversations font partie de ce qui est le plus récompensant dans mon travail et dans ma vie. La vie est faite d'échanges. Chaque mot peut changer la trajectoire d'une vie. Alors je me suis dit : pourquoi ne pas en garder une trace ?
 
----
-
 ## De quoi s'agit-il réellement ?
 
 Ces articles sont une tentative de laisser une trace. Un témoignage. Qui je suis, mon époque, ma façon de voir les choses. Pas pour la gloire ni pour les followers. Juste parce que j'existe, que je pense à des choses, et que peut-être quelqu'un le lira et ça résonnera en lui.
-
----
 
 ## À quoi s'attendre
 
@@ -64,7 +58,5 @@ Dans cet élan, j'écrirai sur :
 - **IA et développement** — Ce que j'apprends dans ce nouveau monde agentique
 - **Leadership** — Collaborer, communiquer, grandir avec les autres
 - **Trucs randoms** — Parce que tout n'a pas besoin d'être catégorisé
-
----
 
 Merci d'être là. Voyons où ça nous mène.
