@@ -1,10 +1,9 @@
 ---
 title: "Olympus: My Dashboard for Orchestrating AI Agents"
-subtitle: "Task management for multi-agent systems"
-date: "2026-02-12"
-author: "Tom Andrieu"
-tags: ["ai-agents", "infrastructure", "side-project", "nestjs", "react"]
-readTime: "10 min"
+excerpt: "I built a dashboard to coordinate a team of 7 AI agents working autonomously on my projects. Here's why, how, and what I've learned."
+publishedAt: "2026-02-12"
+draft: false
+lang: en
 ---
 
 Coordinating multiple AI agents working in parallel requires dedicated infrastructure. After a few weeks of experimenting with 7 specialized agents (architecture, dev, QA, research, writing), I built Olympus — a task management system designed for multi-agent coordination.

@@ -1,10 +1,9 @@
 ---
 title: "Le shift du métier de développeur"
-subtitle: "Entre exécution et vision produit"
-date: "2026-02-12"
-author: "Tom Andrieu"
-tags: ["product-engineering", "career", "ai", "opinion"]
-readTime: "12 min"
+excerpt: "Entre exécution et vision produit, le métier de développeur senior évolue. Réflexions sur ce qui change, ce qui manque, et ce qui pourrait être mieux."
+publishedAt: "2026-02-12"
+draft: false
+lang: fr
 ---
 
 Le métier de développeur est en train de changer. Pas juste à cause de l'IA — même si ça accélère tout. C'est plus profond que ça. C'est une question de **rôle**, de **responsabilité**, et de **sens**.

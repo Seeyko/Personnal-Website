@@ -1,10 +1,9 @@
 ---
 title: "Olympus : Mon Dashboard pour Orchestrer des Agents IA"
-subtitle: "Task management pour systèmes multi-agents"
-date: "2026-02-12"
-author: "Tom Andrieu"
-tags: ["ai-agents", "infrastructure", "side-project", "nestjs", "react"]
-readTime: "10 min"
+excerpt: "J'ai construit un dashboard pour coordonner une équipe de 7 agents IA qui travaillent en autonomie sur mes projets. Voici pourquoi, comment, et ce que j'ai appris."
+publishedAt: "2026-02-12"
+draft: false
+lang: fr
 ---
 
 Coordonner plusieurs agents IA qui travaillent en parallèle nécessite une infrastructure dédiée. Après quelques semaines d'expérimentation avec 7 agents spécialisés (architecture, dev, QA, recherche, rédaction), j'ai construit Olympus — un système de task management conçu pour la coordination multi-agents.

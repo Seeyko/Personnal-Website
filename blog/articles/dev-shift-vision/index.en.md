@@ -1,10 +1,9 @@
 ---
 title: "The Developer Role is Shifting"
-subtitle: "Between execution and product vision"
-date: "2026-02-12"
-author: "Tom Andrieu"
-tags: ["product-engineering", "career", "ai", "opinion"]
-readTime: "12 min"
+excerpt: "Between execution and product vision, the senior developer role is evolving. Reflections on what's changing, what's missing, and what could be better."
+publishedAt: "2026-02-12"
+draft: false
+lang: en
 ---
 
 The developer role is changing. Not just because of AI — though that's accelerating everything. It's deeper than that. It's about **role**, **responsibility**, and **meaning**.
