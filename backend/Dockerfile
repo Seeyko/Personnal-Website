@@ -29,3 +29,4 @@ ENV PORT=3000
 ENV ARTICLES_DIR=/app/articles
 
 CMD ["./server"]
+# Rebuild trigger Thu Feb 12 13:20:51 CET 2026
