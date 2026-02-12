@@ -11,7 +11,9 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/tomandrieu/blog-api/handlers"
+	custommiddleware "github.com/tomandrieu/blog-api/middleware"
 	"github.com/tomandrieu/blog-api/services"
+	"github.com/tomandrieu/blog-api/services/ratelimit"
 )
 
 // DetailedLogger is a custom middleware that logs full request details for debugging
@@ -82,6 +84,15 @@ func main() {
 	jwtService := services.NewJWTService()
 	articleHandler := handlers.NewArticleHandler(articleService, jwtService)
 
+	// Initialize rate limiter for article unlock protection
+	rateLimiter := ratelimit.NewRateLimiter(
+		5,              // 5 attempts per minute
+		10,             // lockout after 10 failures
+		15*time.Minute, // lockout duration: 15 minutes
+		5*time.Minute,  // cleanup interval: 5 minutes
+	)
+	rateLimitMW := custommiddleware.NewRateLimitMiddleware(rateLimiter)
+
 	r := chi.NewRouter()
 
 	// Use detailed logger for debugging (remove in production if too verbose)
@@ -111,7 +122,9 @@ func main() {
 		r.Get("/articles/{slug}", articleHandler.GetArticle)
 		r.Get("/articles/{slug}/", articleHandler.GetArticle)
 		r.Get("/articles/{slug}/image/{filename}", articleHandler.ServeImage)
-		r.Post("/articles/{slug}/unlock", articleHandler.UnlockArticle)
+
+		// Apply rate limiting middleware to unlock endpoint
+		r.With(rateLimitMW.UnlockRateLimit).Post("/articles/{slug}/unlock", articleHandler.UnlockArticle)
 
 		r.Post("/refresh", articleHandler.RefreshCache)
 	})
@@ -131,13 +144,14 @@ func main() {
 	log.Printf("Starting server on port %s", port)
 	log.Printf("Articles directory: %s", articlesDir)
 	log.Printf("CORS allowed origins: %v", allowedOrigins)
+	log.Printf("Rate limiting: ENABLED (5 attempts/min, lockout after 10 failures)")
 	log.Printf("Available routes:")
 	log.Printf("  GET  /                         - Root health check")
 	log.Printf("  GET  /api/health               - API health check")
 	log.Printf("  GET  /api/articles             - List articles")
 	log.Printf("  GET  /api/articles/{slug}      - Get article by slug")
 	log.Printf("  GET  /api/articles/{slug}/image/{filename} - Serve image")
-	log.Printf("  POST /api/articles/{slug}/unlock - Unlock private article")
+	log.Printf("  POST /api/articles/{slug}/unlock - Unlock private article (rate limited)")
 	log.Printf("  POST /api/refresh              - Refresh cache")
 	log.Printf("===========================================")
 
