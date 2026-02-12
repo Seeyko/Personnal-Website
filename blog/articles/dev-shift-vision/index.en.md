@@ -176,6 +176,4 @@ Some companies have figured this out. Others will get there. Or not. But I know 
 
 How about you?
 
----
-
 *This article reflects my personal observations after a few years in development. It doesn't target any organization in particular — just patterns I've seen repeat. If this resonates with you, or if you think I'm completely wrong, let me know. I'm still learning.*

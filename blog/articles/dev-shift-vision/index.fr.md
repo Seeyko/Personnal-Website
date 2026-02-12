@@ -176,6 +176,4 @@ Certaines boîtes l'ont compris. D'autres y viendront. Ou pas. Mais moi, je sais
 
 Et vous ?
 
----
-
 *Cet article reflète mes observations personnelles après quelques années dans le dev. Il ne vise aucune organisation en particulier — juste des patterns que j'ai vus se répéter. Si ça résonne avec vous, ou si vous pensez que je me plante complètement, n'hésitez pas à me le dire. J'apprends encore.*
