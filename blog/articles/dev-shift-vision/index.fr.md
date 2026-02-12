@@ -4,6 +4,8 @@ excerpt: "L'IA change le métier. Les développeurs qui s'impliquent dans le pro
 publishedAt: "2026-02-12"
 draft: false
 lang: fr
+private: true
+passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
 ---
 
 Le métier de développeur est en train de changer. L'IA accélère tout, mais le mouvement est plus profond — c'est une question de rôle, de responsabilité, et de sens.
