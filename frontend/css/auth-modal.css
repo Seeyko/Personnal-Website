@@ -3,9 +3,10 @@
     margin: 4rem auto;
     padding: 3rem;
     text-align: center;
-    background: var(--surface-color, #1a1a1a);
-    border: 1px solid var(--border-color, #333);
-    border-radius: 8px;
+    background: var(--color-bg-secondary, #ffffff);
+    border: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .password-prompt-icon {
@@ -16,11 +17,11 @@
 .password-prompt h3 {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
-    color: var(--text-primary, #fff);
+    color: var(--color-text, #1a1a1a);
 }
 
 .password-prompt p {
-    color: var(--text-secondary, #aaa);
+    color: var(--color-text-secondary, #666);
     margin-bottom: 2rem;
 }
 
@@ -33,33 +34,39 @@
 .password-input {
     padding: 0.75rem 1rem;
     font-size: 1rem;
-    background: var(--input-bg, #0a0a0a);
-    border: 1px solid var(--border-color, #333);
-    border-radius: 4px;
-    color: var(--text-primary, #fff);
-    transition: border-color 0.2s;
+    background: var(--color-bg, #f8f7f4);
+    border: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+    border-radius: var(--radius-md, 8px);
+    color: var(--color-text, #1a1a1a);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .password-input:focus {
     outline: none;
-    border-color: var(--accent-color, #00ff00);
+    border-color: var(--color-accent, #0f766e);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+}
+
+.password-input::placeholder {
+    color: var(--color-text-secondary, #666);
+    opacity: 0.7;
 }
 
 .password-submit {
     padding: 0.75rem 2rem;
     font-size: 1rem;
     font-weight: 600;
-    background: var(--accent-color, #00ff00);
-    color: var(--bg-color, #000);
+    background: var(--color-accent, #0f766e);
+    color: #ffffff;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--radius-md, 8px);
     cursor: pointer;
-    transition: transform 0.2s, opacity 0.2s;
+    transition: transform 0.2s, background-color 0.2s;
 }
 
 .password-submit:hover {
+    background: var(--color-accent-hover, #0d9488);
     transform: translateY(-2px);
-    opacity: 0.9;
 }
 
 .password-submit:active {
@@ -67,7 +74,67 @@
 }
 
 .password-error {
-    color: var(--error-color, #ff4444);
+    color: #dc2626;
     font-size: 0.9rem;
     margin-top: 1rem;
+}
+
+/* Terminal theme overrides */
+body[data-theme="terminal"] .password-prompt {
+    background: #0a0a0a;
+    border-color: #333;
+}
+
+body[data-theme="terminal"] .password-prompt h3 {
+    color: #33ff00;
+}
+
+body[data-theme="terminal"] .password-prompt p {
+    color: #888;
+}
+
+body[data-theme="terminal"] .password-input {
+    background: #1a1a1a;
+    border-color: #333;
+    color: #33ff00;
+}
+
+body[data-theme="terminal"] .password-input:focus {
+    border-color: #33ff00;
+    box-shadow: 0 0 0 3px rgba(51, 255, 0, 0.1);
+}
+
+body[data-theme="terminal"] .password-submit {
+    background: #33ff00;
+    color: #000;
+}
+
+/* Blueprint theme overrides */
+body[data-theme="blueprint"] .password-prompt {
+    background: rgba(0, 20, 40, 0.95);
+    border-color: rgba(0, 255, 255, 0.3);
+}
+
+body[data-theme="blueprint"] .password-prompt h3 {
+    color: #00ffff;
+}
+
+body[data-theme="blueprint"] .password-prompt p {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body[data-theme="blueprint"] .password-input {
+    background: rgba(0, 40, 80, 0.5);
+    border-color: rgba(0, 255, 255, 0.3);
+    color: #fff;
+}
+
+body[data-theme="blueprint"] .password-input:focus {
+    border-color: #00ffff;
+    box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
+}
+
+body[data-theme="blueprint"] .password-submit {
+    background: #00ffff;
+    color: #001428;
 }
