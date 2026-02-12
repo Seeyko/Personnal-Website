@@ -1,16 +1,17 @@
 ---
 title: "The Developer Role is Shifting"
-excerpt: "Between execution and product vision, the senior developer role is evolving. Reflections on what's changing, what's missing, and what could be better."
-publishedAt: "2026-02-12"
-draft: false
-lang: en
+subtitle: "Between execution and product vision"
+date: "2026-02-12"
+author: "Tom Andrieu"
+tags: ["product-engineering", "career", "ai", "opinion"]
+readTime: "12 min"
 ---
 
 The developer role is changing. Not just because of AI — though that's accelerating everything. It's deeper than that. It's about **role**, **responsibility**, and **meaning**.
 
 After a few years observing (and living through) software team dynamics, I've started seeing patterns. Things that work. Things that don't. Models that empower teams, and others that trap them in an endless cycle of sprints and frustration.
 
-This article is an attempt to put words on what I'm seeing. Not to criticize anyone in particular — just to share what I observe and what I'd like to see evolve in our industry.
+This article is **my vision** of where the role could — and should, in my opinion — evolve. Not an absolute truth. Not what all developers want or should want. Just what I observe, what I experiment with, and what seems to me the most interesting path for building better products.
 
 ## The reality: we execute, but we don't really build
 
@@ -73,7 +74,17 @@ With Cursor, Windsurf, v0, Bolt, Claude Sonnet 4.5, and the dozens of other tool
 
 The code itself? Increasingly generated, assisted, automated. And that's a good thing. Because it frees up time for what really matters: **thinking**.
 
-But this only works if developers are **involved in the thinking**. If we continue treating them as executors who type code, AI will indeed replace them. If we treat them as **product engineers** who use code as one tool among many to solve problems — then AI becomes a multiplier, not a replacement.
+**Do all developers want this shift?** No. Some want to remain executors. Others want to become ultra-specialized experts in a specific technology. And there's still room for these roles — at least today.
+
+But as AI evolves, I believe these roles will become less and less important. Not because they're not useful, but because the value is shifting. Pure expertise in a stack becomes commodified when AI can generate quality code in any technology. Pure execution becomes automated when AI can take specs and produce functional code.
+
+What remains — and becomes increasingly critical — is the ability to:
+- Understand users and their real problems
+- Make informed decisions based on data
+- Architect solutions that scale (technically AND humanly)
+- Iterate rapidly based on real feedback
+
+That's why I believe in the **product engineer** model. Not because it's the only valid model, but because it's the one that will best survive AI's evolution.
 
 ## The deadline doom loop
 
@@ -118,6 +129,22 @@ What does that mean?
 - Defining KPIs, analyzing data, iterating
 - Making decisions about what should exist in the product
 - Being **responsible for the outcome**, not just the output
+
+### Why not the reverse? (PMs coding with AI)
+
+A legitimate question: if AI makes code more accessible, why not have **PMs who code** rather than **developers who do product**?
+
+Because **the learning asymmetry** doesn't work the same way.
+
+For a PM: learning to code with AI is learning to use tools. But without deep understanding of architecture, technical debt, system trade-offs — it produces code that *works* but doesn't *scale*. It's like learning to fly with an assistant that corrects all your mistakes: you can take off, but you don't really know how to fly.
+
+For an engineer: learning to understand users is learning to **observe**, **listen**, **analyze**. It's reading data, doing support, recruiting testers, asking the right questions. These are human skills built through experience, not through a tool. And once acquired, they're **complementary** to existing technical expertise.
+
+**An engineer who learns product becomes a better engineer.** They code with a clear vision of the *why*. They make better architecture decisions because they understand user context. They iterate faster because they don't wait for a PM to tell them what to do.
+
+**A PM who learns to code with AI becomes... a PM who codes sometimes.** But without technical depth, they remain dependent on AI for complex decisions. And when AI fails (and it does), they don't know how to debug.
+
+That's why I believe more in engineers evolving toward product than PMs evolving toward code. Technical foundation + product intelligence = a multiplier. Product foundation + some AI-assisted code = a PM who can prototype quickly, but not build sustainable systems.
 
 Some organizations get it. Others are still in the "waterfall disguised as agile" model: decisions happen at the top, developers execute at the bottom, and everyone pretends it's collaborative because there are daily stand-ups.
 

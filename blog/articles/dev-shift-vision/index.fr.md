@@ -1,16 +1,17 @@
 ---
 title: "Le shift du métier de développeur"
-excerpt: "Entre exécution et vision produit, le métier de développeur senior évolue. Réflexions sur ce qui change, ce qui manque, et ce qui pourrait être mieux."
-publishedAt: "2026-02-12"
-draft: false
-lang: fr
+subtitle: "Entre exécution et vision produit"
+date: "2026-02-12"
+author: "Tom Andrieu"
+tags: ["product-engineering", "career", "ai", "opinion"]
+readTime: "12 min"
 ---
 
 Le métier de développeur est en train de changer. Pas juste à cause de l'IA — même si ça accélère tout. C'est plus profond que ça. C'est une question de **rôle**, de **responsabilité**, et de **sens**.
 
 Après quelques années à observer (et vivre) les dynamiques d'équipes de développement, j'ai commencé à voir des patterns. Des choses qui fonctionnent. D'autres qui coincent. Des modèles qui libèrent les équipes, et d'autres qui les enferment dans un cycle sans fin de sprints et de frustration.
 
-Cet article, c'est une tentative de poser des mots sur ce que je vois. Pas pour critiquer qui que ce soit — juste pour partager ce que j'observe et ce que j'aimerais voir évoluer dans notre industrie.
+Cet article, c'est **ma vision** de ce vers quoi le métier pourrait — et devrait, selon moi — évoluer. Pas une vérité absolue. Pas ce que tous les développeurs veulent ou devraient vouloir. Juste ce que j'observe, ce que j'expérimente, et ce qui me semble être le chemin le plus intéressant pour construire de meilleurs produits.
 
 ## Le constat : on exécute, mais on ne construit pas vraiment
 
@@ -73,7 +74,17 @@ Avec Cursor, Windsurf, v0, Bolt, Claude Sonnet 4.5, et les dizaines d'autres out
 
 Le code lui-même ? De plus en plus généré, assisté, automatisé. Et c'est tant mieux. Parce que ça libère du temps pour ce qui compte vraiment : **réfléchir**.
 
-Mais ça ne marche que si les devs sont **impliqués dans la réflexion**. Si on continue à les traiter comme des exécutants qui tapent du code, l'IA les remplacera effectivement. Si on les traite comme des **product engineers** qui utilisent le code comme un outil parmi d'autres pour résoudre des problèmes — alors l'IA devient un multiplicateur, pas un remplaçant.
+**Est-ce que tous les développeurs veulent ce shift ?** Non. Certains veulent rester exécutants. D'autres veulent devenir des experts ultra-spécialisés d'une techno spécifique. Et il y a encore de la place pour ces rôles — du moins aujourd'hui.
+
+Mais à mesure que l'IA évolue, je pense que ces rôles auront de moins en moins d'importance. Pas parce qu'ils ne sont pas utiles, mais parce que la valeur se déplace. L'expertise pure sur une stack devient commodifiée quand l'IA peut générer du code de qualité dans n'importe quelle techno. L'exécution pure devient automatisée quand l'IA peut prendre des specs et produire du code fonctionnel.
+
+Ce qui reste — et ce qui devient de plus en plus critique — c'est la capacité à :
+- Comprendre les utilisateurs et leurs vrais problèmes
+- Prendre des décisions éclairées basées sur de la data
+- Architecturer des solutions qui scalent (techniquement ET humainement)
+- Itérer rapidement en fonction de feedback réel
+
+C'est pour ça que je crois au modèle **product engineer**. Pas parce que c'est le seul modèle valide, mais parce que c'est celui qui survivra le mieux à l'évolution de l'IA.
 
 ## Le "deadline doom loop"
 
@@ -118,6 +129,22 @@ Qu'est-ce que ça veut dire ?
 - Définir des KPIs, analyser les données, itérer
 - Prendre des décisions sur ce qui doit exister dans le produit
 - Être **responsable de l'outcome**, pas juste de l'output
+
+### Pourquoi pas l'inverse ? (PM qui code avec l'IA)
+
+Une question légitime : si l'IA rend le code plus accessible, pourquoi ne pas avoir des **PM qui codent** plutôt que des **devs qui font du product** ?
+
+Parce que **l'asymétrie d'apprentissage** ne joue pas dans le même sens.
+
+Pour un PM : apprendre à coder avec l'IA, c'est apprendre à utiliser des outils. Mais sans la compréhension profonde de l'architecture, de la dette technique, des trade-offs système — ça produit du code qui *fonctionne* mais qui ne *scale* pas. C'est comme apprendre à piloter avec un assistant qui corrige toutes tes erreurs : tu peux décoller, mais tu ne sais pas vraiment piloter.
+
+Pour un ingénieur : apprendre à comprendre les users, c'est apprendre à **observer**, **écouter**, **analyser**. C'est lire de la data, faire du support, recruter des testeurs, poser les bonnes questions. Ce sont des skills humaines qui se construisent par l'expérience, pas par un outil. Et une fois acquises, elles sont **complémentaires** à l'expertise technique existante.
+
+**Un ingénieur qui apprend le product devient un meilleur ingénieur.** Il code avec une vision claire du *pourquoi*. Il prend de meilleures décisions d'architecture parce qu'il comprend le contexte utilisateur. Il itère plus vite parce qu'il n'attend pas qu'un PM lui dise quoi faire.
+
+**Un PM qui apprend à coder avec l'IA devient... un PM qui code parfois.** Mais sans la profondeur technique, il reste dépendant de l'IA pour les décisions complexes. Et quand l'IA se plante (et elle se plante), il ne sait pas comment débugger.
+
+C'est pour ça que je crois plus à l'ingénieur qui évolue vers le product qu'au PM qui évolue vers le code. La fondation technique + l'intelligence produit = un multiplicateur. La fondation produit + un peu de code assisté par IA = un PM qui peut prototyper vite, mais pas construire des systèmes durables.
 
 Certaines organisations l'ont compris. D'autres sont encore dans le modèle "waterfall déguisé en agile" : les décisions se prennent en haut, les devs exécutent en bas, et tout le monde fait semblant que c'est collaboratif parce qu'il y a des daily stand-ups.
 
