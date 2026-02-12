@@ -253,6 +253,7 @@ func (s *ArticleService) GetArticles(page, limit int, lang string) models.Articl
 			PublishedAt: article.PublishedAt,
 			ReadingTime: article.ReadingTime,
 			Lang:        article.Lang,
+			Private:     article.Private,
 		}
 	}
 
