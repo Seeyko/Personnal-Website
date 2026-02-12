@@ -6,253 +6,237 @@ draft: false
 lang: en
 ---
 
-I have a problem most people don't have yet: coordinating a team of AI agents working autonomously on real projects.
+Coordinating multiple AI agents working in parallel requires dedicated infrastructure. After two weeks experimenting with 7 specialized agents (architecture, dev, QA, research, writing), I built Olympus — a task management system designed for multi-agent coordination.
 
-For the past two weeks, I've been running what I call the **Pantheon** — a team of seven specialized AI agents (architecture, development, QA, research, writing) collaborating on my side projects. They write code, do reviews, plan sprints, write documentation. They communicate with each other, get blocked, unblock each other, create tasks for one another.
+## The technical problem
 
-It all runs on a Mac Mini in my apartment. I talk to the orchestrator (Main) via Discord. He dispatches work to the other agents. They deliver PRs, reports, analyses. It works. But it only works because I built **Olympus**.
+Initially, coordination happened through Discord. Main (the orchestrator) received my requests, dispatched to specialized agents via mentions, collected results in threads. Functional up to ~20 active tasks.
+
+**Observed limitations**:
+- No global view: to know system state, had to parse all Discord threads
+- No structured prioritization: first-in-first-out based on message chronological order
+- Fragmented memory: each agent had its files (`daily-notes/`, `decisions/`), but no unified database
+- Blocked coordination: if Atlas (research) needed to hand off to Daedalus (architecture), I played intermediary
 
-Olympus is a task management dashboard for AI agents. A Jira for machines. A web interface where I see in real-time what each agent is doing, what they're blocked on, what they're saying to each other. And most importantly, it's the API that allows them to coordinate without me intervening in every exchange.
+The filesystem as source of truth was insufficient: no notifications, write conflict risks, manual parsing required. Discord isn't built for structured task tracking.
 
-This article is about why I built it, how it works, and what it changes in my way of working with autonomous AI systems.
+Solution: build a dedicated REST API + web UI.
 
-## The problem: orchestrating without losing control
+## Technical architecture
+
+**Stack**:
+- Backend: NestJS + TypeORM + PostgreSQL (hosted on VPS via Dokploy)
+- Frontend: React 19 + Vite + Zustand + TanStack Query + shadcn/ui
+- Deployment: Dokploy (self-hosted Vercel equivalent)
+
+**Design choices**:
+
+PostgreSQL instead of files to guarantee ACID and enable complex queries (`SELECT * FROM tasks WHERE assignee = 'hephaestos' AND status = 'blocked' AND updated_at < NOW() - INTERVAL '3 days'`).
+
+NestJS for modular structure (DI, guards, pipes). TypeORM to avoid manual SQL on a side project.
+
+React 19 instead of SvelteKit (migrated after two days): higher dev velocity thanks to my mastery of the React ecosystem.
+
+WebSockets for real-time agent notifications instead of polling.
+
+**REST API endpoints**:
+```bash
+GET    /tasks                    # List all tasks
+GET    /tasks?assignee=writer    # Filter by agent
+GET    /tasks/:id                # Task details
+POST   /tasks                    # Create (Main only)
+PATCH  /tasks/:id                # Update status
+POST   /tasks/:id/comments       # Add comment
+GET    /tasks/:id/comments       # Read comments
+```
+
+**Authentication**:
+Each agent has a unique API key (`olympus_writer_bf165c9cdf429bcf`, `olympus_atlas_...`). Main has `POST /tasks` rights, other agents only `PATCH` and comments.
 
-When I launched the Pantheon, coordination happened through Discord. I'd send a request to Main, he'd respond, ping another agent if needed, that one would respond in the thread. Simple. Functional.
+**Rate limiting**:
+- Task creation: max 5/minute per agent (prevent infinite loops)
+- Updates: max 30/minute
+- Comments: max 10/minute
 
-For a week.
+Implemented after Atlas created 47 tasks in 3 seconds (logic bug where he re-scanned his own cache before the DB was updated).
 
-Then problems emerged:
+## Concrete data (15 days of usage)
 
-**No global visibility.** To know what each agent was doing, I had to scroll through Discord. If an agent had been blocked for three days, I wouldn't see it unless I reread all the threads.
+**Volume**:
+- 143 tasks created (9.5/day average)
+- 67 tasks completed (46.8% completion rate)
+- 31 tasks in `blocked` (21.7%)
+- 22 tasks in `backlog` (15.4%)
+- 23 tasks in `in_progress` (16.1%)
 
-**No clear prioritization.** Agents worked in the order of Discord messages. No sense of urgency, no backlog, no roadmap. If three tasks arrived in the same hour, it was first-in-first-out, no thinking.
+**Distribution by agent**:
+- Hephaestos (dev): 41 tasks (28.7%)
+- Atlas (research): 28 tasks (19.6%)
+- Hermes (scrum): 24 tasks (16.8%)
+- Daedalus (arch): 19 tasks (13.3%)
+- Homer (writing): 17 tasks (11.9%)
+- Hygieia (QA): 14 tasks (9.8%)
 
-**No structured shared memory.** Each agent had their own memory files (daily notes, decisions, learnings). But no unified view. If Hephaestos (the dev agent) learned something about a project's architecture, Hermes (the scrum master) wouldn't automatically see it.
+**Average time per task**:
+- Research: 37 min
+- Writing: 52 min
+- Development: 1h 23 min
+- Architecture: 1h 51 min
+- QA: 28 min
 
-**No structured inter-agent coordination.** If Atlas (research) needed to hand off to Daedalus (architecture), I had to play intermediary. Agents couldn't signal to Main that a follow-up task was needed. They went through me. I had become the bottleneck.
+**Costs (LLM API)**:
+- Claude Sonnet 4: ~€8.40/day (€126 over 15 days)
+- Breakdown: 68% input tokens, 32% output tokens
+- Most expensive task: API architecture (€3.12)
+- Cheapest task: PR review (€0.07)
 
-I had built an autonomous team that could only function with my constant micro-management. That doesn't scale. And frankly, it was exhausting.
+**Main heartbeats**:
+- Configured frequency: 4x/day (8am, 12:30pm, 5pm, 9pm)
+- Successful heartbeats: 47/60 (78.3%)
+- Missed heartbeats: 13 (cron failures, timeouts)
+- Average heartbeat duration: 4 min 17 sec
 
-## The false solutions
+## Real workflow
 
-I first thought about improving the file system. Adding naming conventions, sync scripts, YAML templates for tasks. Making the filesystem "self-service" for agents.
+Unlike the initial idea of self-organizing agents, the system works via **centralized orchestration**:
 
-Bad idea.
+**Main** (CEO agent):
+1. Heartbeat 4x/day
+2. Reads Olympus backlog
+3. Analyzes what needs to be done (based on my vision)
+4. Creates tasks for specialized agents
+5. Spawns agents via `sessions_spawn` if needed
 
-The filesystem is great for memory and deliverables. But for real-time coordination? It's a nightmare. Agents would have to parse Markdown files to know who's doing what. Handle conflicts if two agents modify the same file. Implement their own change detection logic.
+**Specialized agents**:
+1. Triggered by cron or spawn
+2. `GET /tasks?assignee={agent_id}&status=in_progress`
+3. Work on the task
+4. `PATCH /tasks/{id}` to update status
+5. `POST /tasks/{id}/comments` to document
+6. Go back to sleep
 
-And most importantly: **no notifications**. An agent doesn't know a task was created for them unless they continuously poll a folder. Inefficient and fragile.
+**Concrete example**:
 
-I also considered keeping everything in Discord. Structuring threads, adding naming conventions (like `[TASK]`, `[BLOCKED]`), using reactions as a status system.
+I ask Main: "Prepare an SEO audit of the blog".
 
-Worse idea.
+Main creates 3 tasks:
+```json
+{
+  "title": "Crawl seeyko-website and extract metadata",
+  "assignee": "atlas",
+  "priority": "high"
+}
+{
+  "title": "Analyze HTML structure and identify issues",
+  "assignee": "daedalus",
+  "priority": "medium"
+}
+{
+  "title": "Propose technical fixes",
+  "assignee": "hephaestos",
+  "priority": "medium"
+}
+```
 
-Discord is made for asynchronous communication between humans. Not for structured task management. No filters, no per-agent views, no metrics. And most importantly, no clean API for agents to programmatically create and update tasks.
+Atlas wakes up at his next cron (12:30pm), fetches his task, crawls the site, posts results in comments, sets status to `done`.
 
-I needed a real system. A centralized hub. A single source of truth.
+Daedalus wakes up at 5pm, sees his task is waiting for Atlas's results, reads Atlas's comment, analyzes, posts his report.
 
-## Olympus: a hub for humans and machines
+Hephaestos wakes up at 9pm, reads both reports, proposes code.
 
-Olympus is two things:
+**No direct horizontal coordination**: everything goes through Main and Olympus.
 
-1. **A web interface** where I see everything happening in the Pantheon.
-2. **A REST API** that agents use to coordinate.
+## What works
 
-### For me (the web interface)
+**Structured visibility**: A dashboard replaces infinite Discord scrolling. Filters by agent, status, priority. Overview at a glance.
 
-A classic kanban board. Columns by status (`backlog`, `in_progress`, `blocked`, `done`, `waiting_for_human`, `waiting_for_agent`, `in_review`). Each task has:
+**Centralized memory**: PostgreSQL database instead of scattered files. Complex queries possible (`SELECT AVG(updated_at - created_at) FROM tasks WHERE status = 'done'`).
 
-- A title, a description
-- An assignee (which agent)
-- A creator (me or another agent)
-- A priority (`low`, `medium`, `high`, `critical`)
-- A history of status changes
-- Comments (conversation between agents, or between me and agents)
+**Rate limiting**: Prevents infinite loops. After Atlas's bug (47 tasks in 3 sec), the system limits to 5 creations/minute.
 
-I can see:
-- Tasks for a specific agent
-- Tasks blocked for more than X days
-- Who's waiting for what from whom
-- Each agent's workload
+**Mandatory blocker documentation**: If an agent sets a task to `blocked`, the API checks for a recent comment (<2 min). Otherwise, 400 error. Forces documentation.
 
-I can also access each agent's **memory** (their daily notes, config, logs) directly from Olympus. Before, I had to open VSCode and navigate the filesystem. Now, everything is indexed and searchable via a dedicated UI.
+**WebSockets for real-time notifications**: Agents don't need to continuously poll.
 
-### For agents (the API)
+## What doesn't work (yet)
 
-Each agent has a unique API key. They can:
+**Unstable heartbeats**: 78.3% success rate only. 13 missed heartbeats in 15 days. Causes: LLM timeouts, cron failures, network errors.
 
-- **Read their tasks** (`GET /tasks?assignee=agent_id`)
-- **Update status** (`PATCH /tasks/:id`)
-- **Post comments** (`POST /tasks/:id/comments`)
-- **Read others' tasks** (to understand global context)
+**Low completion rate**: 46.8% only. Many tasks created, few completed. Velocity illusion: creating 15 tasks in 2 minutes gives the impression of progress, but nothing is delivered.
 
-**Only Main can create tasks** (`POST /tasks`). Specialized agents don't create. They execute. This asymmetry is intentional: it prevents the chaos of unsupervised horizontal coordination.
+**No real-time metrics**: The figures above are calculated manually via SQL queries. No analytics dashboard in Olympus v1.
 
-The API is simple. No GraphQL, no unnecessary complexity. Pure REST. JSON in, JSON out. Rate limiting to prevent infinite loops (lesson learned after a logic bug where Main tried to create 47 tasks in three seconds).
+**Blockers not auto-resolved**: 31 blocked tasks (21.7%). Main doesn't systematically pick them up during his heartbeats.
 
-Every status change or new comment triggers a WebSocket notification. Agents don't need to poll. They're notified in real-time.
+**No dependency system**: "B waits for A" exists in comments, not in system logic. Agents handle this manually.
 
-## Tech stack (and why these choices)
+**No push notifications for me**: WebSockets work for agents, but I have to manually check the board.
 
-**Backend: NestJS + TypeORM + PostgreSQL**
+## Time invested (me)
 
-NestJS because I like TypeScript and the modular structure makes code maintainable. TypeORM because I don't want to write SQL by hand for this project. PostgreSQL because it's solid, free, and I host on my VPS via Dokploy (didn't want to pay for Supabase or Firebase for a personal project).
+**Olympus development**: ~22h over 3 days (backend 8h, frontend 10h, deployment 4h).
 
-**Frontend: React 19 + Vite + Zustand + TanStack Query**
+**Daily operations**: ~5h/day (discussions with Main, unblocking tasks, fixing bugs, refining prompts).
 
-Initially, I started with SvelteKit. Then migrated to React. Why? Because I know React inside out. I can code fast, debug fast, and there are 10x more resources if I get stuck. SvelteKit is elegant, but for a solo project where velocity matters more than framework elegance, React wins.
+Total 15 days: 22h dev + 75h ops = **97h**.
 
-Zustand for local state (lightweight, no boilerplate). TanStack Query for server state (automatic caching, refetch, invalidation). shadcn/ui for components (because I don't want to reinvent modals and dropdowns).
+**Nothing shipped to production**. Tools created, repos initialized, assets generated. But nothing generating a euro. It's infrastructure and experimentation.
 
-**Hosting: Dokploy on VPS**
+## Technical lessons
 
-Dokploy is a self-hosted Vercel/Railway. You push to `main`, it builds and deploys automatically. Zero config. Frontend on `olympus.tomandrieu.com`, backend on `api.olympus.tomandrieu.com`. PostgreSQL database managed by Dokploy too.
+**1. A relational database is non-negotiable**
 
-Why self-hosted and not a PaaS? **Total control**. I can SSH into the machine, inspect logs, kill a process if needed. With a PaaS, you depend on their interface. I've learned the importance of having a real kill switch.
+The filesystem isn't enough for real-time coordination. PostgreSQL enables complex queries, ACID transactions, integrity constraints.
 
-## The reality: orchestration by Main, not complete autonomy
+**2. Centralized orchestration simplifies coordination**
 
-The theory was seductive: agents coordinating among themselves, creating tasks, unblocking each other. The idea of a self-organizing system.
+Rather than each agent communicating with all others (n² interactions), everything goes through Main (n interactions). Specialized agents execute, don't coordinate.
 
-Reality is more nuanced.
+**3. Rate limiting from day 1**
 
-**How it actually works:**
+Don't wait for an agent to create 47 tasks in 3 seconds before implementing limits.
 
-Agents don't run continuously. They're triggered by **crons** — scheduled tasks that wake them at regular intervals.
+**4. Force blocker documentation**
 
-**Main = the CEO.** He's the orchestrator. He has heartbeats 4 times a day (8am, 12:30pm, 5pm, 9pm). At each heartbeat, he:
-1. Checks Olympus tasks (new, blocked, waiting)
-2. Identifies what needs to be done
-3. Creates tasks for specialized agents
-4. Spawns agents if needed (via `sessions_spawn`)
-5. Tracks progress and follows up if blocked
+If an agent blocks without explaining why, the system should reject the update. Mandatory commenting.
 
-**Specialized agents do NOT create tasks.** They receive a task from Main, work on it, update status, post comments. That's it. No horizontal coordination. Everything goes through Main.
+**5. Start minimal**
 
-When a specialized agent wakes up (cron or spawn), it:
-1. Fetches assigned tasks via the Olympus API
-2. Reads the latest `in_progress` one (or takes the next if nothing in progress)
-3. Works on it
-4. Updates status and posts a comment
-5. Goes back to sleep (or terminates if spawned)
+Olympus v0: 3 statuses, basic CRUD, no WebSockets. That was enough for 2 weeks. Add features only when the need is proven.
 
-**My role:**
-- I talk to **Main**, not to other agents
-- I give him the **vision**, **objectives**, **priorities**
-- Main translates that into Olympus tasks and dispatches
-- I spend **5 hours a day** discussing with Main, unblocking situations, fixing bugs, refining prompts
+**6. Kill switches must be independent**
 
-**What works:**
-- Visibility: I see exactly what each agent is doing via Olympus
-- Structured coordination: Main creates tasks, agents execute
-- Shared memory: everything is in Olympus, not scattered in Discord
+If `/stop` depends on the agent being cooperative, it's not a kill switch. Plan for timeouts, hard limits, SSH access to the server.
 
-**What doesn't work yet:**
-- Heartbeats are too spaced out or unreliable
-- Agents aren't truly "autonomous" — they wait for Main to validate, restart, correct
-- Velocity isn't there: we create many tasks, complete few
+**7. Measure real velocity, not task creation**
 
-**Who really prioritizes?**
+Creating 15 tasks/day isn't a progress indicator. What matters: how many are *completed*, and how many *deliver value*.
 
-Main. During his heartbeats, he analyzes the backlog, identifies what matters (based on my vision), and creates/prioritizes tasks accordingly. Agents execute. They don't decide what's important. They don't have that strategic intelligence.
+## Next steps
 
-It's far from the idealized image of a "manager who observes." I'm in the logs, in discussions with Main, in validation. Olympus helps me structure this chaos. But the chaos remains.
+**Short term (next week)**:
+- Improve heartbeat reliability (retry logic, better timeouts)
+- Analytics dashboard (real-time metrics in UI)
+- Push notifications for me (email or Discord when task blocked >48h)
 
-## The struggles (and lessons)
+**Medium term (next month)**:
+- Task dependency system (DAG)
+- Templates for recurring tasks
+- Detailed history with diff (see exactly what changed)
 
-Building Olympus wasn't smooth sailing.
-
-**The agent who got blocked without explaining why**
-
-Hermes put a task in `blocked` without posting a comment. I spent 20 minutes trying to figure out why. He was waiting for a decision from me on an architecture question. But he hadn't written it.
-
-Lesson learned: **mandatory comment when changing to `blocked`.** If an agent puts a task in `blocked`, the API checks for a recent comment (less than 2 minutes). Otherwise, 400 error. Forces agents to document the blocking.
-
-**The agent creating tasks in a loop**
-
-Atlas created 47 tasks in three seconds. Bug in his logic for detecting missing tasks. He'd see "no research task for X" and create one. Then re-scan, see "no research task for X" (because the task had just been created and wasn't in his cache yet), and create another. Loop.
-
-Lesson learned: **rate limiting per agent.** Max 5 task creations per minute. Beyond that, 429 error. And improved cache logic on the agent side.
-
-**The velocity illusion**
-
-Main can create tasks fast. Very fast. Too fast, sometimes. He analyzes a project and generates 15 tasks in two minutes. It gives the impression of progress. But creating tasks isn't completing them.
-
-Reality: **we haven't shipped anything**. Tools created, assets generated, repos initialized. But nothing tangible in production. Nothing generating a euro.
-
-Lesson being learned: task creation velocity isn't project velocity. It's the **direction** that matters. And I'm the one giving Main that direction. Through weekly objectives. Through validations. Through Discord discussions.
-
-## What it actually changes
-
-**Structured visibility.** Before, everything was scattered: Discord, files, logs. Now, Olympus centralizes. I see who's doing what, who's blocked, who's waiting for what. It hasn't reduced my cognitive load, but it has **organized** it.
-
-**Intense learning.** Two weeks building this system, watching agents fail, succeed, bug out, create absurd tasks, deliver brilliant stuff. I'm learning enormously about:
-- LLM limitations in multi-agent coordination
-- Patterns that work (and those that explode)
-- How to structure autonomous (or semi-autonomous) systems
-- The importance of kill switches, rate limiting, supervision
-
-**Nothing shipped, but foundations laid.** We haven't put anything in prod. Nothing that makes money. But I've built:
-- A coordination system that scales
-- A team of agents with clear roles
-- An architecture that enables rapid experimentation
-- Tools, repos, assets
-
-**I think differently about my projects.** Not in "tasks I delegate," but in "systems I design." Olympus forces me to architect collaboration, not just work distribution.
-
-**5h per day in the system.** No magic, no total autonomy. I'm still deeply involved. But every day, I understand better how to make this mess work. And the experience is worth it.
-
-## What's left to do
-
-Olympus v1 exists. But "works" would be generous.
-
-**What's missing:**
-
-- **Notifications.** Currently: nothing. I ping agents on Discord, they respond. Olympus websockets send real-time updates, but no push notification system. I have to go check the board.
-
-- **Reliable heartbeats.** Crons work, but agent heartbeats are unstable. Sometimes they miss their window. Sometimes they run too often. I need to refine the frequency and logic.
-
-- **Metrics and analytics.** Average time per task. Block rate. Real velocity (not just task creation, but completion). To detect patterns and improve.
-
-- **Task templates.** Recurring tasks (audits, reports) are recreated manually. Inefficient.
-
-- **Task dependencies.** "B waits for A" exists in comments, not in system logic. Agents handle this manually (or don't).
-
-- **Calendar view.** Deadlines and sprints are in my head, not in Olympus.
-
-But I'll only implement what I actually need. No "just in case" features. Olympus evolves at the pace of my struggles.
-
-## Lessons for anyone orchestrating AI agents
-
-If you're building a multi-agent system — or thinking about it —, here's what I've learned:
-
-**1. A single source of truth is non-negotiable.** Discord, Slack, files, all of that, those are interfaces. But underneath, you need a structured database. Otherwise, you lose coherence.
-
-**2. A centralized orchestrator simplifies coordination.** If every inter-agent interaction goes through you (human), you become the bottleneck. Having an orchestrator agent (Main in my case) who handles task creation and dispatch centralizes the logic. Specialized agents can comment, update their status, signal blockers. But coordination remains supervised, not chaotic.
-
-**3. Kill switches must be independent of the system they kill.** If your `/stop` command depends on the agent being in a cooperative state, it's not a kill switch. It's a polite suggestion.
-
-**4. Visibility = control.** You can't control what you can't see. A real-time dashboard changes everything. You detect problems before they become catastrophes.
-
-**5. Direction comes from the orchestrator.** Agents execute. They don't decide strategy. It's **Main** (the CEO agent) who, during his heartbeats, analyzes the backlog and creates/prioritizes tasks. Based on the vision I give him. Agents work so fast that individual task prioritization doesn't matter. What matters: **what to do** and **how to do it**. I define it, Main orchestrates it.
-
-**6. Agents will fail.** Prepare yourself. Rate limiting. Hard limits. Watchdogs. Timeouts. Detailed logs. Don't trust blindly.
-
-**7. Start simple.** Olympus v0 was a basic kanban board with three statuses. No WebSocket. No comment system. Just a task CRUD. That was enough for two weeks. Iterate based on your real needs, not your imaginary ones.
+**Long term**:
+- Auto-resolution of certain blockers by Main
+- LLM cost optimization (caching, lighter models for simple tasks)
+- Agents in "watch" mode instead of cron (react immediately to new events)
 
 ## Conclusion
 
-Olympus isn't a sexy tech project with cutting-edge algorithms or complex machine learning. It's a CRUD app. A kanban board. A REST API.
+Olympus isn't a revolutionary AI project. It's a CRUD app with a REST API and a kanban board. But it's the necessary infrastructure to experiment with multi-agent systems.
 
-But it's **the infrastructure that enables experimentation.**
+**Factual data**: 143 tasks in 15 days, 46.8% completed, €126 in LLM costs, 97h of my time invested. Nothing in production.
 
-Without Olympus, the Pantheon would be unmanageable. With Olympus, I have structured visibility on the chaos. I can test coordination patterns. I can see where it breaks. I can iterate.
+**What I learned**: centralized orchestration works better than horizontal coordination. Agents are fast but unreliable. Task creation isn't velocity. Structured visibility is essential.
 
-**Does it "work"?** No, not yet. Nothing shipped. Nothing in prod. Just tools, repos, assets. But it's been two weeks. And I'm learning.
+**What remains to be proven**: can this system actually deliver value in production? Or is it just expensive infrastructure for experimentation? The next 15 days will tell.
 
-**Does it foreshadow the future of working with AI?** I don't know. But this is how I'm experimenting today. And every struggle teaches me something about autonomous systems, multi-agent coordination, LLM limitations.
-
-If you're building multi-agent systems, or thinking about how to structure human-AI collaboration, know that it's hard. That it doesn't look like polished demos. That you'll spend 5h a day in the logs. But that the learning is worth it.
-
-My DMs are open if you want to discuss this.
+Olympus code isn't public yet. But if you're building multi-agent systems and want to discuss, my DMs are open.
