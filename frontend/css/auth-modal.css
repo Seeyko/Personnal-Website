@@ -1,0 +1,73 @@
+.password-prompt {
+    max-width: 500px;
+    margin: 4rem auto;
+    padding: 3rem;
+    text-align: center;
+    background: var(--surface-color, #1a1a1a);
+    border: 1px solid var(--border-color, #333);
+    border-radius: 8px;
+}
+
+.password-prompt-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.password-prompt h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary, #fff);
+}
+
+.password-prompt p {
+    color: var(--text-secondary, #aaa);
+    margin-bottom: 2rem;
+}
+
+.password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.password-input {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    background: var(--input-bg, #0a0a0a);
+    border: 1px solid var(--border-color, #333);
+    border-radius: 4px;
+    color: var(--text-primary, #fff);
+    transition: border-color 0.2s;
+}
+
+.password-input:focus {
+    outline: none;
+    border-color: var(--accent-color, #00ff00);
+}
+
+.password-submit {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: var(--accent-color, #00ff00);
+    color: var(--bg-color, #000);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.password-submit:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+.password-submit:active {
+    transform: translateY(0);
+}
+
+.password-error {
+    color: var(--error-color, #ff4444);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}

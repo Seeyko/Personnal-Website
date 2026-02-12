@@ -79,7 +79,8 @@ func main() {
 	}
 
 	articleService := services.NewArticleService(articlesDir)
-	articleHandler := handlers.NewArticleHandler(articleService)
+	jwtService := services.NewJWTService()
+	articleHandler := handlers.NewArticleHandler(articleService, jwtService)
 
 	r := chi.NewRouter()
 
@@ -90,8 +91,8 @@ func main() {
 
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   allowedOrigins,
-		AllowedMethods:   []string{"GET", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Content-Type"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Content-Type", "Authorization"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
 		MaxAge:           300,
@@ -110,6 +111,7 @@ func main() {
 		r.Get("/articles/{slug}", articleHandler.GetArticle)
 		r.Get("/articles/{slug}/", articleHandler.GetArticle)
 		r.Get("/articles/{slug}/image/{filename}", articleHandler.ServeImage)
+		r.Post("/articles/{slug}/unlock", articleHandler.UnlockArticle)
 
 		r.Post("/refresh", articleHandler.RefreshCache)
 	})
@@ -135,6 +137,7 @@ func main() {
 	log.Printf("  GET  /api/articles             - List articles")
 	log.Printf("  GET  /api/articles/{slug}      - Get article by slug")
 	log.Printf("  GET  /api/articles/{slug}/image/{filename} - Serve image")
+	log.Printf("  POST /api/articles/{slug}/unlock - Unlock private article")
 	log.Printf("  POST /api/refresh              - Refresh cache")
 	log.Printf("===========================================")
 

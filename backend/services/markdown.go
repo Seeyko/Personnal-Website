@@ -19,12 +19,14 @@ import (
 )
 
 type Frontmatter struct {
-	Title       string `yaml:"title"`
-	Excerpt     string `yaml:"excerpt"`
-	CoverImage  string `yaml:"coverImage"`
-	PublishedAt string `yaml:"publishedAt"`
-	Draft       bool   `yaml:"draft"`
-	Lang        string `yaml:"lang"`
+	Title        string `yaml:"title"`
+	Excerpt      string `yaml:"excerpt"`
+	CoverImage   string `yaml:"coverImage"`
+	PublishedAt  string `yaml:"publishedAt"`
+	Draft        bool   `yaml:"draft"`
+	Lang         string `yaml:"lang"`
+	Private      bool   `yaml:"private"`
+	PasswordHash string `yaml:"passwordHash"`
 }
 
 type ArticleService struct {
@@ -169,14 +171,16 @@ func (s *ArticleService) parseArticle(slug string, content []byte) (models.Artic
 	}
 
 	return models.Article{
-		Slug:        slug,
-		Title:       meta.Title,
-		Excerpt:     meta.Excerpt,
-		Content:     buf.String(),
-		CoverImage:  coverImage,
-		PublishedAt: publishedAt,
-		ReadingTime: readingTime,
-		Lang:        lang,
+		Slug:         slug,
+		Title:        meta.Title,
+		Excerpt:      meta.Excerpt,
+		Content:      buf.String(),
+		CoverImage:   coverImage,
+		PublishedAt:  publishedAt,
+		ReadingTime:  readingTime,
+		Lang:         lang,
+		Private:      meta.Private,
+		PasswordHash: meta.PasswordHash,
 	}, nil
 }
 

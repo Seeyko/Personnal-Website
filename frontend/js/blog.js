@@ -18,13 +18,36 @@ function getViewFromURL() {
 async function fetchArticle(slug) {
     const apiBase = Utils.getApiBaseUrl();
     const lang = window.LanguageManager?.currentLang || 'fr';
+
+    // Récupérer le token stocké pour cet article
+    const token = localStorage.getItem(`article_token_${slug}`);
+
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
     try {
-        const response = await fetch(`${apiBase}/api/articles/${slug}?lang=${lang}`);
+        const response = await fetch(`${apiBase}/api/articles/${slug}?lang=${lang}`, {
+            headers: headers
+        });
+
         if (!response.ok) return response.status === 404 ? null : null;
+
         const data = await response.json();
+
+        // Si l'article nécessite un mot de passe
+        if (data.requiresPassword) {
+            return { ...data.article, requiresPassword: true };
+        }
+
         if (data.article?.coverImage) {
             data.article.coverImage = `${apiBase}${data.article.coverImage}`;
         }
+
         return data.article;
     } catch {
         return null;
@@ -121,6 +144,13 @@ function renderArticle(article) {
     document.getElementById('article-title').textContent = article.title;
     document.getElementById('article-date').textContent = ContentLoader.formatDate(article.publishedAt);
     document.getElementById('article-reading-time').textContent = `${article.readingTime} min read`;
+
+    // Si l'article nécessite un mot de passe
+    if (article.requiresPassword) {
+        showPasswordPrompt(article);
+        return;
+    }
+
     document.getElementById('article-content').innerHTML = article.content;
 
     const cover = document.getElementById('article-cover');
@@ -132,6 +162,71 @@ function renderArticle(article) {
     }
 
     window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function showPasswordPrompt(article) {
+    const content = document.getElementById('article-content');
+    content.innerHTML = `
+        <div class="password-prompt">
+            <div class="password-prompt-icon">🔒</div>
+            <h3>This article is private</h3>
+            <p>Enter the password to access this content.</p>
+            <form id="password-form" class="password-form">
+                <input 
+                    type="password" 
+                    id="password-input" 
+                    placeholder="Password" 
+                    class="password-input"
+                    autocomplete="off"
+                    required
+                />
+                <button type="submit" class="password-submit">Unlock</button>
+            </form>
+            <div id="password-error" class="password-error" style="display: none;"></div>
+        </div>
+    `;
+
+    const form = document.getElementById('password-form');
+    const input = document.getElementById('password-input');
+    const error = document.getElementById('password-error');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const password = input.value;
+
+        try {
+            const apiBase = Utils.getApiBaseUrl();
+            const response = await fetch(`${apiBase}/api/articles/${article.slug}/unlock`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            if (!response.ok) {
+                error.textContent = 'Invalid password. Please try again.';
+                error.style.display = 'block';
+                input.value = '';
+                input.focus();
+                return;
+            }
+
+            const data = await response.json();
+
+            // Stocker le token
+            localStorage.setItem(`article_token_${article.slug}`, data.token);
+
+            // Recharger l'article
+            const unlockedArticle = await fetchArticle(article.slug);
+            if (unlockedArticle && !unlockedArticle.requiresPassword) {
+                renderArticle(unlockedArticle);
+            }
+        } catch (err) {
+            error.textContent = 'An error occurred. Please try again.';
+            error.style.display = 'block';
+        }
+    });
+
+    input.focus();
 }
 
 function showNotFound() {
