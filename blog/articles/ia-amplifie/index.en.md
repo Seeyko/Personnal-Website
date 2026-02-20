@@ -1,6 +1,6 @@
 ---
 title: "AI Amplifies What Already Existed"
-excerpt: "Your organizational problems didn't wait for ChatGPT. AI just makes them impossible to ignore."
+excerpt: "Two weeks building with AI agents. What I learned about my own processes — and why my problems didn't wait for ChatGPT."
 publishedAt: "2026-02-15"
 draft: false
 lang: en
@@ -8,156 +8,140 @@ private: true
 passwordHash: "$2b$10$Gcd/rVDo9AKWCKFFWrMniuBI69zciDjaQHGjXKPaMxByO49jf6dZ."
 ---
 
-AI doesn't create your problems. It reveals them.
+I spent the last two weeks building with AI agents. Not just using Claude to debug code — really building with them. Agents that architect. That develop. That coordinate with each other through a task system I built.
 
-If your team struggles with AI, it's probably not because of AI. It's because of what was already broken before: vague specs, undocumented tribal knowledge, disorganized process.
+**And here's what I learned: AI doesn't create my problems. It exposes them.**
 
-**AI amplifies.** It doesn't create. That's the whole difference.
+When the agent struggles to understand what I want, it's not because it's incompetent. It's because I wasn't clear. When it generates code going in the wrong direction, it's because my specs were vague. When it gets lost in my codebase, it's because my business logic isn't written anywhere.
 
-**What follows is my vision**, based on two weeks of intensive experimentation with AI and years of observing how teams function (or dysfunction). Not an absolute truth. Just what I observe and what I take from it.
+**AI amplifies.** The good and the bad. And these two weeks forced me to face what was already broken in how I work.
 
-## What was already true before AI
+## What I saw these two weeks
 
-In most teams, specs are a luxury. The PM "knows what they want". The PO "will clarify if needed". The dev "will figure it out". And it works — until it breaks.
+I built a system I call the Pantheon. Seven specialized agents: an orchestrator (Main), an architect (Daedalus), a dev (Hephaestus), QA (Hygieia), a researcher (Atlas), a scrum master (Hermes), a writer (Homer). They collaborate through Olympus, a task dashboard I coded to coordinate them.
 
-Someone leaves. Someone new arrives. The codebase exceeds a critical size. And suddenly, nobody knows why this piece of logic exists, or what it's supposed to do exactly.
+**Result?** On some tasks, it's magic. A complete project scaffold in 15 minutes. Documented architecture in 10 minutes. Technical specs generated from a conversation.
 
-**Tribal knowledge.** All the business logic that lives in the heads of three people. Not in the code. Not in the docs. Just "in the open space".
+On others? Total mess. The agent that generates 200 Discord messages in 13 minutes because it's stuck in a loop. The architect who proposes a stack I have to correct 3 times because the context wasn't clear. The dev who codes for 20 minutes only to realize he doesn't have the right specs.
 
-It worked when the team was small. It breaks when it grows. Or when someone quits. Or when a new person has to understand the system in two weeks.
+**The difference between the two?** Not the AI. My process.
 
-**AI doesn't create this problem.** It just makes it impossible to ignore.
+## The tribal knowledge I have in my head
 
-When AI struggles with your codebase, it's not because it's incompetent. It's because half of your business logic isn't written anywhere. And if it's not written, AI can't guess it — exactly like the new dev who arrives and has to "ask Julien, he'll know".
+For years, I've coded keeping everything in my head. "I know what I want to do, no need to write specs." "It's obvious, no need to document." "I remember why I did it like that."
 
-## Solid process + AI = acceleration. Disorganized process + AI = chaos x10
+It worked. Until now.
 
-Here's the formula.
+Because AI doesn't have access to my head. It can't guess that when I say "payment system", I'm thinking Stripe with webhooks + subscription management + retry logic on failed payments. For it, "payment system" could be anything.
 
-AI tools amplify **both** the good and the bad of your engineering culture. Clear patterns, documented best practices, respected conventions? AI shines. Fuzzy process, everyone codes their own way, nonexistent documentation? AI amplifies the chaos.
+**And suddenly, I realize: this was already a problem before.**
 
-**At Canva**, senior engineers describe their work as "largely review" — verifying AI outputs, guiding agents, taking responsibility for the final product. Result? Productivity multiplied by 2-3 on certain tasks.
+When a new dev joined one of my projects, they struggled. Because half the business logic was "in my head". They had to ask me. Exactly like the AI has to ask me now.
 
-But these results are only possible because they **invested in their process beforehand**. Clear instructions. Complete specs. Documented context. AI just accelerated what was already working.
+The difference? The AI asks me 50 times a day. It makes the problem impossible to ignore.
 
-**Teams that already had good practices accelerate.** Others amplify their debt.
+## Solid process = magic AI. Fuzzy process = amplified chaos.
 
-## Who are the seniors who keep their value?
+I noticed a pattern.
 
-Not those who code fast. Not those who know all the APIs by heart. Not those who have 10 years of React experience.
+**When I took time to formalize:**
+- Clear specs ("here are the user scenarios, here's the architecture, here are the constraints")
+- Documented conventions ("we use Drizzle, not TypeORM, here's why")
+- Explicit context ("this project is an MVP, no over-engineering")
 
-**The seniors who keep their value are those who have integrated specs into their daily work.**
+→ AI shines. It codes fast, cleanly, in the right direction. It documents. It tests. The code it produces is often better than what I would have written myself.
 
-Those who live in the product. Who absorb context in every meeting, every conversation, every decision. When specs are missing — and they're always missing — they compensate. They ask the right questions. They formalize what was implicit.
+**When I was vague:**
+- "Make me something to manage team capacity"
+- "Use a modern stack"
+- "You'll see, it's obvious"
 
-For them, writing technical specs is second nature. No major cognitive effort. It's automatic.
+→ Chaos. AI goes in all directions. It proposes a stack I never use. It codes features I don't want. It generates technical debt because it guesses my intentions.
 
-**The paradox?** Without these skills, AI already does better than an average developer.
+**The formula is simple: Solid process + AI = acceleration. Fuzzy process + AI = chaos x10.**
 
-It doesn't get tired. It doesn't take shortcuts out of laziness. It documents if you ask. It tests if you ask.
+And it's exactly the same without AI. A new dev with vague specs produces vague code. The difference is AI does it 10x faster.
 
-The code it produces is, in the vast majority of cases, **at least as good** as what a dev would have written. Sometimes better.
+## What it taught me about myself
 
-The developer who "only" codes is competing with a machine that codes just as well, faster, and cheaper.
+I thought I knew how to specify. That I was rigorous. That I had good practices.
 
-## It's not the dev that's changing. It's the whole chain.
+**These two weeks showed me I didn't.**
 
-Everyone talks about AI's impact on developers. As if it were a dev topic, for devs.
+I realized I was taking shortcuts. Skipping steps. Considering specs as "optional" if I already knew what I wanted in my head.
 
-**Wrong.**
+**The problem?** My head isn't accessible. Not to AI, not to the dev arriving in 6 months, not even to myself when I reread my code a year later.
 
-It's not the dev that's changing. It's the entire software production chain.
+I learned I need to write. Everything. Before coding.
 
-Today, a product goes through: PM → PO → Lead → Dev → QA. Each step = a handoff. Each handoff = information loss, delay, friction.
+Not because it's a "best practice". Because if I don't, AI forces me to do it after — by asking me 50 questions, generating off-target code, wasting my time.
 
-**AI doesn't replace a link. It compresses the chain.**
+**Writing specs before code is faster than correcting AI after.**
 
-A single person — or a small core — can cover from user need to code in production. With far fewer intermediaries.
+## The seniors who make me think
 
-**Result?** Fewer distinct roles. More hybrid profiles. Fewer specialists who know everything about one domain. More generalists who traverse the chain.
+I noticed something in my teams.
 
-## The dev/product asymmetry
+The seniors who struggle with AI are those who "code fast". Who type code without thinking. Who never document. Who keep everything in their head.
 
-And there, technical profiles have an asymmetric advantage.
+The seniors who excel with AI are those who formalize. Who write technical specs by reflex. Who ask the right questions before coding. Who live in the product, not just in the code.
 
-**A dev who learns to ask the right product questions?** Accessible. They already have analytical rigor. They understand technical constraints. They know what's feasible and what's not.
+**And I asked myself: which category am I in?**
 
-**A PM who learns to put a product in production, make architecture choices that last, spot when AI makes a bad technical choice?** A whole other level of effort.
+Honestly? Between the two. I have the formalization reflexes, but I often short-circuit them. "No need, it's simple." "I know what I want." "It'll be faster if I code directly."
 
-Prototyping an app in 15 minutes with AI, everyone can do it. But the distance between prototype and production remains immense: security, scaling, technical debt, observability. It's shrinking, but it still exists.
+These two weeks forced me to slow down. To write. To structure my thinking before executing.
 
-**OpenAI hires "product engineers" rather than traditional PMs.** The signal is clear: profiles who know how to clearly formulate what they want **AND** technically evaluate what they get will dominate.
+And paradoxically, **it's faster.**
 
-The people who will know how to traverse the chain end-to-end — from need to production deployment — these are the ones who will have the most value.
+## What's changing (and it fascinates me)
 
-## Spec-Driven Development: the only viable answer
+An observation that's been on my mind.
 
-If AI amplifies your process, the question becomes: **how do you make your process amplifiable?**
+The dev job used to be: PM → specs → dev → code. Separate steps. Distinct roles.
 
-**The answer: Spec-Driven Development.**
+With AI, **this chain compresses.**
 
-Write specifications before code. Not as a formality. Not as a document you fill out to check a box. **As the foundation of everything that follows.**
+I can now cover from user need to code in production. Alone. In a few days. Because AI accelerates execution.
 
-Writing specs forces you to ask the real questions upfront: user scenarios, architecture, edge cases, product objective.
+**But it only works if I can do the PM's job too.**
 
-**You see more clearly. AI does too.**
+Understand user needs. Formalize the problem. Define scenarios. Prioritize. Validate with data.
 
-Working with AI doesn't require being better at code. It requires being better at thinking. Think the problem before the solution. The need before the implementation.
+If I only know how to "code", AI replaces me. If I know how to "think the problem AND code the solution", AI multiplies me.
 
-**It's a paradigm shift.** Code is no longer the main artifact. It's the spec.
+**And there's an asymmetry here.**
 
-And when the spec is clear, documented, shared — when it's no longer a specter floating in the open space — AI works miracles. It no longer makes mistakes about conventions. It doesn't reinvent its own way of solving problems. It executes what's asked, because what's asked is finally clear.
+A dev learning to think product is accessible. They already have analytical rigor. They understand technical constraints. They know what's feasible.
 
-**You have to get tribal knowledge out of our heads for AI tools to work.** SDD is the method to get there.
+A PM learning to code with AI is... harder. Because prototyping an app in 15 minutes with AI, anyone can do it. But putting it in production? With security, scaling, observability? That's another level.
 
-## What it changes if you're a lead
+**I think technical profiles have a structural advantage.** As long as they don't remain "just coders".
 
-If you're a lead, tech lead, engineering manager, CTO — this shift changes your job. Not tomorrow. Now.
+## My conclusion (for now)
 
-**Your role is no longer to supervise code.** It's to formalize context. To capture tribal knowledge before it disappears. To transform hallway conversations into exploitable specs. If context isn't written, it doesn't exist — neither for AI, nor for the new person arriving in 6 months.
+Two weeks is short. I don't claim to have understood everything.
 
-**You no longer recruit specialists.** You recruit people who think product. Hybrid profiles who understand the need AND the implementation. The boundary between dev, PM and lead blurs. What matters: clearly formulate what you want and evaluate what you get.
+But here's what I take away:
 
-**You invest in the spec process now.** Not tomorrow. Now. Because AI will expose all your flaws. Teams that have solid specs will accelerate. Others will amplify their chaos. The gap widens.
+**AI reveals my flaws.** My vague specs. My tribal knowledge. My shortcuts. It forces me to be rigorous. And that's good.
 
-**You prepare for compression.** The PM → PO → Lead → Dev → QA chain will compress. Fewer handoffs, fewer intermediaries, smaller and more autonomous teams. Your structure tomorrow isn't the one today.
+**Code is no longer the main artifact.** It's the spec. The code, AI can generate. The clear spec, no. That's where I need to invest my energy.
 
-## The real question
+**The job is changing.** Not tomorrow. Now. I'm no longer "just a dev". I need to think product. Understand users. Formalize problems. And use AI as one tool among others to execute.
 
-Employment of 22-25 year old developers dropped nearly 20% between 2022 and 2025.
+Do I know exactly where this is going? No.
 
-It's not developers who are disappearing. **It's the scope of their job slipping out from under their feet.**
+Does it scare me a bit? Yes.
 
-AI doesn't replace the developer. It replaces their job: writing code, debugging it, maintaining it. These tasks, it already does.
-
-**The question is no longer whether AI codes as well as you. It's whether you do anything other than code.**
-
-Do you understand user needs? Can you formalize a complex problem into clear specs? Can you evaluate the quality of a solution beyond "it compiles"?
-
-If yes, you have value. If no, you're competing with a machine.
-
-Two weeks building with AI. Observing how it amplifies my processes. Seeing where it works, where it breaks.
-
-**What works:** Clear specs. Documented context. Respected conventions. AI accelerates everything.
-
-**What breaks:** Tribal knowledge. Fuzzy specs. Everyone codes their own way. AI amplifies chaos.
-
-**The difference between the two? Not AI. The process.**
-
-AI reveals what was already there. It forces a simple question: is your way of working amplifiable?
-
-If yes, you'll accelerate. If no, you'll amplify your debt.
+Is it fascinating? Absolutely.
 
 ---
 
-*Tom Andrieu — Developer, architect, AI experimenter*  
-*Vaucluse, France — February 2026*  
-*tomandrieu.com*
+*Tom Andrieu — Vaucluse, February 2026*
 
-## Further reading
-
-- **Gabriel Desbouis** — LinkedIn post series on "Getting tribal knowledge out of our heads" and "Compressing the production chain"
-- **Ryan Salva (Google)** — MIT Technology Review, on process amplification by AI
-- **Steve Yegge** — Pragmatic Engineer Newsletter, "AI Agents and the Future of Software Engineering"
-- **Stack Overflow Developer Survey 2025** — Statistics on AI adoption (84% of devs use AI daily)
-- **World Economic Forum, Future of Jobs Report 2025** — 39% of key skills will transform by 2030
+**Resources that helped me think:**
+- Gabriel Desbouis' LinkedIn posts on tribal knowledge
+- PostHog's blog on product engineering
+- Steve Yegge's newsletters on agentic engineering
+- My own struggles these past two weeks
