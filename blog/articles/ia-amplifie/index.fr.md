@@ -2,7 +2,7 @@
 title: "L'IA amplifie ce qui existait déjà"
 excerpt: "Vos problèmes d'organisation n'ont pas attendu ChatGPT. L'IA les rend juste impossibles à ignorer."
 publishedAt: "2026-02-15"
-draft: false
+draft: true
 lang: fr
 ---
 

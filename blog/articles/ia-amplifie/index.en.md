@@ -2,7 +2,7 @@
 title: "AI Amplifies What Already Existed"
 excerpt: "Your organizational problems didn't wait for ChatGPT. AI just makes them impossible to ignore."
 publishedAt: "2026-02-15"
-draft: false
+draft: true
 lang: en
 ---
 
