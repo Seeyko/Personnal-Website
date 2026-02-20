@@ -5,7 +5,7 @@ publishedAt: "2026-02-15"
 draft: false
 lang: fr
 private: true
-passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
+passwordHash: "$2b$10$Gcd/rVDo9AKWCKFFWrMniuBI69zciDjaQHGjXKPaMxByO49jf6dZ."
 ---
 
 L'IA ne crée pas vos problèmes. Elle les révèle.
