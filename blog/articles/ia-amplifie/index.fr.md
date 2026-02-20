@@ -2,8 +2,10 @@
 title: "L'IA amplifie ce qui existait déjà"
 excerpt: "Vos problèmes d'organisation n'ont pas attendu ChatGPT. L'IA les rend juste impossibles à ignorer."
 publishedAt: "2026-02-15"
-draft: true
+draft: false
 lang: fr
+private: true
+passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
 ---
 
 L'IA ne crée pas vos problèmes. Elle les révèle.
