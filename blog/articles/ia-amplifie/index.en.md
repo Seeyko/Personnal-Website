@@ -1,6 +1,6 @@
 ---
 title: "AI Amplifies What Already Existed"
-excerpt: "Two weeks building with AI agents. What I learned about my own processes — and why my problems didn't wait for ChatGPT."
+excerpt: "Two weeks building with AI agents. And the confirmation that everything I've been pushing in my teams for years — specs, docs, rigor — wasn't perfectionism. It was anticipation."
 publishedAt: "2026-02-15"
 draft: false
 lang: en
@@ -8,140 +8,80 @@ private: true
 passwordHash: "$2b$10$Gcd/rVDo9AKWCKFFWrMniuBI69zciDjaQHGjXKPaMxByO49jf6dZ."
 ---
 
-I spent the last two weeks building with AI agents. Not just using Claude to debug code — really building with them. Agents that architect. That develop. That coordinate with each other through a task system I built.
+I spent the last two weeks building with AI agents. Not just using Claude to debug code, but actually building a system where agents architect, develop, coordinate with each other through a task dashboard I coded.
 
-**And here's what I learned: AI doesn't create my problems. It exposes them.**
+And here's what it confirmed for me: everything I've been pushing in my teams for years — docs, clear specs, rigor on context — wasn't useless perfectionism. It was anticipation.
 
-When the agent struggles to understand what I want, it's not because it's incompetent. It's because I wasn't clear. When it generates code going in the wrong direction, it's because my specs were vague. When it gets lost in my codebase, it's because my business logic isn't written anywhere.
+Because AI doesn't create anything. It amplifies what already exists. Your good practices as well as your bad habits. And these two weeks proved me right on pretty much everything I've been defending for a long time, sometimes against popular opinion.
 
-**AI amplifies.** The good and the bad. And these two weeks forced me to face what was already broken in how I work.
+## What I built
 
-## What I saw these two weeks
+I set up what I call the Pantheon. Seven specialized agents collaborating through Olympus, a Jira-like task system I developed to orchestrate them. An orchestrator agent (Main), an architect (Daedalus), a dev (Hephaestus), QA (Hygieia), a researcher (Atlas), a scrum master (Hermes), a writer (Homer).
 
-I built a system I call the Pantheon. Seven specialized agents: an orchestrator (Main), an architect (Daedalus), a dev (Hephaestus), QA (Hygieia), a researcher (Atlas), a scrum master (Hermes), a writer (Homer). They collaborate through Olympus, a task dashboard I coded to coordinate them.
+On some tasks, it's magic. A complete project scaffold in 15 minutes. Documented architecture in 10 minutes. Technical specs generated from a conversation. The kind of velocity you never achieve with a human team.
 
-**Result?** On some tasks, it's magic. A complete project scaffold in 15 minutes. Documented architecture in 10 minutes. Technical specs generated from a conversation.
+On others, it's total chaos. The agent that generates 200 Discord messages in 13 minutes because it's stuck in a generative loop. The architect who proposes a stack I have to correct three times. The dev who codes for 20 minutes in the wrong direction because the specs weren't precise enough.
 
-On others? Total mess. The agent that generates 200 Discord messages in 13 minutes because it's stuck in a loop. The architect who proposes a stack I have to correct 3 times because the context wasn't clear. The dev who codes for 20 minutes only to realize he doesn't have the right specs.
+The difference between the two? It's not the AI. It's my process. When I took time to formalize context, document conventions, write clear specs, AI shined. When I was vague, it amplified the vagueness.
 
-**The difference between the two?** Not the AI. My process.
+## Why I annoy POs who show up without specs
 
-## The tribal knowledge I have in my head
+For years, I've annoyed POs who show up with vague user stories. "As a user, I want to manage my documents." OK, but what does "manage" mean? Upload? Download? Versioning? Permissions? Sharing? And "documents", what's that? PDF only? All formats? What max size?
 
-For years, I've coded keeping everything in my head. "I know what I want to do, no need to write specs." "It's obvious, no need to document." "I remember why I did it like that."
+People tell me I'm a pain. That I slow down the sprint. That "we'll figure it out while developing". Except we never figure it out. We finish the sprint with a feature that doesn't match what the PM wanted, because the PO didn't ask the right questions, and the dev (me) had to guess.
 
-It worked. Until now.
+With AI, this problem is multiplied by ten. If I give it "make me a document management system", it will guess. And its guesses will be as random as mine. Maybe worse, because it doesn't have the business context I've accumulated working on the project for six months.
 
-Because AI doesn't have access to my head. It can't guess that when I say "payment system", I'm thinking Stripe with webhooks + subscription management + retry logic on failed payments. For it, "payment system" could be anything.
+But if I give it clear specs — user scenarios, technical constraints, edge cases, product objective — it will code exactly what's needed. Fast. Clean. With docs. With tests. Often better than what I would have done myself, because it doesn't take shortcuts out of laziness.
 
-**And suddenly, I realize: this was already a problem before.**
+These two weeks proved what I've been saying for a long time: vague specs aren't a time saver. They're debt that explodes at implementation time. With AI, that explosion just happens faster.
 
-When a new dev joined one of my projects, they struggled. Because half the business logic was "in my head". They had to ask me. Exactly like the AI has to ask me now.
+## Why I ask PMs for data
 
-The difference? The AI asks me 50 times a day. It makes the problem impossible to ignore.
+Another thing I've been pushing for years that's earned me side-eyes: I ask PMs for data before coding a feature. How many users will use it? How often? What are the success metrics? What do we measure to know if it works?
 
-## Solid process = magic AI. Fuzzy process = amplified chaos.
+Often, the answer is "we'll see after launch". Except after launch, nobody measures anything. The feature exists, we move to the next one, and six months later we realize nobody uses it.
 
-I noticed a pattern.
+With AI, this question becomes even more critical. Because AI can generate features very fast. Too fast. If we don't know what we're measuring, we'll end up with a product full of features nobody uses, coded in three days instead of three weeks.
 
-**When I took time to formalize:**
-- Clear specs ("here are the user scenarios, here's the architecture, here are the constraints")
-- Documented conventions ("we use Drizzle, not TypeORM, here's why")
-- Explicit context ("this project is an MVP, no over-engineering")
+AI amplifies velocity. But it doesn't amplify discernment. If you don't know what matters, you'll just produce faster things that don't matter.
 
-→ AI shines. It codes fast, cleanly, in the right direction. It documents. It tests. The code it produces is often better than what I would have written myself.
+These two weeks confirmed that you need to slow down upstream to accelerate downstream. Ask the right questions. Define the metrics. Understand the real user need, not the fantasized one. And then, let AI execute.
 
-**When I was vague:**
-- "Make me something to manage team capacity"
-- "Use a modern stack"
-- "You'll see, it's obvious"
+## Tribal knowledge, this plague I've been trying to eliminate forever
 
-→ Chaos. AI goes in all directions. It proposes a stack I never use. It codes features I don't want. It generates technical debt because it guesses my intentions.
+A long-standing battle in my teams: document. Everything. Not because it's pretty. Because tribal knowledge — all the business logic living in three people's heads — breaks when someone leaves, when someone joins, when the project grows.
 
-**The formula is simple: Solid process + AI = acceleration. Fuzzy process + AI = chaos x10.**
+I've seen too many projects where half the architecture decisions aren't written anywhere. "Ask Julien, he'll know." Except Julien is on vacation. Or Julien quit. Or Julien doesn't remember why he made that choice two years ago.
 
-And it's exactly the same without AI. A new dev with vague specs produces vague code. The difference is AI does it 10x faster.
+So I push docs. ADRs (Architecture Decision Records). Code conventions. Onboarding guides. Everything that allows someone to understand the project without having to interrogate the old-timers.
 
-## What it taught me about myself
+With AI, it's even more obvious. AI doesn't have access to my head. It can't guess why I chose this stack, why this logic exists, why this convention applies. If it's not written, it guesses. And its guesses are random.
 
-I thought I knew how to specify. That I was rigorous. That I had good practices.
+These two weeks proved me right on a simple point: if your system requires tribal knowledge to be understood, it can't be amplified by AI. It can just be broken faster.
 
-**These two weeks showed me I didn't.**
+## What it changes for me (and why it fascinates me)
 
-I realized I was taking shortcuts. Skipping steps. Considering specs as "optional" if I already knew what I wanted in my head.
+Honestly, I'm not discovering anything. I'm confirming. Everything I've been defending for years — clear specs, complete docs, data before features, explicit context — was already the right approach. AI just makes the consequences of not doing it much more visible, much faster.
 
-**The problem?** My head isn't accessible. Not to AI, not to the dev arriving in 6 months, not even to myself when I reread my code a year later.
+What fascinates me is something else. It's that AI compresses the production chain. Before, you needed a PM to define the need, a PO to write user stories, a lead to validate architecture, a dev to code, QA to test. Each step was a handoff. Each handoff, information loss.
 
-I learned I need to write. Everything. Before coding.
+Now, I can cover this chain almost alone. Because AI accelerates execution. But it only works if I know how to do everyone's job. Understand user needs like a PM. Formalize specs like a PO. Architect like a lead. And let AI code.
 
-Not because it's a "best practice". Because if I don't, AI forces me to do it after — by asking me 50 questions, generating off-target code, wasting my time.
+There's an asymmetry here. A dev learning to think product is accessible. They already have analytical rigor. They understand technical constraints. They know what's feasible. A PM learning to code with AI is harder. Because prototyping an app in 15 minutes, anyone can do. But putting it in production with security, scaling, observability, that's another level.
 
-**Writing specs before code is faster than correcting AI after.**
-
-## The seniors who make me think
-
-I noticed something in my teams.
-
-The seniors who struggle with AI are those who "code fast". Who type code without thinking. Who never document. Who keep everything in their head.
-
-The seniors who excel with AI are those who formalize. Who write technical specs by reflex. Who ask the right questions before coding. Who live in the product, not just in the code.
-
-**And I asked myself: which category am I in?**
-
-Honestly? Between the two. I have the formalization reflexes, but I often short-circuit them. "No need, it's simple." "I know what I want." "It'll be faster if I code directly."
-
-These two weeks forced me to slow down. To write. To structure my thinking before executing.
-
-And paradoxically, **it's faster.**
-
-## What's changing (and it fascinates me)
-
-An observation that's been on my mind.
-
-The dev job used to be: PM → specs → dev → code. Separate steps. Distinct roles.
-
-With AI, **this chain compresses.**
-
-I can now cover from user need to code in production. Alone. In a few days. Because AI accelerates execution.
-
-**But it only works if I can do the PM's job too.**
-
-Understand user needs. Formalize the problem. Define scenarios. Prioritize. Validate with data.
-
-If I only know how to "code", AI replaces me. If I know how to "think the problem AND code the solution", AI multiplies me.
-
-**And there's an asymmetry here.**
-
-A dev learning to think product is accessible. They already have analytical rigor. They understand technical constraints. They know what's feasible.
-
-A PM learning to code with AI is... harder. Because prototyping an app in 15 minutes with AI, anyone can do it. But putting it in production? With security, scaling, observability? That's another level.
-
-**I think technical profiles have a structural advantage.** As long as they don't remain "just coders".
+I think technical profiles have a structural advantage. As long as they don't remain "just coders".
 
 ## My conclusion (for now)
 
-Two weeks is short. I don't claim to have understood everything.
+Two weeks is short. I don't claim to have understood everything. But here's what I take away.
 
-But here's what I take away:
+AI didn't teach me anything new about how to work. It just confirmed that what I was already doing was the right direction. Clear specs. Complete docs. Data before features. Explicit context. All that was already important before. It's just become critical now.
 
-**AI reveals my flaws.** My vague specs. My tribal knowledge. My shortcuts. It forces me to be rigorous. And that's good.
+Because AI amplifies. If your practices are solid, it multiplies them. If they're vague, it multiplies chaos.
 
-**Code is no longer the main artifact.** It's the spec. The code, AI can generate. The clear spec, no. That's where I need to invest my energy.
-
-**The job is changing.** Not tomorrow. Now. I'm no longer "just a dev". I need to think product. Understand users. Formalize problems. And use AI as one tool among others to execute.
-
-Do I know exactly where this is going? No.
-
-Does it scare me a bit? Yes.
-
-Is it fascinating? Absolutely.
+And maybe that's why I'll always annoy POs who show up without specs. Not out of perfectionism. Out of pragmatism. Because I know that sooner or later, vagueness has a cost. With or without AI.
 
 ---
 
 *Tom Andrieu — Vaucluse, February 2026*
-
-**Resources that helped me think:**
-- Gabriel Desbouis' LinkedIn posts on tribal knowledge
-- PostHog's blog on product engineering
-- Steve Yegge's newsletters on agentic engineering
-- My own struggles these past two weeks

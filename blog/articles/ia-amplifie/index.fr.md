@@ -1,6 +1,6 @@
 ---
 title: "L'IA amplifie ce qui existait déjà"
-excerpt: "Deux semaines à construire avec des agents IA. Ce que j'ai appris sur mes propres process — et pourquoi mes problèmes n'ont pas attendu ChatGPT."
+excerpt: "Deux semaines à construire avec des agents IA. Et la confirmation que tout ce que je pousse depuis des années dans mes équipes — les specs, la doc, la rigueur — n'était pas du perfectionnisme. C'était de l'anticipation."
 publishedAt: "2026-02-15"
 draft: false
 lang: fr
@@ -8,140 +8,80 @@ private: true
 passwordHash: "$2b$10$Gcd/rVDo9AKWCKFFWrMniuBI69zciDjaQHGjXKPaMxByO49jf6dZ."
 ---
 
-J'ai passé les deux dernières semaines à construire avec des agents IA. Pas juste utiliser Claude pour debugger du code — vraiment construire avec eux. Des agents qui architecturent. Qui développent. Qui se coordonnent entre eux via un système de tâches que j'ai construit.
+J'ai passé les deux dernières semaines à construire avec des agents IA. Pas juste utiliser Claude pour debugger du code, mais vraiment construire un système où des agents architecturent, développent, se coordonnent entre eux via un dashboard de tâches que j'ai codé.
 
-**Et voilà ce que j'ai appris : l'IA ne crée pas mes problèmes. Elle les expose.**
+Et voilà ce que ça m'a confirmé : tout ce que je pousse depuis des années dans mes équipes — la doc, les specs claires, la rigueur sur le contexte — ce n'était pas du perfectionnisme inutile. C'était de l'anticipation.
 
-Quand l'agent peine à comprendre ce que je veux, ce n'est pas parce qu'il est incompétent. C'est parce que je n'ai pas été clair. Quand il génère du code qui part dans la mauvaise direction, c'est parce que mes specs étaient floues. Quand il se perd dans mon codebase, c'est parce que ma logique métier n'est écrite nulle part.
+Parce que l'IA ne crée rien. Elle amplifie ce qui existe déjà. Vos bonnes pratiques comme vos mauvaises habitudes. Et ces deux semaines m'ont donné raison sur à peu près tout ce que je défends depuis longtemps, parfois contre l'avis général.
 
-**L'IA amplifie.** Le bon comme le mauvais. Et ces deux semaines m'ont forcé à regarder en face ce qui était déjà cassé dans ma façon de travailler.
+## Ce que j'ai construit
 
-## Ce que j'ai vu ces deux semaines
+J'ai monté ce que j'appelle le Pantheon. Sept agents spécialisés qui collaborent via Olympus, un système de tâches en mode Jira que j'ai développé pour les orchestrer. Un agent orchestrateur (Main), un architecte (Daedalus), un dev (Héphaestos), un QA (Hygieia), un chercheur (Atlas), un scrum master (Hermès), un writer (Homère).
 
-J'ai construit un système que j'appelle le Pantheon. Sept agents spécialisés : un orchestrateur (Main), un architecte (Daedalus), un dev (Héphaestos), un QA (Hygieia), un chercheur (Atlas), un scrum master (Hermès), un writer (Homère). Ils collaborent via Olympus, un dashboard de tâches que j'ai codé pour les coordonner.
+Sur certaines tâches, c'est magique. Un scaffold de projet complet en 15 minutes. Une architecture documentée en 10 minutes. Des specs techniques générées à partir d'une conversation. Le genre de vélocité qu'on n'atteint jamais avec une équipe humaine.
 
-**Résultat ?** Sur certaines tâches, c'est magique. Un scaffold de projet complet en 15 minutes. Une architecture documentée en 10 minutes. Des specs techniques générées à partir d'une conversation.
+Sur d'autres, c'est le chaos total. L'agent qui génère 200 messages Discord en 13 minutes parce qu'il est coincé dans une boucle générative. L'architecte qui propose une stack que je dois corriger trois fois. Le dev qui code pendant 20 minutes dans la mauvaise direction parce que les specs n'étaient pas assez précises.
 
-Sur d'autres ? Un bordel total. L'agent qui génère 200 messages Discord en 13 minutes parce qu'il est coincé dans une boucle. L'architecte qui propose une stack que je dois corriger 3 fois parce que le contexte n'était pas clair. Le dev qui code pendant 20 minutes pour se rendre compte qu'il n'a pas les bonnes specs.
+La différence entre les deux ? Ce n'est pas l'IA. C'est mon process. Quand j'ai pris le temps de formaliser le contexte, de documenter les conventions, d'écrire des specs claires, l'IA a brillé. Quand j'ai été flou, elle a amplifié le flou.
 
-**La différence entre les deux ?** Pas l'IA. Mon process.
+## Pourquoi j'emmerde les PO qui arrivent sans specs
 
-## Le savoir tribal que j'ai dans la tête
+Depuis des années, j'emmerde les PO qui débarquent avec des user stories vagues. "En tant qu'utilisateur, je veux pouvoir gérer mes documents." OK, mais ça veut dire quoi "gérer" ? Upload ? Download ? Versionning ? Permissions ? Partage ? Et "documents", c'est quoi ? PDF uniquement ? Tous les formats ? Quelle taille max ?
 
-Pendant des années, j'ai codé en gardant tout dans ma tête. "Je sais ce que je veux faire, pas besoin d'écrire des specs." "C'est évident, pas besoin de documenter." "Je me souviens pourquoi j'ai fait ça comme ça."
+On me dit que je suis chiant. Que je ralentis le sprint. Que "on verra bien en développant". Sauf qu'on ne voit jamais bien. On termine le sprint avec une feature qui ne correspond pas à ce que le PM voulait, parce que le PO n'avait pas posé les bonnes questions, et le dev (moi) a dû deviner.
 
-Ça marchait. Jusqu'à maintenant.
+Avec l'IA, ce problème est multiplié par dix. Si je lui donne "fais-moi un système de gestion de documents", elle va deviner. Et ses devinettes vont être aussi aléatoires que les miennes. Peut-être pires, parce qu'elle n'a pas le contexte métier que j'ai accumulé en travaillant sur le projet depuis six mois.
 
-Parce que l'IA n'a pas accès à ma tête. Elle ne peut pas deviner que quand je dis "un système de paiement", je pense à Stripe avec webhooks + gestion des subscriptions + retry logic sur les failed payments. Pour elle, "système de paiement" pourrait être n'importe quoi.
+Mais si je lui donne des specs claires — scénarios utilisateurs, contraintes techniques, cas limites, objectif produit — elle va coder exactement ce qu'il faut. Vite. Proprement. Avec de la doc. Avec des tests. Souvent mieux que ce que j'aurais fait moi-même, parce qu'elle ne prend pas de raccourcis par flemme.
 
-**Et soudain, je me rends compte : c'était déjà un problème avant.**
+Ces deux semaines m'ont prouvé ce que je dis depuis longtemps : les specs floues ne sont pas un gain de temps. Elles sont une dette qui explose au moment de l'implémentation. Avec l'IA, cette explosion arrive juste plus vite.
 
-Quand un nouveau dev arrivait sur un de mes projets, il galérait. Parce que la moitié de la logique métier était "dans ma tête". Il devait me demander. Exactement comme l'IA doit me demander maintenant.
+## Pourquoi je demande de la data aux PM
 
-La différence ? L'IA me demande 50 fois par jour. Ça rend le problème impossible à ignorer.
+Autre truc que je pousse depuis des années et qui m'a valu des regards en coin : je demande de la data aux PM avant de coder une feature. Combien d'utilisateurs vont l'utiliser ? À quelle fréquence ? Quelles sont les métriques de succès ? Qu'est-ce qu'on mesure pour savoir si ça marche ?
 
-## Process solide = IA magique. Process flou = amplification du chaos.
+Souvent, la réponse est "on verra après le lancement". Sauf qu'après le lancement, personne ne mesure rien. La feature existe, on passe à la suivante, et six mois plus tard on se rend compte que personne ne l'utilise.
 
-J'ai remarqué un pattern.
+Avec l'IA, cette question devient encore plus critique. Parce que l'IA peut générer des features très vite. Trop vite. Si on ne sait pas ce qu'on mesure, on va se retrouver avec un produit plein de features que personne n'utilise, codées en trois jours au lieu de trois semaines.
 
-**Quand j'ai pris le temps de formaliser :**
-- Specs claires ("voici les scénarios utilisateurs, voici l'archi, voici les contraintes")
-- Conventions documentées ("on utilise Drizzle, pas TypeORM, voici pourquoi")
-- Contexte explicite ("ce projet est un MVP, pas de sur-engineering")
+L'IA amplifie la vélocité. Mais elle n'amplifie pas le discernement. Si vous ne savez pas ce qui compte, vous allez juste produire plus vite des choses qui ne comptent pas.
 
-→ L'IA brille. Elle code vite, proprement, dans la bonne direction. Elle documente. Elle teste. Le code qu'elle produit est souvent meilleur que ce que j'aurais écrit moi-même.
+Ces deux semaines m'ont confirmé qu'il faut ralentir en amont pour accélérer en aval. Poser les bonnes questions. Définir les métriques. Comprendre le besoin utilisateur réel, pas fantasmé. Et ensuite, laisser l'IA exécuter.
 
-**Quand j'ai été flou :**
-- "Fais-moi un truc pour gérer les capacités de l'équipe"
-- "Utilise une stack moderne"
-- "Tu verras, c'est évident"
+## Le savoir tribal, ce fléau que j'essaie d'éliminer depuis toujours
 
-→ Chaos. L'IA part dans tous les sens. Elle propose une stack que je n'utilise jamais. Elle code des features dont je ne veux pas. Elle génère de la dette technique parce qu'elle devine mes intentions.
+Un combat de longue date dans mes équipes : documenter. Tout. Pas parce que c'est joli. Parce que le savoir tribal — toute la logique métier qui vit dans la tête de trois personnes — ça casse quand quelqu'un part, quand quelqu'un arrive, quand le projet grandit.
 
-**La formule est simple : Process solide + IA = accélération. Process flou + IA = chaos x10.**
+J'ai vu trop de projets où la moitié des décisions d'architecture ne sont écrites nulle part. "Demande à Julien, il saura." Sauf que Julien est en vacances. Ou Julien a démissionné. Ou Julien ne se souvient plus pourquoi il a fait ce choix il y a deux ans.
 
-Et c'est exactement la même chose sans l'IA. Un nouveau dev avec des specs floues produit du code flou. La différence, c'est que l'IA le fait 10x plus vite.
+Alors je pousse la doc. Les ADR (Architecture Decision Records). Les conventions de code. Les guides d'onboarding. Tout ce qui permet à quelqu'un de comprendre le projet sans avoir à interroger les anciens.
 
-## Ce que ça m'a appris sur moi
+Avec l'IA, c'est encore plus évident. L'IA n'a pas accès à ma tête. Elle ne peut pas deviner pourquoi j'ai choisi telle stack, pourquoi telle logique existe, pourquoi telle convention s'applique. Si ce n'est pas écrit, elle devine. Et ses devinettes sont aléatoires.
 
-Je pensais que je savais spécifier. Que j'étais rigoureux. Que j'avais de bonnes pratiques.
+Ces deux semaines m'ont donné raison sur un point simple : si votre système nécessite du savoir tribal pour être compris, il ne peut pas être amplifié par l'IA. Il peut juste être cassé plus vite.
 
-**Ces deux semaines m'ont montré que non.**
+## Ce que ça change pour moi (et pourquoi ça me fascine)
 
-J'ai réalisé que je prenais des raccourcis. Que je sautais des étapes. Que je considérais les specs comme "optionnelles" si je savais déjà ce que je voulais dans ma tête.
+Honnêtement, je ne découvre rien. Je confirme. Tout ce que je défends depuis des années — specs claires, doc complète, data avant features, contexte explicite — c'était déjà la bonne approche. L'IA rend juste les conséquences de ne pas le faire beaucoup plus visibles, beaucoup plus rapides.
 
-**Le problème ?** Ma tête n'est pas accessible. Ni pour l'IA, ni pour le dev qui arrive dans 6 mois, ni pour moi-même quand je relis mon code un an plus tard.
+Ce qui me fascine, c'est autre chose. C'est que l'IA compresse la chaîne de production. Avant, il fallait un PM pour définir le besoin, un PO pour écrire les user stories, un lead pour valider l'architecture, un dev pour coder, un QA pour tester. Chaque étape était un handoff. Chaque handoff, une perte d'information.
 
-J'ai appris que je dois écrire. Tout. Avant de coder.
+Maintenant, je peux couvrir cette chaîne presque seul. Parce que l'IA accélère l'exécution. Mais ça ne fonctionne que si je sais faire le boulot de tout le monde. Comprendre le besoin utilisateur comme un PM. Formaliser les specs comme un PO. Architecturer comme un lead. Et laisser l'IA coder.
 
-Pas parce que c'est une "bonne pratique". Parce que si je ne le fais pas, l'IA me force à le faire après — en me posant 50 questions, en générant du code à côté de la plaque, en me faisant perdre du temps.
+Il y a une asymétrie ici. Un dev qui apprend à penser produit, c'est accessible. Il a déjà la rigueur analytique. Il comprend les contraintes techniques. Il sait ce qui est faisable. Un PM qui apprend à coder avec l'IA, c'est plus dur. Parce que prototyper une app en 15 minutes, tout le monde peut le faire. Mais la mettre en production avec de la sécu, du scaling, de l'observabilité, c'est un autre niveau.
 
-**Écrire les specs avant le code, c'est plus rapide que de corriger l'IA après.**
-
-## Les seniors qui me font réfléchir
-
-J'ai remarqué quelque chose dans mes équipes.
-
-Les seniors qui galèrent avec l'IA, ce sont ceux qui "codent vite". Qui tapent du code sans réfléchir. Qui ne documentent jamais. Qui gardent tout dans leur tête.
-
-Les seniors qui excellent avec l'IA, ce sont ceux qui formalisent. Qui écrivent des specs techniques par réflexe. Qui posent les bonnes questions avant de coder. Qui vivent dans le produit, pas juste dans le code.
-
-**Et je me suis demandé : dans quelle catégorie je suis ?**
-
-Honnêtement ? Entre les deux. J'ai les réflexes de formalisation, mais je les court-circuite souvent. "Pas besoin, c'est simple." "Je sais ce que je veux." "Ça ira plus vite si je code direct."
-
-Ces deux semaines m'ont forcé à ralentir. À écrire. À structurer ma pensée avant d'exécuter.
-
-Et paradoxalement, **ça va plus vite.**
-
-## Ce qui est en train de changer (et ça me fascine)
-
-Une observation qui me trotte dans la tête.
-
-Le métier de dev, c'était : PM → specs → dev → code. Des étapes séparées. Des rôles distincts.
-
-Avec l'IA, **cette chaîne se compresse.**
-
-Je peux maintenant couvrir du besoin utilisateur jusqu'au code en production. Seul. En quelques jours. Parce que l'IA accélère l'exécution.
-
-**Mais ça ne marche que si je sais faire le boulot du PM aussi.**
-
-Comprendre le besoin utilisateur. Formaliser le problème. Définir les scénarios. Prioriser. Valider avec de la data.
-
-Si je ne sais faire que "coder", l'IA me remplace. Si je sais "penser le problème ET coder la solution", l'IA me multiplie.
-
-**Et là, il y a une asymétrie.**
-
-Un dev qui apprend à penser produit, c'est accessible. Il a déjà la rigueur analytique. Il comprend les contraintes techniques. Il sait ce qui est faisable.
-
-Un PM qui apprend à coder avec l'IA, c'est... plus dur. Parce que prototyper une app en 15 minutes avec l'IA, tout le monde peut le faire. Mais la mettre en production ? Avec de la sécu, du scaling, de l'observabilité ? C'est un autre niveau.
-
-**Je pense que les profils techniques ont un avantage structurel.** À condition de ne pas rester "juste codeurs".
+Je pense que les profils techniques ont un avantage structurel. À condition de ne pas rester "juste codeurs".
 
 ## Ma conclusion (pour l'instant)
 
-Deux semaines, c'est court. Je ne prétends pas avoir tout compris.
+Deux semaines, c'est court. Je ne prétends pas avoir tout compris. Mais voilà ce que je retiens.
 
-Mais voilà ce que je retiens :
+L'IA ne m'a rien appris de nouveau sur comment travailler. Elle m'a juste confirmé que ce que je faisais déjà était la bonne direction. Les specs claires. La doc complète. La data avant les features. Le contexte explicite. Tout ça, c'était déjà important avant. C'est juste devenu critique maintenant.
 
-**L'IA révèle mes failles.** Mes specs floues. Mon savoir tribal. Mes raccourcis. Elle me force à être rigoureux. Et c'est bien.
+Parce que l'IA amplifie. Si vos pratiques sont solides, elle les multiplie. Si elles sont floues, elle multiplie le chaos.
 
-**Le code n'est plus l'artefact principal.** C'est la spec. Le code, l'IA peut le générer. La spec claire, non. C'est là que je dois investir mon énergie.
-
-**Le métier change.** Pas demain. Maintenant. Je ne suis plus "juste un dev". Je dois penser produit. Comprendre les users. Formaliser les problèmes. Et utiliser l'IA comme un outil parmi d'autres pour exécuter.
-
-Est-ce que je sais exactement où ça va ? Non.
-
-Est-ce que ça me fait un peu flipper ? Oui.
-
-Est-ce que c'est fascinant ? Absolument.
+Et peut-être que c'est pour ça que j'emmerderai toujours les PO qui arrivent sans specs. Pas par perfectionnisme. Par pragmatisme. Parce que je sais que tôt ou tard, le flou se paie. Avec ou sans IA.
 
 ---
 
 *Tom Andrieu — Vaucluse, février 2026*
-
-**Ressources qui m'ont aidé à réfléchir :**
-- Les posts LinkedIn de Gabriel Desbouis sur le savoir tribal
-- Le blog de PostHog sur le product engineering
-- Les newsletters de Steve Yegge sur l'agentic engineering
-- Mes propres galères ces deux dernières semaines
