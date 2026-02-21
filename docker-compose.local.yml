@@ -1,26 +1,35 @@
-version: '3.8'
-
 services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=blog
+      - POSTGRES_PASSWORD=blog
+      - POSTGRES_DB=blog
+    volumes:
+      - pgdata-local:/var/lib/postgresql/data
+
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
     ports:
       - "3000:3000"
+    depends_on:
+      - postgres
     volumes:
       # Bind mount for local development (overrides COPY'd articles for hot-reload)
       - ./blog/articles:/app/articles:ro
-      # Persistent data volume for SQLite
-      - blog-data-local:/app/data
     environment:
       - PORT=3000
       - ARTICLES_DIR=/app/articles
       - FRONTEND_URL=http://localhost:8000
-      - DB_PATH=/app/data/blog.db
+      - DATABASE_URL=postgres://blog:blog@postgres:5432/blog?sslmode=disable
       - ADMIN_API_KEY=${ADMIN_API_KEY:-dev-admin-key-change-me}
       - ADMIN_SECRET_PATH=${ADMIN_SECRET_PATH:-_mx9k7}
       - POSTHOG_API_KEY=${POSTHOG_API_KEY:-}
       - POSTHOG_HOST=${POSTHOG_HOST:-https://eu.i.posthog.com}
 
 volumes:
-  blog-data-local:
+  pgdata-local:

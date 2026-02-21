@@ -2,11 +2,12 @@ package services
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
-	"path/filepath"
+	"time"
 
-	_ "modernc.org/sqlite"
+	_ "github.com/lib/pq"
 )
 
 type Database struct {
@@ -14,30 +15,24 @@ type Database struct {
 }
 
 func NewDatabase() (*Database, error) {
-	dbPath := os.Getenv("DB_PATH")
-	if dbPath == "" {
-		dbPath = "/app/data/blog.db"
+	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL == "" {
+		return nil, fmt.Errorf("DATABASE_URL environment variable is required")
 	}
 
-	// Ensure directory exists
-	dir := filepath.Dir(dbPath)
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return nil, err
-	}
-
-	db, err := sql.Open("sqlite", dbPath)
+	db, err := sql.Open("postgres", databaseURL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	// Enable WAL mode for better concurrent read performance
-	if _, err := db.Exec("PRAGMA journal_mode=WAL"); err != nil {
-		return nil, err
-	}
+	// Connection pool settings
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(5)
+	db.SetConnMaxLifetime(5 * time.Minute)
 
-	// Enable foreign keys
-	if _, err := db.Exec("PRAGMA foreign_keys=ON"); err != nil {
-		return nil, err
+	// Verify connectivity
+	if err := db.Ping(); err != nil {
+		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
 	database := &Database{DB: db}
@@ -45,37 +40,37 @@ func NewDatabase() (*Database, error) {
 		return nil, err
 	}
 
-	log.Printf("SQLite database initialized at %s", dbPath)
+	log.Println("PostgreSQL database initialized")
 	return database, nil
 }
 
 func (d *Database) migrate() error {
 	schema := `
 	CREATE TABLE IF NOT EXISTS share_links (
-		id         INTEGER PRIMARY KEY AUTOINCREMENT,
+		id         SERIAL PRIMARY KEY,
 		token      TEXT UNIQUE NOT NULL,
 		slug       TEXT NOT NULL,
 		label      TEXT NOT NULL DEFAULT '',
 		max_uses   INTEGER,
 		use_count  INTEGER NOT NULL DEFAULT 0,
-		expires_at DATETIME,
-		revoked    INTEGER NOT NULL DEFAULT 0,
-		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		revoked_at DATETIME
+		expires_at TIMESTAMPTZ,
+		revoked    BOOLEAN NOT NULL DEFAULT false,
+		created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		revoked_at TIMESTAMPTZ
 	);
 
 	CREATE INDEX IF NOT EXISTS idx_share_links_token ON share_links(token);
 	CREATE INDEX IF NOT EXISTS idx_share_links_slug ON share_links(slug);
 
 	CREATE TABLE IF NOT EXISTS access_log (
-		id            INTEGER PRIMARY KEY AUTOINCREMENT,
+		id            SERIAL PRIMARY KEY,
 		slug          TEXT NOT NULL,
 		access_method TEXT NOT NULL,
 		share_link_id INTEGER,
 		visitor_hash  TEXT NOT NULL,
 		referrer      TEXT DEFAULT '',
 		user_agent    TEXT DEFAULT '',
-		created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);
 
 	CREATE INDEX IF NOT EXISTS idx_access_log_slug ON access_log(slug);

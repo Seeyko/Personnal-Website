@@ -27,7 +27,7 @@ func (s *AccessLogService) HashVisitor(ip, userAgent string) string {
 
 func (s *AccessLogService) LogAccess(slug, accessMethod string, shareLinkID *int, visitorHash, referrer, userAgent string) error {
 	_, err := s.db.DB.Exec(
-		`INSERT INTO access_log (slug, access_method, share_link_id, visitor_hash, referrer, user_agent) VALUES (?, ?, ?, ?, ?, ?)`,
+		`INSERT INTO access_log (slug, access_method, share_link_id, visitor_hash, referrer, user_agent) VALUES ($1, $2, $3, $4, $5, $6)`,
 		slug, accessMethod, shareLinkID, visitorHash, referrer, userAgent,
 	)
 	if err != nil {
@@ -38,7 +38,7 @@ func (s *AccessLogService) LogAccess(slug, accessMethod string, shareLinkID *int
 	var shareLinkLabel string
 	if shareLinkID != nil {
 		var label string
-		row := s.db.DB.QueryRow(`SELECT label FROM share_links WHERE id = ?`, *shareLinkID)
+		row := s.db.DB.QueryRow(`SELECT label FROM share_links WHERE id = $1`, *shareLinkID)
 		if row.Scan(&label) == nil {
 			shareLinkLabel = label
 		}
@@ -60,19 +60,19 @@ func (s *AccessLogService) GetArticleStats(slug string) (*models.ArticleStats, e
 	}
 
 	// Total views
-	err := s.db.DB.QueryRow(`SELECT COUNT(*) FROM access_log WHERE slug = ?`, slug).Scan(&stats.TotalViews)
+	err := s.db.DB.QueryRow(`SELECT COUNT(*) FROM access_log WHERE slug = $1`, slug).Scan(&stats.TotalViews)
 	if err != nil {
 		return nil, fmt.Errorf("count total views: %w", err)
 	}
 
 	// Unique visitors
-	err = s.db.DB.QueryRow(`SELECT COUNT(DISTINCT visitor_hash) FROM access_log WHERE slug = ?`, slug).Scan(&stats.UniqueVisitors)
+	err = s.db.DB.QueryRow(`SELECT COUNT(DISTINCT visitor_hash) FROM access_log WHERE slug = $1`, slug).Scan(&stats.UniqueVisitors)
 	if err != nil {
 		return nil, fmt.Errorf("count unique visitors: %w", err)
 	}
 
 	// Views by method
-	rows, err := s.db.DB.Query(`SELECT access_method, COUNT(*) FROM access_log WHERE slug = ? GROUP BY access_method`, slug)
+	rows, err := s.db.DB.Query(`SELECT access_method, COUNT(*) FROM access_log WHERE slug = $1 GROUP BY access_method`, slug)
 	if err != nil {
 		return nil, fmt.Errorf("query views by method: %w", err)
 	}
@@ -95,8 +95,8 @@ func (s *AccessLogService) GetArticleStats(slug string) (*models.ArticleStats, e
 		`SELECT al.share_link_id, COUNT(*), COUNT(DISTINCT al.visitor_hash), COALESCE(sl.label, '')
 		 FROM access_log al
 		 LEFT JOIN share_links sl ON al.share_link_id = sl.id
-		 WHERE al.slug = ? AND al.share_link_id IS NOT NULL
-		 GROUP BY al.share_link_id`,
+		 WHERE al.slug = $1 AND al.share_link_id IS NOT NULL
+		 GROUP BY al.share_link_id, sl.label`,
 		slug,
 	)
 	if err != nil {
@@ -119,7 +119,7 @@ func (s *AccessLogService) GetArticleStats(slug string) (*models.ArticleStats, e
 	dayRows, err := s.db.DB.Query(
 		`SELECT DATE(created_at) as date, COUNT(*)
 		 FROM access_log
-		 WHERE slug = ? AND created_at >= datetime('now', '-30 days')
+		 WHERE slug = $1 AND created_at >= NOW() - INTERVAL '30 days'
 		 GROUP BY DATE(created_at)
 		 ORDER BY date`,
 		slug,
@@ -145,7 +145,7 @@ func (s *AccessLogService) GetArticleStats(slug string) (*models.ArticleStats, e
 
 func (s *AccessLogService) GetArticleViewCount(slug string) (int, error) {
 	var count int
-	err := s.db.DB.QueryRow(`SELECT COUNT(*) FROM access_log WHERE slug = ?`, slug).Scan(&count)
+	err := s.db.DB.QueryRow(`SELECT COUNT(*) FROM access_log WHERE slug = $1`, slug).Scan(&count)
 	if err != nil {
 		return 0, fmt.Errorf("count article views: %w", err)
 	}

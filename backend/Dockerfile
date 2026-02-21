@@ -18,9 +18,6 @@ RUN apk add --no-cache ca-certificates tzdata
 
 WORKDIR /app
 
-# Create data directory for SQLite
-RUN mkdir -p /app/data
-
 COPY --from=builder /app/server .
 
 # Copy articles from the repo (ensures fresh articles on every build)
@@ -30,6 +27,5 @@ EXPOSE 3000
 
 ENV PORT=3000
 ENV ARTICLES_DIR=/app/articles
-ENV DB_PATH=/app/data/blog.db
 
 CMD ["./server"]
