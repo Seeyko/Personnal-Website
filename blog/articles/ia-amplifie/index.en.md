@@ -44,7 +44,7 @@ Another thing I've been pushing for years: I ask PMs for data before coding a fe
 
 Often, the answer is "we'll see after launch". Except after launch, nobody measures anything. The feature exists, we move to the next one, and six months later we realize nobody uses it. PostHog wrote about this: [The Hidden Danger of Shipping Fast](https://posthog.com/newsletter/hidden-danger-of-shipping-fast). Shipping for the sake of shipping creates product debt.
 
-But there's the other side. Stefan Petre writes about [Shipping at Inference Speed](https://steipete.me/posts/2025/shipping-at-inference-speed) — with AI, velocity changes everything. You can test hypotheses in days instead of weeks. Iterate faster. Learn faster.
+But there's the other side. Peter Steinberger writes about [Shipping at Inference Speed](https://steipete.me/posts/2025/shipping-at-inference-speed) — with AI, velocity changes everything. You can test hypotheses in days instead of weeks. Iterate faster. Learn faster.
 
 I appreciate both visions. And I try to get something from each.
 
@@ -85,7 +85,3 @@ AI didn't teach me anything new about how to work. It just confirmed that what I
 Because AI amplifies. If your practices are solid, it multiplies them. If they're vague, it multiplies chaos.
 
 And maybe that's why I'll always ask questions when specs aren't clear. Not out of perfectionism. Out of pragmatism. Because I know that sooner or later, vagueness has a cost. With or without AI.
-
----
-
-*Tom Andrieu — Vaucluse, February 2026*

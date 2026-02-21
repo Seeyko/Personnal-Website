@@ -44,7 +44,7 @@ Autre truc que je pousse depuis des années : je demande de la data aux PM avant
 
 Souvent, la réponse est "on verra après le lancement". Sauf qu'après le lancement, personne ne mesure rien. La feature existe, on passe à la suivante, et six mois plus tard on se rend compte que personne ne l'utilise. PostHog a écrit là-dessus : [The Hidden Danger of Shipping Fast](https://posthog.com/newsletter/hidden-danger-of-shipping-fast). Ship pour ship, ça crée de la dette produit.
 
-Mais il y a l'autre côté. Stefan Petre écrit sur [Shipping at Inference Speed](https://steipete.me/posts/2025/shipping-at-inference-speed) — avec l'IA, la vélocité change tout. Tu peux tester des hypothèses en quelques jours au lieu de quelques semaines. Itérer plus vite. Apprendre plus vite.
+Mais il y a l'autre côté. Peter Steinberger écrit sur [Shipping at Inference Speed](https://steipete.me/posts/2025/shipping-at-inference-speed) — avec l'IA, la vélocité change tout. Tu peux tester des hypothèses en quelques jours au lieu de quelques semaines. Itérer plus vite. Apprendre plus vite.
 
 J'apprécie les deux visions. Et j'essaie d'en tirer quelque chose.
 
@@ -85,7 +85,3 @@ L'IA ne m'a rien appris de nouveau sur comment travailler. Elle m'a juste confir
 Parce que l'IA amplifie. Si vos pratiques sont solides, elle les multiplie. Si elles sont floues, elle multiplie le chaos.
 
 Et peut-être que c'est pour ça que je poserai toujours des questions quand les specs ne sont pas claires. Pas par perfectionnisme. Par pragmatisme. Parce que je sais que tôt ou tard, le flou se paie. Avec ou sans IA.
-
----
-
-*Tom Andrieu — Vaucluse, février 2026*
