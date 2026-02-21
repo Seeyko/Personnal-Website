@@ -14,15 +14,17 @@ And here's what it confirmed for me: everything I've been pushing in my teams fo
 
 Because AI doesn't create anything. It amplifies what already exists. Your good practices as well as your bad habits. And these two weeks proved me right on pretty much everything I've been defending for a long time, sometimes against popular opinion.
 
-## What I built
+## What I really discovered these two weeks
 
-I set up what I call the Pantheon. Seven specialized agents collaborating through Olympus, a Jira-like task system I developed to orchestrate them. An orchestrator agent (Main), an architect (Daedalus), a dev (Hephaestus), QA (Hygieia), a researcher (Atlas), a scrum master (Hermes), a writer (Homer).
+I spent these two weeks digging into how multi-agent systems really work. Not just using agents, but understanding their internal mechanisms.
 
-On some tasks, it's magic. A complete project scaffold in 15 minutes. Documented architecture in 10 minutes. Technical specs generated from a conversation. The kind of velocity you never achieve with a human team.
+BMAD (Brief, Mission, Architecture, Development) — a spec-driven work pattern where each step produces formalized specs before moving to the next. Atlas does the brief and research. Daedalus designs the architecture. Hephaestus develops. Hygieia tests. Each agent produces a documented deliverable that the next one consumes. No guessing. No implicit assumptions.
 
-On others, it's total chaos. The agent that generates 200 Discord messages in 13 minutes because it's stuck in a generative loop. The architect who proposes a stack I have to correct three times. The dev who codes for 20 minutes in the wrong direction because the specs weren't precise enough.
+I also dug into how Claude Code works internally. Skills — encapsulated modules that the agent can invoke. The agent team — multiple specialized agents collaborating. Architecture Decision Environments (ADE) — structured contexts where agents document their choices.
 
-The difference between the two? It's not the AI. It's my process. When I took time to formalize context, document conventions, write clear specs, AI shined. When I was vague, it amplified the vagueness.
+These concepts click. They're not just "best practices". They're architectural constraints that force rigor. If you don't formalize your specs, BMAD can't function. If you don't document your decisions, the ADE is empty and the next agent guesses. If you don't structure your conventions, skills don't apply consistently.
+
+And that's where everything connects with what I've been defending for years. These systems only work if the process is solid. AI doesn't compensate for a fuzzy process. It exposes it.
 
 ## Why I ask questions when specs aren't clear
 

@@ -14,15 +14,17 @@ Et voilà ce que ça m'a confirmé : tout ce que je pousse depuis des années da
 
 Parce que l'IA ne crée rien. Elle amplifie ce qui existe déjà. Vos bonnes pratiques comme vos mauvaises habitudes. Et ces deux semaines m'ont donné raison sur à peu près tout ce que je défends depuis longtemps, parfois contre l'avis général.
 
-## Ce que j'ai construit
+## Ce que j'ai vraiment découvert ces deux semaines
 
-J'ai monté ce que j'appelle le Pantheon. Sept agents spécialisés qui collaborent via Olympus, un système de tâches en mode Jira que j'ai développé pour les orchestrer. Un agent orchestrateur (Main), un architecte (Daedalus), un dev (Héphaestos), un QA (Hygieia), un chercheur (Atlas), un scrum master (Hermès), un writer (Homère).
+J'ai passé ces deux semaines à creuser comment les systèmes multi-agents fonctionnent vraiment. Pas juste utiliser des agents, mais comprendre leurs mécanismes internes.
 
-Sur certaines tâches, c'est magique. Un scaffold de projet complet en 15 minutes. Une architecture documentée en 10 minutes. Des specs techniques générées à partir d'une conversation. Le genre de vélocité qu'on n'atteint jamais avec une équipe humaine.
+BMAD (Brief, Mission, Architecture, Development) — un pattern de travail spec-driven où chaque étape produit des specs formalisées avant de passer à la suivante. Atlas fait le brief et la recherche. Daedalus conçoit l'architecture. Héphaestos développe. Hygieia teste. Chaque agent produit un livrable documenté que le suivant consomme. Pas de devinettes. Pas d'implicite.
 
-Sur d'autres, c'est le chaos total. L'agent qui génère 200 messages Discord en 13 minutes parce qu'il est coincé dans une boucle générative. L'architecte qui propose une stack que je dois corriger trois fois. Le dev qui code pendant 20 minutes dans la mauvaise direction parce que les specs n'étaient pas assez précises.
+J'ai aussi creusé comment Claude Code fonctionne en interne. Les skills — des modules encapsulés que l'agent peut invoquer. L'agent team — plusieurs agents spécialisés qui collaborent. Les Architecture Decision Environments (ADE) — des contextes structurés où les agents documentent leurs choix.
 
-La différence entre les deux ? Ce n'est pas l'IA. C'est mon process. Quand j'ai pris le temps de formaliser le contexte, de documenter les conventions, d'écrire des specs claires, l'IA a brillé. Quand j'ai été flou, elle a amplifié le flou.
+Ces concepts font tilt. Ce ne sont pas juste des "bonnes pratiques". Ce sont des contraintes architecturales qui forcent la rigueur. Si tu ne formalises pas tes specs, BMAD ne peut pas fonctionner. Si tu ne documentes pas tes décisions, l'ADE est vide et l'agent suivant devine. Si tu ne structures pas tes conventions, les skills ne s'appliquent pas de façon cohérente.
+
+Et c'est là que tout se rejoint avec ce que je défends depuis des années. Ces systèmes ne fonctionnent que si le process est solide. L'IA ne compense pas un process flou. Elle l'expose.
 
 ## Pourquoi je pose des questions quand les specs ne sont pas claires
 
