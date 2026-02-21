@@ -110,7 +110,7 @@ func main() {
 	articleService := services.NewArticleService(articlesDir)
 	jwtService := services.NewJWTService()
 
-	// Initialize SQLite database
+	// Initialize PostgreSQL database
 	db, err := services.NewDatabase()
 	if err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)

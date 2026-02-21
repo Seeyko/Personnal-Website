@@ -33,31 +33,21 @@ func (s *ShareLinkService) CreateLink(slug, label string, maxUses *int, expiresA
 		return nil, err
 	}
 
-	var expiresAtStr *string
-	if expiresAt != nil {
-		t := expiresAt.UTC().Format(time.RFC3339)
-		expiresAtStr = &t
-	}
-
-	result, err := s.db.DB.Exec(
-		`INSERT INTO share_links (token, slug, label, max_uses, expires_at) VALUES (?, ?, ?, ?, ?)`,
-		token, slug, label, maxUses, expiresAtStr,
-	)
+	var id int
+	err = s.db.DB.QueryRow(
+		`INSERT INTO share_links (token, slug, label, max_uses, expires_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+		token, slug, label, maxUses, expiresAt,
+	).Scan(&id)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create share link: %w", err)
 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get last insert id: %w", err)
-	}
-
-	return s.GetLinkByID(int(id))
+	return s.GetLinkByID(id)
 }
 
 func (s *ShareLinkService) ValidateToken(token string) (*models.ShareLink, error) {
 	link, err := s.scanLink(
-		s.db.DB.QueryRow(`SELECT id, token, slug, label, max_uses, use_count, expires_at, revoked, created_at, revoked_at FROM share_links WHERE token = ?`, token),
+		s.db.DB.QueryRow(`SELECT id, token, slug, label, max_uses, use_count, expires_at, revoked, created_at, revoked_at FROM share_links WHERE token = $1`, token),
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -79,7 +69,7 @@ func (s *ShareLinkService) ValidateToken(token string) (*models.ShareLink, error
 	}
 
 	// Increment use_count atomically
-	_, err = s.db.DB.Exec(`UPDATE share_links SET use_count = use_count + 1 WHERE id = ?`, link.ID)
+	_, err = s.db.DB.Exec(`UPDATE share_links SET use_count = use_count + 1 WHERE id = $1`, link.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to increment use count: %w", err)
 	}
@@ -90,7 +80,7 @@ func (s *ShareLinkService) ValidateToken(token string) (*models.ShareLink, error
 
 func (s *ShareLinkService) GetLinksForSlug(slug string) ([]models.ShareLink, error) {
 	rows, err := s.db.DB.Query(
-		`SELECT id, token, slug, label, max_uses, use_count, expires_at, revoked, created_at, revoked_at FROM share_links WHERE slug = ? ORDER BY created_at DESC`,
+		`SELECT id, token, slug, label, max_uses, use_count, expires_at, revoked, created_at, revoked_at FROM share_links WHERE slug = $1 ORDER BY created_at DESC`,
 		slug,
 	)
 	if err != nil {
@@ -115,8 +105,8 @@ func (s *ShareLinkService) GetAllLinks() ([]models.ShareLink, error) {
 
 func (s *ShareLinkService) RevokeLink(id int) error {
 	result, err := s.db.DB.Exec(
-		`UPDATE share_links SET revoked = 1, revoked_at = ? WHERE id = ?`,
-		time.Now().UTC().Format(time.RFC3339), id,
+		`UPDATE share_links SET revoked = true, revoked_at = $1 WHERE id = $2`,
+		time.Now().UTC(), id,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to revoke link: %w", err)
@@ -135,7 +125,7 @@ func (s *ShareLinkService) RevokeLink(id int) error {
 
 func (s *ShareLinkService) GetLinkByID(id int) (*models.ShareLink, error) {
 	return s.scanLink(
-		s.db.DB.QueryRow(`SELECT id, token, slug, label, max_uses, use_count, expires_at, revoked, created_at, revoked_at FROM share_links WHERE id = ?`, id),
+		s.db.DB.QueryRow(`SELECT id, token, slug, label, max_uses, use_count, expires_at, revoked, created_at, revoked_at FROM share_links WHERE id = $1`, id),
 	)
 }
 
@@ -143,35 +133,21 @@ func (s *ShareLinkService) GetLinkByID(id int) (*models.ShareLink, error) {
 func (s *ShareLinkService) scanLink(row *sql.Row) (*models.ShareLink, error) {
 	var link models.ShareLink
 	var maxUses *int
-	var expiresAtStr *string
-	var revokedInt int
-	var revokedAtStr *string
+	var expiresAt *time.Time
+	var revokedAt *time.Time
 
 	err := row.Scan(
 		&link.ID, &link.Token, &link.Slug, &link.Label,
-		&maxUses, &link.UseCount, &expiresAtStr,
-		&revokedInt, &link.CreatedAt, &revokedAtStr,
+		&maxUses, &link.UseCount, &expiresAt,
+		&link.Revoked, &link.CreatedAt, &revokedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	link.MaxUses = maxUses
-	link.Revoked = revokedInt == 1
-
-	if expiresAtStr != nil {
-		t, err := time.Parse(time.RFC3339, *expiresAtStr)
-		if err == nil {
-			link.ExpiresAt = &t
-		}
-	}
-
-	if revokedAtStr != nil {
-		t, err := time.Parse(time.RFC3339, *revokedAtStr)
-		if err == nil {
-			link.RevokedAt = &t
-		}
-	}
+	link.ExpiresAt = expiresAt
+	link.RevokedAt = revokedAt
 
 	return &link, nil
 }
@@ -183,35 +159,21 @@ func (s *ShareLinkService) scanLinks(rows *sql.Rows) ([]models.ShareLink, error)
 	for rows.Next() {
 		var link models.ShareLink
 		var maxUses *int
-		var expiresAtStr *string
-		var revokedInt int
-		var revokedAtStr *string
+		var expiresAt *time.Time
+		var revokedAt *time.Time
 
 		err := rows.Scan(
 			&link.ID, &link.Token, &link.Slug, &link.Label,
-			&maxUses, &link.UseCount, &expiresAtStr,
-			&revokedInt, &link.CreatedAt, &revokedAtStr,
+			&maxUses, &link.UseCount, &expiresAt,
+			&link.Revoked, &link.CreatedAt, &revokedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
 
 		link.MaxUses = maxUses
-		link.Revoked = revokedInt == 1
-
-		if expiresAtStr != nil {
-			t, err := time.Parse(time.RFC3339, *expiresAtStr)
-			if err == nil {
-				link.ExpiresAt = &t
-			}
-		}
-
-		if revokedAtStr != nil {
-			t, err := time.Parse(time.RFC3339, *revokedAtStr)
-			if err == nil {
-				link.RevokedAt = &t
-			}
-		}
+		link.ExpiresAt = expiresAt
+		link.RevokedAt = revokedAt
 
 		links = append(links, link)
 	}

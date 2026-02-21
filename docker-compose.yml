@@ -30,13 +30,11 @@ services:
     image: ${CI_REGISTRY_IMAGE}/backend:${APP_VERSION:-latest}
     expose:
       - ${BACKEND_PORT:-3000}
-    volumes:
-      - blog-data:/app/data
     environment:
       - PORT=${BACKEND_PORT:-3000}
       - ARTICLES_DIR=/app/articles
       - FRONTEND_URL=${FRONTEND_URL:-https://tomandrieu.com}
-      - DB_PATH=/app/data/blog.db
+      - DATABASE_URL=${DATABASE_URL}
       - ADMIN_API_KEY=${ADMIN_API_KEY}
       - ADMIN_SECRET_PATH=${ADMIN_SECRET_PATH}
       - ADMIN_ALLOWED_IPS=${ADMIN_ALLOWED_IPS:-}
@@ -50,9 +48,6 @@ services:
       - "traefik.http.services.tomandrieu-api.loadbalancer.server.port=3000"
     networks:
       - dokploy-network
-
-volumes:
-  blog-data:
 
 networks:
   dokploy-network:
