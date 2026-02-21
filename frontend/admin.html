@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Base Styles (always loaded) -->
+  <link rel="stylesheet" href="/css/base.css" />
+
+  <!-- Theme Switcher UI Styles -->
+  <link rel="stylesheet" href="/css/theme-switcher.css" />
+
+  <!-- Language Switcher UI Styles -->
+  <link rel="stylesheet" href="/css/language-switcher.css" />
+
+  <!-- Admin Styles -->
+  <link rel="stylesheet" href="/css/admin.css" />
+
+  <!-- Theme CSS (dynamically loaded) -->
+  <link id="theme-css" rel="stylesheet" href="" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=VT323&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Critical CSS -->
+  <style id="critical-css">
+    body.loading #main-content,
+    body.loading .theme-overlay,
+    body.loading .theme-switcher {
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #f8f7f4;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 99999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0; visibility: hidden; pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 36px; height: 36px;
+      border: 2px solid rgba(61, 122, 115, 0.15);
+      border-top-color: #3d7a73;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text { margin-top: 1.25rem; font-family: 'Inter', -apple-system, sans-serif; font-size: 0.8125rem; color: #8a8279; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    body:not(.loading) #main-content,
+    body:not(.loading) .theme-overlay,
+    body:not(.loading) .theme-switcher {
+      opacity: 1; visibility: visible; transition: opacity 0.4s ease;
+    }
+  </style>
+</head>
+<body class="loading" data-theme="default">
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading...</div>
+</div>
+
+<!-- Theme Overlay -->
+<div id="theme-overlay" class="theme-overlay"></div>
+
+<main id="main-content">
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="header-brand">
+      <a href="/" class="brand-link" aria-label="Go to homepage">
+        <span class="brand-prefix"></span>
+        <span class="brand-name" data-content="meta.name">TOM ANDRIEU</span>
+        <span class="brand-suffix"></span>
+      </a>
+    </div>
+    <div class="header-right">
+      <nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+        <span class="nav-link active">
+          <span class="nav-prefix"></span>
+          <span class="nav-text">Admin</span>
+        </span>
+      </nav>
+      <div class="header-controls" id="header-controls"></div>
+    </div>
+  </header>
+
+  <!-- Login Gate -->
+  <section id="admin-login" class="admin-section">
+    <div class="admin-login-card">
+      <h2 class="admin-login-title">Admin Access</h2>
+      <p class="admin-login-subtitle">Enter your API key to continue.</p>
+      <form id="login-form" class="admin-login-form">
+        <input
+          type="password"
+          id="api-key-input"
+          placeholder="API Key"
+          class="admin-input"
+          autocomplete="off"
+          required
+        />
+        <button type="submit" class="admin-btn admin-btn-primary">Authenticate</button>
+      </form>
+      <div id="login-error" class="admin-error" style="display: none;"></div>
+    </div>
+  </section>
+
+  <!-- Dashboard (hidden until authenticated) -->
+  <section id="admin-dashboard" class="admin-section" style="display: none;">
+    <!-- Articles Panel -->
+    <div class="admin-panel">
+      <div class="admin-panel-header">
+        <h2 class="admin-panel-title">Articles</h2>
+        <div class="admin-panel-controls">
+          <select id="lang-filter" class="admin-select">
+            <option value="fr">FR</option>
+            <option value="en">EN</option>
+          </select>
+        </div>
+      </div>
+      <div id="articles-table-container" class="admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Lang</th>
+              <th>Visibility</th>
+              <th>Views</th>
+              <th>Links</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="articles-tbody">
+            <tr><td colspan="6" class="admin-loading">Loading articles...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Share Link Manager (shown when article selected) -->
+    <div id="share-link-panel" class="admin-panel" style="display: none;">
+      <div class="admin-panel-header">
+        <h2 class="admin-panel-title">
+          Share Links: <span id="selected-article-title"></span>
+        </h2>
+        <button id="close-link-panel" class="admin-btn admin-btn-ghost">Close</button>
+      </div>
+
+      <!-- Create new link form -->
+      <div class="admin-form-row">
+        <input type="text" id="link-label" placeholder="Label (e.g. Twitter, LinkedIn)" class="admin-input" />
+        <input type="number" id="link-max-uses" placeholder="Max uses (optional)" class="admin-input admin-input-sm" min="1" />
+        <select id="link-expiry" class="admin-select">
+          <option value="">No expiry</option>
+          <option value="24h">24 hours</option>
+          <option value="7d">7 days</option>
+          <option value="30d">30 days</option>
+          <option value="90d">90 days</option>
+        </select>
+        <button id="create-link-btn" class="admin-btn admin-btn-primary">Create Link</button>
+      </div>
+
+      <!-- Existing links list -->
+      <div id="share-links-list" class="admin-links-list">
+        <p class="admin-loading">Loading links...</p>
+      </div>
+    </div>
+
+    <!-- Stats Panel (shown when stats icon clicked) -->
+    <div id="stats-panel" class="admin-panel" style="display: none;">
+      <div class="admin-panel-header">
+        <h2 class="admin-panel-title">
+          Stats: <span id="stats-article-title"></span>
+        </h2>
+        <button id="close-stats-panel" class="admin-btn admin-btn-ghost">Close</button>
+      </div>
+
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-value" id="stat-total-views">0</div>
+          <div class="admin-stat-label">Total Views</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="admin-stat-value" id="stat-unique-visitors">0</div>
+          <div class="admin-stat-label">Unique Visitors</div>
+        </div>
+      </div>
+
+      <!-- Views by method -->
+      <div class="admin-chart-section">
+        <h3 class="admin-chart-title">Views by Method</h3>
+        <div id="method-chart" class="admin-pie-chart"></div>
+      </div>
+
+      <!-- Views per link -->
+      <div class="admin-chart-section">
+        <h3 class="admin-chart-title">Views per Link</h3>
+        <div id="link-views-list" class="admin-link-views"></div>
+      </div>
+
+      <!-- Daily views -->
+      <div class="admin-chart-section">
+        <h3 class="admin-chart-title">Daily Views (last 30 days)</h3>
+        <div id="daily-chart" class="admin-bar-chart"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer blog-footer">
+    <div class="footer-content">
+      <div class="footer-copyright">&copy; 2026 TOM ANDRIEU</div>
+    </div>
+  </footer>
+</main>
+
+<!-- App Config (must load before other scripts) -->
+<script src="/config.js"></script>
+
+<!-- Core Modules -->
+<script src="/js/core/utils.js"></script>
+<script src="/js/core/content-loader.js"></script>
+<script src="/js/core/effects/header-scroll.js"></script>
+<script src="/js/core/effects/mobile-menu.js"></script>
+<script src="/js/core/theme-init.js"></script>
+
+<!-- i18n / Language Manager -->
+<script src="/i18n/language-manager.js"></script>
+
+<!-- Theme Manager -->
+<script src="/js/theme-manager.js"></script>
+
+<!-- Language Switcher UI -->
+<script src="/i18n/language-switcher.js"></script>
+
+<!-- Admin Script -->
+<script src="/js/admin.js"></script>
+
+<!-- Theme JS (dynamically loaded) -->
+<script id="theme-js" src=""></script>
+</body>
+</html>

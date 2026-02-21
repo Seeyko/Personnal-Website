@@ -10,32 +10,46 @@ function getViewFromURL() {
     const path = window.location.pathname;
     const match = path.match(/^\/blog\/([^\/]+)\/?$/);
 
-    if (match?.[1]) return { view: 'article', slug: match[1] };
-    if (params.get('slug')) return { view: 'article', slug: params.get('slug') };
+    const shareToken = params.get('token') || null;
+
+    if (match?.[1]) return { view: 'article', slug: match[1], shareToken };
+    if (params.get('slug')) return { view: 'article', slug: params.get('slug'), shareToken };
     return { view: 'listing', page: parseInt(params.get('page')) || 1 };
 }
 
-async function fetchArticle(slug) {
+async function fetchArticle(slug, shareToken) {
     const apiBase = Utils.getApiBaseUrl();
     const lang = window.LanguageManager?.currentLang || 'fr';
 
-    // Récupérer le token stocké pour cet article
-    const token = localStorage.getItem(`article_token_${slug}`);
+    // Récupérer le token stocké pour cet article (password JWT)
+    const jwtToken = localStorage.getItem(`article_token_${slug}`);
 
     const headers = {
         'Content-Type': 'application/json'
     };
 
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+    if (jwtToken) {
+        headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+
+    // Build URL with share token if present
+    let url = `${apiBase}/api/articles/${slug}?lang=${lang}`;
+    if (shareToken) {
+        url += `&token=${encodeURIComponent(shareToken)}`;
     }
 
     try {
-        const response = await fetch(`${apiBase}/api/articles/${slug}?lang=${lang}`, {
-            headers: headers
-        });
+        const response = await fetch(url, { headers });
 
-        if (!response.ok) return response.status === 404 ? null : null;
+        if (response.status === 403) {
+            const data = await response.json().catch(() => ({}));
+            if (data.error === 'invalid_token') {
+                return { slug, accessDenied: true, reason: 'invalid_token' };
+            }
+            return { slug, accessDenied: true, reason: 'access_denied' };
+        }
+
+        if (!response.ok) return null;
 
         const data = await response.json();
 
@@ -139,6 +153,13 @@ async function navigateToPage(page) {
 function renderArticle(article) {
     document.getElementById('blog-listing').style.display = 'none';
     document.getElementById('article-view').style.display = 'block';
+
+    // Handle access denied states
+    if (article.accessDenied) {
+        showAccessDenied(article);
+        return;
+    }
+
     document.title = `${article.title} - Tom Andrieu`;
 
     document.getElementById('article-title').textContent = article.title;
@@ -160,6 +181,37 @@ function renderArticle(article) {
     } else {
         cover.style.display = 'none';
     }
+
+    window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function showAccessDenied(article) {
+    document.title = 'Access Denied - Tom Andrieu';
+    document.getElementById('article-title').textContent = '';
+    document.getElementById('article-date').textContent = '';
+    document.getElementById('article-reading-time').textContent = '';
+    document.getElementById('article-cover').style.display = 'none';
+
+    const content = document.getElementById('article-content');
+    const isInvalidToken = article.reason === 'invalid_token';
+
+    const icon = isInvalidToken ? '🔗' : '🔒';
+    const title = isInvalidToken
+        ? (window.LanguageManager?.t('blog.invalidToken') || 'Invalid or Expired Link')
+        : (window.LanguageManager?.t('blog.accessDenied') || 'Private Article');
+    const message = isInvalidToken
+        ? (window.LanguageManager?.t('blog.invalidTokenMsg') || 'This share link is no longer valid. It may have expired or been revoked.')
+        : (window.LanguageManager?.t('blog.accessDeniedMsg') || 'This article is not publicly available.');
+    const backText = window.LanguageManager?.t('blog.backToBlog') || 'Back to Blog';
+
+    content.innerHTML = `
+        <div class="access-denied-prompt">
+            <div class="access-denied-icon">${icon}</div>
+            <h3>${title}</h3>
+            <p>${message}</p>
+            <a href="/blog/" class="access-denied-back">${backText}</a>
+        </div>
+    `;
 
     window.scrollTo({ top: 0, behavior: 'instant' });
 }
@@ -281,11 +333,11 @@ function waitForThemeRenderer(timeout = 2000) {
 }
 
 async function initBlog() {
-    const { view, slug, page } = getViewFromURL();
+    const { view, slug, page, shareToken } = getViewFromURL();
     await waitForThemeRenderer();
 
     if (view === 'article' && slug) {
-        const article = await fetchArticle(slug);
+        const article = await fetchArticle(slug, shareToken);
         article ? renderArticle(article) : showNotFound();
     } else {
         currentPage = page || 1;
@@ -300,10 +352,10 @@ async function initBlog() {
 }
 
 window.addEventListener('popstate', async () => {
-    const { view, slug, page } = getViewFromURL();
+    const { view, slug, page, shareToken } = getViewFromURL();
 
     if (view === 'article' && slug) {
-        const article = await fetchArticle(slug);
+        const article = await fetchArticle(slug, shareToken);
         article ? renderArticle(article) : showNotFound();
     } else {
         document.getElementById('blog-listing').style.display = 'block';

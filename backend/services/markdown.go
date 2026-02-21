@@ -27,6 +27,7 @@ type Frontmatter struct {
 	Lang         string `yaml:"lang"`
 	Private      bool   `yaml:"private"`
 	PasswordHash string `yaml:"passwordHash"`
+	Visibility   string `yaml:"visibility"` // "public", "password", "shared"
 }
 
 type ArticleService struct {
@@ -170,6 +171,21 @@ func (s *ArticleService) parseArticle(slug string, content []byte) (models.Artic
 		lang = "fr"
 	}
 
+	// Determine visibility with backward compatibility
+	visibility := meta.Visibility
+	if visibility == "" {
+		if meta.Private && meta.PasswordHash != "" {
+			visibility = "password"
+		} else if meta.Private {
+			visibility = "password"
+		} else {
+			visibility = "public"
+		}
+	}
+
+	// Keep Private field in sync for frontend backward compat
+	isPrivate := visibility == "password"
+
 	return models.Article{
 		Slug:         slug,
 		Title:        meta.Title,
@@ -179,7 +195,8 @@ func (s *ArticleService) parseArticle(slug string, content []byte) (models.Artic
 		PublishedAt:  publishedAt,
 		ReadingTime:  readingTime,
 		Lang:         lang,
-		Private:      meta.Private,
+		Private:      isPrivate,
+		Visibility:   visibility,
 		PasswordHash: meta.PasswordHash,
 	}, nil
 }
@@ -291,6 +308,31 @@ func (s *ArticleService) GetArticle(slug string, lang string) *models.Article {
 	}
 
 	return nil
+}
+
+// GetAllArticles returns all articles (including private/shared) for admin use
+func (s *ArticleService) GetAllArticles(lang string) []models.Article {
+	s.cacheMu.RLock()
+	defer s.cacheMu.RUnlock()
+
+	var articles []models.Article
+	for _, article := range s.cache {
+		if article.Lang == lang || (lang == "" && article.Lang == "fr") {
+			// Return without content for listing
+			articles = append(articles, models.Article{
+				Slug:        article.Slug,
+				Title:       article.Title,
+				Excerpt:     article.Excerpt,
+				CoverImage:  article.CoverImage,
+				PublishedAt: article.PublishedAt,
+				ReadingTime: article.ReadingTime,
+				Lang:        article.Lang,
+				Private:     article.Private,
+				Visibility:  article.Visibility,
+			})
+		}
+	}
+	return articles
 }
 
 func (s *ArticleService) GetImagePath(slug, filename string) string {
