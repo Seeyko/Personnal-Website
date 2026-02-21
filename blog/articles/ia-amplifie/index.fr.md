@@ -20,9 +20,9 @@ J'ai passé ces deux semaines à creuser comment les systèmes multi-agents fonc
 
 BMAD (Brief, Mission, Architecture, Development) — un pattern de travail spec-driven où chaque étape produit des specs formalisées avant de passer à la suivante. Atlas fait le brief et la recherche. Daedalus conçoit l'architecture. Héphaestos développe. Hygieia teste. Chaque agent produit un livrable documenté que le suivant consomme. Pas de devinettes. Pas d'implicite.
 
-J'ai aussi creusé comment Claude Code fonctionne en interne. Les skills — des modules encapsulés que l'agent peut invoquer. L'agent team — plusieurs agents spécialisés qui collaborent. Les Architecture Decision Environments (ADE) — des contextes structurés où les agents documentent leurs choix.
+J'ai aussi creusé comment Claude Code fonctionne en interne. Les skills — des modules encapsulés que l'agent peut invoquer. L'agent team — plusieurs agents spécialisés qui collaborent. Les Agentic Development Environment (ADE) — des environnements structurés où les agents évoluent avec du contexte formalisé.
 
-Ces concepts font tilt. Ce ne sont pas juste des "bonnes pratiques". Ce sont des contraintes architecturales qui forcent la rigueur. Si tu ne formalises pas tes specs, BMAD ne peut pas fonctionner. Si tu ne documentes pas tes décisions, l'ADE est vide et l'agent suivant devine. Si tu ne structures pas tes conventions, les skills ne s'appliquent pas de façon cohérente.
+Ces concepts font tilt. Ce ne sont pas juste des "bonnes pratiques". Ce sont des contraintes architecturales qui forcent la rigueur. Si tu ne formalises pas tes specs, BMAD ne peut pas fonctionner. Si tu ne structures pas ton environnement, l'ADE n'a pas de contexte et l'agent devine. Si tu ne documentes pas tes conventions, les skills ne s'appliquent pas de façon cohérente.
 
 Et c'est là que tout se rejoint avec ce que je défends depuis des années. Ces systèmes ne fonctionnent que si le process est solide. L'IA ne compense pas un process flou. Elle l'expose.
 

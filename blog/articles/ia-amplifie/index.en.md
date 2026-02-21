@@ -20,9 +20,9 @@ I spent these two weeks digging into how multi-agent systems really work. Not ju
 
 BMAD (Brief, Mission, Architecture, Development) — a spec-driven work pattern where each step produces formalized specs before moving to the next. Atlas does the brief and research. Daedalus designs the architecture. Hephaestus develops. Hygieia tests. Each agent produces a documented deliverable that the next one consumes. No guessing. No implicit assumptions.
 
-I also dug into how Claude Code works internally. Skills — encapsulated modules that the agent can invoke. The agent team — multiple specialized agents collaborating. Architecture Decision Environments (ADE) — structured contexts where agents document their choices.
+I also dug into how Claude Code works internally. Skills — encapsulated modules that the agent can invoke. The agent team — multiple specialized agents collaborating. Agentic Development Environment (ADE) — structured environments where agents evolve with formalized context.
 
-These concepts click. They're not just "best practices". They're architectural constraints that force rigor. If you don't formalize your specs, BMAD can't function. If you don't document your decisions, the ADE is empty and the next agent guesses. If you don't structure your conventions, skills don't apply consistently.
+These concepts click. They're not just "best practices". They're architectural constraints that force rigor. If you don't formalize your specs, BMAD can't function. If you don't structure your environment, the ADE has no context and the agent guesses. If you don't document your conventions, skills don't apply consistently.
 
 And that's where everything connects with what I've been defending for years. These systems only work if the process is solid. AI doesn't compensate for a fuzzy process. It exposes it.
 
