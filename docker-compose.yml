@@ -30,11 +30,18 @@ services:
     image: ${CI_REGISTRY_IMAGE}/backend:${APP_VERSION:-latest}
     expose:
       - ${BACKEND_PORT:-3000}
-    # Articles are now copied into the image at build time (no volume needed)
+    volumes:
+      - blog-data:/app/data
     environment:
       - PORT=${BACKEND_PORT:-3000}
       - ARTICLES_DIR=/app/articles
       - FRONTEND_URL=${FRONTEND_URL:-https://tomandrieu.com}
+      - DB_PATH=/app/data/blog.db
+      - ADMIN_API_KEY=${ADMIN_API_KEY}
+      - ADMIN_SECRET_PATH=${ADMIN_SECRET_PATH}
+      - ADMIN_ALLOWED_IPS=${ADMIN_ALLOWED_IPS:-}
+      - POSTHOG_API_KEY=${POSTHOG_API_KEY:-}
+      - POSTHOG_HOST=${POSTHOG_HOST:-https://eu.i.posthog.com}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tomandrieu-api.rule=Host(`api.tomandrieu.com`)"
@@ -44,6 +51,8 @@ services:
     networks:
       - dokploy-network
 
+volumes:
+  blog-data:
 
 networks:
   dokploy-network:

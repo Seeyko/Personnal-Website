@@ -16,6 +16,7 @@ COPY frontend/themes/ /usr/share/nginx/html/themes/
 COPY frontend/i18n/ /usr/share/nginx/html/i18n/
 COPY frontend/index.html /usr/share/nginx/html/
 COPY frontend/blog.html /usr/share/nginx/html/
+COPY frontend/admin.html /usr/share/nginx/html/
 
 # Copy config template and generate config.js with environment variables
 COPY frontend/config.template.js /tmp/config.template.js
