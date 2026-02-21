@@ -24,11 +24,13 @@ Sur d'autres, c'est le chaos total. L'agent qui génère 200 messages Discord en
 
 La différence entre les deux ? Ce n'est pas l'IA. C'est mon process. Quand j'ai pris le temps de formaliser le contexte, de documenter les conventions, d'écrire des specs claires, l'IA a brillé. Quand j'ai été flou, elle a amplifié le flou.
 
-## Pourquoi j'emmerde les PO qui arrivent sans specs
+## Pourquoi je pose des questions quand les specs ne sont pas claires
 
-Depuis des années, j'emmerde les PO qui débarquent avec des user stories vagues. "En tant qu'utilisateur, je veux pouvoir gérer mes documents." OK, mais ça veut dire quoi "gérer" ? Upload ? Download ? Versionning ? Permissions ? Partage ? Et "documents", c'est quoi ? PDF uniquement ? Tous les formats ? Quelle taille max ?
+Depuis des années, je pose des questions quand un PO débarque avec des user stories vagues. "En tant qu'utilisateur, je veux pouvoir gérer mes documents." OK, mais ça veut dire quoi "gérer" ? Upload ? Download ? Versionning ? Permissions ? Partage ? Et "documents", c'est quoi ? PDF uniquement ? Tous les formats ? Quelle taille max ?
 
-On me dit que je suis chiant. Que je ralentis le sprint. Que "on verra bien en développant". Sauf qu'on ne voit jamais bien. On termine le sprint avec une feature qui ne correspond pas à ce que le PM voulait, parce que le PO n'avait pas posé les bonnes questions, et le dev (moi) a dû deviner.
+J'essaie de comprendre pourquoi les specs sont floues. Et j'essaie d'expliquer pourquoi c'est mieux avec des specs claires. Parce qu'il y a deux options viables : soit on a des specs précises et le dev exécute, soit on n'a pas de specs et on laisse la liberté au dev de décider.
+
+Le pire scénario, c'est le mélange des deux. Pas de specs claires ET pas de liberté. Le dev qui pense produit et veut faire un truc propre se fait dire "non, fais pas ce que tu voulais faire, on fera une évol plus tard". C'est droit dans le mur. On termine le sprint avec une feature qui ne correspond pas à ce que le PM voulait, parce que le PO n'avait pas posé les bonnes questions et le dev n'avait pas la liberté de décider.
 
 Avec l'IA, ce problème est multiplié par dix. Si je lui donne "fais-moi un système de gestion de documents", elle va deviner. Et ses devinettes vont être aussi aléatoires que les miennes. Peut-être pires, parce qu'elle n'a pas le contexte métier que j'ai accumulé en travaillant sur le projet depuis six mois.
 
@@ -36,17 +38,19 @@ Mais si je lui donne des specs claires — scénarios utilisateurs, contraintes 
 
 Ces deux semaines m'ont prouvé ce que je dis depuis longtemps : les specs floues ne sont pas un gain de temps. Elles sont une dette qui explose au moment de l'implémentation. Avec l'IA, cette explosion arrive juste plus vite.
 
-## Pourquoi je demande de la data aux PM
+## La tension entre ship fast et ship smart
 
-Autre truc que je pousse depuis des années et qui m'a valu des regards en coin : je demande de la data aux PM avant de coder une feature. Combien d'utilisateurs vont l'utiliser ? À quelle fréquence ? Quelles sont les métriques de succès ? Qu'est-ce qu'on mesure pour savoir si ça marche ?
+Autre truc que je pousse depuis des années : je demande de la data aux PM avant de coder une feature. Combien d'utilisateurs vont l'utiliser ? À quelle fréquence ? Quelles sont les métriques de succès ? Qu'est-ce qu'on mesure pour savoir si ça marche ?
 
-Souvent, la réponse est "on verra après le lancement". Sauf qu'après le lancement, personne ne mesure rien. La feature existe, on passe à la suivante, et six mois plus tard on se rend compte que personne ne l'utilise.
+Souvent, la réponse est "on verra après le lancement". Sauf qu'après le lancement, personne ne mesure rien. La feature existe, on passe à la suivante, et six mois plus tard on se rend compte que personne ne l'utilise. PostHog a écrit là-dessus : [The Hidden Danger of Shipping Fast](https://posthog.com/newsletter/hidden-danger-of-shipping-fast). Ship pour ship, ça crée de la dette produit.
 
-Avec l'IA, cette question devient encore plus critique. Parce que l'IA peut générer des features très vite. Trop vite. Si on ne sait pas ce qu'on mesure, on va se retrouver avec un produit plein de features que personne n'utilise, codées en trois jours au lieu de trois semaines.
+Mais il y a l'autre côté. Stefan Petre écrit sur [Shipping at Inference Speed](https://steipete.me/posts/2025/shipping-at-inference-speed) — avec l'IA, la vélocité change tout. Tu peux tester des hypothèses en quelques jours au lieu de quelques semaines. Itérer plus vite. Apprendre plus vite.
 
-L'IA amplifie la vélocité. Mais elle n'amplifie pas le discernement. Si vous ne savez pas ce qui compte, vous allez juste produire plus vite des choses qui ne comptent pas.
+J'apprécie les deux visions. Et j'essaie d'en tirer quelque chose.
 
-Ces deux semaines m'ont confirmé qu'il faut ralentir en amont pour accélérer en aval. Poser les bonnes questions. Définir les métriques. Comprendre le besoin utilisateur réel, pas fantasmé. Et ensuite, laisser l'IA exécuter.
+L'IA amplifie la vélocité. Ça, c'est clair. Mais elle n'amplifie pas le discernement. Si tu ne sais pas ce qui compte, tu vas juste produire plus vite des choses qui ne comptent pas. Par contre, si tu as une hypothèse claire et des métriques définies, tu peux ship vite, mesurer, apprendre, tuer ou itérer.
+
+Ces deux semaines m'ont confirmé qu'il faut ralentir en amont pour accélérer en aval. Poser les bonnes questions. Définir ce qu'on mesure. Comprendre le besoin utilisateur réel, pas fantasmé. Et ensuite, laisser l'IA exécuter à vitesse inference.
 
 ## Le savoir tribal, ce fléau que j'essaie d'éliminer depuis toujours
 
@@ -80,7 +84,7 @@ L'IA ne m'a rien appris de nouveau sur comment travailler. Elle m'a juste confir
 
 Parce que l'IA amplifie. Si vos pratiques sont solides, elle les multiplie. Si elles sont floues, elle multiplie le chaos.
 
-Et peut-être que c'est pour ça que j'emmerderai toujours les PO qui arrivent sans specs. Pas par perfectionnisme. Par pragmatisme. Parce que je sais que tôt ou tard, le flou se paie. Avec ou sans IA.
+Et peut-être que c'est pour ça que je poserai toujours des questions quand les specs ne sont pas claires. Pas par perfectionnisme. Par pragmatisme. Parce que je sais que tôt ou tard, le flou se paie. Avec ou sans IA.
 
 ---
 

@@ -24,11 +24,13 @@ On others, it's total chaos. The agent that generates 200 Discord messages in 13
 
 The difference between the two? It's not the AI. It's my process. When I took time to formalize context, document conventions, write clear specs, AI shined. When I was vague, it amplified the vagueness.
 
-## Why I annoy POs who show up without specs
+## Why I ask questions when specs aren't clear
 
-For years, I've annoyed POs who show up with vague user stories. "As a user, I want to manage my documents." OK, but what does "manage" mean? Upload? Download? Versioning? Permissions? Sharing? And "documents", what's that? PDF only? All formats? What max size?
+For years, I've asked questions when a PO shows up with vague user stories. "As a user, I want to manage my documents." OK, but what does "manage" mean? Upload? Download? Versioning? Permissions? Sharing? And "documents", what's that? PDF only? All formats? What max size?
 
-People tell me I'm a pain. That I slow down the sprint. That "we'll figure it out while developing". Except we never figure it out. We finish the sprint with a feature that doesn't match what the PM wanted, because the PO didn't ask the right questions, and the dev (me) had to guess.
+I try to understand why the specs are vague. And I try to explain why it's better with clear specs. Because there are two viable options: either we have precise specs and the dev executes, or we don't have specs and we give the dev freedom to decide.
+
+The worst scenario is mixing both. No clear specs AND no freedom. The dev who thinks product and wants to do something proper gets told "no, don't do what you wanted to do, we'll do an evolution later". That's heading straight into the wall. We finish the sprint with a feature that doesn't match what the PM wanted, because the PO didn't ask the right questions and the dev didn't have the freedom to decide.
 
 With AI, this problem is multiplied by ten. If I give it "make me a document management system", it will guess. And its guesses will be as random as mine. Maybe worse, because it doesn't have the business context I've accumulated working on the project for six months.
 
@@ -36,17 +38,19 @@ But if I give it clear specs — user scenarios, technical constraints, edge cas
 
 These two weeks proved what I've been saying for a long time: vague specs aren't a time saver. They're debt that explodes at implementation time. With AI, that explosion just happens faster.
 
-## Why I ask PMs for data
+## The tension between ship fast and ship smart
 
-Another thing I've been pushing for years that's earned me side-eyes: I ask PMs for data before coding a feature. How many users will use it? How often? What are the success metrics? What do we measure to know if it works?
+Another thing I've been pushing for years: I ask PMs for data before coding a feature. How many users will use it? How often? What are the success metrics? What do we measure to know if it works?
 
-Often, the answer is "we'll see after launch". Except after launch, nobody measures anything. The feature exists, we move to the next one, and six months later we realize nobody uses it.
+Often, the answer is "we'll see after launch". Except after launch, nobody measures anything. The feature exists, we move to the next one, and six months later we realize nobody uses it. PostHog wrote about this: [The Hidden Danger of Shipping Fast](https://posthog.com/newsletter/hidden-danger-of-shipping-fast). Shipping for the sake of shipping creates product debt.
 
-With AI, this question becomes even more critical. Because AI can generate features very fast. Too fast. If we don't know what we're measuring, we'll end up with a product full of features nobody uses, coded in three days instead of three weeks.
+But there's the other side. Stefan Petre writes about [Shipping at Inference Speed](https://steipete.me/posts/2025/shipping-at-inference-speed) — with AI, velocity changes everything. You can test hypotheses in days instead of weeks. Iterate faster. Learn faster.
 
-AI amplifies velocity. But it doesn't amplify discernment. If you don't know what matters, you'll just produce faster things that don't matter.
+I appreciate both visions. And I try to get something from each.
 
-These two weeks confirmed that you need to slow down upstream to accelerate downstream. Ask the right questions. Define the metrics. Understand the real user need, not the fantasized one. And then, let AI execute.
+AI amplifies velocity. That's clear. But it doesn't amplify discernment. If you don't know what matters, you'll just produce faster things that don't matter. However, if you have a clear hypothesis and defined metrics, you can ship fast, measure, learn, kill or iterate.
+
+These two weeks confirmed that you need to slow down upstream to accelerate downstream. Ask the right questions. Define what you measure. Understand the real user need, not the fantasized one. And then, let AI execute at inference speed.
 
 ## Tribal knowledge, this plague I've been trying to eliminate forever
 
@@ -80,7 +84,7 @@ AI didn't teach me anything new about how to work. It just confirmed that what I
 
 Because AI amplifies. If your practices are solid, it multiplies them. If they're vague, it multiplies chaos.
 
-And maybe that's why I'll always annoy POs who show up without specs. Not out of perfectionism. Out of pragmatism. Because I know that sooner or later, vagueness has a cost. With or without AI.
+And maybe that's why I'll always ask questions when specs aren't clear. Not out of perfectionism. Out of pragmatism. Because I know that sooner or later, vagueness has a cost. With or without AI.
 
 ---
 
