@@ -84,10 +84,13 @@ const AdminApp = (() => {
 
     // --- Articles ---
 
+    function getCurrentLang() {
+        return window.LanguageManager?.currentLang || 'fr';
+    }
+
     async function loadArticles() {
-        const lang = document.getElementById('lang-filter').value;
         try {
-            const resp = await apiRequest(`/articles?lang=${lang}`);
+            const resp = await apiRequest(`/articles?lang=${getCurrentLang()}`);
             const data = await resp.json();
             articles = data.articles || [];
             renderArticlesTable(articles);
@@ -376,8 +379,10 @@ const AdminApp = (() => {
             }
         });
 
-        // Wire up language filter
-        document.getElementById('lang-filter').addEventListener('change', () => loadArticles());
+        // Reload articles when global language changes
+        window.addEventListener('languageChanged', () => {
+            if (getApiKey()) loadArticles();
+        });
 
         // Wire up create link button
         document.getElementById('create-link-btn').addEventListener('click', () => createShareLink());
@@ -390,10 +395,6 @@ const AdminApp = (() => {
         document.getElementById('close-stats-panel').addEventListener('click', () => {
             document.getElementById('stats-panel').style.display = 'none';
         });
-
-        // Sync lang-filter with LanguageManager (survives page reload)
-        const currentLang = window.LanguageManager?.currentLang || 'fr';
-        document.getElementById('lang-filter').value = currentLang;
 
         // Check if already authenticated
         if (getApiKey()) {
