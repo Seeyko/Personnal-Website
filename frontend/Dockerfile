@@ -3,9 +3,12 @@ FROM nginx:alpine AS production
 # Build arguments for environment-specific config
 ARG API_URL=https://api.tomandrieu.com
 ARG FRONTEND_URL=https://tomandrieu.com
+ARG ADMIN_SECRET_PATH=***REMOVED***
 
-# Copy nginx config
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+# Copy nginx config template and inject ADMIN_SECRET_PATH
+COPY nginx/default.conf /tmp/default.conf.template
+RUN envsubst '${ADMIN_SECRET_PATH}' < /tmp/default.conf.template > /etc/nginx/conf.d/default.conf && \
+    rm /tmp/default.conf.template
 
 # Copy frontend static files
 COPY frontend/assets/ /usr/share/nginx/html/assets/
