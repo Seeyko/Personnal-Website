@@ -391,6 +391,10 @@ const AdminApp = (() => {
             document.getElementById('stats-panel').style.display = 'none';
         });
 
+        // Sync lang-filter with LanguageManager (survives page reload)
+        const currentLang = window.LanguageManager?.currentLang || 'fr';
+        document.getElementById('lang-filter').value = currentLang;
+
         // Check if already authenticated
         if (getApiKey()) {
             login(getApiKey());
