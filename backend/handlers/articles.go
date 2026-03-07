@@ -20,14 +20,26 @@ import (
 var validSlugPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$`)
 
 type ArticleHandler struct {
-	service    *services.ArticleService
-	jwtService *services.JWTService
+	service          *services.ArticleService
+	jwtService       *services.JWTService
+	shareLinkService *services.ShareLinkService
+	accessLogService *services.AccessLogService
+	posthogService   *services.PostHogService
 }
 
-func NewArticleHandler(service *services.ArticleService, jwtService *services.JWTService) *ArticleHandler {
+func NewArticleHandler(
+	service *services.ArticleService,
+	jwtService *services.JWTService,
+	shareLinkService *services.ShareLinkService,
+	accessLogService *services.AccessLogService,
+	posthogService *services.PostHogService,
+) *ArticleHandler {
 	return &ArticleHandler{
-		service:    service,
-		jwtService: jwtService,
+		service:          service,
+		jwtService:       jwtService,
+		shareLinkService: shareLinkService,
+		accessLogService: accessLogService,
+		posthogService:   posthogService,
 	}
 }
 
@@ -50,10 +62,10 @@ func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 
 	response := h.service.GetArticles(page, limit, lang)
 
-	// Filtrer les articles privés
+	// Only show public articles in listing
 	filteredArticles := []models.Article{}
 	for _, article := range response.Articles {
-		if !article.Private {
+		if article.Visibility == "public" {
 			filteredArticles = append(filteredArticles, article)
 		}
 	}
@@ -86,66 +98,134 @@ func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Si l'article n'est pas privé, retourner directement
-	if !article.Private {
+	// Compute visitor hash for logging
+	visitorHash := ""
+	if h.accessLogService != nil {
+		ip := extractClientIP(r)
+		ua := r.UserAgent()
+		visitorHash = h.accessLogService.HashVisitor(ip, ua)
+	}
+	referrer := r.Referer()
+	userAgent := r.UserAgent()
+
+	switch article.Visibility {
+	case "public":
+		// Public article: return content and log view
+		response := models.ArticleResponse{Article: *article}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+
+		// Log access asynchronously
+		if h.accessLogService != nil {
+			go h.accessLogService.LogAccess(slug, "public", nil, visitorHash, referrer, userAgent)
+		}
+		return
+
+	case "shared":
+		// Shared article: only accessible via share token
+		shareToken := r.URL.Query().Get("token")
+		if shareToken == "" {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(map[string]string{"error": "access_denied"})
+			return
+		}
+
+		// Validate share token
+		link, err := h.shareLinkService.ValidateToken(shareToken)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(map[string]string{"error": "invalid_token"})
+			return
+		}
+
+		// Verify token is for this article
+		if link.Slug != slug {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(map[string]string{"error": "invalid_token"})
+			return
+		}
+
+		// Token valid: return full content
+		response := models.ArticleResponse{Article: *article}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+
+		// Log access with share link attribution
+		if h.accessLogService != nil {
+			linkID := link.ID
+			go h.accessLogService.LogAccess(slug, "share_link", &linkID, visitorHash, referrer, userAgent)
+		}
+		return
+
+	case "password":
+		// Password-protected article: existing JWT flow
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+			// No token: return metadata only
+			response := models.ArticleResponse{
+				Article: models.Article{
+					Slug:        article.Slug,
+					Title:       article.Title,
+					Excerpt:     article.Excerpt,
+					CoverImage:  article.CoverImage,
+					PublishedAt: article.PublishedAt,
+					ReadingTime: article.ReadingTime,
+					Lang:        article.Lang,
+					Private:     true,
+					Visibility:  article.Visibility,
+				},
+				RequiresPassword: true,
+			}
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		// Extract and validate JWT token
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		if err := h.jwtService.ValidateToken(token, slug); err != nil {
+			// Invalid token: return metadata only
+			response := models.ArticleResponse{
+				Article: models.Article{
+					Slug:        article.Slug,
+					Title:       article.Title,
+					Excerpt:     article.Excerpt,
+					CoverImage:  article.CoverImage,
+					PublishedAt: article.PublishedAt,
+					ReadingTime: article.ReadingTime,
+					Lang:        article.Lang,
+					Private:     true,
+					Visibility:  article.Visibility,
+				},
+				RequiresPassword: true,
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		// Valid JWT: return full content
+		response := models.ArticleResponse{Article: *article}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+
+		// Log access
+		if h.accessLogService != nil {
+			go h.accessLogService.LogAccess(slug, "password", nil, visitorHash, referrer, userAgent)
+		}
+		return
+
+	default:
+		// Unknown visibility: treat as public
 		response := models.ArticleResponse{Article: *article}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-
-	// Article privé : vérifier le JWT
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
-		// Pas de token : retourner metadata seulement
-		response := models.ArticleResponse{
-			Article: models.Article{
-				Slug:        article.Slug,
-				Title:       article.Title,
-				Excerpt:     article.Excerpt,
-				CoverImage:  article.CoverImage,
-				PublishedAt: article.PublishedAt,
-				ReadingTime: article.ReadingTime,
-				Lang:        article.Lang,
-				Private:     true,
-				// Content omis
-			},
-			RequiresPassword: true,
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	// Extraire le token
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-
-	// Valider le token
-	if err := h.jwtService.ValidateToken(token, slug); err != nil {
-		// Token invalide : retourner metadata seulement
-		response := models.ArticleResponse{
-			Article: models.Article{
-				Slug:        article.Slug,
-				Title:       article.Title,
-				Excerpt:     article.Excerpt,
-				CoverImage:  article.CoverImage,
-				PublishedAt: article.PublishedAt,
-				ReadingTime: article.ReadingTime,
-				Lang:        article.Lang,
-				Private:     true,
-			},
-			RequiresPassword: true,
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	// Token valide : retourner l'article complet
-	response := models.ArticleResponse{Article: *article}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
 }
 
 func (h *ArticleHandler) ServeImage(w http.ResponseWriter, r *http.Request) {
@@ -214,6 +294,14 @@ func (h *ArticleHandler) UnlockArticle(w http.ResponseWriter, r *http.Request) {
 		lang = "fr"
 	}
 
+	// Compute visitor hash for logging
+	visitorHash := ""
+	if h.accessLogService != nil {
+		ip := extractClientIP(r)
+		ua := r.UserAgent()
+		visitorHash = h.accessLogService.HashVisitor(ip, ua)
+	}
+
 	// Charger l'article
 	article := h.service.GetArticle(slug, lang)
 	if article == nil {
@@ -224,10 +312,10 @@ func (h *ArticleHandler) UnlockArticle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Vérifier que l'article est privé
-	if !article.Private {
+	if article.Visibility != "password" {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Article is not private"})
+		json.NewEncoder(w).Encode(map[string]string{"error": "Article is not password-protected"})
 		return
 	}
 
@@ -250,10 +338,20 @@ func (h *ArticleHandler) UnlockArticle(w http.ResponseWriter, r *http.Request) {
 
 	// Valider le mot de passe
 	if err := bcrypt.CompareHashAndPassword([]byte(article.PasswordHash), []byte(req.Password)); err != nil {
+		// Log failed password attempt
+		if h.accessLogService != nil {
+			go h.accessLogService.LogPasswordAttempt(slug, visitorHash, false)
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid password"})
 		return
+	}
+
+	// Log successful password attempt
+	if h.accessLogService != nil {
+		go h.accessLogService.LogPasswordAttempt(slug, visitorHash, true)
 	}
 
 	// Générer le JWT
@@ -284,4 +382,20 @@ func (h *ArticleHandler) RefreshCache(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "cache refreshed"})
+}
+
+// extractClientIP extracts the real client IP from the request
+func extractClientIP(r *http.Request) string {
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		ips := strings.Split(xff, ",")
+		return strings.TrimSpace(ips[0])
+	}
+	if xri := r.Header.Get("X-Real-IP"); xri != "" {
+		return xri
+	}
+	ip := r.RemoteAddr
+	if colon := strings.LastIndex(ip, ":"); colon != -1 {
+		ip = ip[:colon]
+	}
+	return ip
 }
