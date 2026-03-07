@@ -14,6 +14,10 @@ const AdminApp = (() => {
     let selectedSlug = null;
     let articles = [];
 
+    function t(key) {
+        return window.LanguageManager?.t('admin.' + key) || key;
+    }
+
     function getApiKey() {
         return sessionStorage.getItem('admin_api_key');
     }
@@ -103,7 +107,7 @@ const AdminApp = (() => {
         const tbody = document.getElementById('articles-tbody');
 
         if (!arts.length) {
-            tbody.innerHTML = '<tr><td colspan="6" class="admin-empty">No articles found.</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="6" class="admin-empty">${escapeHtml(t('noArticles'))}</td></tr>`;
             return;
         }
 
@@ -115,8 +119,8 @@ const AdminApp = (() => {
                 <td>${a.totalViews || 0}</td>
                 <td>${a.linkCount || 0}</td>
                 <td class="admin-td-actions">
-                    <button class="admin-btn admin-btn-sm" onclick="AdminApp.selectArticle('${escapeAttr(a.slug)}', '${escapeAttr(a.title)}')">Links</button>
-                    <button class="admin-btn admin-btn-sm admin-btn-ghost" onclick="AdminApp.loadStats('${escapeAttr(a.slug)}', '${escapeAttr(a.title)}')">Stats</button>
+                    <button class="admin-btn admin-btn-sm" onclick="AdminApp.selectArticle('${escapeAttr(a.slug)}', '${escapeAttr(a.title)}')">${escapeHtml(t('links'))}</button>
+                    <button class="admin-btn admin-btn-sm admin-btn-ghost" onclick="AdminApp.loadStats('${escapeAttr(a.slug)}', '${escapeAttr(a.title)}')">${escapeHtml(t('stats'))}</button>
                 </td>
             </tr>
         `).join('');
@@ -134,7 +138,7 @@ const AdminApp = (() => {
 
     async function loadShareLinks(slug) {
         const container = document.getElementById('share-links-list');
-        container.innerHTML = '<p class="admin-loading">Loading links...</p>';
+        container.innerHTML = `<p class="admin-loading">${escapeHtml(t('loadingLinks'))}</p>`;
 
         try {
             const resp = await apiRequest(`/articles/${slug}/share-links`);
@@ -142,7 +146,7 @@ const AdminApp = (() => {
             const links = data.links || [];
             renderShareLinks(links);
         } catch {
-            container.innerHTML = '<p class="admin-error">Failed to load links.</p>';
+            container.innerHTML = `<p class="admin-error">${escapeHtml(t('failedLoadLinks'))}</p>`;
         }
     }
 
@@ -150,30 +154,30 @@ const AdminApp = (() => {
         const container = document.getElementById('share-links-list');
 
         if (!links.length) {
-            container.innerHTML = '<p class="admin-empty">No share links yet. Create one above.</p>';
+            container.innerHTML = `<p class="admin-empty">${escapeHtml(t('noLinksYet'))}</p>`;
             return;
         }
 
         container.innerHTML = links.map(link => {
             const isActive = !link.revoked && (!link.expiresAt || new Date(link.expiresAt) > new Date()) && (link.maxUses === null || link.useCount < link.maxUses);
             const statusClass = link.revoked ? 'revoked' : (isActive ? 'active' : 'expired');
-            const statusText = link.revoked ? 'Revoked' : (isActive ? 'Active' : 'Expired/Maxed');
+            const statusText = link.revoked ? t('revoked') : (isActive ? t('active') : t('expiredMaxed'));
 
             return `
                 <div class="admin-link-card">
                     <div class="admin-link-info">
-                        <div class="admin-link-label">${escapeHtml(link.label || 'Unnamed')}</div>
+                        <div class="admin-link-label">${escapeHtml(link.label || t('unnamed'))}</div>
                         <div class="admin-link-meta">
-                            <span class="admin-badge admin-badge-${statusClass}">${statusText}</span>
-                            <span>Uses: ${link.useCount}${link.maxUses !== null ? '/' + link.maxUses : ''}</span>
-                            ${link.expiresAt ? `<span>Expires: ${new Date(link.expiresAt).toLocaleDateString()}</span>` : ''}
-                            <span>Created: ${new Date(link.createdAt).toLocaleDateString()}</span>
+                            <span class="admin-badge admin-badge-${statusClass}">${escapeHtml(statusText)}</span>
+                            <span>${escapeHtml(t('uses'))}: ${link.useCount}${link.maxUses !== null ? '/' + link.maxUses : ''}</span>
+                            ${link.expiresAt ? `<span>${escapeHtml(t('expires'))}: ${new Date(link.expiresAt).toLocaleDateString()}</span>` : ''}
+                            <span>${escapeHtml(t('created'))}: ${new Date(link.createdAt).toLocaleDateString()}</span>
                         </div>
                     </div>
                     <div class="admin-link-actions">
                         ${isActive ? `
-                            <button class="admin-btn admin-btn-sm" onclick="AdminApp.copyShareLink('${escapeAttr(link.url)}')">Copy URL</button>
-                            <button class="admin-btn admin-btn-sm admin-btn-danger" onclick="AdminApp.revokeShareLink(${link.id})">Revoke</button>
+                            <button class="admin-btn admin-btn-sm" onclick="AdminApp.copyShareLink('${escapeAttr(link.url)}')">${escapeHtml(t('copyUrl'))}</button>
+                            <button class="admin-btn admin-btn-sm admin-btn-danger" onclick="AdminApp.revokeShareLink(${link.id})">${escapeHtml(t('revoke'))}</button>
                         ` : ''}
                     </div>
                 </div>
@@ -217,7 +221,7 @@ const AdminApp = (() => {
             // Brief visual feedback - find the button that was clicked
             const btn = event.target;
             const original = btn.textContent;
-            btn.textContent = 'Copied!';
+            btn.textContent = t('copied');
             setTimeout(() => { btn.textContent = original; }, 1500);
         } catch {
             // Fallback for older browsers
@@ -231,7 +235,7 @@ const AdminApp = (() => {
     }
 
     async function revokeShareLink(id) {
-        if (!confirm('Revoke this share link? This cannot be undone.')) return;
+        if (!confirm(t('revokeConfirm'))) return;
 
         try {
             await apiRequest(`/share-links/${id}`, { method: 'DELETE' });
@@ -277,7 +281,7 @@ const AdminApp = (() => {
         const total = Object.values(methods).reduce((a, b) => a + b, 0);
 
         if (!total) {
-            container.innerHTML = '<p class="admin-empty">No data yet.</p>';
+            container.innerHTML = `<p class="admin-empty">${escapeHtml(t('noDataYet'))}</p>`;
             return;
         }
 
@@ -306,14 +310,14 @@ const AdminApp = (() => {
         const container = document.getElementById('link-views-list');
 
         if (!linkViews.length) {
-            container.innerHTML = '<p class="admin-empty">No link views yet.</p>';
+            container.innerHTML = `<p class="admin-empty">${escapeHtml(t('noLinkViews'))}</p>`;
             return;
         }
 
         container.innerHTML = linkViews.map(lv => `
             <div class="admin-link-view-row">
                 <span class="admin-link-view-label">${escapeHtml(lv.label || 'Link #' + lv.linkId)}</span>
-                <span class="admin-link-view-count">${lv.views} views (${lv.unique} unique)</span>
+                <span class="admin-link-view-count">${lv.views} ${escapeHtml(t('colViews').toLowerCase())} (${lv.unique} unique)</span>
             </div>
         `).join('');
     }
@@ -322,7 +326,7 @@ const AdminApp = (() => {
         const container = document.getElementById('daily-chart');
 
         if (!daily.length) {
-            container.innerHTML = '<p class="admin-empty">No daily data yet.</p>';
+            container.innerHTML = `<p class="admin-empty">${escapeHtml(t('noDailyData'))}</p>`;
             return;
         }
 
@@ -360,7 +364,25 @@ const AdminApp = (() => {
 
     // --- Init ---
 
-    function init() {
+    async function init() {
+        // Wait for LanguageManager to be ready
+        if (window.LanguageManager && !LanguageManager.isLoaded) {
+            await LanguageManager.init();
+        }
+
+        // Populate data-i18n attributes
+        if (window.LanguageManager?.isLoaded) {
+            LanguageManager.populateTranslations();
+        }
+
+        // Set placeholders (data-i18n doesn't handle placeholders)
+        document.getElementById('api-key-input').placeholder = t('apiKeyPlaceholder');
+        document.getElementById('link-label').placeholder = t('labelPlaceholder');
+        document.getElementById('link-max-uses').placeholder = t('maxUsesPlaceholder');
+
+        // Update page title
+        document.title = t('pageTitle');
+
         // Wire up login form
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -372,7 +394,7 @@ const AdminApp = (() => {
 
             const success = await login(key);
             if (!success) {
-                error.textContent = 'Invalid API key. Please try again.';
+                error.textContent = t('invalidApiKey');
                 error.style.display = 'block';
                 input.value = '';
                 input.focus();
@@ -381,6 +403,13 @@ const AdminApp = (() => {
 
         // Reload articles when global language changes
         window.addEventListener('languageChanged', () => {
+            if (window.LanguageManager?.isLoaded) {
+                LanguageManager.populateTranslations();
+                document.getElementById('api-key-input').placeholder = t('apiKeyPlaceholder');
+                document.getElementById('link-label').placeholder = t('labelPlaceholder');
+                document.getElementById('link-max-uses').placeholder = t('maxUsesPlaceholder');
+                document.title = t('pageTitle');
+            }
             if (getApiKey()) loadArticles();
         });
 
