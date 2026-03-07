@@ -6,13 +6,13 @@ draft: false
 lang: en
 ---
 
-Coordinating multiple AI agents working in parallel requires dedicated infrastructure. After a few weeks of experimenting with 7 specialized agents (architecture, dev, QA, research, writing), I built Olympus — a task management system designed for multi-agent coordination.
+Coordinating multiple AI agents working in parallel requires dedicated infrastructure. After a few weeks of experimenting with 7 specialized agents (architecture, dev, QA, research, writing), I built Olympus, a task management system designed for multi-agent coordination.
 
-## The technical problem
+The technical problem
 
 Initially, coordination happened through Discord. Main (the orchestrator) received my requests, dispatched to specialized agents via mentions, collected results in threads. Functional at first.
 
-**Observed limitations**:
+Observed limitations:
 - No global view: to know system state, had to parse all Discord threads
 - No structured prioritization: first-in-first-out based on message chronology
 - Fragmented memory: each agent had their files (`daily-notes/`, `decisions/`), but no unified database
@@ -22,14 +22,14 @@ The filesystem as source of truth was insufficient: no notifications, write conf
 
 Solution: build a dedicated REST API + web UI.
 
-## Technical architecture
+Technical architecture
 
-**Stack**:
+Stack:
 - Backend: NestJS + TypeORM + PostgreSQL (hosted on VPS via Dokploy)
 - Frontend: React 19 + Vite + Zustand + TanStack Query + shadcn/ui
 - Deployment: Dokploy (self-hosted Vercel equivalent)
 
-**Design choices**:
+Design choices:
 
 PostgreSQL over files to guarantee ACID and enable complex queries.
 
@@ -39,102 +39,100 @@ React 19 over SvelteKit (migrated after a few days): faster dev velocity thanks 
 
 WebSockets for real-time agent notifications rather than polling.
 
-**REST API endpoints**:
-```bash
-GET    /tasks                    # List all tasks
-GET    /tasks?assignee=writer    # Filter by agent
-GET    /tasks/:id                # Task details
-POST   /tasks                    # Create (Main only)
-PATCH  /tasks/:id                # Update status
-POST   /tasks/:id/comments       # Add comment
-```
+REST API endpoints:
+GET /tasks # List all tasks
+GET /tasks?assignee=writer # Filter by agent
+GET /tasks/:id # Task details
+POST /tasks # Create (Main only)
+PATCH /tasks/:id # Update status
+POST /tasks/:id/comments # Add comment
 
-**Authentication**:
+Authentication:
 Each agent has a unique API key. Main has `POST /tasks` rights, other agents only `PATCH` and comments.
 
-**Rate limiting**:
+Rate limiting:
 Implemented after Atlas created dozens of tasks in seconds (logic bug where he re-scanned his own cache before DB was updated).
 
-## Real workflow
+Real workflow
 
-Contrary to the initial idea of self-organizing agents, the system works via **centralized orchestration**:
+Contrary to the initial idea of self-organizing agents, the system works via centralized orchestration:
 
-**Main** (CEO agent):
+Main (CEO agent):
 1. Heartbeat several times daily
 2. Reads Olympus backlog
 3. Analyzes what needs to be done (based on my vision)
 4. Creates tasks for specialized agents
 5. Spawns agents via `sessions_spawn` if needed
 
-**Specialized agents**:
+Specialized agents:
 1. Triggered by cron or spawn
 2. Fetch assigned tasks via API
 3. Work on the task
 4. Update status and post comments
 5. Go back to sleep
 
-**No direct horizontal coordination**: everything goes through Main and Olympus.
+No direct horizontal coordination: everything goes through Main and Olympus.
 
-## What works
+What works
 
-**Structured visibility**: A dashboard replaces infinite Discord scrolling. Filters by agent, status, priority. Overview at a glance.
+Structured visibility: A dashboard replaces infinite Discord scrolling. Filters by agent, status, priority. Overview at a glance.
 
-**Centralized memory**: PostgreSQL database rather than scattered files. Complex queries possible.
+Centralized memory: PostgreSQL database rather than scattered files. Complex queries possible.
 
-**Rate limiting**: Prevents infinite loops.
+Rate limiting: Prevents infinite loops.
 
-**Mandatory blocking documentation**: If an agent puts a task in `blocked`, API checks for recent comment. Forces documentation.
+Mandatory blocking documentation: If an agent puts a task in `blocked`, API checks for recent comment. Forces documentation.
 
-**WebSockets for real-time notifications**: Agents don't need to poll continuously.
+WebSockets for real-time notifications: Agents don't need to poll continuously.
 
-## What doesn't work (yet)
+What doesn't work (yet)
 
-**Unstable heartbeats**: Some heartbeats missed (cron failures, timeouts).
+Unstable heartbeats: Some heartbeats missed (cron failures, timeouts).
 
-**Many tasks created, fewer completed**: Velocity illusion. Creating tasks quickly gives the impression of progress, but what matters is what gets delivered.
+Many tasks created, fewer completed: Velocity illusion. Creating tasks quickly gives the impression of progress, but what matters is what gets delivered.
 
-**No integrated metrics**: No analytics dashboard in Olympus v1.
+No integrated metrics: No analytics dashboard in Olympus v1.
 
-**Blockages not auto-resolved**: Main doesn't systematically pick up blocked tasks.
+Blockages not auto-resolved: Main doesn't systematically pick up blocked tasks.
 
-**No dependency system**: "B waits for A" exists in comments, not in system logic.
+No dependency system: "B waits for A" exists in comments, not in system logic.
 
-## Technical lessons
+Technical lessons
 
-**1. A relational database is non-negotiable**
+1. A relational database is non-negotiable
 
 The filesystem isn't enough for real-time coordination.
 
-**2. Centralized orchestration simplifies coordination**
+2. Centralized orchestration simplifies coordination
 
 Rather than each agent communicating with all others (n² interactions), everything goes through Main (n interactions).
 
-**3. Rate limiting from day 1**
+3. Rate limiting from day 1
 
 Don't wait for an agent to create dozens of tasks in a loop before implementing limits.
 
-**4. Force blocking documentation**
+4. Force blocking documentation
 
 If an agent blocks without explaining why, the system should reject the update.
 
-**5. Start minimal**
+5. Start minimal
 
 Olympus v0: a few statuses, basic CRUD, no WebSockets. Add features only when need is proven.
 
-**6. Kill switches must be independent**
+6. Kill switches must be independent
 
 If `/stop` depends on the agent being cooperative, it's not a kill switch.
 
-**7. Measure real velocity, not task creation**
+7. Measure real velocity, not task creation
 
 What matters: how many are *completed*, and how many *deliver value*.
 
-## Conclusion
+Conclusion
 
 Olympus isn't a revolutionary AI project. It's a CRUD app with a REST API and a kanban board. But it's the infrastructure needed to experiment with multi-agent systems.
 
-**What I learned**: centralized orchestration works better than horizontal coordination. Agents are fast but unreliable. Task creation isn't velocity. Structured visibility is essential.
+What I learned: centralized orchestration works better than horizontal coordination. Agents are fast but unreliable. Task creation isn't velocity. Structured visibility is essential.
 
-**What remains to prove**: can this system actually deliver value in production?
+What remains to prove: can this system actually deliver value in production?
 
 Olympus code isn't public yet. But if you're building multi-agent systems and want to discuss, my DMs are open.
