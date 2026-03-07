@@ -4,6 +4,8 @@ excerpt: "Between execution and product vision, the senior developer role is evo
 publishedAt: "2026-02-12"
 draft: false
 lang: en
+private: true
+passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
 ---
 
 The developer role is changing. AI is accelerating everything, of course, but the shift runs deeper — it's about **role**, **responsibility**, and **meaning**.
