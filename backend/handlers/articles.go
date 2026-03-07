@@ -161,6 +161,22 @@ func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 		return
 
 	case "password":
+		// Check share token first (share links bypass password)
+		if shareToken := r.URL.Query().Get("token"); shareToken != "" {
+			link, err := h.shareLinkService.ValidateToken(shareToken)
+			if err == nil && link.Slug == slug {
+				response := models.ArticleResponse{Article: *article}
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(response)
+
+				if h.accessLogService != nil {
+					linkID := link.ID
+					go h.accessLogService.LogAccess(slug, "share_link", &linkID, visitorHash, referrer, userAgent)
+				}
+				return
+			}
+		}
+
 		// Password-protected article: existing JWT flow
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
