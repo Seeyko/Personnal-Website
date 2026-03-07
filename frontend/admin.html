@@ -102,18 +102,17 @@
   <!-- Login Gate -->
   <section id="admin-login" class="admin-section">
     <div class="admin-login-card">
-      <h2 class="admin-login-title">Admin Access</h2>
-      <p class="admin-login-subtitle">Enter your API key to continue.</p>
+      <h2 class="admin-login-title" data-i18n="admin.loginTitle">Admin Access</h2>
+      <p class="admin-login-subtitle" data-i18n="admin.loginSubtitle">Enter your API key to continue.</p>
       <form id="login-form" class="admin-login-form">
         <input
           type="password"
           id="api-key-input"
-          placeholder="API Key"
           class="admin-input"
           autocomplete="off"
           required
         />
-        <button type="submit" class="admin-btn admin-btn-primary">Authenticate</button>
+        <button type="submit" class="admin-btn admin-btn-primary" data-i18n="admin.authenticate">Authenticate</button>
       </form>
       <div id="login-error" class="admin-error" style="display: none;"></div>
     </div>
@@ -124,22 +123,22 @@
     <!-- Articles Panel -->
     <div class="admin-panel">
       <div class="admin-panel-header">
-        <h2 class="admin-panel-title">Articles</h2>
+        <h2 class="admin-panel-title" data-i18n="admin.articles">Articles</h2>
       </div>
       <div id="articles-table-container" class="admin-table-container">
         <table class="admin-table">
           <thead>
             <tr>
-              <th>Title</th>
-              <th>Lang</th>
-              <th>Visibility</th>
-              <th>Views</th>
-              <th>Links</th>
-              <th>Actions</th>
+              <th data-i18n="admin.colTitle">Title</th>
+              <th data-i18n="admin.colLang">Lang</th>
+              <th data-i18n="admin.colVisibility">Visibility</th>
+              <th data-i18n="admin.colViews">Views</th>
+              <th data-i18n="admin.colLinks">Links</th>
+              <th data-i18n="admin.colActions">Actions</th>
             </tr>
           </thead>
           <tbody id="articles-tbody">
-            <tr><td colspan="6" class="admin-loading">Loading articles...</td></tr>
+            <tr><td colspan="6" class="admin-loading" data-i18n="admin.loadingArticles">Loading articles...</td></tr>
           </tbody>
         </table>
       </div>
@@ -149,28 +148,28 @@
     <div id="share-link-panel" class="admin-panel" style="display: none;">
       <div class="admin-panel-header">
         <h2 class="admin-panel-title">
-          Share Links: <span id="selected-article-title"></span>
+          <span data-i18n="admin.shareLinks">Share Links</span>: <span id="selected-article-title"></span>
         </h2>
-        <button id="close-link-panel" class="admin-btn admin-btn-ghost">Close</button>
+        <button id="close-link-panel" class="admin-btn admin-btn-ghost" data-i18n="admin.close">Close</button>
       </div>
 
       <!-- Create new link form -->
       <div class="admin-form-row">
-        <input type="text" id="link-label" placeholder="Label (e.g. Twitter, LinkedIn)" class="admin-input" />
-        <input type="number" id="link-max-uses" placeholder="Max uses (optional)" class="admin-input admin-input-sm" min="1" />
+        <input type="text" id="link-label" class="admin-input" />
+        <input type="number" id="link-max-uses" class="admin-input admin-input-sm" min="1" />
         <select id="link-expiry" class="admin-select">
-          <option value="">No expiry</option>
-          <option value="24h">24 hours</option>
-          <option value="7d">7 days</option>
-          <option value="30d">30 days</option>
-          <option value="90d">90 days</option>
+          <option value="" data-i18n="admin.noExpiry">No expiry</option>
+          <option value="24h" data-i18n="admin.hours24">24 hours</option>
+          <option value="7d" data-i18n="admin.days7">7 days</option>
+          <option value="30d" data-i18n="admin.days30">30 days</option>
+          <option value="90d" data-i18n="admin.days90">90 days</option>
         </select>
-        <button id="create-link-btn" class="admin-btn admin-btn-primary">Create Link</button>
+        <button id="create-link-btn" class="admin-btn admin-btn-primary" data-i18n="admin.createLink">Create Link</button>
       </div>
 
       <!-- Existing links list -->
       <div id="share-links-list" class="admin-links-list">
-        <p class="admin-loading">Loading links...</p>
+        <p class="admin-loading" data-i18n="admin.loadingLinks">Loading links...</p>
       </div>
     </div>
 
@@ -180,35 +179,35 @@
         <h2 class="admin-panel-title">
           Stats: <span id="stats-article-title"></span>
         </h2>
-        <button id="close-stats-panel" class="admin-btn admin-btn-ghost">Close</button>
+        <button id="close-stats-panel" class="admin-btn admin-btn-ghost" data-i18n="admin.close">Close</button>
       </div>
 
       <div class="admin-stats-grid">
         <div class="admin-stat-card">
           <div class="admin-stat-value" id="stat-total-views">0</div>
-          <div class="admin-stat-label">Total Views</div>
+          <div class="admin-stat-label" data-i18n="admin.totalViews">Total Views</div>
         </div>
         <div class="admin-stat-card">
           <div class="admin-stat-value" id="stat-unique-visitors">0</div>
-          <div class="admin-stat-label">Unique Visitors</div>
+          <div class="admin-stat-label" data-i18n="admin.uniqueVisitors">Unique Visitors</div>
         </div>
       </div>
 
       <!-- Views by method -->
       <div class="admin-chart-section">
-        <h3 class="admin-chart-title">Views by Method</h3>
+        <h3 class="admin-chart-title" data-i18n="admin.viewsByMethod">Views by Method</h3>
         <div id="method-chart" class="admin-pie-chart"></div>
       </div>
 
       <!-- Views per link -->
       <div class="admin-chart-section">
-        <h3 class="admin-chart-title">Views per Link</h3>
+        <h3 class="admin-chart-title" data-i18n="admin.viewsPerLink">Views per Link</h3>
         <div id="link-views-list" class="admin-link-views"></div>
       </div>
 
       <!-- Daily views -->
       <div class="admin-chart-section">
-        <h3 class="admin-chart-title">Daily Views (last 30 days)</h3>
+        <h3 class="admin-chart-title" data-i18n="admin.dailyViews">Daily Views (last 30 days)</h3>
         <div id="daily-chart" class="admin-bar-chart"></div>
       </div>
     </div>
