@@ -2,6 +2,7 @@ package services
 
 import (
 	"bytes"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -64,31 +65,40 @@ func NewArticleService(articlesDir string) *ArticleService {
 }
 
 func (s *ArticleService) RefreshCache() error {
+	log.Printf("[RefreshCache] Reading articles from: %s", s.articlesDir)
+
 	entries, err := os.ReadDir(s.articlesDir)
 	if err != nil {
+		log.Printf("[RefreshCache] ERROR reading dir: %v", err)
 		return err
 	}
+
+	log.Printf("[RefreshCache] Found %d entries in articles dir", len(entries))
 
 	var articles []models.Article
 	supportedLangs := []string{"en", "fr"}
 
 	for _, entry := range entries {
 		if !entry.IsDir() {
+			log.Printf("[RefreshCache] Skipping non-dir: %s", entry.Name())
 			continue
 		}
 
 		slug := entry.Name()
+		log.Printf("[RefreshCache] Processing slug: %s", slug)
 
 		// Try language-specific files first (index.en.md, index.fr.md)
 		for _, lang := range supportedLangs {
 			langPath := filepath.Join(s.articlesDir, slug, "index."+lang+".md")
 			content, err := os.ReadFile(langPath)
 			if err != nil {
+				log.Printf("[RefreshCache] Cannot read %s: %v", langPath, err)
 				continue
 			}
 
 			article, err := s.parseArticle(slug, content)
 			if err != nil {
+				log.Printf("[RefreshCache] Parse error for %s/%s: %v", slug, lang, err)
 				continue
 			}
 
@@ -132,6 +142,8 @@ func (s *ArticleService) RefreshCache() error {
 	s.cacheMu.Lock()
 	s.cache = articles
 	s.cacheMu.Unlock()
+
+	log.Printf("[RefreshCache] Cached %d articles total", len(articles))
 
 	return nil
 }
