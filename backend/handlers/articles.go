@@ -110,14 +110,22 @@ func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 
 	switch article.Visibility {
 	case "public":
-		// Public article: return content and log view
+		// Public article: return content
 		response := models.ArticleResponse{Article: *article}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)
 
-		// Log access asynchronously
+		// Log access: attribute to share link if token present, otherwise public
 		if h.accessLogService != nil {
-			go h.accessLogService.LogAccess(slug, "public", nil, visitorHash, referrer, userAgent)
+			accessType := "public"
+			var linkID *int
+			if shareToken := r.URL.Query().Get("token"); shareToken != "" {
+				if link, err := h.shareLinkService.ValidateToken(shareToken); err == nil && link.Slug == slug {
+					accessType = "share_link"
+					linkID = &link.ID
+				}
+			}
+			go h.accessLogService.LogAccess(slug, accessType, linkID, visitorHash, referrer, userAgent)
 		}
 		return
 
