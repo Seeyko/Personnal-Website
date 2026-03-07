@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -80,9 +81,56 @@ func main() {
 		allowedOrigins = append(allowedOrigins, frontendURL)
 	}
 
+	// Admin secret path (hidden route — no public references anywhere)
+	adminSecretPath := os.Getenv("ADMIN_SECRET_PATH")
+	if adminSecretPath == "" {
+		adminSecretPath = "_mx9k7"
+	}
+
+	// Admin API key (required in production)
+	adminAPIKey := os.Getenv("ADMIN_API_KEY")
+	if adminAPIKey == "" {
+		adminAPIKey = "dev-admin-key-change-me"
+		log.Println("WARNING: Using default ADMIN_API_KEY — set ADMIN_API_KEY env var in production!")
+	}
+
+	// Admin IP allowlist (optional)
+	var adminAllowedIPs []string
+	if ips := os.Getenv("ADMIN_ALLOWED_IPS"); ips != "" {
+		for _, ip := range strings.Split(ips, ",") {
+			ip = strings.TrimSpace(ip)
+			if ip != "" {
+				adminAllowedIPs = append(adminAllowedIPs, ip)
+			}
+		}
+		log.Printf("Admin IP allowlist enabled: %v", adminAllowedIPs)
+	}
+
+	// Initialize services
 	articleService := services.NewArticleService(articlesDir)
 	jwtService := services.NewJWTService()
-	articleHandler := handlers.NewArticleHandler(articleService, jwtService)
+
+	// Initialize PostgreSQL database
+	db, err := services.NewDatabase()
+	if err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+	defer db.Close()
+
+	// Initialize PostHog (gracefully optional)
+	posthogService := services.NewPostHogService()
+	defer posthogService.Close()
+
+	// Initialize share link and access log services
+	shareLinkService := services.NewShareLinkService(db)
+	accessLogService := services.NewAccessLogService(db, posthogService)
+
+	// Initialize handlers
+	articleHandler := handlers.NewArticleHandler(articleService, jwtService, shareLinkService, accessLogService, posthogService)
+	adminHandler := handlers.NewAdminHandler(articleService, shareLinkService, accessLogService)
+
+	// Initialize admin auth middleware
+	adminAuth := custommiddleware.NewAdminAuthMiddleware(adminAPIKey, adminAllowedIPs)
 
 	// Initialize rate limiter for article unlock protection
 	rateLimiter := ratelimit.NewRateLimiter(
@@ -102,7 +150,7 @@ func main() {
 
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   allowedOrigins,
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Authorization"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
@@ -127,13 +175,24 @@ func main() {
 		r.With(rateLimitMW.UnlockRateLimit).Post("/articles/{slug}/unlock", articleHandler.UnlockArticle)
 
 		r.Post("/refresh", articleHandler.RefreshCache)
+
+		// Admin routes (hidden behind secret path + API key auth)
+		r.Route("/"+adminSecretPath, func(r chi.Router) {
+			r.Use(adminAuth.Authenticate)
+
+			r.Get("/articles", adminHandler.ListArticles)
+			r.Get("/articles/{slug}/share-links", adminHandler.ListShareLinks)
+			r.Post("/articles/{slug}/share-links", adminHandler.CreateShareLink)
+			r.Get("/articles/{slug}/stats", adminHandler.GetArticleStats)
+			r.Get("/share-links", adminHandler.ListAllShareLinks)
+			r.Delete("/share-links/{id}", adminHandler.RevokeShareLink)
+		})
 	})
 
 	// Catch-all route to debug unmatched requests
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("!!! 404 NOT FOUND !!!")
 		log.Printf("No route matched for: %s %s", r.Method, r.URL.Path)
-		log.Printf("Available routes: /, /api/health, /api/articles, /api/articles/{slug}, /api/articles/{slug}/image/{filename}")
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
@@ -145,6 +204,7 @@ func main() {
 	log.Printf("Articles directory: %s", articlesDir)
 	log.Printf("CORS allowed origins: %v", allowedOrigins)
 	log.Printf("Rate limiting: ENABLED (5 attempts/min, lockout after 10 failures)")
+	log.Printf("Admin API: /api/%s/* (hidden route)", adminSecretPath)
 	log.Printf("Available routes:")
 	log.Printf("  GET  /                         - Root health check")
 	log.Printf("  GET  /api/health               - API health check")
@@ -153,6 +213,7 @@ func main() {
 	log.Printf("  GET  /api/articles/{slug}/image/{filename} - Serve image")
 	log.Printf("  POST /api/articles/{slug}/unlock - Unlock private article (rate limited)")
 	log.Printf("  POST /api/refresh              - Refresh cache")
+	log.Printf("  [ADMIN] GET/POST/DELETE /api/%s/* - Admin endpoints (auth required)", adminSecretPath)
 	log.Printf("===========================================")
 
 	if err := http.ListenAndServe(":"+port, r); err != nil {

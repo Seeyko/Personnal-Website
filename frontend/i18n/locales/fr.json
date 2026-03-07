@@ -90,6 +90,10 @@
     "newBadge": "NOUVEAU !",
     "articleNotFound": "Article Introuvable",
     "articleNotFoundMsg": "Désolé, l'article que vous cherchez n'existe pas.",
+    "accessDenied": "Article Privé",
+    "accessDeniedMsg": "Cet article n'est pas disponible publiquement.",
+    "invalidToken": "Lien invalide ou expiré",
+    "invalidTokenMsg": "Ce lien de partage n'est plus valide. Il a peut-être expiré ou été révoqué.",
     "backToBlog": "Retour au Blog",
     "prev": "Préc.",
     "next": "Suiv."

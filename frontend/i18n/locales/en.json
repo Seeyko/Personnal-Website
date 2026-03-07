@@ -90,6 +90,10 @@
     "newBadge": "NEW!",
     "articleNotFound": "Article Not Found",
     "articleNotFoundMsg": "Sorry, the article you're looking for doesn't exist.",
+    "accessDenied": "Private Article",
+    "accessDeniedMsg": "This article is not publicly available.",
+    "invalidToken": "Invalid or Expired Link",
+    "invalidTokenMsg": "This share link is no longer valid. It may have expired or been revoked.",
     "backToBlog": "Back to Blog",
     "prev": "Prev",
     "next": "Next"

@@ -109,6 +109,117 @@ body[data-theme="terminal"] .password-submit {
     color: #000;
 }
 
+/* Access Denied Prompt */
+.access-denied-prompt {
+    max-width: 500px;
+    margin: 4rem auto;
+    padding: 3rem;
+    text-align: center;
+    background: var(--color-bg-secondary, #ffffff);
+    border: 1px solid var(--color-border, rgba(0, 0, 0, 0.1));
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.access-denied-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.access-denied-prompt h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text, #1a1a1a);
+}
+
+.access-denied-prompt p {
+    color: var(--color-text-secondary, #666);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.access-denied-back {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: var(--color-accent, #0f766e);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-md, 8px);
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.access-denied-back:hover {
+    background: var(--color-accent-hover, #0d9488);
+    transform: translateY(-2px);
+}
+
+/* Terminal theme - access denied */
+body[data-theme="terminal"] .access-denied-prompt {
+    background: #0a0a0a;
+    border-color: #333;
+}
+
+body[data-theme="terminal"] .access-denied-prompt h3 {
+    color: #ff3333;
+}
+
+body[data-theme="terminal"] .access-denied-prompt p {
+    color: #888;
+}
+
+body[data-theme="terminal"] .access-denied-back {
+    background: #33ff00;
+    color: #000;
+}
+
+/* Blueprint theme - access denied */
+body[data-theme="blueprint"] .access-denied-prompt {
+    background: rgba(0, 20, 40, 0.95);
+    border-color: rgba(0, 255, 255, 0.3);
+}
+
+body[data-theme="blueprint"] .access-denied-prompt h3 {
+    color: #ff6b6b;
+}
+
+body[data-theme="blueprint"] .access-denied-prompt p {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body[data-theme="blueprint"] .access-denied-back {
+    background: #00ffff;
+    color: #001428;
+}
+
+/* Retro 90s theme - access denied */
+body[data-theme="retro90s"] .access-denied-prompt {
+    background: #c0c0c0;
+    border: 3px outset #dfdfdf;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+body[data-theme="retro90s"] .access-denied-prompt h3 {
+    color: #000080;
+    font-family: 'Comic Sans MS', cursive;
+}
+
+body[data-theme="retro90s"] .access-denied-prompt p {
+    color: #000;
+}
+
+body[data-theme="retro90s"] .access-denied-back {
+    background: #000080;
+    color: #ffff00;
+    border-radius: 0;
+    border: 2px outset #dfdfdf;
+    font-family: 'Comic Sans MS', cursive;
+}
+
 /* Blueprint theme overrides */
 body[data-theme="blueprint"] .password-prompt {
     background: rgba(0, 20, 40, 0.95);
