@@ -4,6 +4,7 @@ excerpt: "Quand ton orchestrateur IA part en boucle infinie et que seul le débr
 publishedAt: "2026-02-12"
 draft: false
 lang: fr
+private: false
 ---
 
 ## Note de Tom

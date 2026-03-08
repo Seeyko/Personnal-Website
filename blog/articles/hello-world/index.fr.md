@@ -4,6 +4,7 @@ excerpt: "Un nouveau départ : le développement assisté par IA, le product eng
 publishedAt: "2026-01-16"
 draft: false
 lang: fr
+private: false
 ---
 
 Bienvenue sur mon nouveau site web. Ce n'est pas juste un redesign ni une mise à jour pour afficher de nouveaux projets. **C'est un reset.**
