@@ -107,6 +107,9 @@ func (s *ArticleService) RefreshCache() error {
 				article.Lang = lang
 			}
 
+			// Debug log for language assignment (2026-03-08)
+			log.Printf("[RefreshCache] %s/%s → lang=%s visibility=%s", slug, lang, article.Lang, article.Visibility)
+
 			articles = append(articles, article)
 		}
 
