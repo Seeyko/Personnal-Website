@@ -3,7 +3,7 @@
  */
 
 let currentPage = 1;
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 10;
 
 function getViewFromURL() {
     const params = new URLSearchParams(window.location.search);
