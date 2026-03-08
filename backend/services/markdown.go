@@ -253,6 +253,12 @@ func (s *ArticleService) GetArticles(page, limit int, lang string) models.Articl
 		}
 	}
 
+	// Debug: list all filtered articles (2026-03-08)
+	log.Printf("[GetArticles] Filtered %d articles for lang=%s:", len(filteredArticles), lang)
+	for _, a := range filteredArticles {
+		log.Printf("  - %s (visibility=%s)", a.Slug, a.Visibility)
+	}
+
 	total := len(filteredArticles)
 	totalPages := (total + limit - 1) / limit
 
