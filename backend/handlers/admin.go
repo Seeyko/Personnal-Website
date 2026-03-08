@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -37,7 +38,10 @@ func NewAdminHandler(articleService *services.ArticleService, shareLinkService *
 func (h *AdminHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 	lang := r.URL.Query().Get("lang")
 
+	// Admin listing: returns ALL articles (public + password + shared)
 	articles := h.articleService.GetAllArticles(lang)
+
+	log.Printf("[ADMIN ListArticles] lang=%s total=%d", lang, len(articles))
 
 	// Build admin summaries with stats
 	summaries := make([]models.AdminArticleSummary, 0, len(articles))
@@ -49,6 +53,8 @@ func (h *AdminHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 			Visibility:  article.Visibility,
 			PublishedAt: article.PublishedAt,
 		}
+
+		log.Printf("[ADMIN ListArticles]   - %s (visibility=%s)", article.Slug, article.Visibility)
 
 		// Get link count for this article
 		links, err := h.shareLinkService.GetLinksForSlug(article.Slug)
@@ -203,28 +209,33 @@ func (h *AdminHandler) GetArticleStats(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "slug")
 	slug = strings.TrimSuffix(slug, "/")
 
+	log.Printf("[ADMIN GetArticleStats] slug=%s", slug)
+
 	// Return empty stats if access log service is not available
 	if h.accessLogService == nil {
+		log.Printf("[ADMIN GetArticleStats] accessLogService is nil, returning empty stats")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(models.ArticleStats{
-			Slug:          slug,
-			TotalViews:    0,
+			Slug:           slug,
+			TotalViews:     0,
 			UniqueVisitors: 0,
-			ViewsByMethod: map[string]int{},
-			ViewsByLink:   []models.LinkViewStats{},
-			DailyViews:    []models.DailyViewStats{},
+			ViewsByMethod:  map[string]int{},
+			ViewsByLink:    []models.LinkViewStats{},
+			DailyViews:     []models.DailyViewStats{},
 		})
 		return
 	}
 
 	stats, err := h.accessLogService.GetArticleStats(slug)
 	if err != nil {
+		log.Printf("[ADMIN GetArticleStats] ERROR for %s: %v", slug, err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to fetch stats"})
 		return
 	}
 
+	log.Printf("[ADMIN GetArticleStats] slug=%s totalViews=%d uniqueVisitors=%d", slug, stats.TotalViews, stats.UniqueVisitors)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(stats)
 }
