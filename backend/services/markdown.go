@@ -311,6 +311,76 @@ func (s *ArticleService) GetArticles(page, limit int, lang string) models.Articl
 	}
 }
 
+// GetPublicArticles returns only public articles (filters visibility before pagination)
+func (s *ArticleService) GetPublicArticles(page, limit int, lang string) models.ArticleListResponse {
+	s.cacheMu.RLock()
+	defer s.cacheMu.RUnlock()
+
+	// Filter by language AND visibility=public (before pagination)
+	var publicArticles []models.Article
+	for _, article := range s.cache {
+		// Match language
+		if article.Lang != lang && !(lang == "" && article.Lang == "fr") {
+			continue
+		}
+		// Only public articles
+		if article.Visibility == "public" {
+			publicArticles = append(publicArticles, article)
+		}
+	}
+
+	total := len(publicArticles)
+	totalPages := (total + limit - 1) / limit
+
+	start := (page - 1) * limit
+	end := start + limit
+
+	if start >= total {
+		return models.ArticleListResponse{
+			Articles: []models.Article{},
+			Pagination: models.Pagination{
+				Page:       page,
+				Limit:      limit,
+				Total:      total,
+				TotalPages: totalPages,
+				HasNext:    false,
+				HasPrev:    page > 1,
+			},
+		}
+	}
+
+	if end > total {
+		end = total
+	}
+
+	articles := make([]models.Article, end-start)
+	for i, article := range publicArticles[start:end] {
+		articles[i] = models.Article{
+			Slug:        article.Slug,
+			Title:       article.Title,
+			Excerpt:     article.Excerpt,
+			CoverImage:  article.CoverImage,
+			PublishedAt: article.PublishedAt,
+			ReadingTime: article.ReadingTime,
+			Lang:        article.Lang,
+			Private:     article.Private,
+			Visibility:  article.Visibility,
+		}
+	}
+
+	return models.ArticleListResponse{
+		Articles: articles,
+		Pagination: models.Pagination{
+			Page:       page,
+			Limit:      limit,
+			Total:      total,
+			TotalPages: totalPages,
+			HasNext:    end < total,
+			HasPrev:    page > 1,
+		},
+	}
+}
+
 func (s *ArticleService) GetArticle(slug string, lang string) *models.Article {
 	s.cacheMu.RLock()
 	defer s.cacheMu.RUnlock()
