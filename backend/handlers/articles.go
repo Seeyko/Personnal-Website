@@ -70,6 +70,9 @@ func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Debug log for visibility filtering (2026-03-08)
+	log.Printf("[ListArticles] Total=%d Public=%d Lang=%s", len(response.Articles), len(filteredArticles), lang)
+
 	response.Articles = filteredArticles
 	response.Pagination.Total = len(filteredArticles)
 	if limit > 0 {
