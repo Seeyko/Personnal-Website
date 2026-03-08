@@ -1,7 +1,7 @@
 ---
 title: "The Developer Role Shift"
 excerpt: "AI is changing the job. Developers who get involved in product will survive. The others will be automated."
-publishedAt: "2026-02-12"
+publishedAt: "2026-02-15"
 draft: false
 lang: en
 private: false

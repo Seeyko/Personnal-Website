@@ -1,7 +1,7 @@
 ---
 title: "Olympus: My Dashboard for Orchestrating AI Agents"
 excerpt: "I built a dashboard to coordinate a team of 7 AI agents working autonomously on my projects. Here's why, how, and what I've learned."
-publishedAt: "2026-02-12"
+publishedAt: "2026-02-08"
 draft: false
 lang: en
 ---

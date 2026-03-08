@@ -1,7 +1,7 @@
 ---
 title: "Olympus : Mon Dashboard pour Orchestrer des Agents IA"
 excerpt: "J'ai construit un dashboard pour coordonner une équipe de 7 agents IA qui travaillent en autonomie sur mes projets. Voici pourquoi, comment, et ce que j'ai appris."
-publishedAt: "2026-02-12"
+publishedAt: "2026-02-08"
 draft: false
 lang: fr
 private: false
