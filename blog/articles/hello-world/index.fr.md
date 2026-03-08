@@ -15,7 +15,7 @@ Il y a quelques mois, en 2025, j'ai découvert le développement assisté par IA
 
 Au début, c'était juste de l'autocomplétion. Comme si l'éditeur lisait dans mes pensées. Puis j'ai voulu lui laisser les rênes. Lui donner des missions plus complexes. Il y a eu des désillusions, des erreurs, du code pas rigoureux, impossible à maintenir sur le long terme. De la duplication, des fonctions douteuses. Mais j'ai appris à dompter la bête. À m'en servir pour les tâches ingrates, mais aussi pour mieux concevoir. Tester de nouvelles technos. Voir jusqu'où je pouvais aller.
 
-J'ai construit des systèmes entiers. Microservices, event-driven, architecture scalable. Des chats en temps réel, des systèmes de paiement capables d'encaisser des millions de messages par jour. En quelques jours, là où avant j'aurais mis des mois. Et je finis l'année avec Claude Code. Un outil simple d'apparence, qui tourne dans un terminal. Configurable, customisable à souhait. Alors je le customise, je le cadre, je lui apprends à penser et coder comme moi.
+J'ai construit des systèmes entiers. Microservices, event-driven, architecture scalable. Des chats en temps réel, des systèmes de paiement. En deux semaines sur mon temps perso, environ 4 à 6 heures par jour le soir en rentrant chez moi, là où avant j'aurais mis des mois en apprenant au taff. J'ai appris des tonnes de choses que j'aurais mis au minimum 6 mois à apprendre dans mon travail quotidien. Et je finis l'année avec Claude Code. Un outil simple d'apparence, qui tourne dans un terminal. Configurable, customisable à souhait. Alors je le customise, je le cadre, je lui apprends à penser et coder comme moi.
 
 J'ai passé des années à apprendre, à être mentoré par des gens plus intelligents que moi. Ce savoir me distingue. J'espère qu'il ne sera pas vain. Tout le monde peut pisser du code grâce aux IA. Mais tout le monde ne sait pas ce qui fait un système qui marche, qui tient la route, qui reste robuste face au temps. Ces nouveaux outils m'ont aussi fait réfléchir sur ce que je veux vraiment faire.
 
@@ -29,15 +29,17 @@ C'est ce changement que je veux refléter avec ce nouveau site.
 
 ## Quelque chose de plus personnel
 
-Mon vieux site WordPress faisait le taff. Mais il était bateau. Il ne me permettait pas de m'exprimer. Je voulais quelque chose de plus créatif, qui me reflète, avec lequel je peux m'amuser. Quelque chose de léger, que je maîtrise et comprends. Alors avec mon nouveau collègue Claude, je l'ai reconstruit from scratch. Vanilla JS, un petit backend en Go pour les articles. Rien de fancy. Encore des progrès à faire, mais il est là. Et il me correspond.
+Mon vieux site WordPress faisait le taff. Mais il était bateau. Il ne me permettait pas de m'exprimer. Je voulais quelque chose de plus créatif, qui me reflète, avec lequel je peux m'amuser. Quelque chose de léger, que je maîtrise et comprends. Alors avec mon nouveau collègue Claude, je l'ai reconstruit from scratch. Vanilla JS pour faire simple, pas besoin de framework pour un petit site perso. Un petit backend en Go pour avoir une image Docker très légère, ne pas overload mon petit VPS, et un build/deploy rapide et efficace. Rien de fancy. Encore des progrès à faire, mais il est là. Et il me correspond.
 
 ## Pourquoi commencer à écrire des articles ?
 
-Honnêtement ? Parce que j'ai toujours voulu le faire. Mais je ne voyais pas ce que ça apporterait. Je me suis convaincu que je ne savais pas écrire. Parce que je n'écrivais jamais. Pourtant j'ai eu 18 à l'épreuve d'invention au bac de français. Un de mes kiffs absolus. La vérité ? Je n'ai jamais vraiment essayé. Et si je n'essaie pas, personne ne le fera à ma place.
+Honnêtement ? Parce que j'ai toujours voulu le faire. Mais je ne voyais pas ce que ça apporterait. Je me suis convaincu que je ne savais pas écrire. Parce que je n'écrivais jamais. Pourtant j'ai toujours été créatif et adoré l'écrit d'invention quand j'étais plus jeune. La vérité ? Je n'ai jamais vraiment essayé. Et si je n'essaie pas, personne ne le fera à ma place.
 
-Cette année, quelque chose a changé. Je grandis dans ma carrière. Devenir lead. Manager. Encadrer. Me rapprocher des humains. L'année 2025 a été riche en rencontres, des discussions avec des gens fantastiques. J'ai réalisé quelque chose. Mes mots ont de la valeur. Mes idées ne sont pas révolutionnaires. Mais ce sont les miennes. Et plus souvent que je ne le pense, des gens les partagent ou sont prêts à les écouter. Ça peut résonner en eux aussi. Ils ont envie de partager, d'écouter, de débattre. Ces conversations font partie de ce qui est le plus récompensant dans mon travail et dans ma vie.
+Cette année, quelque chose a changé. Je grandis dans ma carrière. Devenir lead. Manager. Encadrer. Me rapprocher des humains. L'année 2025 a été riche en rencontres, des discussions avec des gens fantastiques. J'ai réalisé quelque chose en ayant des débats avec des amis, en voyant leurs visions sur le monde changer, en étant lead d'une équipe chez CBA et en voyant mes collègues évoluer et se fier à mon raisonnement, mes intuitions et mon expertise. Pas que les gens que je manage. Mes n+1 aussi. Mes collègues lead aussi. On apprend tous les uns des autres et je ne l'ai réalisé que cette année.
 
-La vie est faite d'échanges. Chaque mot peut changer la trajectoire d'une vie. Alors je me suis dit : pourquoi ne pas en garder une trace ?
+Mes mots ont de la valeur. Mes idées ne sont pas révolutionnaires. Mais ce sont les miennes. Et selon qui les reçoit, quand, comment (des choses qu'on ne maîtrise pas), ça peut marquer quelqu'un plus profondément qu'on ne le pense. Les mots ont véritablement de la valeur et peuvent aider ou nuire aux gens, donc il faut les peser plus que ce que je faisais avant. Mon besoin parfois cruel d'honnêteté me faisait toujours tout dire, tout le temps, mais cette année j'ai appris à un peu plus peser mes mots.
+
+Ces conversations font partie de ce qui est le plus récompensant dans mon travail et dans ma vie. La vie est faite d'échanges. Chaque mot peut changer la trajectoire d'une vie. Alors je me suis dit : pourquoi ne pas en garder une trace ?
 
 ## De quoi s'agit-il réellement ?
 

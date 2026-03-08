@@ -92,7 +92,7 @@ Contrairement à l'idée initiale d'agents auto-organisés, le système fonction
 
 **Heartbeats instables** : Certains heartbeats manqués (cron failures, timeouts).
 
-**Beaucoup de tâches créées, moins terminées** : Illusion de vélocité. Créer des tâches rapidement donne l'impression d'avancement, mais ce qui compte c'est ce qui est livré.
+**Beaucoup de tâches créées, moins terminées** : Illusion de vélocité. Créer des tâches rapidement donne l'impression d'avancement, mais ce qui compte c'est ce qui est livré. Concrètement, j'avais environ 50 tâches créées par heure, mais avec un taux d'échec d'environ 40%. Au final, la moitié des tâches étaient des rattrapages des tâches ratées d'avant. Ça devenait invivable et inutile.
 
 **Pas de metrics intégrées** : Pas de dashboard analytics dans Olympus v1.
 
@@ -108,7 +108,7 @@ Le filesystem ne suffit pas pour la coordination temps réel.
 
 **2. L'orchestration centralisée simplifie la coordination**
 
-Plutôt que chaque agent communique avec tous les autres (n² interactions), tout passe par Main (n interactions).
+Ce que j'ai découvert avec Olympus et ces 7 agents, c'est que plutôt que de passer une patate chaude dans les mains de plusieurs personnes (agents), il vaut mieux laisser une personne (ou un agent) gérer en plusieurs étapes, et lui donner les skills et tools nécessaires à chaque étape de son parcours. L'orchestration centralisée (tout passe par Main) a été une expérimentation nécessaire pour comprendre ça.
 
 **3. Rate limiting dès le jour 1**
 

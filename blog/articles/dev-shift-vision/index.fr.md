@@ -7,13 +7,13 @@ lang: fr
 private: false
 ---
 
-Le métier de développeur est en train de changer. L'IA accélère tout, mais le mouvement est plus profond. C'est une question de rôle, de responsabilité, et de sens. Cet article, c'est ma vision de ce vers quoi le métier pourrait évoluer. Ce n'est pas une vérité absolue. Tous les développeurs ne voudront pas prendre ce chemin. Mais c'est ce que j'observe, ce que j'expérimente, et ce qui me semble la direction la plus intéressante pour construire de meilleurs produits.
+Le métier de développeur est en train de changer. L'IA accélère tout, mais le mouvement est plus profond. C'est une question de rôle, de responsabilité, et de sens. Cet article, c'est ma vision de ce vers quoi le métier pourrait évoluer. Ce n'est pas une vérité absolue. Tous les développeurs ne voudront pas prendre ce chemin. Mais c'est ce que j'observe dans les organisations où mes amis et moi avons travaillé, ce que j'expérimente, et ce qui me semble la direction la plus intéressante pour construire de meilleurs produits.
 
 ## Le problème : exécuter sans comprendre
 
 Développer, aujourd'hui, dans beaucoup d'organisations, ça ressemble à ça. On te donne une user story, tu l'estimes, tu la développes, tu pousses en prod. Repeat. Le problème, c'est que tu ne sais pas pourquoi tu fais ce que tu fais. La décision a été prise ailleurs, par d'autres personnes. Si la feature ne marche pas, si personne ne l'utilise, ce n'est pas ton problème. Tu as livré 100% du sprint, mission accomplie.
 
-Sauf que livrer 100% des sprints, ce n'est pas la même chose qu'avoir un impact réel. Quand tu codes pendant des mois sans jamais voir cet impact, sans jamais parler aux gens qui utilisent ce que tu construis, ça devient creux. Ça devient un job comme un autre. Et moi, je ne veux pas d'un job comme un autre.
+Chez CBA, on vise 100% de completion rate sur les sprints. C'est l'objectif. Mais livrer 100% des sprints, ce n'est pas la même chose qu'avoir un impact réel. Quand tu codes pendant des mois sans jamais voir cet impact, sans jamais parler aux gens qui utilisent ce que tu construis, ça devient creux. Ça devient un job comme un autre. Et moi, je ne veux pas d'un job comme un autre.
 
 ## Le problème des silos
 
@@ -33,13 +33,15 @@ Beaucoup d'organisations ne sont pas structurées pour offrir ça. Elles sont st
 
 Avec Cursor, Windsurf, Claude, et les dizaines d'outils qui sortent chaque semaine, écrire du code devient une fraction du travail. Ce qui compte maintenant, c'est l'architecture. Comment tout s'articule. Les specs. Quoi construire et pourquoi. Et le contexte utilisateur. Comprendre les vrais problèmes. Le code lui-même ? De plus en plus généré, assisté, automatisé. Et c'est tant mieux, parce que ça libère du temps pour ce qui compte vraiment : réfléchir.
 
-Est-ce que tous les développeurs veulent ce shift ? Non. Certains veulent rester exécutants. D'autres veulent devenir des experts ultra-spécialisés d'une techno. Mais à mesure que l'IA évolue, ces rôles auront de moins en moins d'importance. L'expertise pure sur une stack devient commodifiée quand l'IA génère du code de qualité dans n'importe quelle techno. L'exécution pure devient automatisée quand l'IA prend des specs et produit du code fonctionnel.
+Est-ce que tous les développeurs veulent ce shift ? Non. Certains veulent rester exécutants. D'autres veulent devenir des experts ultra-spécialisés d'une techno. Mais selon moi, à mesure que l'IA évolue, ces rôles auront de moins en moins d'importance. L'expertise pure sur une stack devient commodifiée quand l'IA génère du code de qualité dans n'importe quelle techno. L'exécution pure devient automatisée quand l'IA prend des specs et produit du code fonctionnel.
 
-Ce qui reste, et devient critical, c'est la capacité à comprendre les utilisateurs, prendre des décisions basées sur de la data, et architecturer des solutions qui scalent.
+Aujourd'hui déjà dans mon équipe chez CBA, si tu penses que tech pure, l'IA te remplace quasiment. Il faut soit avoir un très bon niveau et review (rajouter de la valeur en architecture, design patterns, sécurité, performance), soit commencer à penser produit. Je pense que l'IA va tellement progresser rapidement sur la tech pure (certaines études montrent déjà que le coding est le domaine où les modèles sont les meilleurs) que d'ici 2-3 ans, les ingénieurs qui ne savent pas penser produit vont disparaître.
+
+Ce qui reste, et devient critique, c'est la capacité à comprendre les utilisateurs, prendre des décisions basées sur de la data, et architecturer des solutions qui scalent.
 
 ## Le "deadline doom loop"
 
-Un pattern que je vois revenir dans beaucoup d'organisations. On estime une feature, souvent mal, parce qu'on n'a pas toutes les infos. On promet une deadline basée sur cette estimation. La réalité frappe. C'est plus complexe que prévu, les specs changent. On crunch pour tenir la deadline. La feature sort, mais elle est décevante. Bugs, UX bâclée. On blâme le process. "On manque de planification, de tests." On ajoute du process. Plus de meetings, plus de reviews. On devient encore plus lent. Et on retourne à l'étape 1.
+Un pattern que je vois revenir dans plusieurs organisations où j'ai travaillé ou dont mes amis me parlent. On estime une feature, souvent mal, parce qu'on n'a pas toutes les infos. On promet une deadline basée sur cette estimation. La réalité frappe. C'est plus complexe que prévu, les specs changent. On crunch pour tenir la deadline. La feature sort, mais elle est décevante. Bugs, UX bâclée. On blâme le process. "On manque de planification, de tests." On ajoute du process. Plus de meetings, plus de reviews. On devient encore plus lent. Et on retourne à l'étape 1.
 
 C'est un cercle vicieux. La vraie cause, ce n'est pas le manque de process. C'est le manque de confiance. Quand on ne fait pas confiance aux devs pour livrer, on ajoute du contrôle. Quand on ajoute du contrôle, on ralentit. Quand on ralentit, on crunch pour rattraper. Quand on crunch, la qualité baisse. Quand la qualité baisse, on perd encore plus confiance. Et la boucle continue.
 
@@ -51,13 +53,13 @@ Mais la confiance sans feedback, c'est du laisser-aller. Le feedback doit être 
 
 ## Le product engineer
 
-Les meilleures équipes que je connais, PostHog, Linear, et d'autres startups modernes, ont compris ça. Leurs ingénieurs sont des product engineers. Ils parlent aux utilisateurs, font du support, recrutent des testeurs, analysent les données, développent des opinions sur ce qui doit exister, et agissent avec urgence pour le réaliser. Le cycle "problème → fix" est direct, sans téléphone arabe entre quatre départements.
+Les meilleures équipes que je suis en ligne, PostHog, Linear, et d'autres startups modernes qui font du build-in-public, ont compris ça. Leurs ingénieurs sont des product engineers. Ils parlent aux utilisateurs, font du support, recrutent des testeurs, analysent les données, développent des opinions sur ce qui doit exister, et agissent avec urgence pour le réaliser. Le cycle "problème → fix" est direct, sans téléphone arabe entre quatre départements.
 
 Qu'est-ce que ça veut dire concrètement ? Écrire du code, oui, mais le code n'est qu'une partie du travail. Parler aux utilisateurs, concevoir des solutions, pas juste les implémenter, définir des KPIs, itérer en fonction du feedback réel. Être responsable de l'outcome, pas juste de l'output.
 
-Pourquoi le dev qui évolue vers le product, et pas l'inverse ? Parce que l'asymétrie d'apprentissage ne joue pas dans le même sens. Un PM qui code avec l'IA peut prototyper vite, mais sans la compréhension profonde de l'architecture et des trade-offs système, ça produit du code qui fonctionne mais ne scale pas. C'est comme piloter avec un assistant qui corrige toutes tes erreurs. Tu peux décoller, mais tu ne sais pas vraiment piloter.
+Pourquoi le dev qui évolue vers le product, et pas l'inverse ? Parce que l'asymétrie d'apprentissage ne joue pas dans le même sens. Un PM sans formation technique qui code avec l'IA peut prototyper vite, mais sans la compréhension profonde de l'architecture et des trade-offs système, ça produit du code qui fonctionne mais ne scale pas. Les PM peuvent se former, évidemment. Il y a plein d'exemples de devs devenus PM rapidement, comme Boris Cher et d'autres sur X. Mon but n'est pas de dire qu'on va remplacer les PM, mais qu'on peut beaucoup plus faire chevaucher les métiers. Les PM peuvent coder et les devs peuvent prendre des décisions produits.
 
-Un ingénieur qui apprend le product, lui, combine une fondation technique solide avec l'intelligence produit. Il code avec une vision claire du pourquoi. Il prend de meilleures décisions d'architecture parce qu'il comprend le contexte utilisateur. Il itère plus vite parce qu'il n'attend pas qu'un PM lui dise quoi faire. C'est un multiplicateur.
+Un ingénieur qui apprend le product, lui, combine une fondation technique solide avec l'intelligence produit. Il code avec une vision claire du pourquoi. Il prend de meilleures décisions d'architecture parce qu'il comprend le contexte utilisateur. Il itère plus vite parce qu'il n'attend pas qu'un PM lui dise quoi faire. Par définition, c'est un multiplicateur.
 
 ## Ce que ça demande aux organisations
 
