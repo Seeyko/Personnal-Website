@@ -1,7 +1,7 @@
 ---
 title: "Le shift du métier de développeur"
 excerpt: "L'IA change le métier. Les développeurs qui s'impliquent dans le produit survivront. Les autres seront automatisés."
-publishedAt: "2026-02-12"
+publishedAt: "2026-02-15"
 draft: false
 lang: fr
 private: false
