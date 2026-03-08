@@ -4,8 +4,7 @@ excerpt: "Deux semaines à construire avec des agents IA. Et la confirmation que
 publishedAt: "2026-02-15"
 draft: false
 lang: fr
-private: true
-passwordHash: "$2b$10$Gcd/rVDo9AKWCKFFWrMniuBI69zciDjaQHGjXKPaMxByO49jf6dZ."
+private: false
 ---
 
 J'ai passé les deux dernières semaines à construire avec des agents IA. Pas juste utiliser Claude pour debugger du code, mais vraiment construire un système où des agents architecturent, développent, se coordonnent entre eux via un dashboard de tâches que j'ai codé.

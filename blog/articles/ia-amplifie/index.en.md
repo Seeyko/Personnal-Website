@@ -4,8 +4,7 @@ excerpt: "Two weeks building with AI agents. And the confirmation that everythin
 publishedAt: "2026-02-15"
 draft: false
 lang: en
-private: true
-passwordHash: "$2b$10$Gcd/rVDo9AKWCKFFWrMniuBI69zciDjaQHGjXKPaMxByO49jf6dZ."
+private: false
 ---
 
 I spent the last two weeks building with AI agents. Not just using Claude to debug code, but actually building a system where agents architect, develop, coordinate with each other through a task dashboard I coded.
