@@ -1,7 +1,7 @@
 ---
 title: "AI Amplifies What Was Already There"
 excerpt: "Two weeks building with AI agents. And the confirmation that my vision — specs, documentation, rigor — is refining in the right direction."
-publishedAt: "2026-02-15"
+publishedAt: "2026-02-22"
 draft: false
 lang: en
 private: false
