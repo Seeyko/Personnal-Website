@@ -51,7 +51,7 @@ func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 
 	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
 	if limit < 1 || limit > 50 {
-		limit = 6
+		limit = 10
 	}
 
 	// Get language filter from query param, default to "fr"
