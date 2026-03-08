@@ -68,11 +68,11 @@ async function fetchArticle(slug, shareToken) {
     }
 }
 
-async function fetchArticles(page = 1, limit = ITEMS_PER_PAGE) {
+async function fetchArticles(page = 1) {
     const apiBase = Utils.getApiBaseUrl();
     const lang = window.LanguageManager?.currentLang || 'fr';
     try {
-        const response = await fetch(`${apiBase}/api/articles?page=${page}&limit=${limit}&lang=${lang}`);
+        const response = await fetch(`${apiBase}/api/articles?page=${page}&lang=${lang}`);
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
         if (data.articles) {
@@ -83,7 +83,7 @@ async function fetchArticles(page = 1, limit = ITEMS_PER_PAGE) {
         }
         return data;
     } catch {
-        return { articles: [], pagination: { page: 1, limit, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
+        return { articles: [], pagination: { page: 1, limit: 5, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
     }
 }
 
@@ -114,31 +114,27 @@ function renderArticleList(articles) {
 
 function renderPagination(pagination) {
     const container = document.getElementById('pagination');
-    if (!container || pagination.totalPages <= 1) {
-        if (container) container.innerHTML = '';
-        return;
-    }
+    if (!container) return;
 
-    const { page, totalPages, hasNext, hasPrev } = pagination;
+    const { page, hasNext } = pagination;
 
-    container.innerHTML = `
-        <div class="pagination-controls">
-            ${hasPrev ? `<a href="/blog/?page=${page - 1}" class="pagination-btn prev" data-page="${page - 1}">&larr; Prev</a>` : '<span class="pagination-btn prev disabled">&larr; Prev</span>'}
-            <div class="pagination-numbers">
-                ${Array.from({ length: totalPages }, (_, i) => i + 1)
-                    .map(n => n === page ? `<span class="pagination-num active">${n}</span>` : `<a href="/blog/?page=${n}" class="pagination-num" data-page="${n}">${n}</a>`)
-                    .join('')}
+    // Show "Load More" button only if there are more articles
+    if (hasNext) {
+        container.innerHTML = `
+            <div class="pagination-controls">
+                <button class="pagination-btn load-more" data-page="${page + 1}">
+                    ${window.LanguageManager?.t('ui.loadMore') || 'Charger plus'}
+                </button>
             </div>
-            ${hasNext ? `<a href="/blog/?page=${page + 1}" class="pagination-btn next" data-page="${page + 1}">Next &rarr;</a>` : '<span class="pagination-btn next disabled">Next &rarr;</span>'}
-        </div>
-    `;
+        `;
 
-    container.querySelectorAll('[data-page]').forEach(link => {
-        link.addEventListener('click', e => {
+        container.querySelector('[data-page]').addEventListener('click', e => {
             e.preventDefault();
-            navigateToPage(parseInt(link.dataset.page));
+            navigateToPage(parseInt(e.target.dataset.page));
         });
-    });
+    } else {
+        container.innerHTML = '';
+    }
 }
 
 async function navigateToPage(page) {

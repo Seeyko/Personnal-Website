@@ -50,10 +50,8 @@ func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
-	if limit < 1 || limit > 50 {
-		limit = 10
-	}
+	// Hardcoded limit for public articles listing
+	limit := 5
 
 	// Get language filter from query param, default to "fr"
 	lang := r.URL.Query().Get("lang")
@@ -61,24 +59,11 @@ func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 		lang = "fr"
 	}
 
-	response := h.service.GetArticles(page, limit, lang)
-
-	// Only show public articles in listing
-	filteredArticles := []models.Article{}
-	for _, article := range response.Articles {
-		if article.Visibility == "public" {
-			filteredArticles = append(filteredArticles, article)
-		}
-	}
+	// Get public articles only (filtering happens in service now)
+	response := h.service.GetPublicArticles(page, limit, lang)
 
 	// Debug log for visibility filtering (2026-03-08)
-	log.Printf("[ListArticles] Total=%d Public=%d Lang=%s", len(response.Articles), len(filteredArticles), lang)
-
-	response.Articles = filteredArticles
-	response.Pagination.Total = len(filteredArticles)
-	if limit > 0 {
-		response.Pagination.TotalPages = (len(filteredArticles) + limit - 1) / limit
-	}
+	log.Printf("[ListArticles] Page=%d Limit=%d Public=%d Lang=%s", page, limit, len(response.Articles), lang)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
