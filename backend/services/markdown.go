@@ -248,6 +248,8 @@ func (s *ArticleService) GetArticles(page, limit int, lang string) models.Articl
 		// Match if lang matches, or if lang is empty and article is French (default)
 		if article.Lang == lang || (lang == "" && article.Lang == "fr") {
 			filteredArticles = append(filteredArticles, article)
+		} else {
+			log.Printf("[GetArticles] FILTERED OUT: %s (lang=%s, requested=%s)", article.Slug, article.Lang, lang)
 		}
 	}
 
