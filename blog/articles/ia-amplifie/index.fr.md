@@ -1,7 +1,7 @@
 ---
 title: "L'IA amplifie ce qui existait déjà"
 excerpt: "Deux semaines à construire avec des agents IA. Et la confirmation que ma vision — specs, doc, rigueur — s'affine dans la bonne direction."
-publishedAt: "2026-02-15"
+publishedAt: "2026-02-22"
 draft: false
 lang: fr
 private: false
