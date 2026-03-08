@@ -186,6 +186,7 @@ func main() {
 			r.Get("/articles/{slug}/stats", adminHandler.GetArticleStats)
 			r.Get("/share-links", adminHandler.ListAllShareLinks)
 			r.Delete("/share-links/{id}", adminHandler.RevokeShareLink)
+			r.Post("/refresh-cache", articleHandler.RefreshCache)
 		})
 	})
 
