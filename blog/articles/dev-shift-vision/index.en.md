@@ -7,13 +7,13 @@ lang: en
 private: false
 ---
 
-The developer role is changing. AI is accelerating everything, but the shift runs deeper. It's about role, responsibility, and meaning. This article is my vision of where the role could evolve. It's not an absolute truth. Not every developer will want to take this path. But it's what I observe, what I experiment with, and what seems like the most interesting direction for building better products.
+The developer role is changing. AI is accelerating everything, but the shift runs deeper. It's about role, responsibility, and meaning. This article is my vision of where the role could evolve. It's not an absolute truth. Not every developer will want to take this path. But it's what I observe in the organizations where my friends and I have worked, what I experiment with, and what seems like the most interesting direction for building better products.
 
 ## The problem: executing without understanding
 
 Developing today, in many organizations, looks like this. You get a user story, you estimate it, you develop it, you push to prod. Repeat. The problem is that you don't know why you're doing what you're doing. The decision was made elsewhere, by other people. If the feature doesn't work, if nobody uses it, that's not your problem. You delivered 100% of the sprint, mission accomplished.
 
-Except that delivering 100% of sprints isn't the same as having real impact. When you code for months without ever seeing that impact, without ever talking to the people who use what you build, it becomes hollow. It becomes just another job. And I don't want just another job.
+At CBA, we aim for 100% completion rate on sprints. That's the goal. But delivering 100% of sprints isn't the same as having real impact. When you code for months without ever seeing that impact, without ever talking to the people who use what you build, it becomes hollow. It becomes just another job. And I don't want just another job.
 
 ## The silo problem
 
@@ -23,7 +23,7 @@ The real problem: nobody is truly responsible for the final result. The PM says 
 
 ## What I really want
 
-I've realized that what motivates me, and what motivates many senior developers I know, isn't just coding. It's having ownership. Being responsible for a piece of the product. Not just responsible for the code, responsible for the user outcome. If it works, it's because of me. If it doesn't, it's on me to fix it. I want impact. Knowing that what I build actually changes something for the people who use it. Not marketing features that will never be used.
+I've realized that what motivates me, and what motivates many senior developers, isn't just coding. It's having ownership. Being responsible for a piece of the product. Not just responsible for the code, responsible for the user outcome. If it works, it's because of me. If it doesn't, it's on me to fix it. I want impact. Knowing that what I build actually changes something for the people who use it. Not marketing features that will never be used.
 
 I want autonomy. The freedom to decide how to solve a problem, instead of just implementing a solution already chosen by someone else. And I want vision. Understanding where we're going and why we're doing what we're doing. Seeing how it fits into a clear roadmap, without direction changes every two weeks.
 
@@ -33,13 +33,15 @@ Many organizations aren't structured to offer this. They're structured to contro
 
 With Cursor, Windsurf, Claude, and the dozens of tools coming out every week, writing code is becoming a fraction of the work. What matters now is architecture. How everything fits together. Specs. What to build and why. And user context. Understanding real problems. The code itself? Increasingly generated, assisted, automated. And that's good, because it frees up time for what really matters: thinking.
 
-Does every developer want this shift? No. Some want to stay executors. Others want to become ultra-specialized experts in a technology. But as AI evolves, these roles will become less important. Pure stack expertise becomes commoditized when AI generates quality code in any technology. Pure execution becomes automated when AI takes specs and produces functional code.
+Does every developer want this shift? No. Some want to stay executors. Others want to become ultra-specialized experts in a technology. But in my view, as AI evolves, these roles will become less important. Pure stack expertise becomes commoditized when AI generates quality code in any technology. Pure execution becomes automated when AI takes specs and produces functional code.
+
+Already today in my team at CBA, if you only think pure tech, AI basically replaces you. You either need a very high level and review (add value in architecture, design patterns, security, performance), or start thinking product. I think AI will progress so rapidly on pure tech (some studies already show coding is the domain where models are best) that in 2-3 years, engineers who can't think product will disappear.
 
 What remains, and becomes critical, is the ability to understand users, make decisions based on data, and architect solutions that scale.
 
 ## The "deadline doom loop"
 
-A pattern I see recurring in many organizations. You estimate a feature, often poorly, because you don't have all the info. You promise a deadline based on that estimate. Reality hits. It's more complex than expected, specs change. You crunch to meet the deadline. The feature ships, but it's disappointing. Bugs, rushed UX. You blame the process. "We need more planning, more tests." You add process. More meetings, more reviews. You become even slower. And you go back to step 1.
+A pattern I see recurring in several organizations where I've worked or that my friends tell me about. You estimate a feature, often poorly, because you don't have all the info. You promise a deadline based on that estimate. Reality hits. It's more complex than expected, specs change. You crunch to meet the deadline. The feature ships, but it's disappointing. Bugs, rushed UX. You blame the process. "We need more planning, more tests." You add process. More meetings, more reviews. You become even slower. And you go back to step 1.
 
 It's a vicious cycle. The real cause isn't lack of process. It's lack of trust. When you don't trust devs to deliver, you add control. When you add control, you slow down. When you slow down, you crunch to catch up. When you crunch, quality drops. When quality drops, you lose even more trust. And the loop continues.
 
@@ -51,13 +53,13 @@ But trust without feedback is negligence. Feedback must be constant and direct. 
 
 ## The product engineer
 
-The best teams I know, PostHog, Linear, and other modern startups, have figured this out. Their engineers are product engineers. They talk to users, do support, recruit testers, analyze data, develop opinions about what should exist, and act with urgency to make it happen. The "problem → fix" cycle is direct, with no telephone game between four departments.
+The best teams I follow online, PostHog, Linear, and other modern startups doing build-in-public, have figured this out. Their engineers are product engineers. They talk to users, do support, recruit testers, analyze data, develop opinions about what should exist, and act with urgency to make it happen. The "problem → fix" cycle is direct, with no telephone game between four departments.
 
 What does that mean concretely? Writing code, yes, but code is just part of the work. Talking to users, designing solutions, not just implementing them, defining KPIs, iterating based on real feedback. Being responsible for the outcome, not just the output.
 
-Why dev evolving toward product, and not the reverse? Because the learning asymmetry doesn't work the same way. A PM who codes with AI can prototype fast, but without deep understanding of architecture and system trade-offs, it produces code that works but doesn't scale. It's like flying with autopilot that corrects all your mistakes. You can take off, but you don't really know how to fly.
+Why dev evolving toward product, and not the reverse? Because the learning asymmetry doesn't work the same way. A PM without technical background who codes with AI can prototype fast, but without deep understanding of architecture and system trade-offs, it produces code that works but doesn't scale. PMs can train, obviously. There are plenty of examples of devs who became PMs quickly, like Boris Cher and others on X. My goal isn't to say we'll replace PMs, but that we can much more overlap the roles. PMs can code and devs can make product decisions.
 
-An engineer who learns product combines a solid technical foundation with product intelligence. They code with a clear vision of the why. They make better architecture decisions because they understand the user context. They iterate faster because they're not waiting for a PM to tell them what to do. It's a multiplier.
+An engineer who learns product combines a solid technical foundation with product intelligence. They code with a clear vision of the why. They make better architecture decisions because they understand the user context. They iterate faster because they're not waiting for a PM to tell them what to do. By definition, it's a multiplier.
 
 ## What organizations need to change
 

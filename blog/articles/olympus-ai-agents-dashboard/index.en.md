@@ -91,7 +91,7 @@ Contrary to the initial idea of self-organizing agents, the system works via **c
 
 **Unstable heartbeats**: Some heartbeats missed (cron failures, timeouts).
 
-**Many tasks created, fewer completed**: Velocity illusion. Creating tasks quickly gives the impression of progress, but what matters is what gets delivered.
+**Many tasks created, fewer completed**: Velocity illusion. Creating tasks quickly gives the impression of progress, but what matters is what gets delivered. Concretely, I had about 50 tasks created per hour, but with a failure rate of around 40%. In the end, half the tasks were catching up on previously failed tasks. It became unmanageable and useless.
 
 **No integrated metrics**: No analytics dashboard in Olympus v1.
 
@@ -107,7 +107,7 @@ The filesystem isn't enough for real-time coordination.
 
 **2. Centralized orchestration simplifies coordination**
 
-Rather than each agent communicating with all others (n² interactions), everything goes through Main (n interactions).
+What I discovered with Olympus and these 7 agents is that rather than passing a hot potato through multiple people's hands (agents), it's better to let one person (or agent) handle multiple stages, and give them the necessary skills and tools at each step of their journey. Centralized orchestration (everything goes through Main) was a necessary experiment to understand this.
 
 **3. Rate limiting from day 1**
 
