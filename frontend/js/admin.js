@@ -11,6 +11,8 @@ const AdminApp = (() => {
     const apiBase = Utils.getApiBaseUrl();
     const adminApiBase = `${apiBase}/api/${pathSegment}`;
 
+    console.log(`[ADMIN] API base: ${adminApiBase}`);
+
     let selectedSlug = null;
     let articles = [];
 
@@ -97,9 +99,10 @@ const AdminApp = (() => {
             const resp = await apiRequest(`/articles?lang=${getCurrentLang()}`);
             const data = await resp.json();
             articles = data.articles || [];
+            console.log(`[ADMIN] Loaded ${articles.length} articles (visibility: ${articles.map(a => a.visibility).join(', ')})`);
             renderArticlesTable(articles);
-        } catch {
-            // Error handled by apiRequest (auto-logout on 401)
+        } catch (err) {
+            console.error('[ADMIN] Failed to load articles:', err);
         }
     }
 
@@ -254,9 +257,15 @@ const AdminApp = (() => {
 
         try {
             const resp = await apiRequest(`/articles/${slug}/stats`);
+            if (!resp.ok) {
+                console.error(`[ADMIN] Stats request failed: ${resp.status} ${resp.statusText}`);
+                throw new Error(`Stats request failed: ${resp.status}`);
+            }
             const stats = await resp.json();
+            console.log(`[ADMIN] Stats for ${slug}:`, stats);
             renderStats(stats);
-        } catch {
+        } catch (err) {
+            console.error('[ADMIN] Failed to load stats:', err);
             document.getElementById('stat-total-views').textContent = '-';
             document.getElementById('stat-unique-visitors').textContent = '-';
         }
