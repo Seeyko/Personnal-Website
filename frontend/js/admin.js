@@ -5,13 +5,16 @@
  */
 
 const AdminApp = (() => {
-    // Derive the admin secret path from the current page URL
-    // e.g. if page is at /***REMOVED*** or /***REMOVED***/, adminPath = "***REMOVED***"
-    const pathSegment = window.location.pathname.replace(/^\/|\/$/g, '').split('/')[0];
+    // Get the admin secret path from config (injected at Docker build time)
+    // Falls back to extracting from the current page URL
+    const configPath = window.APP_CONFIG?.ADMIN_SECRET_PATH;
+    const urlPath = window.location.pathname.replace(/^\/|\/$/g, '').split('/')[0];
+    const pathSegment = configPath || urlPath;
+
     const apiBase = Utils.getApiBaseUrl();
     const adminApiBase = `${apiBase}/api/${pathSegment}`;
 
-    console.log(`[ADMIN] API base: ${adminApiBase}`);
+    console.log(`[ADMIN] API base: ${adminApiBase} (source: ${configPath ? 'config' : 'url'})`);
 
     let selectedSlug = null;
     let articles = [];
