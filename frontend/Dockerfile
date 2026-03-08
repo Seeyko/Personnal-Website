@@ -23,7 +23,7 @@ COPY frontend/admin.html /usr/share/nginx/html/
 
 # Copy config template and generate config.js with environment variables
 COPY frontend/config.template.js /tmp/config.template.js
-RUN envsubst '${API_URL} ${FRONTEND_URL}' < /tmp/config.template.js > /usr/share/nginx/html/config.js && \
+RUN envsubst '${API_URL} ${FRONTEND_URL} ${ADMIN_SECRET_PATH}' < /tmp/config.template.js > /usr/share/nginx/html/config.js && \
     rm /tmp/config.template.js
 
 EXPOSE 4200

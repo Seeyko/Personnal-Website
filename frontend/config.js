@@ -15,5 +15,9 @@ window.APP_CONFIG = {
     // Frontend URL - where the frontend is served from
     // Local dev: http://localhost:8000
     // Production: https://tomandrieu.com
-    FRONTEND_URL: 'http://localhost:8000'
+    FRONTEND_URL: 'http://localhost:8000',
+
+    // Admin secret path (used by admin.js to build admin API URL)
+    // Must match ADMIN_SECRET_PATH in backend
+    ADMIN_SECRET_PATH: '_mx9k7'
 };
