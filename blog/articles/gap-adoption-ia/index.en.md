@@ -38,10 +38,12 @@ By end of 2027, in my opinion, tools will be trivial. Everyone will have access 
 
 I have, in my estimation, 18-24 months. Maybe less. To take advantage of this lead before it dilutes. Not just "code faster". That, in my opinion, anyone will do in 2 years. What matters is sharing the vision. Helping other teams make this transition.
 
-Training and support. Current workflow audit. BMAD and Claude Code training. Pilot project support. Mandatory knowledge transfer. Not just deliver and leave. Not selling AI. Not "buy this magic SaaS". Transform the way of working. Structure human-AI collaboration. Not just for devs. Marketing, ops, support. Anywhere there are structurable workflows.
+My approach focuses on concrete training and support. Auditing current workflows, training on BMAD methods and Claude Code, supporting pilot projects with mandatory knowledge transfer. The idea isn't to sell AI or offer a "magic SaaS", but to transform the way of working by structuring human-AI collaboration. And this concerns all jobs where there are structurable workflows, not just devs. Marketing, ops, support.
 
-For who? Tech SMEs and startups. Development teams. Companies that feel the gap but don't know where to start. Why now? Because in 18-24 months, in my opinion, this expertise will be commoditized. Tools will be trivial. Everyone will have access. Today, I have an advantage. I can help others shorten their learning curve. Tomorrow, probably, everyone will be at the same level.
+Tech SMEs and startups, development teams, companies that feel the gap but don't know where to start. Why now? Because in 18-24 months, in my opinion, this expertise will be commoditized and tools will be trivial. Today I have an advantage that I can share to help others shorten their learning curve. Tomorrow, probably, everyone will be at the same level.
 
 ## Keep learning, the train has left
 
-This article isn't an ad. It's an observation. We're in a bubble. 10% of the world actually uses AI. The gap exists. In my opinion, it will close in 18-24 months. I'm on this train. Full speed. I'm learning, building, iterating. Every day. Every week. The most satisfying video game I've ever played. I'm going to take advantage of these 18-24 months. Grind the XP. Share what I learn. Help those who want to get on the train. After? The gap will probably close. Everyone will have access. And we'll move on to something else. But for now: keep learning. We'll see where it goes. The train has left.
+This article isn't an ad, it's an observation. We're in a bubble where 10% of the world actually uses AI. The gap exists, and in my opinion it will close in 18-24 months. I'm on this train full speed, learning, building, iterating every day. Honestly, it's become the most satisfying video game I've ever played.
+
+I'm going to take advantage of these 18-24 months to grind the XP, share what I learn, and help those who want to get on the train. After that, the gap will probably close, everyone will have access, and we'll move on to something else. But for now, keep learning and we'll see where it goes.
