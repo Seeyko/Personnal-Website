@@ -8,57 +8,55 @@ private: true
 passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
 ---
 
-Un développeur poste une vidéo sur X. Titre : "I was a 10x engineer. Now I'm useless."
+Il est 00h30 et je regarde une vidéo d'un dev sur X. Titre : "I was a 10x engineer. Now I'm useless."
 
-Il raconte comment son cerveau refuse maintenant de coder manuellement. Comment GPT 5.4 et Codex ont atrophié sa capacité à écrire du code. Il a testé le "vibe coding", deploy sans review, confiance aveugle dans l'IA, et ça a marché. Mais il se sent vide. Sans identité.
+Le mec raconte comment son cerveau refuse maintenant de coder manuellement. GPT 5.4, Codex, tout ça a atrophié sa capacité à écrire du code. Il a essayé le "vibe coding", il a deploy sans review, confiance aveugle dans l'IA, et ça a marché. Mais il se sent vide.
 
-Les commentaires se divisent en deux camps. "Adapte-toi ou meurs." "Ces machines te rendent stupide."
+Les commentaires sont divisés. "Adapte-toi ou meurs." "Ces machines te rendent stupide."
 
-J'ai regardé cette vidéo à 00:30 du matin. Et franchement, je me suis reconnu.
+Et moi, en regardant ça, je me reconnais. C'est réel. Mon cerveau est fried. Je ne pourrais certainement plus coder une ligne manuellement comme avant. Les patterns TypeScript que j'avais en tête, les raccourcis, la mémoire musculaire, tout ça s'est érodé sans que je m'en rende compte.
 
-C'est réel. Mon cerveau est fried. Je ne pourrais certainement plus coder une ligne de code manuellement comme avant. Les patterns que j'avais en tête, les raccourcis syntaxiques, la mémoire musculaire du clavier quand je tapais du TypeScript à toute vitesse, tout ça s'est érodé. Progressivement. Sans que je m'en rende compte.
+Alors j'ai laissé un commentaire au mec. Et en l'écrivant, j'ai réalisé un truc sur moi que j'avais jamais formulé aussi clairement :
 
-Mais en y réfléchissant, je me suis rendu compte d'un truc : je n'ai jamais pleuré cette perte. Pas une seconde.
+> "I'm having way more fun on my projects. I think because from the start, i wasn't interested in providing 'technical' solutions to people, rather i just want to help people. LLM's give me the ability to see my users relief faster. And to express what i had always wanted faster."
 
-## Ce que la vidéo m'a fait comprendre sur moi
+Je n'ai jamais pleuré la perte de ma capacité à coder. Pas une seconde.
 
-Le dev de la vidéo souffre parce qu'il s'identifiait au code. La technique, c'était qui il était. L'élégance algorithmique, l'architecture propre, la maîtrise du langage. Quand les LLMs ont pris cette capacité, ils ont pris un morceau de lui.
+## Pourquoi lui souffre et pas moi
 
-En regardant sa vidéo, j'ai essayé de me projeter à sa place. Et je n'y arrive pas. Pas par arrogance, juste parce que je réalise que je n'ai jamais été un technicien dans l'âme. Le code, pour moi, c'était un moyen. Angular, NestJS, l'architecture propre, j'ai passé des années à apprendre tout ça, et je suis content de l'avoir fait. Mais ça n'a jamais été ce qui me définissait. Ce qui me définit, c'est que je veux aider des gens. Ça a toujours été ça. Le code, c'était juste le chemin que j'avais trouvé pour y arriver.
+En y réfléchissant, je pense que c'est une question d'identité. Le dev de la vidéo, toute sa valeur était dans la technique. L'élégance algorithmique, l'architecture propre, la maîtrise du langage. C'était qui il était. Quand les LLMs ont pris cette capacité, ils ont pris un morceau de lui.
 
-Du coup, les LLMs n'ont pas pris mon identité. Ils ont plutôt enlevé un obstacle entre moi et ce que je voulais vraiment faire. Et c'est peut-être pour ça que j'ai plus de fun maintenant qu'avant. Je construis [Bienvenue](https://tomandrieu.com), [Candineo](https://tomandrieu.com), [ScanR](https://tomandrieu.com). Des projets où je vois directement l'impact sur les gens. Je vois leur soulagement plus vite. Je peux exprimer ce que j'ai toujours voulu plus rapidement.
+Moi, je n'ai jamais été un technicien dans l'âme. J'ai passé des années sur Angular, NestJS, l'architecture propre. Je suis content de l'avoir fait. Mais c'était pas ce qui me définissait. Ce qui me définit, et je m'en rends compte de plus en plus clairement, c'est que je veux aider des gens. Le code c'était juste le chemin que j'avais trouvé pour y arriver.
 
-## Un tweet qui a mis des mots sur ce que je ressentais
+Du coup les LLMs n'ont pas pris mon identité. Ils ont plutôt enlevé un truc qui était entre moi et ce que je voulais vraiment faire. Et c'est pour ça que j'ai plus de fun maintenant. Je construis Bienvenue, Candineo, ScanR, des projets où je vois directement l'impact. Je vois le soulagement des gens plus vite. Je peux exprimer ce que j'ai toujours voulu plus rapidement.
 
-Le même soir, je tombe sur un [tweet de @signulll](https://x.com/signulll/status/2030404483897815089) qui a fait 868K vues :
+## Un tweet qui m'a parlé
+
+Le même soir, je tombe sur un [tweet de @signulll](https://x.com/signulll/status/2030404483897815089) qui a fait 868K vues. Il dit :
 
 > "Building is no longer hard. The variance in outcomes has shifted almost entirely to judgment on what to build, how to sequence it, & how to talk about it."
 
-Et là, ça a mis des mots sur un truc que je ressentais sans savoir l'exprimer. Ce qui a changé, c'est pas que l'IA code mieux que moi. C'est que coder n'est plus la partie difficile. N'importe qui peut construire maintenant. Ce qui devient rare, c'est de savoir quoi construire, dans quel ordre, et pourquoi.
+Et ça met des mots sur un truc que je ressentais sans savoir l'exprimer. Ce qui a changé, c'est pas que l'IA code mieux que moi. C'est que coder n'est plus la partie difficile. N'importe qui peut construire maintenant. Ce qui est devenu rare, c'est savoir quoi construire, dans quel ordre, et pourquoi.
 
-[L'article que j'ai écrit hier](https://tomandrieu.com/blog/gap-adoption-ia) parlait du plateau de productivité à 10%. DX Research a mesuré 121 000 développeurs, 92.6% utilisent l'IA, mais les gains stagnent. En le relisant ce soir, je me rends compte que ce chiffre mesure la mauvaise chose. Il mesure la vitesse à laquelle on produit du code. Mais si le code n'est plus la partie difficile, mesurer la vitesse de production de code, c'est comme mesurer la vitesse à laquelle un menuisier tape des clous quand le vrai problème c'est de savoir quoi construire comme maison.
+Il propose un nom pour ça : "product thinker." Quelqu'un qui comprend ce qui est techniquement possible, qui comprend ce qui résonne avec les gens, et qui sait raconter l'histoire du produit. Il dit que cette personne "might be the most important person in the room."
 
-## Du Product Engineer au Product Thinker
+En janvier, dans [Hello World](https://tomandrieu.com/blog/hello-world), je parlais du Product Engineer. Le concept de PostHog, un développeur responsable de l'entièreté de l'expérience produit. Deux mois plus tard, je me rends compte que le concept a évolué dans ma tête. Le Product Engineer c'était encore ancré dans "je code mais je pense produit." Le Product Thinker c'est autre chose. C'est quelqu'un dont la valeur vient des décisions qu'il prend, pas du code qu'il produit.
 
-@signulll propose un nom pour ce nouveau profil : "product thinker." Quelqu'un qui comprend ce qui est techniquement possible, qui comprend ce qui résonne culturellement, qui sait raconter l'histoire du produit. Il dit :
+Et en y réfléchissant, c'est exactement ce vers quoi je dérive naturellement depuis des mois sans mettre de mot dessus. Mon workflow aujourd'hui : je définis les specs, je séquence les priorités, je pilote [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) pour l'implémentation. Le "building" est délégué. Ce qui reste c'est le jugement.
 
-> "The rarest version of this person sits at the intersection of culture & deep technology. Someone genuinely bilingual."
+## Ce que ça remue
 
-En janvier, dans [Hello World](https://tomandrieu.com/blog/hello-world), je parlais du Product Engineer, le concept de PostHog. Un développeur responsable de l'entièreté de l'expérience produit. Deux mois plus tard, je me rends compte que le concept a évolué dans ma tête. Le Product Engineer, c'était encore ancré dans l'engineering, dans le "je code mais je pense produit". Le Product Thinker, c'est autre chose. C'est quelqu'un dont la valeur vient pas du code qu'il produit, mais des décisions qu'il prend sur quoi construire et pourquoi.
+Ce qui m'a frappé ce soir, c'est que je pense que l'IA ne crée pas une crise d'identité. Elle expose une identité qui n'était pas solide.
 
-Et en y réfléchissant, c'est exactement ce vers quoi je dérive naturellement depuis des mois. Mon workflow aujourd'hui : je définis les specs, je séquence les priorités, je pilote [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) pour l'implémentation. Le "building" est délégué. Ce qui reste, c'est le jugement. Et c'est exactement ce que je voulais faire depuis le début, je m'en rends compte maintenant.
+Le dev de la vidéo avait construit toute sa valeur sur la technique. Quand la technique est devenue commodité, sa valeur s'est effondrée avec. Moi, j'ai eu de la chance, ou c'est juste ma nature, ma valeur n'a jamais été là-dedans.
 
-## Ce que ça m'apprend sur l'identité
+Dans [L'IA amplifie ce qui existait déjà](https://tomandrieu.com/blog/ia-amplifie), j'écrivais que l'IA ne compense pas un process flou, elle l'expose. C'est pareil pour l'identité. Si ton identité tenait sur le fait que tu savais coder ce que les autres ne pouvaient pas coder, et que maintenant tout le monde peut coder, il reste quoi ?
 
-Dans [L'IA amplifie ce qui existait déjà](https://tomandrieu.com/blog/ia-amplifie), je racontais comment deux semaines avec des agents IA m'avaient confirmé que ma vision allait dans la bonne direction. L'IA ne compense pas un process flou, elle l'expose. Brutalement.
+Autour de moi je vois la même chose se dessiner. Pas une division entre ceux qui utilisent l'IA et ceux qui résistent. Plutôt entre ceux qui avaient mis toute leur identité dans le code et ceux qui l'avaient mise ailleurs. Les premiers galèrent. Les seconds font ce qu'ils voulaient faire depuis longtemps, juste plus vite.
 
-Je pense que c'est pareil pour l'identité. L'IA ne crée pas une crise d'identité. Elle expose une identité qui n'était pas solide. Le dev de la vidéo avait construit toute sa valeur sur la technique. Quand la technique est devenue commodité, sa valeur s'est effondrée. Moi, j'ai eu de la chance, ou peut-être que c'est juste ma nature, ma valeur n'a jamais été là-dedans.
+On me demande parfois "est-ce que l'IA va remplacer les développeurs ?" Je sais pas. Mais la question que je me pose c'est plutôt : qui j'étais vraiment, sous le code ? Qu'est-ce qui restait de moi si on enlevait Angular, NestJS, TypeScript ? Pour moi la réponse c'est : tout ce qui comptait vraiment.
 
-Ce que j'observe autour de moi, c'est que l'industrie se divise doucement. Pas entre ceux qui utilisent l'IA et ceux qui résistent. Plutôt entre ceux qui avaient mis toute leur identité dans le code et ceux qui l'avaient mise ailleurs. Les premiers galèrent. Les seconds, comme moi, se retrouvent à faire ce qu'ils voulaient faire depuis longtemps, juste plus vite.
-
-On me demande souvent : "Est-ce que l'IA va remplacer les développeurs ?" Je pense que c'est pas la bonne question. La question que je me pose, c'est plutôt : qui j'étais vraiment, sous le code ? Qu'est-ce qui restait de moi si on enlevait Angular, NestJS, TypeScript ? La réponse, pour moi, c'est : tout ce qui comptait vraiment.
-
-Mon cerveau est fried pour le code manuel. Mais j'ai jamais eu autant de clarté sur ce que je veux vraiment faire.
+Mon cerveau est fried pour le code manuel. Mais j'ai jamais eu autant de clarté sur ce que je veux faire.
 
 ## Références
 
