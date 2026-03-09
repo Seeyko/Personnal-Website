@@ -19,5 +19,5 @@ window.APP_CONFIG = {
 
     // Admin secret path (used by admin.js to build admin API URL)
     // Must match ADMIN_SECRET_PATH in backend
-    ADMIN_SECRET_PATH: '***REMOVED***'
+    ADMIN_SECRET_PATH: '_CHANGE_ME'
 };

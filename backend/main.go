@@ -87,11 +87,10 @@ func main() {
 		adminSecretPath = "***REMOVED***"
 	}
 
-	// Admin API key (required in production)
+	// Admin API key (required)
 	adminAPIKey := os.Getenv("ADMIN_API_KEY")
 	if adminAPIKey == "" {
-		adminAPIKey = "dev-admin-key-change-me"
-		log.Println("WARNING: Using default ADMIN_API_KEY — set ADMIN_API_KEY env var in production!")
+		log.Fatal("FATAL: ADMIN_API_KEY environment variable is required. Set it before starting the server.")
 	}
 
 	// Admin IP allowlist (optional)

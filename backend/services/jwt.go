@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"log"
 	"os"
 	"time"
 
@@ -27,8 +28,7 @@ type JWTService struct {
 func NewJWTService() *JWTService {
 	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
-		// ATTENTION: En production, TOUJOURS définir JWT_SECRET
-		secret = "CHANGE_ME_IN_PRODUCTION"
+		log.Fatal("FATAL: JWT_SECRET environment variable is required. Set it before starting the server.")
 	}
 
 	expirationTime := 1 * time.Hour // Par défaut 1 heure
