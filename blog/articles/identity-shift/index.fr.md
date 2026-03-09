@@ -4,8 +4,7 @@ excerpt: "Un dev poste une vidéo où il raconte comment l'IA a atrophié sa cap
 publishedAt: "2026-03-09"
 draft: false
 lang: fr
-private: true
-passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
+private: false
 ---
 
 Il est 00h30 et je regarde une vidéo d'un dev sur X. "I was a 10x engineer. Now I'm useless." Le mec raconte comment son cerveau refuse de coder manuellement, comment GPT 5.4 et Codex ont atrophié sa capacité à écrire du code. Il a deploy sans review, confiance aveugle dans l'IA, et ça a marché. Mais il se sent vide.

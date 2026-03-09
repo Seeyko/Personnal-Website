@@ -4,8 +4,7 @@ excerpt: "Ces dernières semaines, j'ai réalisé qu'on est dans une bulle. 10% 
 publishedAt: "2026-03-08"
 draft: false
 lang: fr
-private: true
-passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
+private: false
 ---
 
 Twitter/X, mes amis dans la tech, mes collègues chez CBA. On parle tous d'IA. Claude Code par ci, agents par là. Ça semble omniprésent. Mais ces dernières semaines, j'ai discuté avec des devs, des entreprises, des CTOs en dehors de ma bulle. Et j'ai constaté un truc. La plupart n'ont pas switch.

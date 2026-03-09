@@ -4,8 +4,7 @@ excerpt: "Deux mois après Hello World, tout a changé. Olympus abandonné, Clau
 publishedAt: "2026-03-08"
 draft: false
 lang: fr
-private: true
-passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
+private: false
 ---
 
 J'ai écrit [Hello World](https://tomandrieu.com/blog/hello-world) en janvier 2026. J'y racontais ma découverte progressive de l'IA en 2025. Cursor, Claude Code, l'idée du Product Engineer. Nous sommes en mars 2026. Deux mois plus tard. Mais ce qui s'est passé depuis ressemble plus à deux ans qu'à deux mois.
