@@ -123,7 +123,7 @@ function renderPagination(pagination) {
         container.innerHTML = `
             <div class="pagination-controls">
                 <button class="pagination-btn load-more" data-page="${page + 1}">
-                    ${window.LanguageManager?.t('ui.loadMore') || 'Charger plus'}
+                    ${window.LanguageManager?.t('ui.loadMore') || 'Load more'}
                 </button>
             </div>
         `;
@@ -160,7 +160,7 @@ function renderArticle(article) {
 
     document.getElementById('article-title').textContent = article.title;
     document.getElementById('article-date').textContent = ContentLoader.formatDate(article.publishedAt);
-    document.getElementById('article-reading-time').textContent = `${article.readingTime} min read`;
+    document.getElementById('article-reading-time').textContent = `${article.readingTime} ${window.LanguageManager?.t('blog.minRead') || 'min read'}`;
 
     // Si l'article nécessite un mot de passe
     if (article.requiresPassword) {
@@ -214,21 +214,22 @@ function showAccessDenied(article) {
 
 function showPasswordPrompt(article) {
     const content = document.getElementById('article-content');
+    const t = (key, fallback) => window.LanguageManager?.t(key) || fallback;
     content.innerHTML = `
         <div class="password-prompt">
             <div class="password-prompt-icon">🔒</div>
-            <h3>This article is private</h3>
-            <p>Enter the password to access this content.</p>
+            <h3>${t('blog.privateTitle', 'This article is private')}</h3>
+            <p>${t('blog.privateMsg', 'Enter the password to access this content.')}</p>
             <form id="password-form" class="password-form">
                 <input 
                     type="password" 
                     id="password-input" 
-                    placeholder="Password" 
+                    placeholder="${t('blog.passwordPlaceholder', 'Password')}" 
                     class="password-input"
                     autocomplete="off"
                     required
                 />
-                <button type="submit" class="password-submit">Unlock</button>
+                <button type="submit" class="password-submit">${t('blog.unlock', 'Unlock')}</button>
             </form>
             <div id="password-error" class="password-error" style="display: none;"></div>
         </div>
@@ -251,7 +252,7 @@ function showPasswordPrompt(article) {
             });
 
             if (!response.ok) {
-                error.textContent = 'Invalid password. Please try again.';
+                error.textContent = window.LanguageManager?.t('blog.invalidPassword') || 'Invalid password. Please try again.';
                 error.style.display = 'block';
                 input.value = '';
                 input.focus();
@@ -280,11 +281,12 @@ function showPasswordPrompt(article) {
 function showNotFound() {
     const container = document.getElementById('blog-list');
     if (container) {
+        const t = (key, fallback) => window.LanguageManager?.t(key) || fallback;
         container.innerHTML = `
             <div class="not-found">
-                <h2>Article Not Found</h2>
-                <p>Sorry, the article you're looking for doesn't exist.</p>
-                <a href="/blog/" class="back-link">&larr; Back to Blog</a>
+                <h2>${t('blog.notFoundTitle', 'Article Not Found')}</h2>
+                <p>${t('blog.notFoundMsg', "Sorry, the article you're looking for doesn't exist.")}</p>
+                <a href="/blog/" class="back-link">&larr; ${t('blog.backToBlog', 'Back to Blog')}</a>
             </div>
         `;
     }
