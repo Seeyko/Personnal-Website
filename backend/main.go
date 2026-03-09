@@ -84,7 +84,7 @@ func main() {
 	// Admin secret path (hidden route — no public references anywhere)
 	adminSecretPath := os.Getenv("ADMIN_SECRET_PATH")
 	if adminSecretPath == "" {
-		adminSecretPath = "***REMOVED***"
+		adminSecretPath = "_admin"
 	}
 
 	// Admin API key (required)
