@@ -69,7 +69,8 @@
     "typicallyResponds": "Typically responds within 24 hours",
     "establishConnection": "ESTABLISH CONNECTION",
     "systemStatus": "SYSTEM STATUS",
-    "availableNote": "available for projects"
+    "availableNote": "available for projects",
+    "loadMore": "Load more"
   },
   "footer": {
     "sessionId": "SESSION: TOM-2026-PORTFOLIO",
@@ -96,7 +97,14 @@
     "invalidTokenMsg": "This share link is no longer valid. It may have expired or been revoked.",
     "backToBlog": "Back to Blog",
     "prev": "Prev",
-    "next": "Next"
+    "next": "Next",
+    "privateTitle": "This article is private",
+    "privateMsg": "Enter the password to access this content.",
+    "passwordPlaceholder": "Password",
+    "unlock": "Unlock",
+    "invalidPassword": "Invalid password. Please try again.",
+    "notFoundTitle": "Article Not Found",
+    "notFoundMsg": "Sorry, the article you're looking for doesn't exist."
   },
   "guestbook": {
     "signGuestbook": "Please sign my guestbook before you leave!",

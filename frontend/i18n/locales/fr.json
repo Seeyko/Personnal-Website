@@ -69,7 +69,8 @@
     "typicallyResponds": "Réponse sous 24h",
     "establishConnection": "CONNECTER",
     "systemStatus": "STATUT SYSTÈME",
-    "availableNote": "disponible pour projets"
+    "availableNote": "disponible pour projets",
+    "loadMore": "Charger plus"
   },
   "footer": {
     "sessionId": "SESSION: TOM-2026-PORTFOLIO",
@@ -96,7 +97,14 @@
     "invalidTokenMsg": "Ce lien de partage n'est plus valide. Il a peut-être expiré ou été révoqué.",
     "backToBlog": "Retour au Blog",
     "prev": "Préc.",
-    "next": "Suiv."
+    "next": "Suiv.",
+    "privateTitle": "Cet article est privé",
+    "privateMsg": "Entrez le mot de passe pour accéder au contenu.",
+    "passwordPlaceholder": "Mot de passe",
+    "unlock": "Déverrouiller",
+    "invalidPassword": "Mot de passe incorrect. Réessayez.",
+    "notFoundTitle": "Article introuvable",
+    "notFoundMsg": "Désolé, l'article que vous cherchez n'existe pas."
   },
   "guestbook": {
     "signGuestbook": "Signez le livre d'or !",

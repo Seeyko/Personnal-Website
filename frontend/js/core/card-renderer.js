@@ -116,7 +116,7 @@ const CardRenderer = (() => {
                 <p class="blog-card-excerpt">${article.excerpt}</p>
                 <div class="blog-card-meta">
                     <span class="blog-date">${cfg.dateWrapper ? cfg.dateWrapper.replace('{date}', date) : date}</span>
-                    <span class="blog-reading-time">${cfg.readingTimePrefix || ''}${article.readingTime} min read</span>
+                    <span class="blog-reading-time">${cfg.readingTimePrefix || ''}${article.readingTime} ${window.LanguageManager?.t('blog.minRead') || 'min read'}</span>
                     ${newBadge}
                 </div>
             </div>
