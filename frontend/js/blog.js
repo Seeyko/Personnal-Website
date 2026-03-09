@@ -160,7 +160,9 @@ function renderArticle(article) {
 
     document.getElementById('article-title').textContent = article.title;
     document.getElementById('article-date').textContent = ContentLoader.formatDate(article.publishedAt);
-    document.getElementById('article-reading-time').textContent = `${article.readingTime} ${window.LanguageManager?.t('blog.minRead') || 'min read'}`;
+    const readingTimeEl = document.getElementById('article-reading-time');
+    readingTimeEl.dataset.readingTime = article.readingTime;
+    readingTimeEl.textContent = `${article.readingTime} ${window.LanguageManager?.t('blog.minRead') || 'min read'}`;
 
     // Si l'article nécessite un mot de passe
     if (article.requiresPassword) {
@@ -331,6 +333,11 @@ function waitForThemeRenderer(timeout = 2000) {
 }
 
 async function initBlog() {
+    // Ensure i18n is ready before rendering
+    if (window.LanguageManager && !LanguageManager.isLoaded) {
+        await LanguageManager.init();
+    }
+
     const { view, slug, page, shareToken } = getViewFromURL();
     await waitForThemeRenderer();
 
@@ -370,3 +377,11 @@ if (document.readyState === 'loading') {
 } else {
     initBlog();
 }
+
+// Re-render dynamic i18n strings when language changes
+window.addEventListener('languageChanged', () => {
+    const readingTimeEl = document.getElementById('article-reading-time');
+    if (readingTimeEl && readingTimeEl.dataset.readingTime) {
+        readingTimeEl.textContent = `${readingTimeEl.dataset.readingTime} ${window.LanguageManager?.t('blog.minRead') || 'min read'}`;
+    }
+});
