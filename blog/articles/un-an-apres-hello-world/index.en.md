@@ -4,8 +4,7 @@ excerpt: "Two months after Hello World, everything changed. Olympus abandoned, C
 publishedAt: "2026-03-08"
 draft: false
 lang: en
-private: true
-passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
+private: false
 ---
 
 I wrote [Hello World](https://tomandrieu.com/blog/hello-world) in January 2026. I talked about my progressive discovery of AI in 2025. Cursor, Claude Code, the idea of the Product Engineer. We're now in March 2026. Two months later. But what happened since feels more like two years than two months.

@@ -4,8 +4,7 @@ excerpt: "A dev posts a video about how AI atrophied his ability to code. I rela
 publishedAt: "2026-03-09"
 draft: false
 lang: en
-private: true
-passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
+private: false
 ---
 
 It's 00:30 and I'm watching a video from a dev on X. "I was a 10x engineer. Now I'm useless." The guy talks about how his brain refuses to code manually, how GPT 5.4 and Codex atrophied his ability to write code. He deployed without review, blind trust in AI, and it worked. But he feels empty.

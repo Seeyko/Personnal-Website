@@ -4,8 +4,7 @@ excerpt: "These past weeks, I realized we're in a bubble. 10% of the world actua
 publishedAt: "2026-03-08"
 draft: false
 lang: en
-private: true
-passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
+private: false
 ---
 
 Twitter/X, my friends in tech, my colleagues at CBA. We all talk about AI. Claude Code here, agents there. It seems omnipresent. But these past weeks, I've been talking to devs, companies, CTOs outside my bubble. And I noticed something. Most haven't switched.
