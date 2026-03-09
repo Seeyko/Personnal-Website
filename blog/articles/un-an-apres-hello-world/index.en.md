@@ -1,7 +1,7 @@
 ---
 title: "One year after Hello World: full speed"
 excerpt: "Two months after Hello World, everything changed. Olympus abandoned, Claude Code alone, OpenClaw on borrowed time. Here's where I am."
-publishedAt: "2026-03-08"
+publishedAt: "2026-03-05"
 draft: false
 lang: en
 private: false

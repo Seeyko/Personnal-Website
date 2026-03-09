@@ -1,7 +1,7 @@
 ---
 title: "Un an après Hello World : le train à pleine vitesse"
 excerpt: "Deux mois après Hello World, tout a changé. Olympus abandonné, Claude Code seul, OpenClaw en sursis. Voilà où j'en suis."
-publishedAt: "2026-03-08"
+publishedAt: "2026-03-05"
 draft: false
 lang: fr
 private: false
