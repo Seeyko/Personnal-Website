@@ -1,7 +1,7 @@
 ---
 title: "Le gap d'adoption IA"
 excerpt: "Ces dernières semaines, j'ai réalisé qu'on est dans une bulle. 10% du monde utilise vraiment l'IA. Le gap est là, maintenant, et il va probablement se refermer."
-publishedAt: "2026-03-08"
+publishedAt: "2026-03-01"
 draft: false
 lang: fr
 private: false

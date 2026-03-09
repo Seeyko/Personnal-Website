@@ -1,7 +1,7 @@
 ---
 title: "The AI adoption gap"
 excerpt: "These past weeks, I realized we're in a bubble. 10% of the world actually uses AI. The gap is here, now, and it'll probably close."
-publishedAt: "2026-03-08"
+publishedAt: "2026-03-01"
 draft: false
 lang: en
 private: false
