@@ -51,7 +51,7 @@ func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Hardcoded limit for public articles listing
-	limit := 5
+	limit := 10
 
 	// Get language filter from query param, default to "fr"
 	lang := r.URL.Query().Get("lang")

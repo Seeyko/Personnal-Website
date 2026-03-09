@@ -83,7 +83,7 @@ async function fetchArticles(page = 1) {
         }
         return data;
     } catch {
-        return { articles: [], pagination: { page: 1, limit: 5, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
+        return { articles: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
     }
 }
 
