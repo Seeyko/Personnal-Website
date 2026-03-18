@@ -84,13 +84,14 @@ func main() {
 	// Admin secret path (hidden route — no public references anywhere)
 	adminSecretPath := os.Getenv("ADMIN_SECRET_PATH")
 	if adminSecretPath == "" {
-		adminSecretPath = "_admin"
+		adminSecretPath = "_mx9k7"
 	}
 
-	// Admin API key (required)
+	// Admin API key (required in production)
 	adminAPIKey := os.Getenv("ADMIN_API_KEY")
 	if adminAPIKey == "" {
-		log.Fatal("FATAL: ADMIN_API_KEY environment variable is required. Set it before starting the server.")
+		adminAPIKey = "dev-admin-key-change-me"
+		log.Println("WARNING: Using default ADMIN_API_KEY — set ADMIN_API_KEY env var in production!")
 	}
 
 	// Admin IP allowlist (optional)
