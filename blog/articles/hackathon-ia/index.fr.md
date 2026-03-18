@@ -1,7 +1,7 @@
 ---
 title: "Un hackathon IA à 15"
 excerpt: "On a fait un hackathon IA au taff. 15 personnes, une semaine, du code de prod. Ce que ça a confirmé sur la coordination, les process, et ce qui change quand l'IA accélère tout."
-publishedAt: "2026-03-16"
+publishedAt: "2026-03-15"
 draft: false
 lang: fr
 private: true
