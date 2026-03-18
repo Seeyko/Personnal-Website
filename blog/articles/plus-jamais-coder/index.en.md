@@ -5,7 +5,7 @@ publishedAt: "2026-03-18"
 draft: false
 lang: en
 private: true
-passwordHash: "$2b$10$Dq9jJrrf32JE5Tw0WxWtiOuwOfH0b0M210sKYZdTrVAbKvywf4knS"
+passwordHash: "$2a$10$Dq9jJrrf32JE5Tw0WxWtiOuwOfH0b0M210sKYZdTrVAbKvywf4knS"
 ---
 
 It's been several weeks, maybe months, since I've written almost any line of code. On my personal projects, at work, everywhere. But tonight I really verbalized it for the first time. I don't think it'll happen again.
