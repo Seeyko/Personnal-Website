@@ -1,7 +1,7 @@
 ---
 title: "An AI hackathon with 15 people"
 excerpt: "We did an AI hackathon at work. 15 people, one week, production code. What it confirmed about coordination, processes, and what changes when AI accelerates everything."
-publishedAt: "2026-03-12"
+publishedAt: "2026-03-16"
 draft: false
 lang: en
 private: true
