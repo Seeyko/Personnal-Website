@@ -1,6 +1,6 @@
 ---
-title: "An AI hackathon with 15 people"
-excerpt: "We did an AI hackathon at work. 15 people, one week, production code. What it confirmed about coordination, processes, and what changes when AI accelerates everything."
+title: "A week to test the limits"
+excerpt: "We did an AI hackathon at work. 15 people, one week, goal: push AI to its limits on real code and see what we make of it."
 publishedAt: "2026-03-15"
 draft: false
 lang: en
@@ -8,7 +8,7 @@ private: true
 passwordHash: "$2a$10$Dq9jJrrf32JE5Tw0WxWtiOuwOfH0b0M210sKYZdTrVAbKvywf4knS"
 ---
 
-We did an AI hackathon at work last week. 15 people in a room, one week, goal: test what AI concretely changes in how we work. Not a hackathon for fun. A real full-scale test on production code.
+We did an AI hackathon at work last week. 15 people in a room, one week. The framework was clear from the start: nothing goes to prod. It's for testing, pushing the limits, and seeing what we make of it. The goals were multiple: rebuild legacy code from scratch with AI, code where there's a lot of business logic in undocumented tribal knowledge. Develop a new feature in the middle of all that. Test and create processes and workflows to coordinate the entire production chain. Automate tests. And other things too.
 
 The raw results are impressive. Legacy modules we estimated at weeks of refactoring were migrated in a few days. Features took shape in one day where the usual process would have required weeks of specs then implementation. On some tasks we were at over 200% productivity gains.
 

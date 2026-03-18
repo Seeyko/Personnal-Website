@@ -1,6 +1,6 @@
 ---
-title: "Un hackathon IA à 15"
-excerpt: "On a fait un hackathon IA au taff. 15 personnes, une semaine, du code de prod. Ce que ça a confirmé sur la coordination, les process, et ce qui change quand l'IA accélère tout."
+title: "Une semaine pour tester les limites"
+excerpt: "On a fait un hackathon IA au taff. 15 personnes, une semaine, objectif : aller chercher les limites de l'IA sur du vrai code et voir ce qu'on en fait."
 publishedAt: "2026-03-15"
 draft: false
 lang: fr
@@ -8,7 +8,7 @@ private: true
 passwordHash: "$2a$10$Dq9jJrrf32JE5Tw0WxWtiOuwOfH0b0M210sKYZdTrVAbKvywf4knS"
 ---
 
-On a fait un hackathon IA au taff la semaine dernière. 15 personnes dans une salle, une semaine, objectif : tester ce que l'IA change concrètement dans notre façon de bosser. Pas un hackathon pour le fun. Un vrai test grandeur nature sur du code de prod.
+On a fait un hackathon IA au taff la semaine dernière. 15 personnes dans une salle, une semaine. Le cadre était clair dès le départ : rien n'ira en prod. C'est pour tester, aller chercher les limites, et voir ce qu'on en fait. Les objectifs étaient multiples : refaire du code legacy from scratch avec l'IA, du code où il y a beaucoup de métier en mode savoir tribal pas documenté. Développer une nouvelle feature au milieu de tout ça. Tester et créer des process et workflows pour coordonner toute la chaîne de prod. Automatiser les tests. Et d'autres trucs encore.
 
 Les résultats bruts sont impressionnants. Des modules legacy qu'on estimait à des semaines de refonte ont été migrés en quelques jours. Des features ont pris forme en une journée là où le process habituel aurait demandé des semaines de specs puis d'implémentation. Sur certaines tâches on était à plus de 200% de gain de productivité.
 
