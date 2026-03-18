@@ -5,7 +5,7 @@ publishedAt: "2026-03-15"
 draft: false
 lang: fr
 private: true
-passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
+passwordHash: "$2b$10$Dq9jJrrf32JE5Tw0WxWtiOuwOfH0b0M210sKYZdTrVAbKvywf4knS"
 ---
 
 On a fait un hackathon IA au taff la semaine dernière. 15 personnes dans une salle, une semaine, objectif : tester ce que l'IA change concrètement dans notre façon de bosser. Pas un hackathon pour le fun. Un vrai test grandeur nature sur du code de prod.

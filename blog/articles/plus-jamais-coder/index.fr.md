@@ -5,7 +5,7 @@ publishedAt: "2026-03-18"
 draft: false
 lang: fr
 private: true
-passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
+passwordHash: "$2b$10$Dq9jJrrf32JE5Tw0WxWtiOuwOfH0b0M210sKYZdTrVAbKvywf4knS"
 ---
 
 Ça fait plusieurs semaines, peut-être des mois, que j'ai quasi plus écrit une ligne de code. Sur mes projets perso, au taff, partout. Mais ce soir je l'ai vraiment verbalisé pour la première fois. Je pense que ça ne m'arrivera plus.

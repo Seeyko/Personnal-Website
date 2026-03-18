@@ -5,7 +5,7 @@ publishedAt: "2026-03-15"
 draft: false
 lang: en
 private: true
-passwordHash: "$2a$10$rpI8Eg912NE7ujSMZ/xPouaPAC/M7vFWTZVfLfBjILCiYT8bXYfi."
+passwordHash: "$2b$10$Dq9jJrrf32JE5Tw0WxWtiOuwOfH0b0M210sKYZdTrVAbKvywf4knS"
 ---
 
 We did an AI hackathon at work last week. 15 people in a room, one week, goal: test what AI concretely changes in how we work. Not a hackathon for fun. A real full-scale test on production code.
