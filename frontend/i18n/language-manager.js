@@ -103,6 +103,8 @@ const LanguageManager = (() => {
         if (themeId) await loadThemeTranslations(themeId, lang);
 
         try { localStorage.setItem(STORAGE_KEY, lang); } catch {}
+        // Set cookie for SSR language detection
+        try { document.cookie = `lang=${lang}; path=/; max-age=31536000; SameSite=Lax`; } catch {}
         const url = new URL(window.location);
         url.searchParams.set('lang', lang);
         window.history.replaceState({}, '', url);

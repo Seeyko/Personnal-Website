@@ -81,6 +81,12 @@ func main() {
 		allowedOrigins = append(allowedOrigins, frontendURL)
 	}
 
+	// API URL for SSR (used in meta tags, OG, canonical URLs)
+	apiURL := os.Getenv("API_URL")
+	if apiURL == "" {
+		apiURL = "http://localhost:3000"
+	}
+
 	// Admin secret path (hidden route — no public references anywhere)
 	adminSecretPath := os.Getenv("ADMIN_SECRET_PATH")
 	if adminSecretPath == "" {
@@ -128,6 +134,7 @@ func main() {
 	// Initialize handlers
 	articleHandler := handlers.NewArticleHandler(articleService, jwtService, shareLinkService, accessLogService, posthogService)
 	adminHandler := handlers.NewAdminHandler(articleService, shareLinkService, accessLogService)
+	ssrHandler := handlers.NewSSRHandler(articleService, shareLinkService, frontendURL, apiURL)
 
 	// Initialize admin auth middleware
 	adminAuth := custommiddleware.NewAdminAuthMiddleware(adminAPIKey, adminAllowedIPs)
@@ -162,6 +169,16 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, `{"status":"ok","message":"Backend is running. API routes are under /api"}`)
 	})
+
+	// SSR blog routes (proxied from nginx)
+	r.Get("/blog", ssrHandler.ServeBlogPage)
+	r.Get("/blog/", ssrHandler.ServeBlogPage)
+	r.Get("/blog/{slug}", ssrHandler.ServeBlogPage)
+	r.Get("/blog/{slug}/", ssrHandler.ServeBlogPage)
+
+	// SEO routes
+	r.Get("/sitemap.xml", ssrHandler.ServeSitemap)
+	r.Get("/robots.txt", ssrHandler.ServeRobots)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/health", handlers.HealthCheck)
@@ -206,8 +223,13 @@ func main() {
 	log.Printf("CORS allowed origins: %v", allowedOrigins)
 	log.Printf("Rate limiting: ENABLED (5 attempts/min, lockout after 10 failures)")
 	log.Printf("Admin API: /api/%s/* (hidden route)", adminSecretPath)
+	log.Printf("SSR: ENABLED (blog pages rendered server-side)")
 	log.Printf("Available routes:")
 	log.Printf("  GET  /                         - Root health check")
+	log.Printf("  GET  /blog/                    - SSR blog listing")
+	log.Printf("  GET  /blog/{slug}/             - SSR article page")
+	log.Printf("  GET  /sitemap.xml              - Dynamic sitemap")
+	log.Printf("  GET  /robots.txt               - Robots.txt")
 	log.Printf("  GET  /api/health               - API health check")
 	log.Printf("  GET  /api/articles             - List articles")
 	log.Printf("  GET  /api/articles/{slug}      - Get article by slug")

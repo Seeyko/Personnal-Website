@@ -16,6 +16,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tomandrieu-frontend.rule=Host(`tomandrieu.com`)"
+      - "traefik.http.routers.tomandrieu-frontend.priority=1"
       - "traefik.http.routers.tomandrieu-frontend.entrypoints=websecure"
       - "traefik.http.routers.tomandrieu-frontend.tls.certResolver=letsencrypt"
       - "traefik.http.services.tomandrieu-frontend.loadbalancer.server.port=4200"
@@ -35,6 +36,7 @@ services:
       - PORT=${BACKEND_PORT:-3000}
       - ARTICLES_DIR=/app/articles
       - FRONTEND_URL=${FRONTEND_URL:-https://tomandrieu.com}
+      - API_URL=${API_URL:-https://api.tomandrieu.com}
       - DATABASE_URL=${DATABASE_URL}
       - ADMIN_API_KEY=${ADMIN_API_KEY}
       - ADMIN_SECRET_PATH=${ADMIN_SECRET_PATH}
@@ -43,10 +45,23 @@ services:
       - POSTHOG_HOST=${POSTHOG_HOST:-https://eu.i.posthog.com}
     labels:
       - "traefik.enable=true"
+      # API subdomain
       - "traefik.http.routers.tomandrieu-api.rule=Host(`api.tomandrieu.com`)"
       - "traefik.http.routers.tomandrieu-api.entrypoints=websecure"
       - "traefik.http.routers.tomandrieu-api.tls.certResolver=letsencrypt"
       - "traefik.http.services.tomandrieu-api.loadbalancer.server.port=3000"
+      # SSR blog routes on main domain (priority 10 > frontend priority 1)
+      - "traefik.http.routers.tomandrieu-ssr.rule=Host(`tomandrieu.com`) && (Path(`/blog`) || PathPrefix(`/blog/`))"
+      - "traefik.http.routers.tomandrieu-ssr.priority=10"
+      - "traefik.http.routers.tomandrieu-ssr.entrypoints=websecure"
+      - "traefik.http.routers.tomandrieu-ssr.tls.certResolver=letsencrypt"
+      - "traefik.http.routers.tomandrieu-ssr.service=tomandrieu-api"
+      # SEO routes (sitemap, robots) (priority 10 > frontend priority 1)
+      - "traefik.http.routers.tomandrieu-seo.rule=Host(`tomandrieu.com`) && (Path(`/sitemap.xml`) || Path(`/robots.txt`))"
+      - "traefik.http.routers.tomandrieu-seo.priority=10"
+      - "traefik.http.routers.tomandrieu-seo.entrypoints=websecure"
+      - "traefik.http.routers.tomandrieu-seo.tls.certResolver=letsencrypt"
+      - "traefik.http.routers.tomandrieu-seo.service=tomandrieu-api"
     networks:
       - dokploy-network
 
