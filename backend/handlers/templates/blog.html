@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="{{.Lang}}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Hreflang for multilingual SEO -->
+  <link rel="canonical" href="{{.CanonicalURL}}" />
+  <link rel="alternate" hreflang="{{.Lang}}" href="{{.CanonicalURL}}" />
+  {{if .AltURL}}<link rel="alternate" hreflang="{{.AltLang}}" href="{{.AltURL}}" />{{end}}
+  <link rel="alternate" hreflang="x-default" href="{{.FrontendURL}}/blog/{{if eq .PageType "article"}}{{.Article.Slug}}/{{end}}" />
+
+  {{if eq .PageType "article"}}
+  {{if .NoIndex}}
+  {{/* Private/shared article: generic metadata, no content leak */}}
+  <title>Private Article - Tom Andrieu</title>
+  <meta name="description" content="This article requires authentication to access." />
+  {{else}}
+  {{/* Public article: full SEO metadata */}}
+  <title>{{.Article.Title}} - Tom Andrieu</title>
+  <meta name="description" content="{{truncate .Article.Excerpt 155}}" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="{{.Article.Title}}" />
+  <meta property="og:description" content="{{truncate .Article.Excerpt 155}}" />
+  <meta property="og:url" content="{{.CanonicalURL}}" />
+  <meta property="og:site_name" content="Tom Andrieu" />
+  <meta property="og:locale" content="{{if eq .Lang "fr"}}fr_FR{{else}}en_US{{end}}" />
+  {{if .Article.CoverImage}}<meta property="og:image" content="{{.Article.CoverImage}}" />{{end}}
+  <meta property="article:published_time" content="{{isoDate .Article.PublishedAt}}" />
+  <meta property="article:author" content="Tom Andrieu" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="{{if .Article.CoverImage}}summary_large_image{{else}}summary{{end}}" />
+  <meta name="twitter:title" content="{{.Article.Title}}" />
+  <meta name="twitter:description" content="{{truncate .Article.Excerpt 155}}" />
+  {{if .Article.CoverImage}}<meta name="twitter:image" content="{{.Article.CoverImage}}" />{{end}}
+
+  <!-- JSON-LD Structured Data (pre-built in Go to avoid template escaping issues) -->
+  {{.JSONLD}}
+  {{end}}
+  {{else}}
+  <title>Blog - Tom Andrieu</title>
+  <meta name="description" content="Articles and thoughts on product engineering, building meaningful products, and technology." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Blog - Tom Andrieu" />
+  <meta property="og:description" content="Articles and thoughts on product engineering, building meaningful products, and technology." />
+  <meta property="og:url" content="{{.FrontendURL}}/blog/" />
+  <meta property="og:site_name" content="Tom Andrieu" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Blog - Tom Andrieu" />
+  <meta name="twitter:description" content="Articles and thoughts on product engineering, building meaningful products, and technology." />
+  {{end}}
+
+  {{if .NoIndex}}<meta name="robots" content="noindex, nofollow" />{{end}}
+
+  <!-- PostHog Analytics (centralized) -->
+  <script src="/js/analytics.js"></script>
+
+  <!-- Base Styles (always loaded) -->
+  <link rel="stylesheet" href="/css/base.css" />
+
+  <!-- CRO Styles (conversion optimization) -->
+  <link rel="stylesheet" href="/css/cro.css" />
+
+  <!-- Theme Switcher UI Styles -->
+  <link rel="stylesheet" href="/css/theme-switcher.css" />
+
+  <!-- Language Switcher UI Styles -->
+  <link rel="stylesheet" href="/css/language-switcher.css" />
+
+  <!-- Blog Styles -->
+  <link rel="stylesheet" href="/css/blog.css" />
+
+  <!-- Auth Modal Styles (for private articles) -->
+  <link rel="stylesheet" href="/css/auth-modal.css" />
+
+  <!-- Theme CSS (dynamically loaded) -->
+  <link id="theme-css" rel="stylesheet" href="" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=VT323&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Roboto+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Critical CSS -->
+  <style id="critical-css">
+    body.loading #main-content,
+    body.loading .theme-overlay,
+    body.loading .theme-switcher {
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #f8f7f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 2px solid rgba(61, 122, 115, 0.15);
+      border-top-color: #3d7a73;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+      margin-top: 1.25rem;
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 0.8125rem;
+      color: #8a8279;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    body:not(.loading) #main-content,
+    body:not(.loading) .theme-overlay,
+    body:not(.loading) .theme-switcher {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.4s ease;
+    }
+  </style>
+</head>
+<body class="loading" data-theme="default">
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading...</div>
+</div>
+
+<!-- Theme Overlay -->
+<div id="theme-overlay" class="theme-overlay"></div>
+
+<main id="main-content">
+  <!-- Header -->
+  <header class="header" role="banner">
+    <div class="header-brand">
+      <a href="/" class="brand-link" aria-label="Go to homepage">
+        <span class="brand-prefix"></span>
+        <span class="brand-name" data-content="meta.name">TOM ANDRIEU</span>
+        <span class="brand-suffix"></span>
+      </a>
+    </div>
+    <div class="header-right">
+      <nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+        <a href="/#projects" class="nav-link" data-section="01">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.projects">Projects</span>
+        </a>
+        <a href="/#about" class="nav-link" data-section="02">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.about">About</span>
+        </a>
+        <a href="/#timeline" class="nav-link" data-section="03">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.history">History</span>
+        </a>
+        <a href="/#contact" class="nav-link" data-section="05">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.contact">Contact</span>
+        </a>
+      </nav>
+      <div class="header-controls" id="header-controls"></div>
+      <button class="hamburger-menu" id="hamburger-menu" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Blog Listing View -->
+  <section id="blog-listing" class="blog-page" {{if eq .PageType "article"}}style="display: none;"{{end}}>
+    <div class="blog-page-header">
+      <h1 class="blog-page-title" data-i18n="sections.blog">BLOG</h1>
+      <p class="blog-page-subtitle" data-i18n="blog.subtitle">Thoughts on product engineering, building meaningful products, and technology.</p>
+    </div>
+
+    <div id="blog-list" class="blog-list">
+      {{if eq .PageType "listing"}}
+        {{if .Articles}}
+          {{range .Articles}}
+          <a class="blog-card blog-list-card fade-in-up{{if not .CoverImage}} no-image{{end}}" href="/blog/{{.Slug}}/">
+            {{if .CoverImage}}
+            <div class="blog-card-image">
+              <img src="{{.CoverImage}}" alt="{{.Title}}" loading="lazy">
+            </div>
+            {{end}}
+            <div class="blog-card-content">
+              <h3 class="blog-card-title">{{.Title}}</h3>
+              <p class="blog-card-excerpt">{{.Excerpt}}</p>
+              <div class="blog-card-meta">
+                <span class="blog-date">{{formatDate .PublishedAt $.Lang}}</span>
+                <span class="blog-reading-time">{{.ReadingTime}} min read</span>
+              </div>
+            </div>
+          </a>
+          {{end}}
+        {{else}}
+          <p class="no-articles">No articles yet. Check back soon!</p>
+        {{end}}
+      {{else if eq .PageType "not-found"}}
+        <div class="not-found">
+          <h2>Article Not Found</h2>
+          <p>Sorry, the article you're looking for doesn't exist.</p>
+          <a href="/blog/" class="back-link">&larr; Back to Blog</a>
+        </div>
+      {{else}}
+        <div class="blog-list-loading">
+          <span class="loading-text">Loading articles...</span>
+          <span class="loading-spinner-text">...</span>
+        </div>
+      {{end}}
+    </div>
+
+    <div id="pagination" class="pagination">
+      <!-- Pagination controls inserted by JS -->
+    </div>
+  </section>
+
+  <!-- Article Detail View -->
+  <article id="article-view" class="article-page" {{if ne .PageType "article"}}style="display: none;"{{end}}>
+    {{if eq .PageType "article"}}
+    <div class="article-header">
+      <a href="/blog/" class="back-link">
+        <span class="back-arrow">&larr;</span>
+        <span data-i18n="blog.backToBlog">Back to Blog</span>
+      </a>
+      {{if not .NoIndex}}
+      {{/* Public article: render title, date, content */}}
+      <div class="article-meta">
+        <span id="article-date" class="article-date">{{formatDate .Article.PublishedAt .Lang}}</span>
+        <span class="meta-separator">|</span>
+        <span id="article-reading-time" class="article-reading-time" data-reading-time="{{.Article.ReadingTime}}">{{.Article.ReadingTime}} min read</span>
+      </div>
+      <h1 id="article-title" class="article-title">{{.Article.Title}}</h1>
+      {{else}}
+      {{/* Private/shared article: empty placeholders, JS fills them after auth */}}
+      <div class="article-meta">
+        <span id="article-date" class="article-date"></span>
+        <span class="meta-separator">|</span>
+        <span id="article-reading-time" class="article-reading-time"></span>
+      </div>
+      <h1 id="article-title" class="article-title"></h1>
+      {{end}}
+    </div>
+
+    {{if not .NoIndex}}
+    <div id="article-cover" class="article-cover" {{if not .Article.CoverImage}}style="display: none;"{{end}}>
+      {{if .Article.CoverImage}}
+      <img src="{{.Article.CoverImage}}" alt="{{.Article.Title}}" class="article-cover-img">
+      {{end}}
+    </div>
+    {{else}}
+    <div id="article-cover" class="article-cover" style="display: none;"></div>
+    {{end}}
+
+    <div id="article-content" class="article-content">
+      {{if .Article.Content}}
+        {{safeHTML .Article.Content}}
+      {{end}}
+    </div>
+
+    <div class="article-footer">
+      <a href="/blog/" class="back-link">
+        <span class="back-arrow">&larr;</span>
+        <span data-i18n="blog.backToBlog">Back to Blog</span>
+      </a>
+    </div>
+    {{else}}
+    <div class="article-header">
+      <a href="/blog/" class="back-link">
+        <span class="back-arrow">&larr;</span>
+        <span data-i18n="blog.backToBlog">Back to Blog</span>
+      </a>
+      <div class="article-meta">
+        <span id="article-date" class="article-date"></span>
+        <span class="meta-separator">|</span>
+        <span id="article-reading-time" class="article-reading-time"></span>
+      </div>
+      <h1 id="article-title" class="article-title"></h1>
+    </div>
+    <div id="article-cover" class="article-cover"></div>
+    <div id="article-content" class="article-content"></div>
+    <div class="article-footer">
+      <a href="/blog/" class="back-link">
+        <span class="back-arrow">&larr;</span>
+        <span data-i18n="blog.backToBlog">Back to Blog</span>
+      </a>
+    </div>
+    {{end}}
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer blog-footer">
+    <div class="footer-content">
+      <div class="footer-copyright">
+        &copy; 2026 TOM ANDRIEU
+      </div>
+    </div>
+  </footer>
+</main>
+
+<!-- SSR Data for JS hydration -->
+<script>
+  window.__SSR_DATA__ = {{.SSRDataJSON}};
+  window.APP_CONFIG = {{.ConfigJSON}};
+</script>
+
+<!-- GSAP for animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<!-- App Config (fallback for client-side navigation) -->
+<script src="/config.js"></script>
+
+<!-- Core Modules -->
+<script src="/js/core/utils.js"></script>
+<script src="/js/core/content-loader.js"></script>
+<script src="/js/core/card-renderer.js"></script>
+<script src="/js/core/effects/header-scroll.js"></script>
+<script src="/js/core/effects/mobile-menu.js"></script>
+<script src="/js/core/theme-init.js"></script>
+
+<!-- i18n / Language Manager -->
+<script src="/i18n/language-manager.js"></script>
+
+<!-- Theme Manager -->
+<script src="/js/theme-manager.js"></script>
+
+<!-- Language Switcher UI -->
+<script src="/i18n/language-switcher.js"></script>
+
+<!-- Blog Scripts -->
+<script>
+(function() {
+    var script = document.createElement('script');
+    var cacheBuster = window.location.hostname === 'localhost' ? '?v=' + Date.now() : '';
+    script.src = '/js/blog.js' + cacheBuster;
+    document.body.appendChild(script);
+})();
+</script>
+
+<!-- Theme JS (dynamically loaded) -->
+<script id="theme-js" src=""></script>
+</body>
+</html>

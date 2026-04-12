@@ -341,14 +341,39 @@ async function initBlog() {
     const { view, slug, page, shareToken } = getViewFromURL();
     await waitForThemeRenderer();
 
+    // Check for server-side rendered content
+    const ssrData = window.__SSR_DATA__;
+
     if (view === 'article' && slug) {
-        const article = await fetchArticle(slug, shareToken);
-        article ? renderArticle(article) : showNotFound();
+        if (ssrData?.article && ssrData.article.slug === slug) {
+            // SSR: content already in DOM
+            document.getElementById('blog-listing').style.display = 'none';
+            document.getElementById('article-view').style.display = 'block';
+
+            if (ssrData.article.requiresPassword) {
+                showPasswordPrompt({ slug, requiresPassword: true });
+            }
+            // else: HTML already rendered by Go template, nothing to do
+        } else {
+            // Client-side navigation: fetch and render
+            const article = await fetchArticle(slug, shareToken);
+            article ? renderArticle(article) : showNotFound();
+        }
     } else {
-        currentPage = page || 1;
-        const data = await fetchArticles(currentPage);
-        renderArticleList(data.articles);
-        renderPagination(data.pagination);
+        if (ssrData?.articles && ssrData.articles.length > 0) {
+            // SSR: article list already in DOM, just animate and wire pagination
+            initListAnimations();
+            if (ssrData.pagination) {
+                renderPagination(ssrData.pagination);
+            }
+        } else if (!ssrData?.articles) {
+            // No SSR data: fetch client-side (e.g. client-side navigation)
+            currentPage = page || 1;
+            const data = await fetchArticles(currentPage);
+            renderArticleList(data.articles);
+            renderPagination(data.pagination);
+        }
+        // If ssrData.articles is an empty array, the template already shows "no articles"
     }
 
     document.body.classList.remove('loading');
