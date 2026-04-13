@@ -20,8 +20,8 @@ WORKDIR /app
 
 COPY --from=builder /app/server .
 
-# Force rebuild of articles layer (bust cache) - Updated 2026-03-09
-ARG CACHE_BUST=2026-03-09-admin-fix
+# Force rebuild of articles layer (bust cache) - Updated 2026-04-13
+ARG CACHE_BUST=2026-04-13-ssr
 RUN echo "Articles cache bust: ${CACHE_BUST}"
 
 # Copy articles from the repo (ensures fresh articles on every build)

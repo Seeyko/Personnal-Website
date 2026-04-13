@@ -15,6 +15,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.tomandrieu-staging-frontend.rule=Host(`staging.tomandrieu.com`)"
+      - "traefik.http.routers.tomandrieu-staging-frontend.priority=1"
       - "traefik.http.routers.tomandrieu-staging-frontend.entrypoints=websecure"
       - "traefik.http.routers.tomandrieu-staging-frontend.tls.certResolver=letsencrypt"
       - "traefik.http.services.tomandrieu-staging-frontend.loadbalancer.server.port=4200"
@@ -34,12 +35,26 @@ services:
       - PORT=${BACKEND_PORT:-3000}
       - ARTICLES_DIR=/app/articles
       - FRONTEND_URL=${FRONTEND_URL:-https://staging.tomandrieu.com}
+      - API_URL=${API_URL:-https://api.staging.tomandrieu.com}
     labels:
       - "traefik.enable=true"
+      # API subdomain
       - "traefik.http.routers.tomandrieu-staging-api.rule=Host(`api.staging.tomandrieu.com`)"
       - "traefik.http.routers.tomandrieu-staging-api.entrypoints=websecure"
       - "traefik.http.routers.tomandrieu-staging-api.tls.certResolver=letsencrypt"
       - "traefik.http.services.tomandrieu-staging-api.loadbalancer.server.port=3000"
+      # SSR blog routes on staging domain
+      - "traefik.http.routers.tomandrieu-staging-ssr.rule=Host(`staging.tomandrieu.com`) && (Path(`/blog`) || PathPrefix(`/blog/`))"
+      - "traefik.http.routers.tomandrieu-staging-ssr.priority=10"
+      - "traefik.http.routers.tomandrieu-staging-ssr.entrypoints=websecure"
+      - "traefik.http.routers.tomandrieu-staging-ssr.tls.certResolver=letsencrypt"
+      - "traefik.http.routers.tomandrieu-staging-ssr.service=tomandrieu-staging-api"
+      # SEO routes on staging
+      - "traefik.http.routers.tomandrieu-staging-seo.rule=Host(`staging.tomandrieu.com`) && (Path(`/sitemap.xml`) || Path(`/robots.txt`))"
+      - "traefik.http.routers.tomandrieu-staging-seo.priority=10"
+      - "traefik.http.routers.tomandrieu-staging-seo.entrypoints=websecure"
+      - "traefik.http.routers.tomandrieu-staging-seo.tls.certResolver=letsencrypt"
+      - "traefik.http.routers.tomandrieu-staging-seo.service=tomandrieu-staging-api"
     networks:
       - dokploy-network
 
