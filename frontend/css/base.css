@@ -816,12 +816,23 @@ body.loading * {
 }
 
 /* ─── /Now Section (current status) ─── */
+/* Force the /now card-header to render even in themes that hide .card-header globally */
+#now .card-header,
 .now-card-header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+/* Code comment markers around the intro — hidden by default, shown only in terminal */
+.code-comment-marker {
+  display: none;
+}
+body[data-theme="terminal"] .code-comment-marker {
+  display: inline;
+  opacity: 0.55;
 }
 
 .now-date {

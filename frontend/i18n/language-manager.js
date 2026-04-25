@@ -64,8 +64,9 @@ const LanguageManager = (() => {
 
     function populateTranslations() {
         document.querySelectorAll('[data-i18n]').forEach(el => {
-            const value = t(el.dataset.i18n);
-            if (value && typeof value === 'string') {
+            const key = el.dataset.i18n;
+            const value = t(key);
+            if (value && typeof value === 'string' && value !== key) {
                 el.innerHTML = value
                     .replace(/<highlight>/g, '<span class="highlight">')
                     .replace(/<\/highlight>/g, '</span>');

@@ -139,6 +139,11 @@ const ContentLoader = (() => {
         if (window.LanguageManager && !LanguageManager.isLoaded) {
             await LanguageManager.init();
         }
+        // Load theme-scoped translations now that LanguageManager is ready
+        const themeId = window.ThemeManager?.getCurrentThemeId?.();
+        if (themeId && window.LanguageManager?.loadThemeTranslations) {
+            await LanguageManager.loadThemeTranslations(themeId, LanguageManager.currentLang);
+        }
         await loadContent();
         await loadNow();
         if (window.LanguageManager?.isLoaded) {
