@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tom Andrieu - Product Engineer</title>
-  <meta name="description" content="Product engineer who builds meaningful products, iterates with purpose, and helps teams do their best work." />
+  <title>Tom Andrieu — Product Builder · Transformation IA</title>
+  <meta name="description" content="Product Builder et Transformation IA. Je construis des produits, et je transforme par l'IA les équipes qui construisent des produits. CBA · AgatheYOU · Studio Manifeste." />
 
   <!-- PostHog Analytics (centralized) -->
   <script src="/js/analytics.js"></script>
@@ -161,19 +161,27 @@
     </div>
     <div class="header-right">
       <nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
-        <a href="#projects" class="nav-link" data-section="01">
+        <a href="#now" class="nav-link" data-section="01">
           <span class="nav-prefix"></span>
-          <span class="nav-text" data-i18n="nav.projects">Projects</span>
+          <span class="nav-text" data-i18n="nav.now">Now</span>
         </a>
-        <a href="#about" class="nav-link" data-section="02">
+        <a href="#work" class="nav-link" data-section="02">
           <span class="nav-prefix"></span>
-          <span class="nav-text" data-i18n="nav.about">About</span>
+          <span class="nav-text" data-i18n="nav.work">Work</span>
         </a>
-        <a href="#timeline" class="nav-link" data-section="03">
+        <a href="#writing" class="nav-link" data-section="03">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.writing">Writing</span>
+        </a>
+        <a href="#timeline" class="nav-link" data-section="04">
           <span class="nav-prefix"></span>
           <span class="nav-text" data-i18n="nav.history">History</span>
         </a>
-        <a href="#contact" class="nav-link" data-section="05">
+        <a href="#about" class="nav-link" data-section="05">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.about">About</span>
+        </a>
+        <a href="#contact" class="nav-link" data-section="06">
           <span class="nav-prefix"></span>
           <span class="nav-text" data-i18n="nav.contact">Contact</span>
         </a>
@@ -255,22 +263,25 @@
           <span class="cursor-blink">_</span>
         </div>
         <div class="terminal-output">
-          <p class="output-line">[<span class="status-ok">OK</span>] Loading modules...</p>
-          <p class="output-line">[<span class="status-ok">OK</span>] Product engineer initialized</p>
-          <p class="output-line">[<span class="status-ok">OK</span>] Ready to build something meaningful</p>
+          <p class="output-line">[<span class="status-ok">OK</span>] <span data-i18n="terminalOutput.loadingModules">Loading modules...</span></p>
+          <p class="output-line">[<span class="status-ok">OK</span>] <span data-i18n="terminalOutput.productBuilderInit">Product builder initialized</span></p>
+          <p class="output-line">[<span class="status-ok">OK</span>] <span data-i18n="terminalOutput.aiTransformerOnline">AI transformer online</span></p>
         </div>
       </div>
 
-      <h1 class="hero-title">
-        <span class="title-line" data-i18n="hero.title.0">PRODUCT</span>
-        <span class="title-line" data-i18n="hero.title.1">ENGINEER</span>
+      <h1 class="hero-title hero-title-greeting">
+        <span class="title-line" data-i18n="hero.title">SALUT</span>
       </h1>
 
-      <p class="hero-subtitle">
-        <span class="annotation-mark"></span>
-        <span data-i18n="hero.subtitle">BUILDING THINGS THAT MATTER</span>
-        <span class="annotation-mark"></span>
-      </p>
+      <div class="hero-subtitle hero-quote">
+        <span class="annotation-mark hero-quote-mark-open"></span>
+        <p class="hero-quote-line" data-i18n="hero.quote.0">Je suis product builder.</p>
+        <p class="hero-quote-line" data-i18n="hero.quote.1">Mais à force de construire avec l'IA,</p>
+        <p class="hero-quote-line" data-i18n="hero.quote.2">j'ai commencé à transformer les équipes</p>
+        <p class="hero-quote-line" data-i18n="hero.quote.3">qui construisent des produits.</p>
+        <p class="hero-quote-line hero-quote-final" data-i18n="hero.quote.4">Maintenant je fais les deux.</p>
+        <span class="annotation-mark hero-quote-mark-close"></span>
+      </div>
 
       <!-- 90s Under Construction Badge -->
       <div class="under-construction">
@@ -329,26 +340,72 @@
     </div>
   </section>
 
-  <!-- Projects Section -->
-  <section id="projects" class="projects">
+  <!-- /Now Section (current status, living) -->
+  <section id="now" class="now">
     <div class="section-header">
       <div class="section-label">
         <span class="section-number">01</span>
         <span class="section-prompt">$</span>
-        <h2 class="section-title" data-glitch="PROJECTS" data-i18n="sections.projects">PROJECTS</h2><span class="retro-badge" data-i18n="blog.newBadge">NEW!</span>
+        <h2 class="section-title" data-glitch="/NOW" data-i18n="sections.now">/NOW</h2>
       </div>
       <div class="section-divider">═══════════════════════════════════════════════════════</div>
     </div>
 
-    <div id="projects-grid" class="projects-grid">
-      <div class="projects-grid-loading">
-        <span class="loading-text" data-i18n="ui.loadingProjects">Loading projects...</span>
-        <span class="loading-spinner">⣾⣽⣻⢿⡿⣟⣯⣷</span>
+    <div class="now-content">
+      <div class="now-card about-card">
+        <div class="card-header now-card-header">
+          <span class="card-title" data-i18n="now.headerLabel">OÙ J'EN SUIS</span>
+          <span class="now-date" id="now-date" data-content="now.date">avril 2026</span>
+        </div>
+        <div class="card-body">
+          <p class="now-intro"><span class="code-comment-marker">/* </span><span data-i18n="now.intro">Section vivante. Mise à jour quand ça bouge.</span><span class="code-comment-marker"> */</span></p>
+          <ul class="now-list" id="now-list">
+            <li class="now-list-loading" data-i18n="ui.loadingNow">Chargement...</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Work Section (formerly Projects) -->
+  <section id="work" class="projects work">
+    <div class="section-header">
+      <div class="section-label">
+        <span class="section-number">02</span>
+        <span class="section-prompt">$</span>
+        <h2 class="section-title" data-glitch="WORK" data-i18n="sections.work">WORK</h2><span class="retro-badge" data-i18n="blog.newBadge">NEW!</span>
+      </div>
+      <div class="section-divider">═══════════════════════════════════════════════════════</div>
+    </div>
+
+    <!-- Hidden legacy grid (kept for back-compat with theme-init renderProjects fallback) -->
+    <div id="projects-grid" class="projects-grid projects-grid-hidden" hidden></div>
+
+    <!-- Territory 1: Product Builder -->
+    <div class="work-territory" id="territory-product-builder">
+      <header class="work-territory-header">
+        <h3 class="work-territory-title" data-i18n="work.productBuilder.title">PRODUCT BUILDER</h3>
+        <p class="work-territory-subtitle" data-i18n="work.productBuilder.subtitle">Lead Front-End @ CBA · AgatheYOU · side projects.</p>
+      </header>
+      <div id="work-product-builder-grid" class="projects-grid">
+        <div class="projects-grid-loading">
+          <span class="loading-text" data-i18n="ui.loadingProjects">Chargement des projets...</span>
+          <span class="loading-spinner">⣾⣽⣻⢿⡿⣟⣯⣷</span>
+        </div>
       </div>
     </div>
 
+    <!-- Territory 2: Transformation IA -->
+    <div class="work-territory" id="territory-transformation-ia">
+      <header class="work-territory-header">
+        <h3 class="work-territory-title" data-i18n="work.transformationIa.title">TRANSFORMATION IA</h3>
+        <p class="work-territory-subtitle" data-i18n="work.transformationIa.subtitle">Plateforme & IA agentique chez CBA, agence IA chez Studio Manifeste.</p>
+      </header>
+      <div id="work-transformation-ia-grid" class="projects-grid"></div>
+    </div>
+
     <div class="section-footer">
-      <span class="footer-info">total 4 projects | drwxr-xr-x</span>
+      <span class="footer-info" id="work-footer-info">total — | drwxr-xr-x</span>
       <span class="coord-marker">x: 0, y: 1200</span>
     </div>
   </section>
@@ -357,7 +414,7 @@
   <section id="about" class="about">
     <div class="section-header">
       <div class="section-label">
-        <span class="section-number">02</span>
+        <span class="section-number">05</span>
         <span class="section-prompt">$</span>
         <h2 class="section-title" data-glitch="ABOUT" data-i18n="sections.about">ABOUT</h2>
       </div>
@@ -407,7 +464,7 @@
   <section id="timeline" class="git-timeline-section">
     <div class="section-header">
       <div class="section-label">
-        <span class="section-number">03</span>
+        <span class="section-number">04</span>
         <span class="section-prompt">$</span>
         <h2 class="section-title" data-glitch="HISTORY" data-i18n="sections.history">HISTORY</h2>
       </div>
@@ -431,16 +488,18 @@
     </div>
   </section>
 
-  <!-- Blog Section (commented out - enable later if needed)
-  <section id="blog" class="blog">
+  <!-- Writing Section (blog excerpts on home) -->
+  <section id="writing" class="blog writing">
     <div class="section-header">
       <div class="section-label">
-        <span class="section-number">04</span>
+        <span class="section-number">03</span>
         <span class="section-prompt">$</span>
-        <h2 class="section-title" data-glitch="BLOG" data-i18n="sections.blog">BLOG</h2><span class="retro-badge" data-i18n="blog.newBadge">NEW!</span>
+        <h2 class="section-title" data-glitch="WRITING" data-i18n="sections.writing">WRITING</h2>
       </div>
       <div class="section-divider">═══════════════════════════════════════════════════════</div>
     </div>
+
+    <p class="writing-intro" data-i18n="writing.intro">Notes, posts, et ce que j'apprends en construisant.</p>
 
     <div id="blog-grid" class="blog-grid">
       <div class="blog-grid-loading">
@@ -459,13 +518,12 @@
       </a>
     </div>
   </section>
-  -->
 
   <!-- Contact Section -->
   <section id="contact" class="contact">
     <div class="section-header">
       <div class="section-label">
-        <span class="section-number">04</span>
+        <span class="section-number">06</span>
         <span class="section-prompt">$</span>
         <h2 class="section-title" data-glitch="CONTACT" data-i18n="sections.contact">CONTACT</h2>
       </div>
@@ -481,12 +539,7 @@
           <!-- CRO: Availability Badge -->
           <div class="availability-badge">
             <span class="availability-dot"></span>
-            <span data-i18n="ui.availableForProjects">Available for Projects</span>
-          </div>
-
-          <!-- CRO: Urgency Banner -->
-          <div class="contact-urgency">
-            <span data-i18n="ui.acceptingClients">Currently accepting new clients for Q2 2025</span>
+            <span data-i18n="ui.openToConversations">Open to conversations</span>
           </div>
 
           <div class="contact-prompt">

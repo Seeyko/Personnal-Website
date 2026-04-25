@@ -53,11 +53,19 @@ const CardRenderer = (() => {
 
     function renderProjectCard(project, index, config = {}) {
         const cfg = { ...defaultConfig.project, ...config };
-        const card = document.createElement('a');
+        const hasUrl = Boolean(project.url);
+        const card = document.createElement(hasUrl ? 'a' : 'div');
         card.className = cfg.wrapperClass + (cfg.extraClasses ? ' ' + cfg.extraClasses : '');
-        card.href = project.url;
-        card.target = '_blank';
-        card.rel = 'noopener noreferrer';
+        if (hasUrl) {
+            card.href = project.url;
+            card.target = '_blank';
+            card.rel = 'noopener noreferrer';
+        } else {
+            card.classList.add('no-url');
+        }
+        if (!project.images?.length && !project.video) {
+            card.classList.add('no-image');
+        }
 
         if (cfg.animationDelay) card.style.animationDelay = `${index * 0.1}s`;
         if (cfg.tooltip) card.setAttribute('data-tooltip', cfg.tooltip.replace('{title}', project.title));
@@ -69,7 +77,7 @@ const CardRenderer = (() => {
         let header = cfg.headerTemplate ? cfg.headerTemplate(project, idx)
             : (cfg.showIndex || cfg.showType) ? `<div class="project-card-header">${cfg.showIndex ? `<span class="project-index">${cfg.indexPrefix}${idx}</span>` : ''}${cfg.showType ? `<span class="project-type">${cfg.typePrefix}${project.type}${cfg.typeSuffix}</span>` : ''}</div>` : '';
 
-        let url = cfg.showUrl ? `<div class="project-link"><span class="link-icon">${cfg.urlIcon}</span><span class="link-url">${cfg.urlText || project.url}</span></div>` : '';
+        let url = (cfg.showUrl && hasUrl) ? `<div class="project-link"><span class="link-icon">${cfg.urlIcon}</span><span class="link-url">${cfg.urlText || project.url}</span></div>` : '';
         let footer = cfg.footerTemplate ? cfg.footerTemplate(project, idx) : '';
         let corners = cfg.cornerDecorations ? '<div class="card-corner tl"></div><div class="card-corner tr"></div><div class="card-corner bl"></div><div class="card-corner br"></div>' : '';
 

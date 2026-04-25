@@ -7,7 +7,8 @@ const ContentLoader = (() => {
     let siteContent = {};
     let projects = [];
     let articles = [];
-    let loaded = { content: false, projects: false, articles: false };
+    let nowData = null;
+    let loaded = { content: false, projects: false, articles: false, now: false };
 
     const getCurrentLang = () => window.LanguageManager?.currentLang || 'fr';
 
@@ -68,15 +69,88 @@ const ContentLoader = (() => {
         });
     }
 
+    async function loadNow() {
+        if (loaded.now) return nowData;
+
+        const lang = getCurrentLang();
+        try {
+            const response = await fetch(`/data/${lang}/now.json`);
+            if (!response.ok) throw new Error('Failed to fetch now');
+            nowData = await response.json();
+            loaded.now = true;
+            console.log(`%c[OK] /now loaded (${lang})`, 'color: #33ff00;');
+        } catch (err) {
+            console.warn('[WARN] /now data unavailable');
+            nowData = null;
+        }
+        return nowData;
+    }
+
+    function populateNow() {
+        if (!nowData) return;
+
+        const dateEl = document.getElementById('now-date');
+        if (dateEl && nowData.date) dateEl.textContent = nowData.date;
+
+        const list = document.getElementById('now-list');
+        if (!list || !Array.isArray(nowData.items)) return;
+
+        list.textContent = '';
+        nowData.items.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'now-item';
+            if (item.key) li.dataset.nowKey = item.key;
+
+            const arrow = document.createElement('span');
+            arrow.className = 'now-arrow';
+            arrow.textContent = '→';
+
+            const label = document.createElement('span');
+            label.className = 'now-label';
+            label.textContent = item.label || '';
+
+            const value = document.createElement('span');
+            value.className = 'now-value';
+            value.textContent = item.value || '';
+
+            if (item.link && item.link.url) {
+                value.appendChild(document.createTextNode(' '));
+                const a = document.createElement('a');
+                a.className = 'now-link';
+                a.href = item.link.url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.textContent = item.link.text || item.link.url;
+                const arrowOut = document.createElement('span');
+                arrowOut.className = 'now-link-arrow';
+                arrowOut.textContent = '↗';
+                a.appendChild(arrowOut);
+                value.appendChild(a);
+            }
+
+            li.appendChild(arrow);
+            li.appendChild(label);
+            li.appendChild(value);
+            list.appendChild(li);
+        });
+    }
+
     async function loadAndPopulate() {
         if (window.LanguageManager && !LanguageManager.isLoaded) {
             await LanguageManager.init();
         }
+        // Load theme-scoped translations now that LanguageManager is ready
+        const themeId = window.ThemeManager?.getCurrentThemeId?.();
+        if (themeId && window.LanguageManager?.loadThemeTranslations) {
+            await LanguageManager.loadThemeTranslations(themeId, LanguageManager.currentLang);
+        }
         await loadContent();
+        await loadNow();
         if (window.LanguageManager?.isLoaded) {
             LanguageManager.populateTranslations();
         }
         populateContent();
+        populateNow();
         return siteContent;
     }
 
@@ -132,7 +206,8 @@ const ContentLoader = (() => {
         siteContent = {};
         projects = [];
         articles = [];
-        loaded = { content: false, projects: false, articles: false };
+        nowData = null;
+        loaded = { content: false, projects: false, articles: false, now: false };
     }
 
     return {
@@ -140,11 +215,13 @@ const ContentLoader = (() => {
         loadAndPopulate,
         loadProjects,
         loadArticles,
+        loadNow,
         formatDate,
         resetCache,
         get content() { return siteContent; },
         get projects() { return projects; },
         get articles() { return articles; },
+        get now() { return nowData; },
         get isLoaded() { return loaded.content; }
     };
 })();

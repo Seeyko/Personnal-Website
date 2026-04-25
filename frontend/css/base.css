@@ -764,3 +764,172 @@ body.loading * {
   animation: pulse 1.5s infinite;
 }
 
+/* ─── Writing Section ─── */
+.writing-intro {
+  margin-bottom: 1.75rem;
+  opacity: 0.75;
+  font-size: 0.95rem;
+  max-width: 38rem;
+}
+
+/* ─── Work Territories (Product Builder / Transformation IA) ─── */
+.work-territory {
+  margin-bottom: 3rem;
+}
+
+.work-territory:last-child {
+  margin-bottom: 0;
+}
+
+.work-territory-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed currentColor;
+  opacity: 0.95;
+}
+
+.work-territory-header > * {
+  opacity: 1;
+}
+
+.work-territory-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 0.25rem;
+}
+
+.work-territory-subtitle {
+  font-size: 0.875rem;
+  margin: 0;
+  opacity: 0.7;
+}
+
+.projects-grid-hidden {
+  display: none !important;
+}
+
+/* Cards without URL (e.g. internal mission descriptions) */
+.project-card.no-url {
+  cursor: default;
+}
+
+/* ─── /Now Section (current status) ─── */
+/* Force the /now card-header to render even in themes that hide .card-header globally */
+#now .card-header,
+.now-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Code comment markers around the intro — hidden by default, shown only in terminal */
+.code-comment-marker {
+  display: none;
+}
+body[data-theme="terminal"] .code-comment-marker {
+  display: inline;
+  opacity: 0.55;
+}
+
+.now-date {
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875em;
+  letter-spacing: 0.02em;
+}
+
+.now-intro {
+  margin-bottom: 1.25rem;
+}
+
+.now-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.now-list-loading {
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.now-item {
+  display: grid;
+  grid-template-columns: 1.5rem 7rem 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+  line-height: 1.55;
+}
+
+@media (max-width: 640px) {
+  .now-item {
+    grid-template-columns: 1.5rem 1fr;
+  }
+  .now-item .now-label {
+    grid-column: 2;
+  }
+  .now-item .now-value {
+    grid-column: 1 / -1;
+    padding-left: 2.25rem;
+  }
+}
+
+.now-arrow {
+  opacity: 0.6;
+}
+
+.now-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+.now-value {
+  opacity: 0.95;
+}
+
+.now-link {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.now-link-arrow {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+/* ─── Hero Quote (multi-line manifesto) ─── */
+.hero-quote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  text-align: center;
+  position: relative;
+}
+
+.hero-quote-line {
+  margin: 0;
+  line-height: 1.6;
+  font-size: inherit;
+  color: inherit;
+}
+
+.hero-quote-final {
+  margin-top: 0.6rem;
+  font-weight: 600;
+  font-style: italic;
+}
+

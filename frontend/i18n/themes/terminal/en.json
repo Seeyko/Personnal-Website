@@ -42,9 +42,10 @@
     "colorsReset": "[SYSTEM] Colors reset to default"
   },
   "terminalOutput": {
-    "loadingModules": "[OK] Loading modules...",
-    "productEngineerInit": "[OK] Product engineer initialized",
-    "readyToBuild": "[OK] Ready to build something meaningful"
+    "loadingModules": "Loading modules...",
+    "productBuilderInit": "Product builder initialized",
+    "aiTransformerOnline": "AI transformer online",
+    "readyToBuild": "Ready to ship"
   },
   "heroStats": {
     "creativity": "CREATIVITY",

@@ -1,21 +1,27 @@
 {
   "meta": {
     "name": "Tom Andrieu",
-    "title": "Product Engineer",
-    "description": "Product engineer who builds meaningful products, iterates with purpose, and helps teams do their best work."
+    "title": "Product Builder · AI Transformation",
+    "description": "Product Builder and AI Transformation. I build products, and I transform with AI the teams that build products."
   },
   "hero": {
-    "title": ["PRODUCT", "ENGINEER"],
-    "subtitle": "BUILDING THINGS THAT MATTER"
+    "title": "HEY",
+    "quote": [
+      "I'm a product builder.",
+      "But by building with AI,",
+      "I started transforming the teams",
+      "who build products.",
+      "Now I do both."
+    ]
   },
   "about": {
-    "intro": "I build <highlight>MEANINGFUL</highlight> products and help small teams do their <highlight>BEST WORK</highlight>.",
-    "detail": "I care about craft and iteration. I'd rather enable others than micromanage them. Working with AI has made me even more optimistic about what focused teams can create.",
+    "intro": "I build <highlight>PRODUCTS</highlight>, and I transform with <highlight>AI</highlight> the teams who build them.",
+    "detail": "Build side: Lead Front-End @ CBA (AgatheYOU) and side projects. Transform side: Platform Architect @ CBA (6-month mission on the platform & agentic AI) and co-founder of Studio Manifeste, the AI agency for SMEs. Same craft, two sides.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ YEARS",
-      "focus": "PRODUCT ENGINEERING",
-      "status": "AVAILABLE FOR PROJECTS"
+      "focus": "PRODUCT BUILDER · AGENTIC AI",
+      "status": "ON MISSION"
     },
     "specLabels": {
       "location": "LOCATION",
@@ -39,6 +45,9 @@
     "email": "CONTACT@TOMANDRIEU.COM"
   },
   "nav": {
+    "now": "Now",
+    "work": "Work",
+    "writing": "Writing",
     "projects": "Projects",
     "about": "About",
     "blog": "Blog",
@@ -46,6 +55,9 @@
     "history": "History"
   },
   "sections": {
+    "now": "/NOW",
+    "work": "WORK",
+    "writing": "WRITING",
     "projects": "PROJECTS",
     "about": "ABOUT",
     "blog": "BLOG",
@@ -54,6 +66,7 @@
   },
   "ui": {
     "loading": "Loading...",
+    "loadingNow": "Loading...",
     "loadingProjects": "Loading projects...",
     "noArticles": "No articles yet. Check back soon!",
     "viewAllArticles": "VIEW ALL ARTICLES",
@@ -65,6 +78,7 @@
     "waitLetsConnect": "Wait! Let's Connect",
     "haveProjectInMind": "Have a project in mind? I'd love to hear about it.",
     "availableForProjects": "Available for Projects",
+    "openToConversations": "Open to conversations",
     "acceptingClients": "Currently accepting new clients for Q2 2025",
     "typicallyResponds": "Typically responds within 24 hours",
     "establishConnection": "ESTABLISH CONNECTION",
@@ -84,6 +98,23 @@
     "yearsExperience": "Years Experience",
     "usersReached": "Users Reached",
     "liveProducts": "Live Products"
+  },
+  "now": {
+    "headerLabel": "WHERE I'M AT",
+    "intro": "Living section. Updated when things move."
+  },
+  "work": {
+    "productBuilder": {
+      "title": "PRODUCT BUILDER",
+      "subtitle": "Lead Front-End @ CBA · AgatheYOU · side projects."
+    },
+    "transformationIa": {
+      "title": "AI TRANSFORMATION",
+      "subtitle": "Platform & agentic AI at CBA, AI agency at Studio Manifeste."
+    }
+  },
+  "writing": {
+    "intro": "Notes, posts, and what I'm learning while building."
   },
   "blog": {
     "subtitle": "Thoughts on product engineering, building meaningful products, and technology.",

@@ -13,7 +13,30 @@ const ThemeInit = (() => {
             await ContentLoader.loadAndPopulate();
 
             const projects = await ContentLoader.loadProjects();
-            CardRenderer.renderProjects(projects, config.cards || {}, '#projects-grid');
+            const builderProjects = projects.filter(p => p.category === 'product-builder');
+            const transformProjects = projects.filter(p => p.category === 'transformation-ia');
+
+            if (document.querySelector('#work-product-builder-grid')) {
+                CardRenderer.renderProjects(builderProjects, config.cards || {}, '#work-product-builder-grid');
+            }
+            if (document.querySelector('#work-transformation-ia-grid')) {
+                CardRenderer.renderProjects(transformProjects, config.cards || {}, '#work-transformation-ia-grid');
+            }
+
+            // Back-compat: if a legacy single grid is present, render all there.
+            const legacyGrid = document.querySelector('#projects-grid:not(.projects-grid-hidden)');
+            if (legacyGrid) {
+                CardRenderer.renderProjects(projects, config.cards || {}, '#projects-grid');
+            }
+
+            const footerInfo = document.querySelector('#work-footer-info');
+            if (footerInfo) {
+                const total = projects.length;
+                const lang = window.LanguageManager?.currentLang || 'fr';
+                const word = lang === 'fr' ? 'projets' : 'projects';
+                footerInfo.textContent = `total ${total} ${word} | drwxr-xr-x`;
+            }
+
             Carousel.initAll();
 
             ScrollEffects.initAll();
