@@ -299,6 +299,9 @@
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 220px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .marker-badge {
