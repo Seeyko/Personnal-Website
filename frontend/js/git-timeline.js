@@ -62,8 +62,9 @@ const GitTimeline = (() => {
         const totalPadding = CONFIG.padding.left + CONFIG.padding.right;
         const yearWidth = (availableWidth - totalPadding) / yearCount;
 
-        // Minimum 60px per year for readability
-        return Math.max(yearWidth, 60);
+        // Minimum 48px per year — keeps timeline fitting in narrower viewports
+        // before the horizontal scrollbar kicks in
+        return Math.max(yearWidth, 48);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -349,9 +350,25 @@ const GitTimeline = (() => {
             const ongoing = isOngoing(branch);
 
             branch.commits.forEach((commit, idx) => {
-                // Position commits along the branch
-                // First commit near start, subsequent commits spaced along
-                const commitX = branch._startX + CONFIG.curveRadius + 10 + (idx * 120);
+                // Position commits along the branch:
+                // - idx 0 sits near the branch start
+                // - subsequent commits use their own date if available,
+                //   otherwise fall back to a fixed horizontal stride (220px)
+                let commitX;
+                if (idx === 0) {
+                    commitX = branch._startX + CONFIG.curveRadius + 10;
+                } else {
+                    const commitDate = parseDate(commit.date);
+                    if (commitDate != null) {
+                        commitX = yearToX(commitDate);
+                    } else {
+                        commitX = branch._startX + CONFIG.curveRadius + 10 + (idx * 220);
+                    }
+                }
+
+                // Alternate vertical offset for siblings on the same branch so
+                // long titles don't visually collide on a single line.
+                const verticalStagger = idx === 0 ? -14 : 22;
 
                 const marker = document.createElement('div');
                 marker.className = `git-commit-marker git-commit-${branch.type} ${ongoing ? 'ongoing' : ''}`;
@@ -359,7 +376,7 @@ const GitTimeline = (() => {
                 //Do not show hash for the first one
                 //marker.dataset.commitHash = commit.hash;
                 marker.style.left = `${commitX}px`;
-                marker.style.top = `${laneY - 14}px`;
+                marker.style.top = `${laneY + verticalStagger}px`;
                 marker.style.setProperty('--branch-color', color);
 
                 // Format date range

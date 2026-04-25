@@ -36,10 +36,27 @@ const ContentLoader = (() => {
                 .join('');
         }
 
-        // Tech stack
-        const tech = document.getElementById('tech-grid');
-        if (tech && siteContent.techStack) {
-            tech.innerHTML = siteContent.techStack.map(t => `<span class="tech-tag">${t}</span>`).join('');
+        // Craft block (replaces former tech stack tags)
+        const craft = document.getElementById('craft-block');
+        if (craft && siteContent.craft) {
+            craft.textContent = '';
+            const title = document.createElement('h4');
+            title.className = 'craft-title';
+            title.textContent = siteContent.craft.title || '';
+            const desc = document.createElement('p');
+            desc.className = 'craft-description';
+            desc.textContent = siteContent.craft.description || '';
+            craft.appendChild(title);
+            craft.appendChild(desc);
+        } else if (craft && siteContent.techStack) {
+            // Legacy fallback
+            craft.textContent = '';
+            siteContent.techStack.forEach(t => {
+                const span = document.createElement('span');
+                span.className = 'tech-tag';
+                span.textContent = t;
+                craft.appendChild(span);
+            });
         }
 
         // Social links
@@ -92,6 +109,28 @@ const ContentLoader = (() => {
         const dateEl = document.getElementById('now-date');
         if (dateEl && nowData.date) dateEl.textContent = nowData.date;
 
+        // New format: connected paragraph built from typed segments (text | link).
+        // Built with safe DOM APIs (no innerHTML) — no XSS risk.
+        const paragraphHost = document.getElementById('now-paragraph');
+        if (paragraphHost && Array.isArray(nowData.paragraph)) {
+            paragraphHost.textContent = '';
+            nowData.paragraph.forEach(seg => {
+                if (seg && typeof seg.text === 'string') {
+                    paragraphHost.appendChild(document.createTextNode(seg.text));
+                } else if (seg && seg.link && seg.link.url && seg.link.text) {
+                    const a = document.createElement('a');
+                    a.className = 'now-inline-link';
+                    a.href = seg.link.url;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.textContent = seg.link.text;
+                    paragraphHost.appendChild(a);
+                }
+            });
+            return;
+        }
+
+        // Legacy format: list of items (kept for safety if data hasn't migrated)
         const list = document.getElementById('now-list');
         if (!list || !Array.isArray(nowData.items)) return;
 

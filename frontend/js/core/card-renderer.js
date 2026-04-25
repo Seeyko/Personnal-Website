@@ -65,6 +65,9 @@ const CardRenderer = (() => {
         }
         if (!project.images?.length && !project.video) {
             card.classList.add('no-image');
+            // Surface the project type as a small badge so the card reads
+            // intentional, not broken (used by the .no-image::before badge)
+            if (project.type) card.dataset.cardType = project.type;
         }
 
         if (cfg.animationDelay) card.style.animationDelay = `${index * 0.1}s`;
