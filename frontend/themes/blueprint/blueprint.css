@@ -450,7 +450,7 @@ body[data-theme="blueprint"] .section-title::before {
   font-size: clamp(1.2rem, 3vw, 1.8rem); /* Restore font size for pseudo-element */
 }
 
-body[data-theme="blueprint"] #projects .section-title::before {
+body[data-theme="blueprint"] #work .section-title::before {
   content: 'SELECTED WORKS';
 }
 
