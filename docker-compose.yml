@@ -43,6 +43,7 @@ services:
       - ADMIN_ALLOWED_IPS=${ADMIN_ALLOWED_IPS:-}
       - POSTHOG_API_KEY=${POSTHOG_API_KEY:-}
       - POSTHOG_HOST=${POSTHOG_HOST:-https://eu.i.posthog.com}
+      - JWT_SECRET=${JWT_SECRET}
     labels:
       - "traefik.enable=true"
       # API subdomain
