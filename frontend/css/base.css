@@ -565,11 +565,88 @@ body.loading * {
   gap: 1rem;
 }
 
-/* ─── Tech Grid ─── */
+/* ─── Tech Grid (legacy, kept for back-compat) ─── */
 .tech-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+/* ─── Craft block (replaces tech grid) ─── */
+.craft-stack {
+  margin-top: 1rem;
+}
+
+.craft-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border-left: 2px solid currentColor;
+  border-color: var(--accent, currentColor);
+  opacity: 0.95;
+}
+
+.craft-title {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent, inherit);
+}
+
+.craft-description {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+/* ─── /now paragraph (replaces 4-bucket list) ─── */
+.now-paragraph {
+  margin: 0;
+  line-height: 1.65;
+  font-size: 1rem;
+}
+
+.now-inline-link {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  color: inherit;
+}
+
+.now-paragraph-loading {
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* ─── Compact (no-image) project cards: 2-up grid in same row ─── */
+.project-card.no-image {
+  grid-column: span 1;
+  position: relative;
+}
+
+.project-card.no-image .project-media-container {
+  display: none;
+}
+
+/* Small type badge in the top-right so the card reads as an intentional
+   "text mission" tile instead of a broken image card */
+.project-card.no-image::before {
+  content: attr(data-card-type);
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  border: 1px dashed currentColor;
+  border-radius: 999px;
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 /* ─── Responsive social links fix ─── */

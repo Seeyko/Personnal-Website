@@ -10,25 +10,18 @@
   },
   "about": {
     "intro": "I think you learn a craft <highlight>by doing it</highlight>, and you learn to transform a craft <highlight>by having done it</highlight>.",
-    "detail": "On craft, I prefer short iterations over closed specs, pairs over committees, and tools you understand over tools you put up with. AI didn't change that preference. It just made it apply to more problems, faster.",
+    "detail": "I prefer short iterations over closed specs, pairs over committees, and tools you understand over tools you put up with. AI didn't change that preference. It just made it apply to more problems, faster.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ YEARS",
       "focus": "ARCHITECTURE · AI · PRODUCT",
-      "status": "6-MONTH MISSION · M1/6"
+      "status": "BUILDING"
     }
   },
-  "techStack": [
-    "AI/ML",
-    "NEXT.JS",
-    "ANGULAR",
-    "TYPESCRIPT",
-    "NODE.JS",
-    "NESTJS",
-    "FLUTTER",
-    "WORDPRESS",
-    "VOXEL"
-  ],
+  "craft": {
+    "title": "AI POWERED",
+    "description": "No stack resists me anymore. With AI, I can build apps in any language, any framework, any platform. A bit pretentious, but it's true."
+  },
   "contact": {
     "email": "CONTACT@TOMANDRIEU.COM",
     "social": {

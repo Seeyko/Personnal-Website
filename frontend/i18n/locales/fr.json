@@ -10,12 +10,12 @@
   },
   "about": {
     "intro": "Je crois qu'on apprend un métier <highlight>en le faisant</highlight>, et qu'on apprend à le transformer <highlight>en l'ayant fait</highlight>.",
-    "detail": "Côté craft, je préfère les itérations courtes aux specs fermées, les binômes aux comités, et les outils qu'on comprend aux outils qu'on subit. L'IA n'a pas changé cette préférence, elle l'a juste rendue applicable à plus de problèmes, plus vite.",
+    "detail": "Je préfère les itérations courtes aux specs fermées, les binômes aux comités, et les outils qu'on comprend aux outils qu'on subit. L'IA n'a pas changé cette préférence, elle l'a juste rendue applicable à plus de problèmes, plus vite.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ ANS",
       "focus": "ARCHITECTURE · IA · PRODUIT",
-      "status": "MISSION 6 MOIS · M1/6"
+      "status": "EN BUILD"
     },
     "specLabels": {
       "location": "LOCALISATION",
@@ -23,6 +23,10 @@
       "focus": "DOMAINE",
       "status": "STATUT"
     }
+  },
+  "craft": {
+    "title": "AI POWERED",
+    "description": "Plus aucune stack ne me résiste. Avec l'IA, je peux faire des apps dans n'importe quel langage, n'importe quel framework, n'importe quelle plateforme. Un peu prétentieux, mais c'est vrai."
   },
   "techStack": [
     "IA/ML",
@@ -49,7 +53,7 @@
     "history": "Historique"
   },
   "sections": {
-    "now": "/NOW",
+    "now": "NOW",
     "work": "WORK",
     "writing": "ÉCRITS",
     "projects": "PROJETS",
