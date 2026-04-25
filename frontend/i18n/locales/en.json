@@ -66,6 +66,7 @@
   },
   "ui": {
     "loading": "Loading...",
+    "loadingNow": "Loading...",
     "loadingProjects": "Loading projects...",
     "noArticles": "No articles yet. Check back soon!",
     "viewAllArticles": "VIEW ALL ARTICLES",
@@ -96,6 +97,10 @@
     "yearsExperience": "Years Experience",
     "usersReached": "Users Reached",
     "liveProducts": "Live Products"
+  },
+  "now": {
+    "headerLabel": "WHERE I'M AT",
+    "intro": "Living section. Updated when things move."
   },
   "blog": {
     "subtitle": "Thoughts on product engineering, building meaningful products, and technology.",
