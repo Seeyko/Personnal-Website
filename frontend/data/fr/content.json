@@ -1,21 +1,27 @@
 {
   "meta": {
     "name": "Tom Andrieu",
-    "title": "Product Engineer",
-    "description": "Product Engineer. Je construis des produits de A à Z, je parle aux users, j'itère vite, et j'aide les équipes à faire du bon boulot."
+    "title": "Product Builder · Transformation IA",
+    "description": "Product Builder et Transformation IA. Je construis des produits, et je transforme par l'IA les équipes qui construisent des produits."
   },
   "hero": {
-    "title": ["PRODUCT", "ENGINEER"],
-    "subtitle": "BUILD. REFINE. OWN THE OUTCOME."
+    "title": "SALUT",
+    "quote": [
+      "Je suis product builder.",
+      "Mais à force de construire avec l'IA,",
+      "j'ai commencé à transformer les équipes",
+      "qui construisent des produits.",
+      "Maintenant je fais les deux."
+    ]
   },
   "about": {
-    "intro": "Je construis des produits pour de <highlight>VRAIS USERS</highlight> et j'aide les petites équipes à <highlight>AVANCER VITE</highlight>.",
-    "detail": "Je parle aux utilisateurs, je gère les problèmes de bout en bout, et j'itère jusqu'à ce que ça marche. Je préfère construire un truc petit qui compte plutôt que planifier un machin énorme qui marchera jamais. Bosser avec l'IA m'a rendu optimiste sur ce que des équipes focus peuvent créer.",
+    "intro": "Je construis des <highlight>PRODUITS</highlight>, et je transforme par l'<highlight>IA</highlight> les équipes qui en construisent.",
+    "detail": "Côté build : Lead Front-End @ CBA (AgatheYOU) et side projects. Côté transformation : Platform Architect @ CBA (mission 6 mois sur la plateforme & IA agentique) et co-fondateur du Studio Manifeste, l'agence IA pour PME. C'est le même métier, vu de deux côtés.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ ANS",
-      "focus": "PRODUCT ENGINEERING",
-      "status": "DISPO POUR PROJETS"
+      "focus": "PRODUCT BUILDER · IA AGENTIQUE",
+      "status": "MISSION EN COURS"
     }
   },
   "techStack": [
