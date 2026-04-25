@@ -103,8 +103,11 @@ const LanguageManager = (() => {
         if (themeId) await loadThemeTranslations(themeId, lang);
 
         try { localStorage.setItem(STORAGE_KEY, lang); } catch {}
-        // Set cookie for SSR language detection
-        try { document.cookie = `lang=${lang}; path=/; max-age=31536000; SameSite=Lax`; } catch {}
+        // Set cookie for SSR language detection (Secure on HTTPS only).
+        try {
+            const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+            document.cookie = `lang=${lang}; path=/; max-age=31536000; SameSite=Lax${secure}`;
+        } catch {}
         const url = new URL(window.location);
         url.searchParams.set('lang', lang);
         window.history.replaceState({}, '', url);

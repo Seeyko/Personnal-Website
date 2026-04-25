@@ -361,7 +361,10 @@ async function initBlog() {
         }
     } else {
         if (ssrData?.articles && ssrData.articles.length > 0) {
-            // SSR: article list already in DOM, just animate and wire pagination
+            // SSR: article list already in DOM, just animate and wire pagination.
+            // Sync currentPage with what the server rendered so subsequent
+            // "Load more" clicks request the right next page.
+            currentPage = ssrData.pagination?.page || page || 1;
             initListAnimations();
             if (ssrData.pagination) {
                 renderPagination(ssrData.pagination);
