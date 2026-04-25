@@ -1,7 +1,7 @@
 services:
   frontend:
     env_file:
-      - .env.staging
+      - .env
     build:
       context: .
       dockerfile: frontend/Dockerfile
@@ -24,7 +24,7 @@ services:
 
   backend:
     env_file:
-      - .env.staging
+      - .env
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -36,6 +36,12 @@ services:
       - ARTICLES_DIR=/app/articles
       - FRONTEND_URL=${FRONTEND_URL:-https://staging.tomandrieu.com}
       - API_URL=${API_URL:-https://api.staging.tomandrieu.com}
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_API_KEY=${ADMIN_API_KEY:-}
+      - ADMIN_SECRET_PATH=${ADMIN_SECRET_PATH:-}
+      - POSTHOG_API_KEY=${POSTHOG_API_KEY:-}
+      - POSTHOG_HOST=${POSTHOG_HOST:-https://eu.i.posthog.com}
     labels:
       - "traefik.enable=true"
       # API subdomain
