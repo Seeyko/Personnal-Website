@@ -344,6 +344,20 @@ const GitTimeline = (() => {
      * Branches are now ABOVE the trunk
      */
     function renderCommitCards(container, branches, totalWidth, trunkY) {
+        // Threshold (px) below which two adjacent commits on the same branch
+        // are considered "horizontally close" and need a vertical stagger to
+        // avoid overlapping. Anything wider than this stays on a single line.
+        const STAGGER_THRESHOLD = 180;
+
+        // Pre-compute commit X positions per branch so we can detect
+        // horizontal collisions before deciding the vertical stagger.
+        function commitXFor(branch, commit, idx) {
+            if (idx === 0) return branch._startX + CONFIG.curveRadius + 10;
+            const commitDate = parseDate(commit.date);
+            if (commitDate != null) return yearToX(commitDate);
+            return branch._startX + CONFIG.curveRadius + 10 + (idx * 220);
+        }
+
         branches.forEach(branch => {
             // laneY is above the trunk (smaller Y value)
             const laneY = trunkY - (branch._lane + 1) * CONFIG.laneHeight;
@@ -351,27 +365,22 @@ const GitTimeline = (() => {
             const ongoing = isOngoing(branch);
 
             branch.commits.forEach((commit, idx) => {
-                // Position commits along the branch:
-                // - idx 0 sits near the branch start
-                // - subsequent commits use their own date if available,
-                //   otherwise fall back to a fixed horizontal stride (220px)
-                let commitX;
-                if (idx === 0) {
-                    commitX = branch._startX + CONFIG.curveRadius + 10;
-                } else {
-                    const commitDate = parseDate(commit.date);
-                    if (commitDate != null) {
-                        commitX = yearToX(commitDate);
-                    } else {
-                        commitX = branch._startX + CONFIG.curveRadius + 10 + (idx * 220);
+                const commitX = commitXFor(branch, commit, idx);
+
+                // Vertical stagger:
+                // - Single commit OR first commit of a multi-commit branch:
+                //   sit centered on the branch line (-14).
+                // - Subsequent commits: stay on the line if the previous
+                //   commit is far enough horizontally; otherwise alternate
+                //   above/below to avoid overlap (+22 = below the line).
+                let verticalStagger = -14;
+                if (idx > 0) {
+                    const prevX = commitXFor(branch, branch.commits[idx - 1], idx - 1);
+                    const gap = commitX - prevX;
+                    if (gap < STAGGER_THRESHOLD) {
+                        verticalStagger = (idx % 2 === 1) ? 22 : -14;
                     }
                 }
-
-                // All markers sit just above the branch line for visual
-                // consistency. The compact label (markerLabel) keeps things
-                // single-line so multiple commits on the same branch (e.g. CBA)
-                // can sit on the same horizontal axis without colliding.
-                const verticalStagger = -14;
 
                 const marker = document.createElement('div');
                 marker.className = `git-commit-marker git-commit-${branch.type} ${ongoing ? 'ongoing' : ''}`;
@@ -387,15 +396,18 @@ const GitTimeline = (() => {
                 const endYear = ongoing ? 'Present' : branch.endDate.split('-')[0];
                 const dateRange = `${startYear} - ${endYear}`;
 
-                // Compact marker label:
-                // - Projects: just the project name (branch.name) — e.g. "Skoolbook"
-                // - Work/education: details.markerLabel if present, else details.title
+                // Compact marker label, in priority order:
+                // 1. commit.details.markerLabel (per-commit override, e.g. "Skoolbook")
+                // 2. branch.name (for single-commit branches: "Ride My Park")
+                // 3. commit.details.title (final fallback)
                 // The full title always shows in the hover overlay for context.
                 let displayTitle;
-                if (branch.type === 'project') {
+                if (commit.details.markerLabel) {
+                    displayTitle = commit.details.markerLabel;
+                } else if (branch.type === 'project') {
                     displayTitle = branch.name;
                 } else {
-                    displayTitle = commit.details.markerLabel || commit.details.title;
+                    displayTitle = commit.details.title;
                 }
 
                 marker.innerHTML = `
@@ -675,12 +687,15 @@ const GitTimeline = (() => {
                 const endYear = ongoing ? 'Present' : branch.endDate.split('-')[0];
                 const dateRange = `${startYear} - ${endYear}`;
 
-                // Format title based on type (mirror desktop logic)
+                // Format title (mirror desktop logic):
+                // markerLabel > branch.name (for projects) > details.title
                 let displayTitle;
-                if (branch.type === 'project') {
+                if (commit.details.markerLabel) {
+                    displayTitle = commit.details.markerLabel;
+                } else if (branch.type === 'project') {
                     displayTitle = branch.name;
                 } else {
-                    displayTitle = commit.details.markerLabel || commit.details.title;
+                    displayTitle = commit.details.title;
                 }
 
                 const commitEl = document.createElement('div');
