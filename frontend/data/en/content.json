@@ -2,26 +2,20 @@
   "meta": {
     "name": "Tom Andrieu",
     "title": "Product Builder · AI Transformation",
-    "description": "Product Builder and AI Transformation. I build products, and I transform with AI the teams that build products."
+    "description": "I build products, and I help product teams fold AI into their day-to-day work. CBA · Studio Manifeste."
   },
   "hero": {
     "title": "HEY",
-    "quote": [
-      "I'm a product builder.",
-      "But by building with AI,",
-      "I started transforming the teams",
-      "who build products.",
-      "Now I do both."
-    ]
+    "quote": "I've been coding for 8 years. My job is building products. AI didn't change that craft, it changed who can do it and how fast. From building with it, I ended up helping other teams fold it into their day-to-day work. Same craft, two angles."
   },
   "about": {
-    "intro": "I build <highlight>PRODUCTS</highlight>, and I transform with <highlight>AI</highlight> the teams who build them.",
-    "detail": "Build side: Lead Front-End @ CBA (AgatheYOU) and side projects. Transform side: Platform Architect @ CBA (6-month mission on the platform & agentic AI) and co-founder of Studio Manifeste, the AI agency for SMEs. Same craft, two sides.",
+    "intro": "I think you learn a craft <highlight>by doing it</highlight>, and you learn to transform a craft <highlight>by having done it</highlight>.",
+    "detail": "On craft, I prefer short iterations over closed specs, pairs over committees, and tools you understand over tools you put up with. AI didn't change that preference. It just made it apply to more problems, faster.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ YEARS",
-      "focus": "PRODUCT BUILDER · AGENTIC AI",
-      "status": "ON MISSION"
+      "focus": "ARCHITECTURE · AI · PRODUCT",
+      "status": "6-MONTH MISSION · M1/6"
     }
   },
   "techStack": [
