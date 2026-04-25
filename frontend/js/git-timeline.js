@@ -62,13 +62,13 @@ const GitTimeline = (() => {
         const totalPadding = CONFIG.padding.left + CONFIG.padding.right;
         const yearWidth = (availableWidth - totalPadding) / yearCount;
 
-        // Soft floor: 100px per year. At default 100% zoom on a normal desktop
-        // the natural fit value (>100) wins, so the timeline fits the viewport
-        // exactly with no horizontal scrollbar. When a user zooms in (CSS
-        // viewport shrinks), the floor kicks in, content overflows, and
-        // render() auto-scrolls to the right — latest events stay visible,
-        // older ones remain accessible by scrolling left.
-        return Math.max(yearWidth, 100);
+        // Pure fit-to-viewport, no minimum floor: the timeline always
+        // tiles the available width exactly, so it never overflows and
+        // never shows a horizontal scrollbar — at any zoom level. The
+        // trade-off is that very small viewports may compress markers,
+        // but on desktop (>=1025px, where the horizontal timeline shows)
+        // the natural fit stays comfortable.
+        return Math.max(yearWidth, 30);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -435,9 +435,13 @@ const GitTimeline = (() => {
                 // If its natural left edge sits inside the previous sibling's
                 // bounding box, nudge it right just enough to clear (no
                 // vertical stacking — Tom prefers single-line lanes).
+                // The shift is capped at totalWidth - markerWidth so a
+                // marker never extends past the timeline's right edge,
+                // which would create a horizontal scrollbar.
                 const markerWidth = marker.offsetWidth;
+                const maxAllowedX = Math.max(0, totalWidth - markerWidth);
                 if (commitX < prevMarkerRight + MARKER_GAP) {
-                    commitX = prevMarkerRight + MARKER_GAP;
+                    commitX = Math.min(prevMarkerRight + MARKER_GAP, maxAllowedX);
                     marker.style.left = `${commitX}px`;
                 }
                 prevMarkerRight = commitX + markerWidth;
