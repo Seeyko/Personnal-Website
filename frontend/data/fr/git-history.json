@@ -151,11 +151,46 @@
           "message": "Arrivée chez CBA en tant que Lead Dev",
           "author": "CBA Informatique Liberale",
           "details": {
-            "title": "Lead Developer",
+            "title": "Lead Developer · Lead Front-End AgatheYOU",
             "company": "CBA Informatique Liberale",
             "location": "Avignon, France",
             "description": "Lead d'une équipe de 8 développeurs construisant applications web et mobiles avec Angular & Ionic. Architecture multi-applications et mise en place pipeline CI/CD.",
             "tags": ["Angular", "Ionic", "CI/CD", "Team Lead"]
+          }
+        },
+        {
+          "hash": "cba2026pa",
+          "date": "2026-04",
+          "message": "Mission Platform Architect — Plateforme & IA Agentique (6 mois)",
+          "author": "CBA Informatique Liberale",
+          "details": {
+            "title": "Platform Architect (Plateforme & IA Agentique)",
+            "company": "CBA Informatique Liberale",
+            "location": "Avignon, France",
+            "description": "Mission de 6 mois (avr. 2026 → sept. 2026) en parallèle du Lead Front-End. Concevoir et faire évoluer une plateforme de développement et de conception, intégrer des capacités agentiques, accompagner les équipes produit et techniques, diffuser une culture plateforme.",
+            "tags": ["IA Agentique", "Platform Engineering", "Developer Experience", "Product Experience"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "studio-manifeste",
+      "name": "Studio Manifeste",
+      "type": "project",
+      "startDate": "2026-01",
+      "endDate": "ongoing",
+      "commits": [
+        {
+          "hash": "stm2026",
+          "date": "2026-01",
+          "message": "Co-fondation Studio Manifeste",
+          "author": "Studio Manifeste",
+          "details": {
+            "title": "Co-fondateur",
+            "company": "Studio Manifeste",
+            "location": "studio.alphaluppi.fr",
+            "description": "Agence IA pour PME. On aide les PME à intégrer l'IA dans leur métier — conseil, intégration, formation. Sans hype et sans bullshit.",
+            "tags": ["Agence IA", "PME", "Co-fondateur", "Conseil"]
           }
         }
       ]
