@@ -1,9 +1,9 @@
 {
   "date": "April 2026",
   "headerLabel": "WHERE I'M AT",
-  "intro": "Living section. Updated when things move.",
+  "intro": "",
   "paragraph": [
-    { "text": "Last month I took on a 6-month mission on top of the Lead Front-End role: Platform Architect at CBA, working on the dev platform and agentic AI for product and tech teams. AgatheYOU keeps shipping. " },
+    { "text": "Last month I took on a 6-month mission on top of the Lead Front-End role: Platform Architect at CBA, working on the dev platform and agentic AI for product and tech teams. AgatheYou keeps shipping. " },
     { "link": { "text": "Studio Manifeste", "url": "https://studio.alphaluppi.fr" } },
     { "text": ", the AI agency I'm co-founding, is taking shape on the side. Two side projects in the oven, no freelance window this quarter." }
   ]
