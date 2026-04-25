@@ -62,10 +62,13 @@ const GitTimeline = (() => {
         const totalPadding = CONFIG.padding.left + CONFIG.padding.right;
         const yearWidth = (availableWidth - totalPadding) / yearCount;
 
-        // Minimum 140px per year — keeps each year readable.
-        // When the timeline grows past the viewport, we let it overflow and
-        // auto-scroll the user to the right (latest events) on init/render.
-        return Math.max(yearWidth, 140);
+        // Soft floor: 100px per year. At default 100% zoom on a normal desktop
+        // the natural fit value (>100) wins, so the timeline fits the viewport
+        // exactly with no horizontal scrollbar. When a user zooms in (CSS
+        // viewport shrinks), the floor kicks in, content overflows, and
+        // render() auto-scrolls to the right — latest events stay visible,
+        // older ones remain accessible by scrolling left.
+        return Math.max(yearWidth, 100);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -344,13 +347,7 @@ const GitTimeline = (() => {
      * Branches are now ABOVE the trunk
      */
     function renderCommitCards(container, branches, totalWidth, trunkY) {
-        // Threshold (px) below which two adjacent commits on the same branch
-        // are considered "horizontally close" and need a vertical stagger to
-        // avoid overlapping. Anything wider than this stays on a single line.
-        const STAGGER_THRESHOLD = 180;
-
-        // Pre-compute commit X positions per branch so we can detect
-        // horizontal collisions before deciding the vertical stagger.
+        // Natural X position of a commit (its true date on the timeline).
         function commitXFor(branch, commit, idx) {
             if (idx === 0) return branch._startX + CONFIG.curveRadius + 10;
             const commitDate = parseDate(commit.date);
@@ -358,43 +355,49 @@ const GitTimeline = (() => {
             return branch._startX + CONFIG.curveRadius + 10 + (idx * 220);
         }
 
+        // Minimum horizontal gap between adjacent markers on the same branch
+        // (in px). When two commits would visually collide at their natural
+        // dates, the later one is nudged right just enough to clear the prev.
+        const MARKER_GAP = 8;
+
         branches.forEach(branch => {
             // laneY is above the trunk (smaller Y value)
             const laneY = trunkY - (branch._lane + 1) * CONFIG.laneHeight;
             const color = CONFIG.colors[branch.type] || CONFIG.colors.work;
             const ongoing = isOngoing(branch);
 
-            branch.commits.forEach((commit, idx) => {
-                const commitX = commitXFor(branch, commit, idx);
+            // Tracks the right edge of the previously rendered marker on this
+            // branch — used to shift the next one rightwards when its natural
+            // date would put it under the previous label.
+            let prevMarkerRight = -Infinity;
 
-                // Vertical stagger:
-                // - Single commit OR first commit of a multi-commit branch:
-                //   sit centered on the branch line (-14).
-                // - Subsequent commits: stay on the line if the previous
-                //   commit is far enough horizontally; otherwise alternate
-                //   above/below to avoid overlap (+22 = below the line).
-                let verticalStagger = -14;
-                if (idx > 0) {
-                    const prevX = commitXFor(branch, branch.commits[idx - 1], idx - 1);
-                    const gap = commitX - prevX;
-                    if (gap < STAGGER_THRESHOLD) {
-                        verticalStagger = (idx % 2 === 1) ? 22 : -14;
-                    }
-                }
+            branch.commits.forEach((commit, idx) => {
+                let commitX = commitXFor(branch, commit, idx);
 
                 const marker = document.createElement('div');
                 marker.className = `git-commit-marker git-commit-${branch.type} ${ongoing ? 'ongoing' : ''}`;
                 marker.dataset.branchId = branch.id;
                 //Do not show hash for the first one
                 //marker.dataset.commitHash = commit.hash;
+                // All markers sit centered on the branch line — keeping them
+                // on a single horizontal line. If two commits are too close
+                // horizontally, the second one shifts right (see below) so
+                // they sit side-by-side instead of stacking vertically.
                 marker.style.left = `${commitX}px`;
-                marker.style.top = `${laneY + verticalStagger}px`;
+                marker.style.top = `${laneY - 14}px`;
                 marker.style.setProperty('--branch-color', color);
 
-                // Format date range
-                const startYear = branch.startDate.split('-')[0];
-                const endYear = ongoing ? 'Present' : branch.endDate.split('-')[0];
-                const dateRange = `${startYear} - ${endYear}`;
+                // Format date range — commit-level override (commit.details.dateRange)
+                // wins, so a sub-mission with bounded dates (e.g. "Apr 2026 → Sept 2026")
+                // can override its parent branch's open-ended "2024 - Present".
+                let dateRange;
+                if (commit.details.dateRange) {
+                    dateRange = commit.details.dateRange;
+                } else {
+                    const startYear = branch.startDate.split('-')[0];
+                    const endYear = ongoing ? 'Present' : branch.endDate.split('-')[0];
+                    dateRange = `${startYear} - ${endYear}`;
+                }
 
                 // Compact marker label, in priority order:
                 // 1. commit.details.markerLabel (per-commit override, e.g. "Skoolbook")
@@ -427,6 +430,17 @@ const GitTimeline = (() => {
                 //marker.dataset.hash = commit.hash;
 
                 container.appendChild(marker);
+
+                // After the marker is in the DOM we know its real width.
+                // If its natural left edge sits inside the previous sibling's
+                // bounding box, nudge it right just enough to clear (no
+                // vertical stacking — Tom prefers single-line lanes).
+                const markerWidth = marker.offsetWidth;
+                if (commitX < prevMarkerRight + MARKER_GAP) {
+                    commitX = prevMarkerRight + MARKER_GAP;
+                    marker.style.left = `${commitX}px`;
+                }
+                prevMarkerRight = commitX + markerWidth;
             });
         });
     }
