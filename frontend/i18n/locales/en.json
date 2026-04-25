@@ -102,6 +102,16 @@
     "headerLabel": "WHERE I'M AT",
     "intro": "Living section. Updated when things move."
   },
+  "work": {
+    "productBuilder": {
+      "title": "PRODUCT BUILDER",
+      "subtitle": "Lead Front-End @ CBA · AgatheYOU · side projects."
+    },
+    "transformationIa": {
+      "title": "AI TRANSFORMATION",
+      "subtitle": "Platform & agentic AI at CBA, AI agency at Studio Manifeste."
+    }
+  },
   "blog": {
     "subtitle": "Thoughts on product engineering, building meaningful products, and technology.",
     "minRead": "min read",
