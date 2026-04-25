@@ -112,6 +112,9 @@
       "subtitle": "Platform & agentic AI at CBA, AI agency at Studio Manifeste."
     }
   },
+  "writing": {
+    "intro": "Notes, posts, and what I'm learning while building."
+  },
   "blog": {
     "subtitle": "Thoughts on product engineering, building meaningful products, and technology.",
     "minRead": "min read",

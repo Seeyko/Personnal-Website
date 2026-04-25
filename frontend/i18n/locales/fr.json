@@ -112,6 +112,9 @@
       "subtitle": "Plateforme & IA agentique chez CBA, agence IA chez Studio Manifeste."
     }
   },
+  "writing": {
+    "intro": "Notes, posts, et ce que j'apprends en construisant."
+  },
   "blog": {
     "subtitle": "Product engineering, création de produits, et technologie.",
     "minRead": "min de lecture",
