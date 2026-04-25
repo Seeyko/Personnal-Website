@@ -95,8 +95,8 @@
       ]
     },
     {
-      "id": "skoolbook",
-      "name": "Skoolbook",
+      "id": "side-projects-edu",
+      "name": "Side Projects",
       "type": "project",
       "startDate": "2023-01",
       "endDate": "ongoing",
@@ -108,21 +108,13 @@
           "author": "Skoolbook",
           "details": {
             "title": "Fondateur",
+            "markerLabel": "Skoolbook",
             "company": "Skoolbook",
             "location": "skoolbook.fr",
             "description": "Plateforme de gestion de bibliothèque scolaire pour aider les enseignants à suivre les emprunts et encourager la lecture. Interface intuitive avec fonctionnalités d'autonomie élève.",
             "tags": ["WordPress", "PHP", "UX/UI", "Education"]
           }
-        }
-      ]
-    },
-    {
-      "id": "teachtools",
-      "name": "Teach Tools",
-      "type": "project",
-      "startDate": "2023-06",
-      "endDate": "ongoing",
-      "commits": [
+        },
         {
           "hash": "tt2023",
           "date": "2023-06",
@@ -130,6 +122,7 @@
           "author": "Teach Tools",
           "details": {
             "title": "Fondateur",
+            "markerLabel": "Teach Tools",
             "company": "Teach Tools",
             "location": "teach-tools.com",
             "description": "Assistant pédagogique propulsé par l'IA générant exercices et images pour enseignants. Application Next.js avec intégration IA et pipeline CI/CD.",
@@ -152,7 +145,7 @@
           "author": "CBA Informatique Liberale",
           "details": {
             "title": "Lead Developer · Lead Front-End AgatheYou",
-            "markerLabel": "Lead Front-End AgatheYou",
+            "markerLabel": "Lead Front-End",
             "company": "CBA Informatique Liberale",
             "location": "Avignon, France",
             "description": "Lead d'une équipe de 8 développeurs construisant applications web et mobiles avec Angular & Ionic. Architecture multi-applications et mise en place pipeline CI/CD.",
@@ -166,7 +159,7 @@
           "author": "CBA Informatique Liberale",
           "details": {
             "title": "Platform Architect (Plateforme & IA Agentique)",
-            "markerLabel": "Platform Architect",
+            "markerLabel": "AI Platform Architect",
             "company": "CBA Informatique Liberale",
             "location": "Avignon, France",
             "description": "Mission de 6 mois (avr. 2026 → sept. 2026) en parallèle du Lead Front-End. Concevoir et faire évoluer une plateforme de développement et de conception, intégrer des capacités agentiques, accompagner les équipes produit et techniques, diffuser une culture plateforme.",
