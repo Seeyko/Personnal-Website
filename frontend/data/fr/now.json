@@ -1,9 +1,9 @@
 {
   "date": "avril 2026",
   "headerLabel": "OÙ J'EN SUIS",
-  "intro": "Section vivante. Mise à jour quand ça bouge.",
+  "intro": "",
   "paragraph": [
-    { "text": "Le mois dernier j'ai pris une mission de 6 mois en plus du Lead Front-End : Platform Architect chez CBA, sur la plateforme dev et l'IA agentique pour les équipes produit et tech. AgatheYOU continue d'évoluer en prod. " },
+    { "text": "Le mois dernier j'ai pris une mission de 6 mois en plus du Lead Front-End : Platform Architect chez CBA, sur la plateforme dev et l'IA agentique pour les équipes produit et tech. AgatheYou continue d'évoluer en prod. " },
     { "link": { "text": "Studio Manifeste", "url": "https://studio.alphaluppi.fr" } },
     { "text": ", l'agence IA qu'on co-fonde, prend forme en parallèle. Deux side projects sur le feu, pas de fenêtre freelance ce trimestre." }
   ]

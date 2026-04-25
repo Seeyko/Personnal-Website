@@ -7,7 +7,7 @@
   "hero": {
     "title": "SALUT",
     "signature": "Tom",
-    "quote": "Je code depuis 8 ans. Mon métier, c'est de construire des produits. L'IA n'a pas changé ce métier, elle a changé qui peut le faire et à quelle vitesse. À force de construire avec elle, j'ai commencé à aider d'autres équipes à l'intégrer dans leur quotidien. Même métier, deux angles."
+    "quote": "Je code depuis 8 ans. Mon métier, c'est de construire des produits. L'IA n'a pas changé ce métier, elle a changé qui peut le faire et à quelle vitesse. À force de construire avec elle, j'ai commencé à aider d'autres équipes à l'intégrer dans leur quotidien."
   },
   "about": {
     "intro": "Je crois qu'on apprend un métier <highlight>en le faisant</highlight>, et qu'on apprend à le transformer <highlight>en l'ayant fait</highlight>.",
@@ -100,7 +100,7 @@
   },
   "now": {
     "headerLabel": "OÙ J'EN SUIS",
-    "intro": "Section vivante. Mise à jour quand ça bouge."
+    "intro": ""
   },
   "work": {
     "productBuilder": {
