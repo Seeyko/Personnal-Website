@@ -170,46 +170,23 @@ body[data-theme="default"] .hero-content {
   z-index: 1;
 }
 
+/* Hero centers on the manifesto — small, clean, left-aligned, no
+   decorative quote glyph, no italic. SALUT is hidden, the citation
+   IS the hero, signed "— Tom" right below. */
 body[data-theme="default"] .hero-title {
-  margin-bottom: var(--spacing-lg);
-  max-width: 720px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-  padding-left: 0;
+  display: none;
 }
 
-/* Big confident greeting — anchors the hero, dominates the citation that
-   follows. Uses the accent color directly, no opacity dimming. */
-body[data-theme="default"] .hero-title .title-line {
-  display: block;
-  font-size: clamp(3rem, 7vw, 5.5rem);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  text-transform: none;
-  color: var(--accent);
-  -webkit-text-fill-color: var(--accent);
-  opacity: 1;
-}
-
-body[data-theme="default"] .hero-title .title-line:last-child {
-  color: var(--accent);
-  -webkit-text-fill-color: var(--accent);
-  opacity: 1;
-}
-
-/* Citation reads as a quiet supporting line under SALUT — same width,
-   centered, no heavy border or oversized decorative quote glyph. */
 body[data-theme="default"] .hero-subtitle {
-  font-size: clamp(1rem, 1.6vw, 1.2rem);
-  color: var(--text-secondary);
+  font-family: var(--font-sans, system-ui);
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  color: var(--text-primary);
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.65;
   max-width: 640px;
-  margin: 0 auto var(--spacing-lg);
+  margin: 0 auto;
   letter-spacing: 0;
-  text-align: center;
+  text-align: left;
   font-style: normal;
 }
 
@@ -217,6 +194,7 @@ body[data-theme="default"] .hero-quote-paragraph {
   position: relative;
   padding: 0;
   border-left: none;
+  margin: 0;
 }
 
 body[data-theme="default"] .hero-quote-paragraph::before {
@@ -225,6 +203,19 @@ body[data-theme="default"] .hero-quote-paragraph::before {
 
 body[data-theme="default"] .hero-subtitle .annotation-mark {
   display: none;
+}
+
+/* Signature on the same column, left-aligned, accent color, small */
+body[data-theme="default"] .hero-signature {
+  font-family: var(--font-sans, system-ui);
+  font-size: 0.95rem;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--accent);
+  text-align: left;
+  max-width: 640px;
+  margin: 0.75rem auto 0;
+  letter-spacing: 0.02em;
 }
 
 /* Scroll Indicator - Hidden in default theme as social proof stats take this space */

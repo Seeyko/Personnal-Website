@@ -447,6 +447,17 @@ body[data-theme="terminal"] .hero-subtitle .annotation-mark {
   display: none;
 }
 
+/* Signature inside the manifesto box — looks like a sign-off comment */
+body[data-theme="terminal"] .hero-signature {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  color: var(--secondary);
+  font-size: 0.9rem;
+  text-align: right;
+  margin: var(--spacing-sm) 0 0;
+  padding-left: 1rem;
+  letter-spacing: 0.05em;
+}
+
 body[data-theme="terminal"] .hero-stats {
   flex-direction: column;
   gap: 0.5rem;
@@ -599,6 +610,12 @@ body[data-theme="terminal"] .project-card::before {
   height: 100%;
   background: linear-gradient(135deg, rgba(51, 255, 0, 0.02) 0%, transparent 50%);
   pointer-events: none;
+  /* Reset .project-card.no-image::before's border/radius cascade leak —
+     on terminal the type badge is rendered inside the header instead, so
+     this pseudo-element is only the gradient overlay. Without these resets
+     the no-image rule would draw a giant dashed ellipse around each card. */
+  border: none;
+  border-radius: 0;
 }
 
 body[data-theme="terminal"] .project-card:hover {
