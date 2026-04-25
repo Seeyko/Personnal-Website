@@ -378,15 +378,34 @@
       <div class="section-divider">═══════════════════════════════════════════════════════</div>
     </div>
 
-    <div id="projects-grid" class="projects-grid">
-      <div class="projects-grid-loading">
-        <span class="loading-text" data-i18n="ui.loadingProjects">Loading projects...</span>
-        <span class="loading-spinner">⣾⣽⣻⢿⡿⣟⣯⣷</span>
+    <!-- Hidden legacy grid (kept for back-compat with theme-init renderProjects fallback) -->
+    <div id="projects-grid" class="projects-grid projects-grid-hidden" hidden></div>
+
+    <!-- Territory 1: Product Builder -->
+    <div class="work-territory" id="territory-product-builder">
+      <header class="work-territory-header">
+        <h3 class="work-territory-title" data-i18n="work.productBuilder.title">PRODUCT BUILDER</h3>
+        <p class="work-territory-subtitle" data-i18n="work.productBuilder.subtitle">Lead Front-End @ CBA · AgatheYOU · side projects.</p>
+      </header>
+      <div id="work-product-builder-grid" class="projects-grid">
+        <div class="projects-grid-loading">
+          <span class="loading-text" data-i18n="ui.loadingProjects">Chargement des projets...</span>
+          <span class="loading-spinner">⣾⣽⣻⢿⡿⣟⣯⣷</span>
+        </div>
       </div>
     </div>
 
+    <!-- Territory 2: Transformation IA -->
+    <div class="work-territory" id="territory-transformation-ia">
+      <header class="work-territory-header">
+        <h3 class="work-territory-title" data-i18n="work.transformationIa.title">TRANSFORMATION IA</h3>
+        <p class="work-territory-subtitle" data-i18n="work.transformationIa.subtitle">Plateforme & IA agentique chez CBA, agence IA chez Studio Manifeste.</p>
+      </header>
+      <div id="work-transformation-ia-grid" class="projects-grid"></div>
+    </div>
+
     <div class="section-footer">
-      <span class="footer-info">total 4 projects | drwxr-xr-x</span>
+      <span class="footer-info" id="work-footer-info">total — | drwxr-xr-x</span>
       <span class="coord-marker">x: 0, y: 1200</span>
     </div>
   </section>

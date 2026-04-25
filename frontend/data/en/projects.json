@@ -1,9 +1,18 @@
 [
     {
+        "id": "agatheyou",
+        "title": "AgatheYOU",
+        "description": "Lead Front-End on AgatheYOU @ CBA. Health app for liberal practitioners, Angular & Ionic, team of 8 developers.",
+        "type": "PRODUCT (CBA)",
+        "category": "product-builder",
+        "tags": ["Angular", "Ionic", "Lead Front-End", "Healthcare"]
+    },
+    {
         "id": "ride-my-park",
         "title": "Ride My Park",
         "description": "Find nearby spots among 30K skateparks, street spots & pumptracks for BMX, Skateboard, Aggressive Inline, Freestyle Scooter on Ride My Park.",
         "type": "WEB APPLICATION",
+        "category": "product-builder",
         "url": "https://ridemypark.com",
         "images": [
             "/assets/ridemypark-mobile-store-wallpaper.jpg",
@@ -17,6 +26,7 @@
         "title": "Skoolbook",
         "description": "Skoolbook is a platform I designed with my partner, a school teacher, to optimize school library management. It offers an intuitive interface for teachers, simplifies book loan tracking, and encourages student autonomy.",
         "type": "WEB APPLICATION",
+        "category": "product-builder",
         "url": "https://skoolbook.fr",
         "images": [
             "/assets/skoolbook-landing-page.png",
@@ -31,6 +41,7 @@
         "title": "Teach Tools",
         "description": "A digital teaching assistant with innovative tools to simplify teachers' daily work. Generate exercises and images using AI.",
         "type": "AI TOOL",
+        "category": "product-builder",
         "url": "https://teach-tools.com",
         "images": [
             "/assets/teach-tools-exercise-generation.png",
@@ -45,6 +56,7 @@
         "title": "GyroDex",
         "description": "A pokedex for Animal Crossing. List and save which Animal Crossing creatures you've collected, with friends. Full vibe coding to have fun with AI.",
         "type": "WEB APP",
+        "category": "product-builder",
         "url": "https://v0-animal-crossing-gyroides.vercel.app",
         "images": [
             "/assets/girodex-gyroide-collection.png",
@@ -52,5 +64,22 @@
             "/assets/girodex-friends-dashboard.png"
         ],
         "tags": ["Next.js", "Vercel", "Gaming"]
+    },
+    {
+        "id": "platform-architect-cba",
+        "title": "Platform Architect @ CBA",
+        "description": "6-month mission: design and evolve a development and design platform integrating agentic capabilities, to improve efficiency, quality and autonomy of product and technical teams. Platform, tools, agents, enablement, evangelism.",
+        "type": "MISSION (6 MONTHS)",
+        "category": "transformation-ia",
+        "tags": ["Agentic AI", "Platform Engineering", "Developer Experience", "Product Experience"]
+    },
+    {
+        "id": "studio-manifeste",
+        "title": "Studio Manifeste",
+        "description": "AI agency for SMEs that I'm co-founding. We help SMEs integrate AI into their business, without hype and without bullshit. Advisory, integration, training.",
+        "type": "AI AGENCY",
+        "category": "transformation-ia",
+        "url": "https://studio.alphaluppi.fr",
+        "tags": ["AI Agency", "SMEs", "Co-founder", "Advisory"]
     }
 ]
