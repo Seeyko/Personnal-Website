@@ -326,14 +326,10 @@ body[data-theme="blueprint"] .hero-content {
   text-align: center;
 }
 
+/* Hero now centers on the citation. The big SALUT/HEY headline is hidden
+   so the manifesto can speak for itself, signed "— Tom" at the bottom. */
 body[data-theme="blueprint"] .hero-title {
-  font-family: var(--font-technical);
-  font-size: clamp(3rem, 10vw, 8rem);
-  font-weight: 700;
-  line-height: 1.1;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  align-items: center;
+  display: none;
 }
 
 body[data-theme="blueprint"] .title-line {
@@ -356,22 +352,32 @@ body[data-theme="blueprint"] .hero-subtitle {
   animation-delay: 1.5s;
 }
 
-/* Paragraph form: tighter letter-spacing, slightly bigger size for body readability */
+/* Manifesto: small mono, left-aligned, no big * markers — keeps the
+   blueprint type (technical mono) but stays understated. */
 body[data-theme="blueprint"] .hero-subtitle.hero-quote {
-  font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
   letter-spacing: 0.02em;
   max-width: 640px;
-  margin: var(--spacing-md) auto var(--spacing-lg);
+  margin: var(--spacing-md) auto 0;
   text-align: left;
-  line-height: 1.75;
+  line-height: 1.7;
+  color: var(--text-primary, #fff);
 }
 
 body[data-theme="blueprint"] .annotation-mark {
-  color: var(--accent-redline);
+  display: none;
 }
 
-body[data-theme="blueprint"] .annotation-mark::before {
-  content: '*';
+/* Signature: technical mono, redline color, left-aligned same column */
+body[data-theme="blueprint"] .hero-signature {
+  font-family: var(--font-technical);
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-redline);
+  text-align: left;
+  max-width: 640px;
+  margin: 0.75rem auto 0;
 }
 
 /* Hero Annotation (Handwritten) */
