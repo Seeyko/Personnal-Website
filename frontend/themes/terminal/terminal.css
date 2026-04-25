@@ -405,6 +405,22 @@ body[data-theme="terminal"] .hero-subtitle {
   text-shadow: var(--glow-primary);
 }
 
+/* Paragraph form (post-repositioning hero copy): readable size, mono, left-aligned */
+body[data-theme="terminal"] .hero-subtitle.hero-quote {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  letter-spacing: 0.02em;
+  text-shadow: none;
+  max-width: 640px;
+  margin: var(--spacing-md) auto var(--spacing-lg);
+  text-align: left;
+  line-height: 1.75;
+}
+
+body[data-theme="terminal"] .hero-quote-paragraph {
+  color: var(--primary);
+}
+
 body[data-theme="terminal"] .hero-subtitle .annotation-mark::before {
   content: '>';
   animation: blink-fast 0.5s step-end infinite;

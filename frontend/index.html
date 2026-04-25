@@ -169,19 +169,15 @@
           <span class="nav-prefix"></span>
           <span class="nav-text" data-i18n="nav.work">Work</span>
         </a>
-        <a href="#writing" class="nav-link" data-section="03">
-          <span class="nav-prefix"></span>
-          <span class="nav-text" data-i18n="nav.writing">Writing</span>
-        </a>
-        <a href="#timeline" class="nav-link" data-section="04">
+        <a href="#timeline" class="nav-link" data-section="03">
           <span class="nav-prefix"></span>
           <span class="nav-text" data-i18n="nav.history">History</span>
         </a>
-        <a href="#about" class="nav-link" data-section="05">
+        <a href="#about" class="nav-link" data-section="04">
           <span class="nav-prefix"></span>
           <span class="nav-text" data-i18n="nav.about">About</span>
         </a>
-        <a href="#contact" class="nav-link" data-section="06">
+        <a href="#contact" class="nav-link" data-section="05">
           <span class="nav-prefix"></span>
           <span class="nav-text" data-i18n="nav.contact">Contact</span>
         </a>
@@ -275,11 +271,7 @@
 
       <div class="hero-subtitle hero-quote">
         <span class="annotation-mark hero-quote-mark-open"></span>
-        <p class="hero-quote-line" data-i18n="hero.quote.0">Je suis product builder.</p>
-        <p class="hero-quote-line" data-i18n="hero.quote.1">Mais à force de construire avec l'IA,</p>
-        <p class="hero-quote-line" data-i18n="hero.quote.2">j'ai commencé à transformer les équipes</p>
-        <p class="hero-quote-line" data-i18n="hero.quote.3">qui construisent des produits.</p>
-        <p class="hero-quote-line hero-quote-final" data-i18n="hero.quote.4">Maintenant je fais les deux.</p>
+        <p class="hero-quote-paragraph" data-i18n="hero.quote">Je code depuis 8 ans. Mon métier, c'est de construire des produits. L'IA n'a pas changé ce métier, elle a changé qui peut le faire et à quelle vitesse. À force de construire avec elle, j'ai commencé à aider d'autres équipes à l'intégrer dans leur quotidien. Même métier, deux angles.</p>
         <span class="annotation-mark hero-quote-mark-close"></span>
       </div>
 
@@ -346,7 +338,7 @@
       <div class="section-label">
         <span class="section-number">01</span>
         <span class="section-prompt">$</span>
-        <h2 class="section-title" data-glitch="/NOW" data-i18n="sections.now">/NOW</h2>
+        <h2 class="section-title" data-glitch="NOW" data-i18n="sections.now">NOW</h2>
       </div>
       <div class="section-divider">═══════════════════════════════════════════════════════</div>
     </div>
@@ -359,9 +351,7 @@
         </div>
         <div class="card-body">
           <p class="now-intro"><span class="code-comment-marker">/* </span><span data-i18n="now.intro">Section vivante. Mise à jour quand ça bouge.</span><span class="code-comment-marker"> */</span></p>
-          <ul class="now-list" id="now-list">
-            <li class="now-list-loading" data-i18n="ui.loadingNow">Chargement...</li>
-          </ul>
+          <p class="now-paragraph" id="now-paragraph"><span class="now-paragraph-loading" data-i18n="ui.loadingNow">Chargement...</span></p>
         </div>
       </div>
     </div>
@@ -414,7 +404,7 @@
   <section id="about" class="about">
     <div class="section-header">
       <div class="section-label">
-        <span class="section-number">05</span>
+        <span class="section-number">04</span>
         <span class="section-prompt">$</span>
         <h2 class="section-title" data-glitch="ABOUT" data-i18n="sections.about">ABOUT</h2>
       </div>
@@ -444,9 +434,9 @@
             <!-- Populated from content.json -->
           </div>
 
-          <div class="tech-stack">
-            <p class="code-comment">/* Tech stack */</p>
-            <div class="tech-grid" id="tech-grid">
+          <div class="craft-stack">
+            <p class="code-comment">/* Stack */</p>
+            <div class="craft-block" id="craft-block">
               <!-- Populated from content.json -->
             </div>
           </div>
@@ -464,7 +454,7 @@
   <section id="timeline" class="git-timeline-section">
     <div class="section-header">
       <div class="section-label">
-        <span class="section-number">04</span>
+        <span class="section-number">03</span>
         <span class="section-prompt">$</span>
         <h2 class="section-title" data-glitch="HISTORY" data-i18n="sections.history">HISTORY</h2>
       </div>
@@ -488,42 +478,11 @@
     </div>
   </section>
 
-  <!-- Writing Section (blog excerpts on home) -->
-  <section id="writing" class="blog writing">
-    <div class="section-header">
-      <div class="section-label">
-        <span class="section-number">03</span>
-        <span class="section-prompt">$</span>
-        <h2 class="section-title" data-glitch="WRITING" data-i18n="sections.writing">WRITING</h2>
-      </div>
-      <div class="section-divider">═══════════════════════════════════════════════════════</div>
-    </div>
-
-    <p class="writing-intro" data-i18n="writing.intro">Notes, posts, et ce que j'apprends en construisant.</p>
-
-    <div id="blog-grid" class="blog-grid">
-      <div class="blog-grid-loading">
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-      </div>
-    </div>
-
-    <div class="blog-footer">
-      <a href="/blog/" class="view-all-link">
-        <span class="link-bracket">[</span>
-        <span data-i18n="ui.viewAllArticles">VIEW ALL ARTICLES</span>
-        <span class="link-bracket">]</span>
-        <span class="link-arrow">→</span>
-      </a>
-    </div>
-  </section>
-
   <!-- Contact Section -->
   <section id="contact" class="contact">
     <div class="section-header">
       <div class="section-label">
-        <span class="section-number">06</span>
+        <span class="section-number">05</span>
         <span class="section-prompt">$</span>
         <h2 class="section-title" data-glitch="CONTACT" data-i18n="sections.contact">CONTACT</h2>
       </div>

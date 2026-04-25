@@ -1,13 +1,5 @@
 [
     {
-        "id": "agatheyou",
-        "title": "AgatheYOU",
-        "description": "Lead Front-End sur AgatheYOU @ CBA. Application santé pour les professionnels libéraux, Angular & Ionic, équipe de 8 développeurs.",
-        "type": "PRODUIT (CBA)",
-        "category": "product-builder",
-        "tags": ["Angular", "Ionic", "Lead Front-End", "Santé"]
-    },
-    {
         "id": "ride-my-park",
         "title": "Ride My Park",
         "description": "Trouvez des spots près de chez vous parmi 30K skateparks, street spots et pumptracks pour BMX, Skateboard, Roller, Trottinette Freestyle sur Ride My Park.",

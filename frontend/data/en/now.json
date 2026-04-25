@@ -2,30 +2,9 @@
   "date": "April 2026",
   "headerLabel": "WHERE I'M AT",
   "intro": "Living section. Updated when things move.",
-  "items": [
-    {
-      "key": "build",
-      "label": "Build",
-      "value": "Lead Front-End @ CBA · AgatheYOU · side projects."
-    },
-    {
-      "key": "transform",
-      "label": "Transform",
-      "value": "Platform Architect @ CBA · month 1/6 — platform & agentic AI for product and tech teams."
-    },
-    {
-      "key": "studio",
-      "label": "Studio",
-      "value": "Studio Manifeste — the AI agency for SMEs, in the works.",
-      "link": {
-        "url": "https://studio.alphaluppi.fr",
-        "text": "studio.alphaluppi.fr"
-      }
-    },
-    {
-      "key": "freelance",
-      "label": "Freelance",
-      "value": "No open mission right now."
-    }
+  "paragraph": [
+    { "text": "Last month I took on a 6-month mission on top of the Lead Front-End role: Platform Architect at CBA, working on the dev platform and agentic AI for product and tech teams. AgatheYOU keeps shipping. " },
+    { "link": { "text": "Studio Manifeste", "url": "https://studio.alphaluppi.fr" } },
+    { "text": ", the AI agency I'm co-founding, is taking shape on the side. Two side projects in the oven, no freelance window this quarter." }
   ]
 }
