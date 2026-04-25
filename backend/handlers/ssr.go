@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -61,14 +62,18 @@ type ssrArticle struct {
 	RequiresPassword bool   `json:"requiresPassword,omitempty"`
 }
 
+// listingPageSize is the number of articles per page on the blog listing.
+const listingPageSize = 10
+
+// sitemapPageSize is the page size used when paginating articles for the sitemap.
+const sitemapPageSize = 100
+
 func NewSSRHandler(service *services.ArticleService, shareLinkService *services.ShareLinkService, frontendURL, apiURL string) *SSRHandler {
 	funcMap := template.FuncMap{
 		"formatDate": formatDateForSSR,
-		"safeHTML":   func(s string) template.HTML { return template.HTML(s) },
-		"toJSON": func(v interface{}) template.JS {
-			b, _ := json.Marshal(v)
-			return template.JS(b)
-		},
+		// safeHTML marks article content as pre-sanitized HTML. Article content
+		// is produced by the trusted markdown pipeline; do not pass user input.
+		"safeHTML": func(s string) template.HTML { return template.HTML(s) },
 		"isoDate": func(t time.Time) string {
 			return t.Format("2006-01-02")
 		},
@@ -106,7 +111,9 @@ func (h *SSRHandler) renderToResponse(w http.ResponseWriter, statusCode int, dat
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(statusCode)
-	buf.WriteTo(w)
+	if _, err := buf.WriteTo(w); err != nil {
+		log.Printf("[SSR] Response write error: %v", err)
+	}
 }
 
 // ServeBlogPage handles GET /blog/ and GET /blog/{slug}/.
@@ -123,7 +130,11 @@ func (h *SSRHandler) ServeBlogPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *SSRHandler) renderListing(w http.ResponseWriter, r *http.Request, lang string) {
-	response := h.service.GetPublicArticles(1, 10, lang)
+	page := 1
+	if p, err := strconv.Atoi(r.URL.Query().Get("page")); err == nil && p > 0 {
+		page = p
+	}
+	response := h.service.GetPublicArticles(page, listingPageSize, lang)
 
 	// Build SSR data for JS hydration
 	ssrArticles := make([]ssrArticle, len(response.Articles))
@@ -314,19 +325,67 @@ func (h *SSRHandler) ServeSitemap(w http.ResponseWriter, r *http.Request) {
 		{Loc: h.frontendURL + "/blog/"},
 	}
 
-	// Collect unique slugs from FR articles (canonical), add hreflang links
-	resp := h.service.GetPublicArticles(1, 100, "fr")
-	for _, a := range resp.Articles {
-		base := h.frontendURL + "/blog/" + a.Slug + "/"
-		urls = append(urls, URL{
-			Loc:     base,
-			LastMod: a.PublishedAt.Format("2006-01-02"),
-			Links: []Link{
+	// Collect every public FR article (canonical). Mark each with an EN
+	// alternate only when an EN translation actually exists.
+	enSlugs := map[string]bool{}
+	for page := 1; ; page++ {
+		resp := h.service.GetPublicArticles(page, sitemapPageSize, "en")
+		for _, a := range resp.Articles {
+			enSlugs[a.Slug] = true
+		}
+		if !resp.Pagination.HasNext {
+			break
+		}
+	}
+	for page := 1; ; page++ {
+		resp := h.service.GetPublicArticles(page, sitemapPageSize, "fr")
+		for _, a := range resp.Articles {
+			base := h.frontendURL + "/blog/" + a.Slug + "/"
+			links := []Link{
 				{Rel: "alternate", Hreflang: "fr", Href: base},
-				{Rel: "alternate", Hreflang: "en", Href: base + "?lang=en"},
 				{Rel: "alternate", Hreflang: "x-default", Href: base},
-			},
-		})
+			}
+			if enSlugs[a.Slug] {
+				links = append(links, Link{Rel: "alternate", Hreflang: "en", Href: base + "?lang=en"})
+			}
+			urls = append(urls, URL{
+				Loc:     base,
+				LastMod: a.PublishedAt.Format("2006-01-02"),
+				Links:   links,
+			})
+		}
+		if !resp.Pagination.HasNext {
+			break
+		}
+	}
+	// EN-only articles (no FR canonical) still deserve a sitemap entry.
+	frSlugs := map[string]bool{}
+	for _, u := range urls {
+		// Extract slug from "<frontend>/blog/<slug>/"
+		if strings.HasPrefix(u.Loc, h.frontendURL+"/blog/") && u.Loc != h.frontendURL+"/blog/" {
+			s := strings.TrimSuffix(strings.TrimPrefix(u.Loc, h.frontendURL+"/blog/"), "/")
+			frSlugs[s] = true
+		}
+	}
+	for page := 1; ; page++ {
+		resp := h.service.GetPublicArticles(page, sitemapPageSize, "en")
+		for _, a := range resp.Articles {
+			if frSlugs[a.Slug] {
+				continue
+			}
+			base := h.frontendURL + "/blog/" + a.Slug + "/"
+			urls = append(urls, URL{
+				Loc:     base + "?lang=en",
+				LastMod: a.PublishedAt.Format("2006-01-02"),
+				Links: []Link{
+					{Rel: "alternate", Hreflang: "en", Href: base + "?lang=en"},
+					{Rel: "alternate", Hreflang: "x-default", Href: base + "?lang=en"},
+				},
+			})
+		}
+		if !resp.Pagination.HasNext {
+			break
+		}
 	}
 
 	sitemap := URLSet{
@@ -335,11 +394,19 @@ func (h *SSRHandler) ServeSitemap(w http.ResponseWriter, r *http.Request) {
 		URLs:       urls,
 	}
 
-	w.Header().Set("Content-Type", "application/xml; charset=utf-8")
-	w.Write([]byte(xml.Header))
-	enc := xml.NewEncoder(w)
+	var buf bytes.Buffer
+	buf.WriteString(xml.Header)
+	enc := xml.NewEncoder(&buf)
 	enc.Indent("", "  ")
-	enc.Encode(sitemap)
+	if err := enc.Encode(sitemap); err != nil {
+		log.Printf("[SSR] Sitemap encode error: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/xml; charset=utf-8")
+	if _, err := buf.WriteTo(w); err != nil {
+		log.Printf("[SSR] Sitemap write error: %v", err)
+	}
 }
 
 // ServeRobots serves a robots.txt pointing to the sitemap.

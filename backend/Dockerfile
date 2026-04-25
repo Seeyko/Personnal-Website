@@ -4,11 +4,6 @@ WORKDIR /build
 
 RUN apk add --no-cache git
 
-# Cache bust — changing this value invalidates all layers below (backend source + articles)
-# Update this on every deploy that needs a fresh build
-ARG CACHE_BUST=2026-04-13-ssr
-RUN echo "Cache bust: ${CACHE_BUST}"
-
 # Copy Go module files first (from backend directory in context)
 COPY backend/go.mod backend/go.sum* ./
 RUN go mod download 2>/dev/null || go mod tidy
@@ -25,7 +20,12 @@ WORKDIR /app
 
 COPY --from=builder /app/server .
 
-# Copy articles from the repo
+# Cache bust — changing this value invalidates the articles layer below.
+# Bump on deploys that need fresh articles without changing backend source.
+ARG CACHE_BUST=2026-04-25-ssr
+RUN echo "Articles cache bust: ${CACHE_BUST}"
+
+# Copy articles from the repo (ensures fresh articles on every build)
 COPY blog/articles /app/articles
 
 EXPOSE 3000
