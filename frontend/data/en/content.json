@@ -1,21 +1,27 @@
 {
   "meta": {
     "name": "Tom Andrieu",
-    "title": "Product Engineer",
-    "description": "Product Engineer. I build products end-to-end, talk to users, iterate fast, and help teams do their best work."
+    "title": "Product Builder · AI Transformation",
+    "description": "Product Builder and AI Transformation. I build products, and I transform with AI the teams that build products."
   },
   "hero": {
-    "title": ["PRODUCT", "ENGINEER"],
-    "subtitle": "BUILD. REFINE. OWN THE OUTCOME."
+    "title": "HEY",
+    "quote": [
+      "I'm a product builder.",
+      "But by building with AI,",
+      "I started transforming the teams",
+      "who build products.",
+      "Now I do both."
+    ]
   },
   "about": {
-    "intro": "I build products for <highlight>REAL USERS</highlight> and help small teams <highlight>MOVE FAST</highlight>.",
-    "detail": "I talk to users, own problems end-to-end, and iterate until it works. I'd rather build something small that matters than plan something big that doesn't. Working with AI has made me even more optimistic about what focused teams can create.",
+    "intro": "I build <highlight>PRODUCTS</highlight>, and I transform with <highlight>AI</highlight> the teams who build them.",
+    "detail": "Build side: Lead Front-End @ CBA (AgatheYOU) and side projects. Transform side: Platform Architect @ CBA (6-month mission on the platform & agentic AI) and co-founder of Studio Manifeste, the AI agency for SMEs. Same craft, two sides.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ YEARS",
-      "focus": "PRODUCT ENGINEERING",
-      "status": "AVAILABLE FOR PROJECTS"
+      "focus": "PRODUCT BUILDER · AGENTIC AI",
+      "status": "ON MISSION"
     }
   },
   "techStack": [

@@ -764,3 +764,26 @@ body.loading * {
   animation: pulse 1.5s infinite;
 }
 
+/* ─── Hero Quote (multi-line manifesto) ─── */
+.hero-quote {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  text-align: center;
+  position: relative;
+}
+
+.hero-quote-line {
+  margin: 0;
+  line-height: 1.6;
+  font-size: inherit;
+  color: inherit;
+}
+
+.hero-quote-final {
+  margin-top: 0.6rem;
+  font-weight: 600;
+  font-style: italic;
+}
+
