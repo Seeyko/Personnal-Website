@@ -405,29 +405,46 @@ body[data-theme="terminal"] .hero-subtitle {
   text-shadow: var(--glow-primary);
 }
 
-/* Paragraph form (post-repositioning hero copy): readable size, mono, left-aligned */
+/* Citation styled as a terminal output panel — same look as the
+   typewriter box above (dark panel + green border), so it reads as
+   a continuation of the terminal session: $ cat manifesto.txt */
 body[data-theme="terminal"] .hero-subtitle.hero-quote {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
   font-size: clamp(0.9rem, 1.4vw, 1.05rem);
   letter-spacing: 0.02em;
   text-shadow: none;
-  max-width: 640px;
+  max-width: 800px;
   margin: var(--spacing-md) auto var(--spacing-lg);
   text-align: left;
   line-height: 1.75;
+  background: var(--bg-terminal-panel);
+  border: 1px solid var(--border);
+  padding: var(--spacing-md);
+  position: relative;
+}
+
+/* Prompt line above the quote: looks like a real shell command */
+body[data-theme="terminal"] .hero-subtitle.hero-quote::before {
+  content: 'tom@dev:~$ cat manifesto.txt';
+  display: block;
+  color: var(--secondary);
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px dashed var(--muted);
+  font-size: 1rem;
 }
 
 body[data-theme="terminal"] .hero-quote-paragraph {
   color: var(--primary);
+  padding-left: 1rem;
+  border-left: 2px solid var(--muted);
+  margin: 0;
 }
 
-body[data-theme="terminal"] .hero-subtitle .annotation-mark::before {
-  content: '>';
-  animation: blink-fast 0.5s step-end infinite;
-}
-
-body[data-theme="terminal"] .hero-subtitle .annotation-mark:last-child::before {
-  content: '<';
+/* Drop the > / < animated annotations — the cat-prefix replaces them */
+body[data-theme="terminal"] .hero-subtitle .annotation-mark {
+  display: none;
 }
 
 body[data-theme="terminal"] .hero-stats {
