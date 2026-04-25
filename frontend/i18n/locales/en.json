@@ -6,7 +6,8 @@
   },
   "hero": {
     "title": "HEY",
-    "quote": "I've been coding for 8 years. My job is building products. AI didn't change that craft, it changed who can do it and how fast. From building with it, I ended up helping other teams fold it into their day-to-day work. Same craft, two angles."
+    "signature": "Tom",
+    "quote": "I've been coding for 8 years. My job is building products. AI didn't change that craft, it changed who can do it and how fast. From building with it, I ended up helping other teams fold it into their day-to-day work."
   },
   "about": {
     "intro": "I think you learn a craft <highlight>by doing it</highlight>, and you learn to transform a craft <highlight>by having done it</highlight>.",
@@ -99,7 +100,7 @@
   },
   "now": {
     "headerLabel": "WHERE I'M AT",
-    "intro": "Living section. Updated when things move."
+    "intro": ""
   },
   "work": {
     "productBuilder": {

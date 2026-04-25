@@ -62,9 +62,13 @@ const GitTimeline = (() => {
         const totalPadding = CONFIG.padding.left + CONFIG.padding.right;
         const yearWidth = (availableWidth - totalPadding) / yearCount;
 
-        // Minimum 48px per year — keeps timeline fitting in narrower viewports
-        // before the horizontal scrollbar kicks in
-        return Math.max(yearWidth, 48);
+        // Pure fit-to-viewport, no minimum floor: the timeline always
+        // tiles the available width exactly, so it never overflows and
+        // never shows a horizontal scrollbar — at any zoom level. The
+        // trade-off is that very small viewports may compress markers,
+        // but on desktop (>=1025px, where the horizontal timeline shows)
+        // the natural fit stays comfortable.
+        return Math.max(yearWidth, 30);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -343,53 +347,68 @@ const GitTimeline = (() => {
      * Branches are now ABOVE the trunk
      */
     function renderCommitCards(container, branches, totalWidth, trunkY) {
+        // Natural X position of a commit (its true date on the timeline).
+        function commitXFor(branch, commit, idx) {
+            if (idx === 0) return branch._startX + CONFIG.curveRadius + 10;
+            const commitDate = parseDate(commit.date);
+            if (commitDate != null) return yearToX(commitDate);
+            return branch._startX + CONFIG.curveRadius + 10 + (idx * 220);
+        }
+
+        // Minimum horizontal gap between adjacent markers on the same branch
+        // (in px). When two commits would visually collide at their natural
+        // dates, the later one is nudged right just enough to clear the prev.
+        const MARKER_GAP = 8;
+
         branches.forEach(branch => {
             // laneY is above the trunk (smaller Y value)
             const laneY = trunkY - (branch._lane + 1) * CONFIG.laneHeight;
             const color = CONFIG.colors[branch.type] || CONFIG.colors.work;
             const ongoing = isOngoing(branch);
 
-            branch.commits.forEach((commit, idx) => {
-                // Position commits along the branch:
-                // - idx 0 sits near the branch start
-                // - subsequent commits use their own date if available,
-                //   otherwise fall back to a fixed horizontal stride (220px)
-                let commitX;
-                if (idx === 0) {
-                    commitX = branch._startX + CONFIG.curveRadius + 10;
-                } else {
-                    const commitDate = parseDate(commit.date);
-                    if (commitDate != null) {
-                        commitX = yearToX(commitDate);
-                    } else {
-                        commitX = branch._startX + CONFIG.curveRadius + 10 + (idx * 220);
-                    }
-                }
+            // Tracks the right edge of the previously rendered marker on this
+            // branch — used to shift the next one rightwards when its natural
+            // date would put it under the previous label.
+            let prevMarkerRight = -Infinity;
 
-                // Alternate vertical offset for siblings on the same branch so
-                // long titles don't visually collide on a single line.
-                const verticalStagger = idx === 0 ? -14 : 22;
+            branch.commits.forEach((commit, idx) => {
+                let commitX = commitXFor(branch, commit, idx);
 
                 const marker = document.createElement('div');
                 marker.className = `git-commit-marker git-commit-${branch.type} ${ongoing ? 'ongoing' : ''}`;
                 marker.dataset.branchId = branch.id;
                 //Do not show hash for the first one
                 //marker.dataset.commitHash = commit.hash;
+                // All markers sit centered on the branch line — keeping them
+                // on a single horizontal line. If two commits are too close
+                // horizontally, the second one shifts right (see below) so
+                // they sit side-by-side instead of stacking vertically.
                 marker.style.left = `${commitX}px`;
-                marker.style.top = `${laneY + verticalStagger}px`;
+                marker.style.top = `${laneY - 14}px`;
                 marker.style.setProperty('--branch-color', color);
 
-                // Format date range
-                const startYear = branch.startDate.split('-')[0];
-                const endYear = ongoing ? 'Present' : branch.endDate.split('-')[0];
-                const dateRange = `${startYear} - ${endYear}`;
+                // Format date range — commit-level override (commit.details.dateRange)
+                // wins, so a sub-mission with bounded dates (e.g. "Apr 2026 → Sept 2026")
+                // can override its parent branch's open-ended "2024 - Present".
+                let dateRange;
+                if (commit.details.dateRange) {
+                    dateRange = commit.details.dateRange;
+                } else {
+                    const startYear = branch.startDate.split('-')[0];
+                    const endYear = ongoing ? 'Present' : branch.endDate.split('-')[0];
+                    dateRange = `${startYear} - ${endYear}`;
+                }
 
-                // Compact marker: format depends on branch type
-                // For projects: "Role - Project Name" (e.g., "Fondateur - Skoolbook")
-                // For work/education: just the title
+                // Compact marker label, in priority order:
+                // 1. commit.details.markerLabel (per-commit override, e.g. "Skoolbook")
+                // 2. branch.name (for single-commit branches: "Ride My Park")
+                // 3. commit.details.title (final fallback)
+                // The full title always shows in the hover overlay for context.
                 let displayTitle;
-                if (branch.type === 'project') {
-                    displayTitle = `${commit.details.title} - ${commit.details.company}`;
+                if (commit.details.markerLabel) {
+                    displayTitle = commit.details.markerLabel;
+                } else if (branch.type === 'project') {
+                    displayTitle = branch.name;
                 } else {
                     displayTitle = commit.details.title;
                 }
@@ -411,6 +430,21 @@ const GitTimeline = (() => {
                 //marker.dataset.hash = commit.hash;
 
                 container.appendChild(marker);
+
+                // After the marker is in the DOM we know its real width.
+                // If its natural left edge sits inside the previous sibling's
+                // bounding box, nudge it right just enough to clear (no
+                // vertical stacking — Tom prefers single-line lanes).
+                // The shift is capped at totalWidth - markerWidth so a
+                // marker never extends past the timeline's right edge,
+                // which would create a horizontal scrollbar.
+                const markerWidth = marker.offsetWidth;
+                const maxAllowedX = Math.max(0, totalWidth - markerWidth);
+                if (commitX < prevMarkerRight + MARKER_GAP) {
+                    commitX = Math.min(prevMarkerRight + MARKER_GAP, maxAllowedX);
+                    marker.style.left = `${commitX}px`;
+                }
+                prevMarkerRight = commitX + markerWidth;
             });
         });
     }
@@ -671,10 +705,13 @@ const GitTimeline = (() => {
                 const endYear = ongoing ? 'Present' : branch.endDate.split('-')[0];
                 const dateRange = `${startYear} - ${endYear}`;
 
-                // Format title based on type
+                // Format title (mirror desktop logic):
+                // markerLabel > branch.name (for projects) > details.title
                 let displayTitle;
-                if (branch.type === 'project') {
-                    displayTitle = `${commit.details.title} - ${commit.details.company}`;
+                if (commit.details.markerLabel) {
+                    displayTitle = commit.details.markerLabel;
+                } else if (branch.type === 'project') {
+                    displayTitle = branch.name;
                 } else {
                     displayTitle = commit.details.title;
                 }
@@ -751,8 +788,10 @@ const GitTimeline = (() => {
         // Render SVG graph first to get dimensions and trunkY
         const { totalWidth, totalHeight, trunkY } = renderSvg(lanesContainer, branches, laneCount);
 
-        // Set container height (width is handled by CSS width: 100%)
+        // Set container size. Width must be explicit so absolute markers
+        // beyond the viewport contribute to scrollWidth (auto-scroll right).
         lanesContainer.style.height = `${totalHeight}px`;
+        lanesContainer.style.width = `${totalWidth}px`;
 
         // Render commit cards (with trunkY for positioning)
         renderCommitCards(lanesContainer, branches, totalWidth, trunkY);
@@ -772,6 +811,15 @@ const GitTimeline = (() => {
         // Create overlay and setup events (desktop only)
         createOverlay();
         setupEvents();
+
+        // Auto-scroll horizontally to the right so the latest events are
+        // visible by default. Older events stay accessible by scrolling left.
+        // Wait one frame for layout to settle before reading scrollWidth.
+        requestAnimationFrame(() => {
+            if (scrollContainer) {
+                scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+            }
+        });
 
         console.log('%c[GitTimeline] Rendered', 'color: #33ff00');
     }

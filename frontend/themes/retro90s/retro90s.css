@@ -388,20 +388,10 @@ body[data-theme="retro90s"] .hero-content {
   z-index: 10;
 }
 
-/* Rainbow Animated Title */
+/* Hero is now the manifesto, signed "— Tom" — the giant rainbow SALUT
+   was too loud and ate the page. Hidden so the citation can breathe. */
 body[data-theme="retro90s"] .hero-title {
-  font-family: var(--font-heading);
-  font-size: clamp(3rem, 12vw, 7rem);
-  font-weight: 900;
-  text-transform: uppercase;
-  line-height: 1;
-  align-items: center;
-  margin-bottom: var(--spacing-md);
-  text-shadow:
-    3px 3px 0 var(--color-black),
-    -1px -1px 0 var(--color-white),
-    6px 6px 0 rgba(0,0,0,0.2);
-  position: relative;
+  display: none;
 }
 
 body[data-theme="retro90s"] .title-line {
@@ -409,15 +399,6 @@ body[data-theme="retro90s"] .title-line {
   animation: rainbow-text 4s linear infinite;
   cursor: pointer;
   transition: transform 0.1s;
-}
-
-body[data-theme="retro90s"] .title-line:hover {
-  transform: scale(1.05) rotate(-2deg);
-  animation-duration: 1s;
-}
-
-body[data-theme="retro90s"] .title-line:nth-child(2) {
-  animation-delay: -2s;
 }
 
 @keyframes rainbow-text {
@@ -436,26 +417,42 @@ body[data-theme="retro90s"] .hero-subtitle {
   color: var(--color-navy);
   margin-bottom: var(--spacing-md);
   text-shadow: 1px 1px 0 var(--color-white);
-  animation: subtitle-wobble 3s ease-in-out infinite;
 }
 
-/* Paragraph form: kill the wobble (unreadable on long text), keep playful body font */
+/* Citation: playful comic font, small, left-aligned, no GeoCities box */
 body[data-theme="retro90s"] .hero-subtitle.hero-quote {
   animation: none;
-  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  font-family: var(--font-fun);
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
   max-width: 640px;
-  margin: var(--spacing-sm) auto var(--spacing-md);
+  margin: var(--spacing-md) auto 0;
   text-align: left;
-  line-height: 1.7;
+  line-height: 1.65;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-navy);
+  text-shadow: 1px 1px 0 var(--color-white);
 }
 
-@keyframes subtitle-wobble {
-  0%, 100% { transform: rotate(-1deg); }
-  50% { transform: rotate(1deg); }
+body[data-theme="retro90s"] .hero-subtitle.hero-quote::before {
+  content: none;
 }
 
 body[data-theme="retro90s"] .hero-subtitle .annotation-mark {
   display: none;
+}
+
+/* Signature: handwritten-feel, left-aligned under the citation */
+body[data-theme="retro90s"] .hero-signature {
+  font-family: var(--font-fun);
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ff00ff;
+  text-shadow: 1px 1px 0 var(--color-white);
+  text-align: left;
+  max-width: 640px;
+  margin: 0.75rem auto 0;
 }
 
 /* Hit Counter - Authentic LED Style */
