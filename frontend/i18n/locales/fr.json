@@ -66,6 +66,7 @@
   },
   "ui": {
     "loading": "Chargement...",
+    "loadingNow": "Chargement...",
     "loadingProjects": "Chargement des projets...",
     "noArticles": "Pas encore d'articles. Revenez bientôt !",
     "viewAllArticles": "VOIR TOUS LES ARTICLES",
@@ -96,6 +97,10 @@
     "yearsExperience": "Ans d'XP",
     "usersReached": "Utilisateurs",
     "liveProducts": "Produits en prod"
+  },
+  "now": {
+    "headerLabel": "OÙ J'EN SUIS",
+    "intro": "Section vivante. Mise à jour quand ça bouge."
   },
   "blog": {
     "subtitle": "Product engineering, création de produits, et technologie.",
