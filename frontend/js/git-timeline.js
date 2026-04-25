@@ -62,9 +62,10 @@ const GitTimeline = (() => {
         const totalPadding = CONFIG.padding.left + CONFIG.padding.right;
         const yearWidth = (availableWidth - totalPadding) / yearCount;
 
-        // Minimum 48px per year — keeps timeline fitting in narrower viewports
-        // before the horizontal scrollbar kicks in
-        return Math.max(yearWidth, 48);
+        // Minimum 140px per year — keeps each year readable.
+        // When the timeline grows past the viewport, we let it overflow and
+        // auto-scroll the user to the right (latest events) on init/render.
+        return Math.max(yearWidth, 140);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -366,9 +367,11 @@ const GitTimeline = (() => {
                     }
                 }
 
-                // Alternate vertical offset for siblings on the same branch so
-                // long titles don't visually collide on a single line.
-                const verticalStagger = idx === 0 ? -14 : 22;
+                // All markers sit just above the branch line for visual
+                // consistency. The compact label (markerLabel) keeps things
+                // single-line so multiple commits on the same branch (e.g. CBA)
+                // can sit on the same horizontal axis without colliding.
+                const verticalStagger = -14;
 
                 const marker = document.createElement('div');
                 marker.className = `git-commit-marker git-commit-${branch.type} ${ongoing ? 'ongoing' : ''}`;
@@ -384,14 +387,15 @@ const GitTimeline = (() => {
                 const endYear = ongoing ? 'Present' : branch.endDate.split('-')[0];
                 const dateRange = `${startYear} - ${endYear}`;
 
-                // Compact marker: format depends on branch type
-                // For projects: "Role - Project Name" (e.g., "Fondateur - Skoolbook")
-                // For work/education: just the title
+                // Compact marker label:
+                // - Projects: just the project name (branch.name) — e.g. "Skoolbook"
+                // - Work/education: details.markerLabel if present, else details.title
+                // The full title always shows in the hover overlay for context.
                 let displayTitle;
                 if (branch.type === 'project') {
-                    displayTitle = `${commit.details.title} - ${commit.details.company}`;
+                    displayTitle = branch.name;
                 } else {
-                    displayTitle = commit.details.title;
+                    displayTitle = commit.details.markerLabel || commit.details.title;
                 }
 
                 marker.innerHTML = `
@@ -671,12 +675,12 @@ const GitTimeline = (() => {
                 const endYear = ongoing ? 'Present' : branch.endDate.split('-')[0];
                 const dateRange = `${startYear} - ${endYear}`;
 
-                // Format title based on type
+                // Format title based on type (mirror desktop logic)
                 let displayTitle;
                 if (branch.type === 'project') {
-                    displayTitle = `${commit.details.title} - ${commit.details.company}`;
+                    displayTitle = branch.name;
                 } else {
-                    displayTitle = commit.details.title;
+                    displayTitle = commit.details.markerLabel || commit.details.title;
                 }
 
                 const commitEl = document.createElement('div');
@@ -751,8 +755,10 @@ const GitTimeline = (() => {
         // Render SVG graph first to get dimensions and trunkY
         const { totalWidth, totalHeight, trunkY } = renderSvg(lanesContainer, branches, laneCount);
 
-        // Set container height (width is handled by CSS width: 100%)
+        // Set container size. Width must be explicit so absolute markers
+        // beyond the viewport contribute to scrollWidth (auto-scroll right).
         lanesContainer.style.height = `${totalHeight}px`;
+        lanesContainer.style.width = `${totalWidth}px`;
 
         // Render commit cards (with trunkY for positioning)
         renderCommitCards(lanesContainer, branches, totalWidth, trunkY);
@@ -772,6 +778,15 @@ const GitTimeline = (() => {
         // Create overlay and setup events (desktop only)
         createOverlay();
         setupEvents();
+
+        // Auto-scroll horizontally to the right so the latest events are
+        // visible by default. Older events stay accessible by scrolling left.
+        // Wait one frame for layout to settle before reading scrollWidth.
+        requestAnimationFrame(() => {
+            if (scrollContainer) {
+                scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+            }
+        });
 
         console.log('%c[GitTimeline] Rendered', 'color: #33ff00');
     }

@@ -151,7 +151,8 @@
           "message": "Arrivée chez CBA en tant que Lead Dev",
           "author": "CBA Informatique Liberale",
           "details": {
-            "title": "Lead Developer · Lead Front-End AgatheYOU",
+            "title": "Lead Developer · Lead Front-End AgatheYou",
+            "markerLabel": "Lead Front-End AgatheYou",
             "company": "CBA Informatique Liberale",
             "location": "Avignon, France",
             "description": "Lead d'une équipe de 8 développeurs construisant applications web et mobiles avec Angular & Ionic. Architecture multi-applications et mise en place pipeline CI/CD.",
@@ -165,6 +166,7 @@
           "author": "CBA Informatique Liberale",
           "details": {
             "title": "Platform Architect (Plateforme & IA Agentique)",
+            "markerLabel": "Platform Architect",
             "company": "CBA Informatique Liberale",
             "location": "Avignon, France",
             "description": "Mission de 6 mois (avr. 2026 → sept. 2026) en parallèle du Lead Front-End. Concevoir et faire évoluer une plateforme de développement et de conception, intégrer des capacités agentiques, accompagner les équipes produit et techniques, diffuser une culture plateforme.",
