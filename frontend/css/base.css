@@ -764,6 +764,14 @@ body.loading * {
   animation: pulse 1.5s infinite;
 }
 
+/* ─── Writing Section ─── */
+.writing-intro {
+  margin-bottom: 1.75rem;
+  opacity: 0.75;
+  font-size: 0.95rem;
+  max-width: 38rem;
+}
+
 /* ─── Work Territories (Product Builder / Transformation IA) ─── */
 .work-territory {
   margin-bottom: 3rem;
