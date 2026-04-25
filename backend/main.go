@@ -170,7 +170,9 @@ func main() {
 		fmt.Fprintf(w, `{"status":"ok","message":"Backend is running. API routes are under /api"}`)
 	})
 
-	// SSR blog routes (proxied from nginx)
+	// SSR blog routes — Traefik routes /blog and /blog/* directly here (priority 10
+	// > frontend priority 1). The nginx fallback in nginx/default.conf only kicks in
+	// for local dev without Traefik.
 	r.Get("/blog", ssrHandler.ServeBlogPage)
 	r.Get("/blog/", ssrHandler.ServeBlogPage)
 	r.Get("/blog/{slug}", ssrHandler.ServeBlogPage)
