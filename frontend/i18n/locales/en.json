@@ -45,6 +45,9 @@
     "email": "CONTACT@TOMANDRIEU.COM"
   },
   "nav": {
+    "now": "Now",
+    "work": "Work",
+    "writing": "Writing",
     "projects": "Projects",
     "about": "About",
     "blog": "Blog",
@@ -52,6 +55,9 @@
     "history": "History"
   },
   "sections": {
+    "now": "/NOW",
+    "work": "WORK",
+    "writing": "WRITING",
     "projects": "PROJECTS",
     "about": "ABOUT",
     "blog": "BLOG",

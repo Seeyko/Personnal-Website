@@ -15,18 +15,22 @@ const HeaderComponent = (() => {
 
     // Default navigation items
     const DEFAULT_NAV_ITEMS = [
-        { href: '/#projects', section: '01', i18nKey: 'nav.projects', text: 'Projects' },
-        { href: '/#about', section: '02', i18nKey: 'nav.about', text: 'About' },
-        { href: '/#timeline', section: '03', i18nKey: 'nav.history', text: 'History' },
-        { href: '/#contact', section: '05', i18nKey: 'nav.contact', text: 'Contact' }
+        { href: '/#now', section: '01', i18nKey: 'nav.now', text: 'Now' },
+        { href: '/#work', section: '02', i18nKey: 'nav.work', text: 'Work' },
+        { href: '/#writing', section: '03', i18nKey: 'nav.writing', text: 'Writing' },
+        { href: '/#timeline', section: '04', i18nKey: 'nav.history', text: 'History' },
+        { href: '/#about', section: '05', i18nKey: 'nav.about', text: 'About' },
+        { href: '/#contact', section: '06', i18nKey: 'nav.contact', text: 'Contact' }
     ];
 
     // Navigation items for landing page (internal links)
     const LANDING_NAV_ITEMS = [
-        { href: '#projects', section: '01', i18nKey: 'nav.projects', text: 'Projects' },
-        { href: '#about', section: '02', i18nKey: 'nav.about', text: 'About' },
-        { href: '#timeline', section: '03', i18nKey: 'nav.history', text: 'History' },
-        { href: '#contact', section: '05', i18nKey: 'nav.contact', text: 'Contact' }
+        { href: '#now', section: '01', i18nKey: 'nav.now', text: 'Now' },
+        { href: '#work', section: '02', i18nKey: 'nav.work', text: 'Work' },
+        { href: '#writing', section: '03', i18nKey: 'nav.writing', text: 'Writing' },
+        { href: '#timeline', section: '04', i18nKey: 'nav.history', text: 'History' },
+        { href: '#about', section: '05', i18nKey: 'nav.about', text: 'About' },
+        { href: '#contact', section: '06', i18nKey: 'nav.contact', text: 'Contact' }
     ];
 
     /**
