@@ -910,16 +910,23 @@ body[data-theme="terminal"] .code-comment-marker {
   opacity: 0.7;
 }
 
-/* ─── Hero Quote (multi-line manifesto) ─── */
+/* ─── Hero Quote (intro paragraph, left-aligned) ─── */
 .hero-quote {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.1rem;
-  text-align: center;
+  display: block;
+  max-width: 640px;
+  margin: 0 auto var(--spacing-lg);
+  text-align: left;
   position: relative;
 }
 
+.hero-quote-paragraph {
+  margin: 0;
+  line-height: 1.7;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Legacy multi-line rules kept for back-compat with any cached HTML */
 .hero-quote-line {
   margin: 0;
   line-height: 1.6;

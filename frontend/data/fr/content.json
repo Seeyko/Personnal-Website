@@ -2,26 +2,20 @@
   "meta": {
     "name": "Tom Andrieu",
     "title": "Product Builder · Transformation IA",
-    "description": "Product Builder et Transformation IA. Je construis des produits, et je transforme par l'IA les équipes qui construisent des produits."
+    "description": "Je construis des produits, et j'aide les équipes qui en construisent à intégrer l'IA dans leur quotidien. CBA · Studio Manifeste."
   },
   "hero": {
     "title": "SALUT",
-    "quote": [
-      "Je suis product builder.",
-      "Mais à force de construire avec l'IA,",
-      "j'ai commencé à transformer les équipes",
-      "qui construisent des produits.",
-      "Maintenant je fais les deux."
-    ]
+    "quote": "Je code depuis 8 ans. Mon métier, c'est de construire des produits. L'IA n'a pas changé ce métier, elle a changé qui peut le faire et à quelle vitesse. À force de construire avec elle, j'ai commencé à aider d'autres équipes à l'intégrer dans leur quotidien. Même métier, deux angles."
   },
   "about": {
-    "intro": "Je construis des <highlight>PRODUITS</highlight>, et je transforme par l'<highlight>IA</highlight> les équipes qui en construisent.",
-    "detail": "Côté build : Lead Front-End @ CBA (AgatheYOU) et side projects. Côté transformation : Platform Architect @ CBA (mission 6 mois sur la plateforme & IA agentique) et co-fondateur du Studio Manifeste, l'agence IA pour PME. C'est le même métier, vu de deux côtés.",
+    "intro": "Je crois qu'on apprend un métier <highlight>en le faisant</highlight>, et qu'on apprend à le transformer <highlight>en l'ayant fait</highlight>.",
+    "detail": "Côté craft, je préfère les itérations courtes aux specs fermées, les binômes aux comités, et les outils qu'on comprend aux outils qu'on subit. L'IA n'a pas changé cette préférence, elle l'a juste rendue applicable à plus de problèmes, plus vite.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ ANS",
-      "focus": "PRODUCT BUILDER · IA AGENTIQUE",
-      "status": "MISSION EN COURS"
+      "focus": "ARCHITECTURE · IA · PRODUIT",
+      "status": "MISSION 6 MOIS · M1/6"
     }
   },
   "techStack": [

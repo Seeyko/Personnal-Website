@@ -6,17 +6,17 @@
     {
       "key": "build",
       "label": "Build",
-      "value": "Lead Front-End @ CBA · AgatheYOU · side projects."
+      "value": "AgatheYOU keeps shipping in prod. Two side projects on the side."
     },
     {
       "key": "transform",
       "label": "Transform",
-      "value": "Platform Architect @ CBA · month 1/6 — platform & agentic AI for product and tech teams."
+      "value": "Month 1/6 of a Platform Architect mission: equipping CBA teams with agentic AI."
     },
     {
       "key": "studio",
       "label": "Studio",
-      "value": "Studio Manifeste — the AI agency for SMEs, in the works.",
+      "value": "Studio Manifeste, the AI agency for SMEs, in the works.",
       "link": {
         "url": "https://studio.alphaluppi.fr",
         "text": "studio.alphaluppi.fr"
@@ -25,7 +25,7 @@
     {
       "key": "freelance",
       "label": "Freelance",
-      "value": "No open mission right now."
+      "value": "No open window this quarter."
     }
   ]
 }

@@ -356,6 +356,16 @@ body[data-theme="blueprint"] .hero-subtitle {
   animation-delay: 1.5s;
 }
 
+/* Paragraph form: tighter letter-spacing, slightly bigger size for body readability */
+body[data-theme="blueprint"] .hero-subtitle.hero-quote {
+  font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+  letter-spacing: 0.02em;
+  max-width: 640px;
+  margin: var(--spacing-md) auto var(--spacing-lg);
+  text-align: left;
+  line-height: 1.75;
+}
+
 body[data-theme="blueprint"] .annotation-mark {
   color: var(--accent-redline);
 }
