@@ -1,7 +1,7 @@
 {
   "config": {
     "title": "JOURNEY",
-    "subtitle": "From student to product engineer",
+    "subtitle": "From student to lead",
     "startYear": 2017,
     "endYear": 2027
   },
@@ -151,11 +151,46 @@
           "message": "Joined CBA as Lead Developer",
           "author": "CBA Informatique Liberale",
           "details": {
-            "title": "Lead Developer",
+            "title": "Lead Developer · Lead Front-End AgatheYOU",
             "company": "CBA Informatique Liberale",
             "location": "Avignon, France",
             "description": "Leading a team of 8 developers building web and mobile applications with Angular & Ionic. Architecting multiple applications and implementing CI/CD pipeline.",
             "tags": ["Angular", "Ionic", "CI/CD", "Team Lead"]
+          }
+        },
+        {
+          "hash": "cba2026pa",
+          "date": "2026-04",
+          "message": "Platform Architect mission — Platform & Agentic AI (6 months)",
+          "author": "CBA Informatique Liberale",
+          "details": {
+            "title": "Platform Architect (Platform & Agentic AI)",
+            "company": "CBA Informatique Liberale",
+            "location": "Avignon, France",
+            "description": "6-month mission (Apr. 2026 → Sept. 2026) alongside the Lead Front-End role. Design and evolve a development and design platform, integrate agentic capabilities, support product and tech teams, spread a platform culture.",
+            "tags": ["Agentic AI", "Platform Engineering", "Developer Experience", "Product Experience"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "studio-manifeste",
+      "name": "Studio Manifeste",
+      "type": "project",
+      "startDate": "2026-01",
+      "endDate": "ongoing",
+      "commits": [
+        {
+          "hash": "stm2026",
+          "date": "2026-01",
+          "message": "Co-founded Studio Manifeste",
+          "author": "Studio Manifeste",
+          "details": {
+            "title": "Co-founder",
+            "company": "Studio Manifeste",
+            "location": "studio.alphaluppi.fr",
+            "description": "AI agency for SMEs. We help SMEs integrate AI into their business — advisory, integration, training. No hype, no bullshit.",
+            "tags": ["AI Agency", "SMEs", "Co-founder", "Advisory"]
           }
         }
       ]
