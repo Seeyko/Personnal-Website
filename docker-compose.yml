@@ -53,13 +53,13 @@ services:
       - "traefik.http.services.tomandrieu-api.loadbalancer.server.port=3000"
       # SSR blog routes on main domain (priority 10 > frontend priority 1)
       - "traefik.http.routers.tomandrieu-ssr.rule=Host(`tomandrieu.com`) && (Path(`/blog`) || PathPrefix(`/blog/`))"
-      - "traefik.http.routers.tomandrieu-ssr.priority=10"
+      - "traefik.http.routers.tomandrieu-ssr.priority=30"
       - "traefik.http.routers.tomandrieu-ssr.entrypoints=websecure"
       - "traefik.http.routers.tomandrieu-ssr.tls.certResolver=letsencrypt"
       - "traefik.http.routers.tomandrieu-ssr.service=tomandrieu-api"
       # SEO routes (sitemap, robots) (priority 10 > frontend priority 1)
       - "traefik.http.routers.tomandrieu-seo.rule=Host(`tomandrieu.com`) && (Path(`/sitemap.xml`) || Path(`/robots.txt`))"
-      - "traefik.http.routers.tomandrieu-seo.priority=10"
+      - "traefik.http.routers.tomandrieu-seo.priority=30"
       - "traefik.http.routers.tomandrieu-seo.entrypoints=websecure"
       - "traefik.http.routers.tomandrieu-seo.tls.certResolver=letsencrypt"
       - "traefik.http.routers.tomandrieu-seo.service=tomandrieu-api"
