@@ -23,7 +23,11 @@
 .git-timeline-section {
     position: relative;
     padding: 4rem 0 2rem 0;
-    overflow-x: hidden;
+    /* overflow-x: clip so the SVG never spills sideways, while letting the
+       commit-detail overlay overflow downwards (visible). Using clip rather
+       than hidden lets the cross-axis stay truly visible (the spec forces
+       overflow-y to auto when paired with hidden). */
+    overflow-x: clip;
     overflow-y: visible;
     width: 100%;
     max-width: 100%;
