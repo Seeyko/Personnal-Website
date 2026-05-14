@@ -103,13 +103,9 @@
     "intro": ""
   },
   "work": {
-    "productBuilder": {
-      "title": "PRODUCT BUILDER",
-      "subtitle": "Products I'm building, with teams or solo."
-    },
-    "transformationIa": {
-      "title": "AI TRANSFORMATION",
-      "subtitle": "Missions where I help product and tech teams fold AI into their stack."
+    "categories": {
+      "productBuilder": "Product Builder",
+      "transformationIa": "AI Transformation"
     }
   },
   "writing": {

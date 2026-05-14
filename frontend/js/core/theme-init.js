@@ -13,14 +13,9 @@ const ThemeInit = (() => {
             await ContentLoader.loadAndPopulate();
 
             const projects = await ContentLoader.loadProjects();
-            const builderProjects = projects.filter(p => p.category === 'product-builder');
-            const transformProjects = projects.filter(p => p.category === 'transformation-ia');
 
-            if (document.querySelector('#work-product-builder-grid')) {
-                CardRenderer.renderProjects(builderProjects, config.cards || {}, '#work-product-builder-grid');
-            }
-            if (document.querySelector('#work-transformation-ia-grid')) {
-                CardRenderer.renderProjects(transformProjects, config.cards || {}, '#work-transformation-ia-grid');
+            if (document.querySelector('#work-grid')) {
+                CardRenderer.renderProjects(projects, config.cards || {}, '#work-grid');
             }
 
             // Back-compat: if a legacy single grid is present, render all there.
