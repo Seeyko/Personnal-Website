@@ -23,7 +23,8 @@
 .git-timeline-section {
     position: relative;
     padding: 4rem 0 2rem 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: visible;
     width: 100%;
     max-width: 100%;
     margin-left: 0;
