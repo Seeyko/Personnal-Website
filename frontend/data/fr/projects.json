@@ -64,14 +64,5 @@
         "type": "MISSION (6 MOIS)",
         "category": "transformation-ia",
         "tags": ["IA Agentique", "Platform Engineering", "Developer Experience", "Product Experience"]
-    },
-    {
-        "id": "studio-manifeste",
-        "title": "Studio Manifeste",
-        "description": "Agence IA pour PME que je co-fonde. On aide les PME à intégrer l'IA dans leur métier, sans hype et sans bullshit. Conseil, intégration, formation.",
-        "type": "AGENCE IA",
-        "category": "transformation-ia",
-        "url": "https://studio.alphaluppi.fr",
-        "tags": ["Agence IA", "PME", "Co-fondateur", "Conseil"]
     }
 ]

@@ -64,14 +64,5 @@
         "type": "MISSION (6 MONTHS)",
         "category": "transformation-ia",
         "tags": ["Agentic AI", "Platform Engineering", "Developer Experience", "Product Experience"]
-    },
-    {
-        "id": "studio-manifeste",
-        "title": "Studio Manifeste",
-        "description": "AI agency for SMEs that I'm co-founding. We help SMEs integrate AI into their business, without hype and without bullshit. Advisory, integration, training.",
-        "type": "AI AGENCY",
-        "category": "transformation-ia",
-        "url": "https://studio.alphaluppi.fr",
-        "tags": ["AI Agency", "SMEs", "Co-founder", "Advisory"]
     }
 ]
