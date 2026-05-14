@@ -102,12 +102,6 @@
     "headerLabel": "WHERE I'M AT",
     "intro": ""
   },
-  "work": {
-    "categories": {
-      "productBuilder": "Product Builder",
-      "transformationIa": "AI Transformation"
-    }
-  },
   "writing": {
     "intro": "Notes, posts, and what I'm learning while building."
   },

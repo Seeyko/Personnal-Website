@@ -97,18 +97,6 @@ const CardRenderer = (() => {
             ${footer}${corners}
         `;
 
-        if (project.category) {
-            const camel = project.category.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-            const label = window.LanguageManager?.t(`work.categories.${camel}`);
-            if (label) {
-                const badge = document.createElement('span');
-                badge.className = 'project-category';
-                badge.setAttribute('data-category', project.category);
-                badge.textContent = label;
-                card.querySelector('.project-info')?.prepend(badge);
-            }
-        }
-
         cfg.onRender?.(card, project, index);
         return card;
     }

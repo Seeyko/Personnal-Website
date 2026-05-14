@@ -849,24 +849,6 @@ body.loading * {
   max-width: 38rem;
 }
 
-/* ─── Project category badge (Product Builder / Transformation IA) ─── */
-.project-category {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.25rem 0.55rem;
-  margin: 0 0 0.6rem;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  opacity: 0.8;
-}
-
-.project-category[data-category="transformation-ia"] {
-  opacity: 1;
-}
-
 .projects-grid-hidden {
   display: none !important;
 }

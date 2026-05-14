@@ -102,12 +102,6 @@
     "headerLabel": "OÙ J'EN SUIS",
     "intro": ""
   },
-  "work": {
-    "categories": {
-      "productBuilder": "Product Builder",
-      "transformationIa": "Transformation IA"
-    }
-  },
   "writing": {
     "intro": "Notes, posts, et ce que j'apprends en construisant."
   },
