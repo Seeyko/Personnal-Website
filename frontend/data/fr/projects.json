@@ -4,7 +4,6 @@
         "title": "Ride My Park",
         "description": "Trouvez des spots près de chez vous parmi 30K skateparks, street spots et pumptracks pour BMX, Skateboard, Roller, Trottinette Freestyle sur Ride My Park.",
         "type": "APPLICATION WEB",
-        "category": "product-builder",
         "url": "https://ridemypark.com",
         "images": [
             "/assets/ridemypark-mobile-store-wallpaper.jpg",
@@ -18,7 +17,6 @@
         "title": "Skoolbook",
         "description": "Skoolbook, c'est une appli que j'ai construite avec ma conjointe instit. L'idée : simplifier la gestion des bibliothèques de classe. Les profs peuvent suivre les emprunts facilement, et les élèves gèrent leurs livres en autonomie.",
         "type": "APPLICATION WEB",
-        "category": "product-builder",
         "url": "https://skoolbook.fr",
         "images": [
             "/assets/skoolbook-landing-page.png",
@@ -33,7 +31,6 @@
         "title": "Teach Tools",
         "description": "Des outils pour les profs. Génère des exercices et des images grâce à l'IA. Simple et pratique pour le quotidien.",
         "type": "OUTIL IA",
-        "category": "product-builder",
         "url": "https://teach-tools.com",
         "images": [
             "/assets/teach-tools-exercise-generation.png",
@@ -48,7 +45,6 @@
         "title": "GyroDex",
         "description": "Un pokédex pour Animal Crossing. Liste et permet de sauvegarder quelles créatures d'Animal Crossing vous avez collectées, avec des amis. Full vibe coding pour m'amuser avec l'IA.",
         "type": "APP WEB",
-        "category": "product-builder",
         "url": "https://v0-animal-crossing-gyroides.vercel.app",
         "images": [
             "/assets/girodex-gyroide-collection.png",
@@ -56,22 +52,5 @@
             "/assets/girodex-friends-dashboard.png"
         ],
         "tags": ["Next.js", "Vercel", "Gaming"]
-    },
-    {
-        "id": "platform-architect-cba",
-        "title": "Platform Architect @ CBA",
-        "description": "Mission de 6 mois : concevoir et faire évoluer une plateforme de développement et de conception, intégrant des capacités agentiques, pour améliorer l'efficacité, la qualité et l'autonomie des équipes produit et techniques. Plateforme, outils, agents, accompagnement, vulgarisation.",
-        "type": "MISSION (6 MOIS)",
-        "category": "transformation-ia",
-        "tags": ["IA Agentique", "Platform Engineering", "Developer Experience", "Product Experience"]
-    },
-    {
-        "id": "studio-manifeste",
-        "title": "Studio Manifeste",
-        "description": "Agence IA pour PME que je co-fonde. On aide les PME à intégrer l'IA dans leur métier, sans hype et sans bullshit. Conseil, intégration, formation.",
-        "type": "AGENCE IA",
-        "category": "transformation-ia",
-        "url": "https://studio.alphaluppi.fr",
-        "tags": ["Agence IA", "PME", "Co-fondateur", "Conseil"]
     }
 ]

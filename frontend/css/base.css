@@ -849,40 +849,6 @@ body.loading * {
   max-width: 38rem;
 }
 
-/* ─── Work Territories (Product Builder / Transformation IA) ─── */
-.work-territory {
-  margin-bottom: 3rem;
-}
-
-.work-territory:last-child {
-  margin-bottom: 0;
-}
-
-.work-territory-header {
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px dashed currentColor;
-  opacity: 0.95;
-}
-
-.work-territory-header > * {
-  opacity: 1;
-}
-
-.work-territory-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin: 0 0 0.25rem;
-}
-
-.work-territory-subtitle {
-  font-size: 0.875rem;
-  margin: 0;
-  opacity: 0.7;
-}
-
 .projects-grid-hidden {
   display: none !important;
 }

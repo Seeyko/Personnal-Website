@@ -168,28 +168,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "studio-manifeste",
-      "name": "Studio Manifeste",
-      "type": "project",
-      "startDate": "2026-01",
-      "endDate": "ongoing",
-      "commits": [
-        {
-          "hash": "stm2026",
-          "date": "2026-01",
-          "message": "Co-founded Studio Manifeste",
-          "author": "Studio Manifeste",
-          "details": {
-            "title": "Co-founder",
-            "company": "Studio Manifeste",
-            "location": "studio.alphaluppi.fr",
-            "description": "AI agency for SMEs. We help SMEs integrate AI into their business — advisory, integration, training. No hype, no bullshit.",
-            "tags": ["AI Agency", "SMEs", "Co-founder", "Advisory"]
-          }
-        }
-      ]
     }
   ]
 }

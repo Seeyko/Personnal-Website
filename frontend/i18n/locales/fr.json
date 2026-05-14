@@ -2,7 +2,7 @@
   "meta": {
     "name": "Tom Andrieu",
     "title": "Product Builder · Transformation IA",
-    "description": "Je construis des produits, et j'aide les équipes qui en construisent à intégrer l'IA dans leur quotidien. CBA · Studio Manifeste."
+    "description": "Je construis des produits, et j'aide les équipes qui en construisent à intégrer l'IA dans leur quotidien. CBA."
   },
   "hero": {
     "title": "SALUT",
@@ -101,16 +101,6 @@
   "now": {
     "headerLabel": "OÙ J'EN SUIS",
     "intro": ""
-  },
-  "work": {
-    "productBuilder": {
-      "title": "PRODUCT BUILDER",
-      "subtitle": "Produits que je construis, en équipe ou en solo."
-    },
-    "transformationIa": {
-      "title": "TRANSFORMATION IA",
-      "subtitle": "Missions où j'aide des équipes produit et tech à intégrer l'IA dans leur stack."
-    }
   },
   "writing": {
     "intro": "Notes, posts, et ce que j'apprends en construisant."

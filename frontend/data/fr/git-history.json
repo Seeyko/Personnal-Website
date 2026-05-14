@@ -168,28 +168,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "studio-manifeste",
-      "name": "Studio Manifeste",
-      "type": "project",
-      "startDate": "2026-01",
-      "endDate": "ongoing",
-      "commits": [
-        {
-          "hash": "stm2026",
-          "date": "2026-01",
-          "message": "Co-fondation Studio Manifeste",
-          "author": "Studio Manifeste",
-          "details": {
-            "title": "Co-fondateur",
-            "company": "Studio Manifeste",
-            "location": "studio.alphaluppi.fr",
-            "description": "Agence IA pour PME. On aide les PME à intégrer l'IA dans leur métier — conseil, intégration, formation. Sans hype et sans bullshit.",
-            "tags": ["Agence IA", "PME", "Co-fondateur", "Conseil"]
-          }
-        }
-      ]
     }
   ]
 }
