@@ -992,24 +992,30 @@ body[data-theme="terminal"] .code-comment-marker {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   overflow: hidden;
 }
+/* Canvas takes the space above the caption; the heart is centred in it, so the
+   heart and the caption end up sharing the same vertical axis (cleanly stacked,
+   no overlap). */
 .heart-experiment canvas {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  flex: 1 1 auto;
   width: 100%;
-  height: 100%;
+  min-height: 0;
   display: block;
-  /* Allow normal page scrolling over the canvas on touch devices. */
+  /* Allow normal page scrolling over the canvas on touch devices while a
+     horizontal drag spins the heart. */
   touch-action: pan-y;
+  cursor: grab;
+}
+.heart-experiment canvas.grabbing {
+  cursor: grabbing;
 }
 .heart-experiment-caption {
   position: relative;
   z-index: 1;
   align-self: center;
-  margin-top: auto;
-  margin-bottom: 1.2rem;
+  margin: 0 0 1.2rem;
   font-size: 0.8rem;
   letter-spacing: 0.04em;
   color: inherit;
@@ -1017,6 +1023,7 @@ body[data-theme="terminal"] .code-comment-marker {
   pointer-events: none;
 }
 @media (prefers-reduced-motion: reduce) {
+  .heart-experiment canvas { cursor: default; }
   .heart-experiment-caption { opacity: 0.4; }
 }
 

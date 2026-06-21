@@ -14,13 +14,15 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { buildHeartGeometry } from '/js/experiments/heart-geometry.js';
 
-// Per-theme look: dot shape, colours, and how violently it disintegrates.
-// shape: 0 round · 1 square · 2 cross · 3 diamond
+// Per-theme look: each theme gets a genuinely different dot — its own shape,
+// palette, size and how violently it disintegrates — so switching theme is an
+// unmistakable change, not just a recolour.
+// shape: 0 round · 1 square · 2 cross · 3 diamond · 4 ring · 5 star
 const THEME_STYLES = {
   default:  { shape: 0, colA: 0x14141a, colB: 0xb23047, accent: 0xff2e55, rainbow: 0, size: 0.022, scatter: 2.4, swirl: 1.0 },
-  terminal: { shape: 1, colA: 0x0a5a0a, colB: 0x49ff49, accent: 0xd6ffd6, rainbow: 0, size: 0.020, scatter: 3.1, swirl: 1.6 },
-  blueprint:{ shape: 2, colA: 0x4f86c6, colB: 0xeaf6ff, accent: 0x76e6ff, rainbow: 0, size: 0.025, scatter: 2.7, swirl: 0.9 },
-  retro90s: { shape: 3, colA: 0x222222, colB: 0xffffff, accent: 0xffffff, rainbow: 1, size: 0.030, scatter: 3.5, swirl: 2.2 },
+  terminal: { shape: 1, colA: 0x0a5a0a, colB: 0x49ff49, accent: 0xd6ffd6, rainbow: 0, size: 0.019, scatter: 3.1, swirl: 1.6 },
+  blueprint:{ shape: 2, colA: 0x4f86c6, colB: 0xeaf6ff, accent: 0x76e6ff, rainbow: 0, size: 0.026, scatter: 2.7, swirl: 0.9 },
+  retro90s: { shape: 5, colA: 0x6a00ff, colB: 0xffe600, accent: 0x00ffd0, rainbow: 1, size: 0.034, scatter: 3.6, swirl: 2.4 },
 };
 
 let started = false;
@@ -144,6 +146,14 @@ export function initHeart(section) {
           m = inBox * plus;
         } else if (shp == 3) {        // diamond
           m = smoothstep(0.5, 0.44, abs(p.x) + abs(p.y));
+        } else if (shp == 4) {        // ring / hollow circle
+          float r = length(p);
+          m = smoothstep(0.5, 0.42, r) * smoothstep(0.20, 0.28, r);
+        } else if (shp == 5) {        // 5-point star
+          float ang = atan(p.y, p.x);
+          float r = length(p);
+          float k = 0.30 + 0.20 * cos(5.0 * ang);
+          m = smoothstep(k, k - 0.06, r);
         } else {                      // round
           m = smoothstep(0.5, 0.42, length(p));
         }
@@ -186,29 +196,72 @@ export function initHeart(section) {
   const points = new THREE.Points(geometry, material);
   points.frustumCulled = false;
   points.rotation.x = -Math.PI / 2;
-  points.scale.setScalar(1.6 / r);
+  // A touch smaller than the canvas so the lobes/tip never clip the edges.
+  points.scale.setScalar(1.5 / r);
   heart.add(points);
   scene.add(heart);
 
   sizeToSection();
 
-  // --- Interaction (does NOT block scrolling) -----------------------------
+  // --- Interaction: grab to spin (inertial) + ripple — never blocks scroll --
   const ROT_Y = new THREE.Vector3(0, 1, 0);
+  const ROT_X = new THREE.Vector3(1, 0, 0);
   const IDLE_SPIN = reduced ? 0 : 0.0026;
+  const DRAG_K = 0.006;            // pixels -> radians
   let lastInteract = -1;
+  let dragging = false;
+  let activePointer = null;
+  let lastX = 0, lastY = 0;
+  let velX = IDLE_SPIN, velY = 0;  // current rotation velocity (coasts to idle)
 
-  function onMove(e) {
+  function pointerToNDC(e) {
     const rect = canvas.getBoundingClientRect();
     uni.uPointer.value.set(
       ((e.clientX - rect.left) / rect.width) * 2 - 1,
       -(((e.clientY - rect.top) / rect.height) * 2 - 1),
     );
     lastInteract = performance.now();
+  }
+
+  function onMove(e) {
+    if (dragging && e.pointerId === activePointer) {
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      velX = dx * DRAG_K;
+      velY = dy * DRAG_K;
+      heart.rotateOnWorldAxis(ROT_Y, velX);
+      heart.rotateOnWorldAxis(ROT_X, velY);
+    }
+    pointerToNDC(e);
     if (reduced) requestFrame(); // wake a few frames for the ripple
   }
+
+  function onDown(e) {
+    dragging = true;
+    activePointer = e.pointerId;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    try { canvas.setPointerCapture(e.pointerId); } catch {}
+    canvas.classList.add('grabbing');
+    pointerToNDC(e);
+    requestFrame();
+  }
+
+  function onUp(e) {
+    if (e.pointerId !== activePointer) return;
+    dragging = false;
+    activePointer = null;
+    try { canvas.releasePointerCapture(e.pointerId); } catch {}
+    canvas.classList.remove('grabbing');
+  }
+
   if (!reduced) {
     canvas.addEventListener('pointermove', onMove, { passive: true });
-    canvas.addEventListener('pointerdown', onMove, { passive: true });
+    canvas.addEventListener('pointerdown', onDown, { passive: true });
+    canvas.addEventListener('pointerup', onUp, { passive: true });
+    canvas.addEventListener('pointercancel', onUp, { passive: true });
   }
 
   // --- Render loop with visibility gating ---------------------------------
@@ -220,10 +273,16 @@ export function initHeart(section) {
     rafId = 0;
     uni.uTime.value = clock.getElapsedTime();
 
-    const active = performance.now() - lastInteract < 120;
+    const active = dragging || performance.now() - lastInteract < 120;
     uni.uStrength.value += ((active ? 1 : 0) - uni.uStrength.value) * 0.12;
 
-    if (!reduced) heart.rotateOnWorldAxis(ROT_Y, IDLE_SPIN);
+    if (!reduced && !dragging) {
+      // Coast on the drag's momentum, then glide back to the gentle idle spin.
+      velX += (IDLE_SPIN - velX) * 0.02;
+      velY += (0 - velY) * 0.06;
+      heart.rotateOnWorldAxis(ROT_Y, velX);
+      heart.rotateOnWorldAxis(ROT_X, velY);
+    }
     renderer.render(scene, camera);
 
     // Keep going only while something is animating and the heart is on-screen.
