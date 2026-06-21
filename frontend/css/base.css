@@ -988,7 +988,7 @@ body[data-theme="terminal"] .code-comment-marker {
   position: relative;
   width: 100%;
   /* Reserve space up-front so lazy-loading causes no layout shift (CLS). */
-  height: clamp(340px, 56vh, 560px);
+  height: clamp(380px, 64vh, 640px);
   display: flex;
   flex-direction: column;
   align-items: center;
