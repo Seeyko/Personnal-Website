@@ -34,7 +34,8 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(0, 0.6, 4.2);
 
 // --- Lighting -------------------------------------------------------------
-scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+scene.add(new THREE.HemisphereLight(0xffd9e6, 0x2a0a18, 0.7));
 
 const key = new THREE.DirectionalLight(0xffd9e6, 2.2);
 key.position.set(3, 4, 5);
@@ -57,6 +58,9 @@ const material = new THREE.MeshPhysicalMaterial({
   clearcoatRoughness: 0.18,
   sheen: 0.6,
   sheenColor: new THREE.Color(0xff8fb0),
+  // Render both faces so the surface is lit regardless of triangle winding —
+  // Three orients the shading normal toward the viewer on double-sided meshes.
+  side: THREE.DoubleSide,
 });
 
 const heart = new THREE.Group();
