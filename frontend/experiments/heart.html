@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+  />
+  <meta name="theme-color" content="#0b0410" />
+  <title>Cœur 3D — Expérimentation</title>
+  <meta
+    name="description"
+    content="La surface algébrique du cœur de Taubin, rendue en vrai maillage 3D et manipulable au doigt."
+  />
+  <style>
+    :root { color-scheme: dark; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #0b0410;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #f5e9f0;
+      overscroll-behavior: none;
+    }
+    #scene {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      /* Let OrbitControls own all touch gestures (no page scroll/zoom). */
+      touch-action: none;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: max(env(safe-area-inset-top), 18px) 20px max(env(safe-area-inset-bottom), 18px);
+    }
+    .top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .title {
+      font-size: clamp(1.1rem, 4.5vw, 1.6rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 18px rgba(224, 18, 60, 0.45);
+    }
+    .eq {
+      margin-top: 6px;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: clamp(0.62rem, 2.7vw, 0.8rem);
+      color: #e9aec2;
+      opacity: 0.85;
+      line-height: 1.4;
+    }
+    .back {
+      pointer-events: auto;
+      flex-shrink: 0;
+      text-decoration: none;
+      color: #f5e9f0;
+      font-size: 0.8rem;
+      padding: 8px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: background 0.2s ease;
+    }
+    .back:active { background: rgba(255, 255, 255, 0.16); }
+
+    .hint {
+      align-self: center;
+      font-size: 0.82rem;
+      color: #e9aec2;
+      opacity: 0.75;
+      text-align: center;
+      animation: fade 5s ease forwards;
+      animation-delay: 4.5s;
+    }
+    @keyframes fade { to { opacity: 0; } }
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      background: #0b0410;
+      color: #e9aec2;
+      font-size: 0.9rem;
+      transition: opacity 0.6s ease;
+      z-index: 10;
+    }
+    #loader.hidden { opacity: 0; pointer-events: none; }
+    .beat {
+      width: 46px; height: 46px;
+      background: #e0123c;
+      transform: rotate(-45deg);
+      position: relative;
+      animation: pump 1.1s ease-in-out infinite;
+      box-shadow: 0 0 30px rgba(224, 18, 60, 0.6);
+    }
+    .beat::before, .beat::after {
+      content: ""; position: absolute; width: 46px; height: 46px;
+      background: #e0123c; border-radius: 50%;
+    }
+    .beat::before { top: -23px; left: 0; }
+    .beat::after { left: 23px; top: 0; }
+    @keyframes pump {
+      0%, 100% { transform: rotate(-45deg) scale(1); }
+      15% { transform: rotate(-45deg) scale(1.18); }
+      30% { transform: rotate(-45deg) scale(1); }
+      45% { transform: rotate(-45deg) scale(1.1); }
+    }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <div class="overlay">
+    <div class="top">
+      <div>
+        <div class="title">Cœur 3D ❤</div>
+        <div class="eq">(x² + 9⁄4·y² + z² − 1)³ − x²z³ − 9⁄80·y²z³ = 0</div>
+      </div>
+      <a class="back" href="/">← Retour</a>
+    </div>
+    <div class="hint">Glisse pour faire tourner · pince pour zoomer</div>
+  </div>
+
+  <div id="loader">
+    <div class="beat"></div>
+    <div>Génération du cœur…</div>
+  </div>
+
+  <script type="module" src="/js/experiments/heart.js"></script>
+</body>
+</html>
