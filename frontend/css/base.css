@@ -983,3 +983,40 @@ body[data-theme="terminal"] .code-comment-marker {
   font-style: italic;
 }
 
+/* ── Interactive 3D heart (lazy-loaded, theme-aware) ─────────────────── */
+.heart-experiment {
+  position: relative;
+  width: 100%;
+  /* Reserve space up-front so lazy-loading causes no layout shift (CLS). */
+  height: clamp(340px, 56vh, 560px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.heart-experiment canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Allow normal page scrolling over the canvas on touch devices. */
+  touch-action: pan-y;
+}
+.heart-experiment-caption {
+  position: relative;
+  z-index: 1;
+  align-self: center;
+  margin-top: auto;
+  margin-bottom: 1.2rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: inherit;
+  opacity: 0.55;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .heart-experiment-caption { opacity: 0.4; }
+}
+
