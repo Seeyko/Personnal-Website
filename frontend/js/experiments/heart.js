@@ -52,16 +52,18 @@ const pointMaterial = new THREE.ShaderMaterial({
     uAspect: { value: window.innerWidth / window.innerHeight },
     uPointer: { value: new THREE.Vector2(-10, -10) }, // NDC, off-screen = idle
     uStrength: { value: 0 },     // 0..1 touch influence, eased in JS
-    uRadius: { value: 0.3 },     // influence radius in NDC
-    uPush: { value: 0.32 },      // bloom distance in object space
+    uRadius: { value: 0.36 },    // influence radius in NDC
+    uPush: { value: 0.35 },      // base bloom distance (object space)
+    uScatter: { value: 2.8 },    // chaotic disintegration distance
   },
   transparent: true,
   depthTest: true,
   depthWrite: true,
   vertexShader: /* glsl */`
-    uniform float uScale, uSize, uTime, uAspect, uStrength, uRadius, uPush;
+    uniform float uScale, uSize, uTime, uAspect, uStrength, uRadius, uPush, uScatter;
     uniform vec3 uLightDir;
     uniform vec2 uPointer;
+    attribute vec3 aRandom;
     varying float vShade;
     varying float vInfl;
 
@@ -75,9 +77,21 @@ const pointMaterial = new THREE.ShaderMaterial({
       float infl = smoothstep(uRadius, 0.0, d) * uStrength;
       vInfl = infl;
 
-      // Bloom along the normal, with a little organic shimmer.
+      // Base bloom along the normal...
       float shimmer = 0.75 + 0.25 * sin(uTime * 7.0 + position.x * 9.0 + position.y * 11.0);
       vec3 dpos = position + normal * (infl * uPush * shimmer);
+
+      // ...then chaotic disintegration: fling each point along its own random
+      // direction (ramped sharply with influence) plus a swirling drift, so the
+      // heart blows apart near the finger and re-collapses on release.
+      float burst = pow(infl, 1.6);
+      vec3 dir = normalize(normal * 0.4 + aRandom);
+      vec3 swirl = vec3(
+        sin(uTime * 2.3 + aRandom.y * 6.28),
+        sin(uTime * 2.7 + aRandom.z * 6.28),
+        sin(uTime * 2.1 + aRandom.x * 6.28)
+      );
+      dpos += dir * (burst * uScatter) + swirl * (infl * 0.45);
 
       vec4 mv = modelViewMatrix * vec4(dpos, 1.0);
       vec3 n = normalize(normalMatrix * normal);
@@ -85,7 +99,8 @@ const pointMaterial = new THREE.ShaderMaterial({
       vShade = 0.18 + 0.82 * lambert;
 
       gl_Position = projectionMatrix * mv;
-      float s = uSize * (0.45 + 0.95 * vShade) * (1.0 + infl * 1.4);
+      // Scattered points shrink a little as they fly off, like embers.
+      float s = uSize * (0.45 + 0.95 * vShade) * (1.0 + infl * 0.8) * (1.0 - 0.35 * burst);
       gl_PointSize = s * uScale / -mv.z;
     }
   `,
@@ -112,15 +127,35 @@ scene.add(heart);
 function buildHeart() {
   const { positions, normals } = buildHeartGeometry(RESOLUTION);
 
+  // A random direction per point drives the chaotic disintegration scatter.
+  const count = positions.length / 3;
+  const random = new Float32Array(positions.length);
+  for (let i = 0; i < count; i++) {
+    // Random point in a unit sphere -> random direction + magnitude.
+    let x, y, z, l2;
+    do {
+      x = Math.random() * 2 - 1;
+      y = Math.random() * 2 - 1;
+      z = Math.random() * 2 - 1;
+      l2 = x * x + y * y + z * z;
+    } while (l2 > 1 || l2 < 1e-4);
+    random[i * 3] = x;
+    random[i * 3 + 1] = y;
+    random[i * 3 + 2] = z;
+  }
+
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+  geometry.setAttribute('aRandom', new THREE.BufferAttribute(random, 3));
   geometry.computeBoundingSphere();
 
   geometry.center();
   const r = geometry.boundingSphere ? geometry.boundingSphere.radius : 1;
 
   const points = new THREE.Points(geometry, pointMaterial);
+  // Scattered points leave the bounding sphere; don't let culling hide them.
+  points.frustumCulled = false;
   points.rotation.x = -Math.PI / 2; // equation z-axis is up (lobes up)
   points.scale.setScalar(1.6 / r);
   heart.add(points);
