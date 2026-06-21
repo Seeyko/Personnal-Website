@@ -14,15 +14,15 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 import { buildHeartGeometry } from '/js/experiments/heart-geometry.js';
 
-// Per-theme look: each theme gets a genuinely different dot — its own shape,
-// palette, size and how violently it disintegrates — so switching theme is an
-// unmistakable change, not just a recolour.
-// shape: 0 round · 1 square · 2 cross · 3 diamond · 4 ring · 5 star
+// Per-theme look: each theme gets a genuinely different particle — its own
+// shape, palette, size and how violently it disintegrates — so switching theme
+// is an unmistakable change, not just a recolour.
+// shape: 0 round · 1 square · 2 cross · 3 diamond · 4 ring · 5 star · 6 triangle · 7 heart
 const THEME_STYLES = {
-  default:  { shape: 0, colA: 0x14141a, colB: 0xb23047, accent: 0xff2e55, rainbow: 0, size: 0.022, scatter: 2.4, swirl: 1.0 },
-  terminal: { shape: 1, colA: 0x0a5a0a, colB: 0x49ff49, accent: 0xd6ffd6, rainbow: 0, size: 0.019, scatter: 3.1, swirl: 1.6 },
-  blueprint:{ shape: 2, colA: 0x4f86c6, colB: 0xeaf6ff, accent: 0x76e6ff, rainbow: 0, size: 0.026, scatter: 2.7, swirl: 0.9 },
-  retro90s: { shape: 5, colA: 0x6a00ff, colB: 0xffe600, accent: 0x00ffd0, rainbow: 1, size: 0.034, scatter: 3.6, swirl: 2.4 },
+  default:  { shape: 7, colA: 0x14141a, colB: 0xb23047, accent: 0xff2e55, rainbow: 0, size: 0.032, scatter: 2.4, swirl: 1.0 },
+  terminal: { shape: 1, colA: 0x0a5a0a, colB: 0x49ff49, accent: 0xd6ffd6, rainbow: 0, size: 0.021, scatter: 3.1, swirl: 1.6 },
+  blueprint:{ shape: 2, colA: 0x4f86c6, colB: 0xeaf6ff, accent: 0x76e6ff, rainbow: 0, size: 0.030, scatter: 2.7, swirl: 0.9 },
+  retro90s: { shape: 5, colA: 0x6a00ff, colB: 0xffe600, accent: 0x00ffd0, rainbow: 1, size: 0.040, scatter: 3.6, swirl: 2.4 },
 };
 
 let started = false;
@@ -57,6 +57,7 @@ export function initHeart(section) {
     camera.updateProjectionMatrix();
     uni.uScale.value = (h * renderer.getPixelRatio()) * 0.5;
     uni.uAspect.value = w / h;
+    if (typeof frameHeart === 'function') frameHeart();
   }
 
   // --- Material -----------------------------------------------------------
@@ -154,6 +155,18 @@ export function initHeart(section) {
           float r = length(p);
           float k = 0.30 + 0.20 * cos(5.0 * ang);
           m = smoothstep(k, k - 0.06, r);
+        } else if (shp == 6) {        // upward triangle
+          vec2 q = vec2(p.x, -p.y);
+          float base = smoothstep(0.0, 0.04, q.y + 0.4);
+          float sides = smoothstep(0.0, 0.04, (0.45 - q.y) - 1.9 * abs(q.x));
+          m = base * sides;
+        } else if (shp == 7) {        // heart
+          vec2 q = (gl_PointCoord - vec2(0.5, 0.435)) * 2.3;
+          q.y = -q.y;                 // y up
+          float xx = q.x * q.x;
+          float a = xx + q.y * q.y - 1.0;
+          float hh = a * a * a - xx * q.y * q.y * q.y;
+          m = 1.0 - smoothstep(-0.05, 0.05, hh);
         } else {                      // round
           m = smoothstep(0.5, 0.42, length(p));
         }
@@ -188,18 +201,30 @@ export function initHeart(section) {
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
   geometry.setAttribute('aRandom', new THREE.BufferAttribute(random, 3));
-  geometry.computeBoundingSphere();
+  geometry.computeBoundingBox();
   geometry.center();
-  const r = geometry.boundingSphere ? geometry.boundingSphere.radius : 1;
+  // Heart silhouette at rest: x is screen-horizontal, z is screen-vertical
+  // (we rotate it -90° about x below so the lobes point up).
+  const bb = geometry.boundingBox;
+  const heartW = bb.max.x - bb.min.x;
+  const heartH = bb.max.z - bb.min.z;
 
   const heart = new THREE.Group();
   const points = new THREE.Points(geometry, material);
   points.frustumCulled = false;
   points.rotation.x = -Math.PI / 2;
-  // A touch smaller than the canvas so the lobes/tip never clip the edges.
-  points.scale.setScalar(1.5 / r);
   heart.add(points);
   scene.add(heart);
+
+  // Scale the heart to a fixed fraction of whatever the canvas can show, so it
+  // stays large and centred on every aspect ratio (wide desktop AND tall phone)
+  // without the lobes/tip ever clipping the edges.
+  function frameHeart() {
+    const vH = 2 * camera.position.z * Math.tan((camera.fov * Math.PI / 180) / 2);
+    const vW = vH * camera.aspect;
+    const s = Math.min((vH * 0.92) / heartH, (vW * 0.96) / heartW);
+    points.scale.setScalar(s);
+  }
 
   sizeToSection();
 
