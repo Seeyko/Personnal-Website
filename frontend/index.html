@@ -542,6 +542,12 @@
     </div>
   </section>
 
+  <!-- Interactive 3D heart — lazy-loaded; nothing downloads until it nears the viewport -->
+  <section id="heart-experiment" class="heart-experiment" aria-label="Interactive 3D heart">
+    <canvas id="heart-canvas" aria-hidden="true"></canvas>
+    <p class="heart-experiment-caption">Built with heart — touch it.</p>
+  </section>
+
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-content">
@@ -603,5 +609,23 @@
 
 <!-- Theme JS (dynamically loaded) -->
 <script id="theme-js" src=""></script>
+
+<!-- Interactive 3D heart: lazy-loaded only when it nears the viewport.
+     Three.js and the heart module are NOT fetched until then, so this has
+     zero impact on initial load, SEO and Lighthouse. -->
+<script type="module">
+  const section = document.getElementById('heart-experiment');
+  if (section && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        io.disconnect();
+        import('/js/heart-home.js')
+          .then((m) => m.initHeart(section))
+          .catch((err) => console.error('Heart load failed', err));
+      }
+    }, { rootMargin: '300px 0px' });
+    io.observe(section);
+  }
+</script>
 </body>
 </html>
