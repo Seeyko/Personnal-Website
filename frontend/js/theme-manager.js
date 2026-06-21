@@ -12,6 +12,7 @@ const ThemeManager = (() => {
 
     const DEFAULT_THEME = 'default';
     const STORAGE_KEY = 'portfolio_theme';
+    const SCROLL_KEY = 'portfolio_scroll';
     let currentThemeId = null;
 
     const getFromURL = () => new URLSearchParams(window.location.search).get('theme');
@@ -62,9 +63,59 @@ const ThemeManager = (() => {
 
     function switchTheme(id) {
         if (id === currentThemeId) return;
+        // Switching theme reloads the page (each theme ships its own JS), so
+        // remember where the visitor was and snap back there once it reloads.
+        try { sessionStorage.setItem(SCROLL_KEY, String(window.scrollY)); } catch {}
         const url = new URL(window.location);
         url.searchParams.set('theme', id);
         window.location.href = url.toString();
+    }
+
+    // Restore the scroll position saved by switchTheme. Content loads
+    // asynchronously and grows the page, so we keep correcting the scroll each
+    // frame until we can actually reach the saved spot (or time out / the user
+    // takes over). Smooth scroll-behavior is paused so the snap is instant.
+    function restoreScroll() {
+        let raw = null;
+        try { raw = sessionStorage.getItem(SCROLL_KEY); } catch { return; }
+        if (raw == null) return;
+        try { sessionStorage.removeItem(SCROLL_KEY); } catch {}
+
+        const target = parseInt(raw, 10);
+        if (!Number.isFinite(target) || target <= 0) return;
+
+        const html = document.documentElement;
+        const prevRestore = 'scrollRestoration' in history ? history.scrollRestoration : null;
+        if (prevRestore !== null) history.scrollRestoration = 'manual';
+        const prevBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
+
+        let done = false;
+        const abort = () => finish();
+        function finish() {
+            if (done) return;
+            done = true;
+            html.style.scrollBehavior = prevBehavior;
+            if (prevRestore !== null) history.scrollRestoration = prevRestore;
+            window.removeEventListener('wheel', abort);
+            window.removeEventListener('touchstart', abort);
+            window.removeEventListener('keydown', abort);
+        }
+        window.addEventListener('wheel', abort, { passive: true });
+        window.addEventListener('touchstart', abort, { passive: true });
+        window.addEventListener('keydown', abort);
+
+        const deadline = performance.now() + 3000;
+        (function tick() {
+            if (done) return;
+            const maxY = Math.max(0, html.scrollHeight - window.innerHeight);
+            window.scrollTo(0, Math.min(target, maxY));
+            if (maxY < target && performance.now() < deadline) {
+                requestAnimationFrame(tick);
+            } else {
+                finish();
+            }
+        })();
     }
 
     function createSwitcher() {
@@ -97,6 +148,7 @@ const ThemeManager = (() => {
     }
 
     function init() {
+        restoreScroll();
         const timeout = setTimeout(() => { console.warn('[THEME] Timeout'); hideLoading(); }, 3000);
         const themeId = THEMES[getFromURL() || getSaved()] ? (getFromURL() || getSaved()) : DEFAULT_THEME;
         apply(themeId).then(() => clearTimeout(timeout));
