@@ -1,7 +1,12 @@
 /**
  * Interactive 3D heart — the Taubin implicit surface rendered as a
- * "projected halftone" point cloud on a light backdrop. Drag to spin it;
- * it keeps its momentum and glides to a gentle idle rotation. Pinch to zoom.
+ * "projected halftone" point cloud on a light backdrop.
+ *
+ * Gestures:
+ *  - one finger drag .... spin it; it keeps its momentum and glides to a
+ *                         gentle idle rotation. Wherever you touch, the points
+ *                         bloom outward with a warm glow and reform on release.
+ *  - two finger pinch ... zoom.
  */
 import * as THREE from 'three';
 import { buildHeartGeometry } from './heart-geometry.js';
@@ -9,8 +14,7 @@ import { buildHeartGeometry } from './heart-geometry.js';
 const canvas = document.getElementById('scene');
 const loader = document.getElementById('loader');
 
-// Denser grid = more points = finer halftone. Points are cheap to draw, so we
-// can afford a high sampling resolution; ease off a touch on small screens.
+// Denser grid = more points = finer halftone. Points are cheap, so sample high.
 const isSmall = Math.min(window.innerWidth, window.innerHeight) < 640;
 const RESOLUTION = isSmall ? 96 : 128;
 
@@ -31,11 +35,11 @@ const camera = new THREE.PerspectiveCamera(
 let camDistance = 4.4;
 camera.position.set(0, 0, camDistance);
 
-// --- Halftone point material ---------------------------------------------
-// Dot size and tone both vary with how much each point faces the light, so
-// lit areas read as dense pale dots and shadowed areas as small dark dots —
-// a 3D halftone. Lighting is in view space, so the shading stays fixed to the
-// camera and the form is revealed as the heart turns.
+// --- Halftone point material with touch deformation ----------------------
+// Dot size and tone vary with view-space lighting (lit = dense pale dots,
+// shadow = small dark dots). Near the pointer, points bloom outward along
+// their normal and glow with an accent colour; the influence fades in/out so
+// the cloud reforms when you let go.
 const pointMaterial = new THREE.ShaderMaterial({
   uniforms: {
     uScale: { value: (window.innerHeight * renderer.getPixelRatio()) * 0.5 },
@@ -43,37 +47,59 @@ const pointMaterial = new THREE.ShaderMaterial({
     uLightDir: { value: new THREE.Vector3(-0.45, 0.7, 0.65).normalize() },
     uDark: { value: new THREE.Color(0x2a2a30) },
     uLight: { value: new THREE.Color(0xffffff) },
+    uAccent: { value: new THREE.Color(0xff2e55) },
+    uTime: { value: 0 },
+    uAspect: { value: window.innerWidth / window.innerHeight },
+    uPointer: { value: new THREE.Vector2(-10, -10) }, // NDC, off-screen = idle
+    uStrength: { value: 0 },     // 0..1 touch influence, eased in JS
+    uRadius: { value: 0.3 },     // influence radius in NDC
+    uPush: { value: 0.32 },      // bloom distance in object space
   },
   transparent: true,
   depthTest: true,
   depthWrite: true,
   vertexShader: /* glsl */`
-    uniform float uScale;
-    uniform float uSize;
+    uniform float uScale, uSize, uTime, uAspect, uStrength, uRadius, uPush;
     uniform vec3 uLightDir;
+    uniform vec2 uPointer;
     varying float vShade;
+    varying float vInfl;
+
     void main() {
-      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+      // Where does this point land on screen (before deformation)?
+      vec4 mv0 = modelViewMatrix * vec4(position, 1.0);
+      vec4 clip = projectionMatrix * mv0;
+      vec2 ndc = clip.xy / clip.w;
+      float d = distance(vec2(ndc.x * uAspect, ndc.y),
+                         vec2(uPointer.x * uAspect, uPointer.y));
+      float infl = smoothstep(uRadius, 0.0, d) * uStrength;
+      vInfl = infl;
+
+      // Bloom along the normal, with a little organic shimmer.
+      float shimmer = 0.75 + 0.25 * sin(uTime * 7.0 + position.x * 9.0 + position.y * 11.0);
+      vec3 dpos = position + normal * (infl * uPush * shimmer);
+
+      vec4 mv = modelViewMatrix * vec4(dpos, 1.0);
       vec3 n = normalize(normalMatrix * normal);
       float lambert = max(dot(n, normalize(uLightDir)), 0.0);
-      float shade = 0.18 + 0.82 * lambert;
-      vShade = shade;
-      gl_Position = projectionMatrix * mvPosition;
-      // Bigger dots where brighter -> halftone tone via dot size.
-      float s = uSize * (0.45 + 0.95 * shade);
-      gl_PointSize = s * uScale / -mvPosition.z;
+      vShade = 0.18 + 0.82 * lambert;
+
+      gl_Position = projectionMatrix * mv;
+      float s = uSize * (0.45 + 0.95 * vShade) * (1.0 + infl * 1.4);
+      gl_PointSize = s * uScale / -mv.z;
     }
   `,
   fragmentShader: /* glsl */`
-    uniform vec3 uDark;
-    uniform vec3 uLight;
+    uniform vec3 uDark, uLight, uAccent;
     varying float vShade;
+    varying float vInfl;
     void main() {
       // Round, soft-edged dot.
-      float d = length(gl_PointCoord - vec2(0.5));
-      float alpha = smoothstep(0.5, 0.4, d);
+      float dd = length(gl_PointCoord - vec2(0.5));
+      float alpha = smoothstep(0.5, 0.4, dd);
       if (alpha < 0.02) discard;
       vec3 color = mix(uDark, uLight, vShade);
+      color = mix(color, uAccent, clamp(vInfl, 0.0, 1.0) * 0.85);
       gl_FragColor = vec4(color, alpha);
     }
   `,
@@ -91,29 +117,35 @@ function buildHeart() {
   geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
   geometry.computeBoundingSphere();
 
-  // Centre and normalise scale so it always frames nicely.
   geometry.center();
   const r = geometry.boundingSphere ? geometry.boundingSphere.radius : 1;
 
   const points = new THREE.Points(geometry, pointMaterial);
-  // The equation's z-axis is vertical (lobes up) — stand the heart upright.
-  points.rotation.x = -Math.PI / 2;
+  points.rotation.x = -Math.PI / 2; // equation z-axis is up (lobes up)
   points.scale.setScalar(1.6 / r);
   heart.add(points);
 }
 
-// --- Inertial drag + pinch zoom (touch-first) ----------------------------
+// --- Inertial drag + pinch zoom + touch bloom (touch-first) --------------
 const ROT_AXIS_Y = new THREE.Vector3(0, 1, 0);
 const ROT_AXIS_X = new THREE.Vector3(1, 0, 0);
-const IDLE_SPIN = 0.0022; // gentle self-rotation it always glides back to
-const DRAG_K = 0.006;     // finger sensitivity
+const IDLE_SPIN = 0.0022;
+const DRAG_K = 0.006;
 
-let velX = IDLE_SPIN; // angular velocity around world Y
-let velY = 0;         // angular velocity around world X
+let velX = IDLE_SPIN;
+let velY = 0;
 const pointers = new Map();
 let dragging = false;
 let lastX = 0, lastY = 0;
 let pinchStart = 0, pinchStartDist = camDistance;
+
+const pointerNDC = pointMaterial.uniforms.uPointer.value;
+function setPointerNDC(clientX, clientY) {
+  pointerNDC.set(
+    (clientX / window.innerWidth) * 2 - 1,
+    -(clientY / window.innerHeight) * 2 + 1,
+  );
+}
 
 function applyRotation(ax, ay) {
   heart.rotateOnWorldAxis(ROT_AXIS_Y, ax);
@@ -127,6 +159,7 @@ canvas.addEventListener('pointerdown', (e) => {
     dragging = true;
     lastX = e.clientX;
     lastY = e.clientY;
+    setPointerNDC(e.clientX, e.clientY);
   } else if (pointers.size === 2) {
     dragging = false;
     const pts = [...pointers.values()];
@@ -151,6 +184,7 @@ canvas.addEventListener('pointermove', (e) => {
   }
 
   if (dragging) {
+    setPointerNDC(e.clientX, e.clientY);
     const dx = e.clientX - lastX;
     const dy = e.clientY - lastY;
     lastX = e.clientX;
@@ -170,14 +204,23 @@ function endPointer(e) {
     dragging = true;
     lastX = p.x;
     lastY = p.y;
+    setPointerNDC(p.x, p.y);
   }
 }
 canvas.addEventListener('pointerup', endPointer);
 canvas.addEventListener('pointercancel', endPointer);
 
 // --- Render loop ----------------------------------------------------------
+const clock = new THREE.Clock();
+const u = pointMaterial.uniforms;
+
 function animate() {
   requestAnimationFrame(animate);
+  u.uTime.value = clock.getElapsedTime();
+
+  // Touch bloom fades in while a single finger is down, out otherwise.
+  const target = (dragging && pointers.size === 1) ? 1 : 0;
+  u.uStrength.value += (target - u.uStrength.value) * 0.12;
 
   if (!dragging) {
     // Coast on momentum, then glide back to a gentle idle spin — "the dance".
@@ -195,8 +238,8 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  pointMaterial.uniforms.uScale.value =
-    (window.innerHeight * renderer.getPixelRatio()) * 0.5;
+  u.uScale.value = (window.innerHeight * renderer.getPixelRatio()) * 0.5;
+  u.uAspect.value = window.innerWidth / window.innerHeight;
 });
 
 // --- Boot -----------------------------------------------------------------
