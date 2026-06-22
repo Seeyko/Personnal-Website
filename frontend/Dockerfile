@@ -22,6 +22,12 @@ COPY frontend/blog.html /usr/share/nginx/html/
 COPY frontend/admin.html /usr/share/nginx/html/
 COPY frontend/experiments/ /usr/share/nginx/html/experiments/
 
+# SEO / PWA / icon files that live at the frontend root (not under a copied dir)
+COPY frontend/robots.txt /usr/share/nginx/html/
+COPY frontend/sitemap.xml /usr/share/nginx/html/
+COPY frontend/site.webmanifest /usr/share/nginx/html/
+COPY frontend/favicon.ico /usr/share/nginx/html/
+
 # Copy config template and generate config.js with environment variables
 COPY frontend/config.template.js /tmp/config.template.js
 RUN envsubst '${API_URL} ${FRONTEND_URL} ${ADMIN_SECRET_PATH}' < /tmp/config.template.js > /usr/share/nginx/html/config.js && \
