@@ -28,6 +28,23 @@
 - [x] node --check (passes)
 - [x] Commit + push + PR
 
+## Follow-up 2 (screenshot feedback: crop ugly on click, hover-out snaps, all too fast)
+User chose "les 3": fade + stylish box + smaller explosion. Implemented together:
+- Box: canvas wrapped in `.heart-stage` (centred ~620px case) with a theme-aware
+  frame (glass case / terminal CRT bezel / blueprint ticks / retro90s Win95 window).
+  index.html + base.css.
+- Edge fade: shader fades particle alpha in the outer ~14% of the box (vNdc), so an
+  overflowing bloom dissolves instead of hard-clipping into a rectangle.
+- Smaller explosion: scatter 2.4-3.6 -> 0.55-0.85, BURST_PEAK 0.85 -> 0.6,
+  uPush 0.35 -> 0.12, ripple amp 0.5 -> 0.28.
+- Hover-out snap fixed: hover bloom is now GLOBAL (whole heart) instead of cursor-
+  localised; with the snug box, leaving it = pointerleave = a slow bouncy return.
+- ~3.5x slower everywhere: STR spring 0.022/0.11 -> 0.0018/0.03, BURST 0.05/0.12 ->
+  0.004/0.035, idle spin 0.0018 -> 0.0008, shimmer 7->1.8, swirl/ripple speeds down.
+- HEART_FILL 0.8 gives the bloom room inside the box (heart not shrunk noticeably;
+  the frame makes the margin read as intentional).
+
 ## Notes
-- No GPU in sandbox -> WebGL not visually verifiable here; spring constants &
-  burst magnitude likely want a quick local tune.
+- No GPU/browser in remote sandbox -> WebGL + the 4 themed frames NOT visually
+  verified here. Frame styles, HEART_FILL, edge-fade band (0.86) and spring
+  constants likely want a quick local pass across all themes + mobile.
