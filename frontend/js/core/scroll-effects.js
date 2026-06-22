@@ -32,6 +32,16 @@ const ScrollEffects = (() => {
             ...opts
         };
 
+        // Reduced-motion: reveal everything immediately (no opacity:0 start, no
+        // transition) so these elements can never get stuck hidden.
+        if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+            document.querySelectorAll(selector).forEach(el => {
+                Object.assign(el.style, cfg.visible, { transition: 'none' });
+                el.classList.add('visible');
+            });
+            return;
+        }
+
         const observer = new IntersectionObserver(entries => {
             entries.forEach(e => {
                 if (e.isIntersecting) {
