@@ -19,10 +19,10 @@ import { buildHeartGeometry } from '/js/experiments/heart-geometry.js';
 // is an unmistakable change, not just a recolour.
 // shape: 0 round · 1 square · 2 cross · 3 diamond · 4 ring · 5 star · 6 triangle · 7 heart
 const THEME_STYLES = {
-  default:  { shape: 7, colA: 0x14141a, colB: 0xb23047, accent: 0xff2e55, rainbow: 0, size: 0.032, scatter: 2.4, swirl: 1.0 },
-  terminal: { shape: 1, colA: 0x0a5a0a, colB: 0x49ff49, accent: 0xd6ffd6, rainbow: 0, size: 0.021, scatter: 3.1, swirl: 1.6 },
-  blueprint:{ shape: 2, colA: 0x4f86c6, colB: 0xeaf6ff, accent: 0x76e6ff, rainbow: 0, size: 0.030, scatter: 2.7, swirl: 0.9 },
-  retro90s: { shape: 5, colA: 0x6a00ff, colB: 0xffe600, accent: 0x00ffd0, rainbow: 1, size: 0.040, scatter: 3.6, swirl: 2.4 },
+  default:  { shape: 7, colA: 0x14141a, colB: 0xb23047, accent: 0xff2e55, rainbow: 0, size: 0.17, scatter: 2.4, swirl: 1.0 },
+  terminal: { shape: 1, colA: 0x0a5a0a, colB: 0x49ff49, accent: 0xd6ffd6, rainbow: 0, size: 0.12, scatter: 3.1, swirl: 1.6 },
+  blueprint:{ shape: 2, colA: 0x4f86c6, colB: 0xeaf6ff, accent: 0x76e6ff, rainbow: 0, size: 0.15, scatter: 2.7, swirl: 0.9 },
+  retro90s: { shape: 5, colA: 0x6a00ff, colB: 0xffe600, accent: 0x00ffd0, rainbow: 1, size: 0.18, scatter: 3.6, swirl: 2.4 },
 };
 
 let started = false;
@@ -38,8 +38,10 @@ export function initHeart(section) {
   const themeId = document.body.dataset.theme || 'default';
   const style = THEME_STYLES[themeId] || THEME_STYLES.default;
 
+  // Fewer points than a dense halftone, so each particle is big enough to read
+  // as its theme's shape (a heart, a star, …) rather than a generic speck.
   const isSmall = Math.min(window.innerWidth, window.innerHeight) < 640;
-  const RESOLUTION = isSmall ? 64 : 84;
+  const RESOLUTION = isSmall ? 38 : 48;
 
   // --- Renderer (transparent: sits on the theme's own background) ---------
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
@@ -47,7 +49,7 @@ export function initHeart(section) {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 0, 4.4);
+  camera.position.set(0, 0, 4.8);
 
   function sizeToSection() {
     const w = canvas.clientWidth || section.clientWidth;
@@ -105,7 +107,7 @@ export function initHeart(section) {
         float shimmer = 0.75 + 0.25 * sin(uTime * 7.0 + position.x * 9.0 + position.y * 11.0);
         vec3 dpos = position + normal * (infl * uPush * shimmer);
 
-        float burst = pow(infl, 1.6);
+        float burst = pow(max(infl, 0.0), 1.6);
         vec3 dir = normalize(normal * 0.4 + aRandom);
         vec3 swirl = vec3(
           sin(uTime * 2.3 * uSwirl + aRandom.y * 6.28),
@@ -203,11 +205,16 @@ export function initHeart(section) {
   geometry.setAttribute('aRandom', new THREE.BufferAttribute(random, 3));
   geometry.computeBoundingBox();
   geometry.center();
-  // Heart silhouette at rest: x is screen-horizontal, z is screen-vertical
-  // (we rotate it -90° about x below so the lobes point up).
+  // After the -90° x-rotation below: geometry x -> screen-horizontal,
+  // geometry z -> screen-vertical (lobes up), geometry y -> depth (toward camera).
   const bb = geometry.boundingBox;
   const heartW = bb.max.x - bb.min.x;
   const heartH = bb.max.z - bb.min.z;
+  const heartD = bb.max.y - bb.min.y;
+  // As it idly spins about the vertical axis, the on-screen width and the depth
+  // swap, so the widest horizontal extent — and the deepest point — is the
+  // larger of width/depth. Size against that so it never clips mid-spin.
+  const span = Math.max(heartW, heartD);
 
   const heart = new THREE.Group();
   const points = new THREE.Points(geometry, material);
@@ -216,25 +223,35 @@ export function initHeart(section) {
   heart.add(points);
   scene.add(heart);
 
-  // Scale the heart to a fixed fraction of whatever the canvas can show, so it
-  // stays large and centred on every aspect ratio (wide desktop AND tall phone)
-  // without the lobes/tip ever clipping the edges.
+  // Fit the heart to (almost) the whole frustum, accounting for perspective:
+  // its nearest face sits at camZ - span*s/2, where it is magnified most, so we
+  // solve the scale per axis at that near plane. This makes it as big as
+  // possible while guaranteeing the lobes/tip never get cropped — on any aspect
+  // ratio (wide desktop and tall phone). Recomputed on every resize.
   function frameHeart() {
-    const vH = 2 * camera.position.z * Math.tan((camera.fov * Math.PI / 180) / 2);
-    const vW = vH * camera.aspect;
-    const s = Math.min((vH * 0.92) / heartH, (vW * 0.96) / heartW);
-    points.scale.setScalar(s);
+    const T = Math.tan((camera.fov * Math.PI / 180) / 2);
+    const camZ = camera.position.z;
+    const F = 0.96; // leave a hair of margin for the point radius
+    const sV = (2 * F * T * camZ) / (heartH + F * T * span);
+    const sW = (2 * F * camera.aspect * T * camZ) / (span + F * camera.aspect * T * span);
+    points.scale.setScalar(Math.min(sV, sW));
   }
 
   sizeToSection();
 
-  // --- Interaction: grab to spin (inertial) + ripple — never blocks scroll --
+  // --- Interaction: grab to spin (inertial) + hover-bloom — never blocks scroll
   const ROT_Y = new THREE.Vector3(0, 1, 0);
   const ROT_X = new THREE.Vector3(1, 0, 0);
   const IDLE_SPIN = reduced ? 0 : 0.0026;
   const DRAG_K = 0.006;            // pixels -> radians
-  let lastInteract = -1;
+  // Bloom strength is driven by a spring (not a snap): it holds while the
+  // pointer is over the heart, then reconstructs slowly with a bouncy overshoot
+  // when the pointer leaves. Lower stiffness = slower, lower damping = bouncier.
+  const STR_STIFF = 0.045;
+  const STR_DAMP = 0.16;
   let dragging = false;
+  let hovering = false;
+  let strengthVel = 0;
   let activePointer = null;
   let lastX = 0, lastY = 0;
   let velX = IDLE_SPIN, velY = 0;  // current rotation velocity (coasts to idle)
@@ -245,7 +262,6 @@ export function initHeart(section) {
       ((e.clientX - rect.left) / rect.width) * 2 - 1,
       -(((e.clientY - rect.top) / rect.height) * 2 - 1),
     );
-    lastInteract = performance.now();
   }
 
   function onMove(e) {
@@ -260,11 +276,16 @@ export function initHeart(section) {
       heart.rotateOnWorldAxis(ROT_X, velY);
     }
     pointerToNDC(e);
-    if (reduced) requestFrame(); // wake a few frames for the ripple
+    hovering = true;
+    requestFrame();
   }
+
+  function onEnter(e) { hovering = true; pointerToNDC(e); requestFrame(); }
+  function onLeave() { hovering = false; requestFrame(); } // let it spring back
 
   function onDown(e) {
     dragging = true;
+    hovering = true;
     activePointer = e.pointerId;
     lastX = e.clientX;
     lastY = e.clientY;
@@ -278,12 +299,16 @@ export function initHeart(section) {
     if (e.pointerId !== activePointer) return;
     dragging = false;
     activePointer = null;
+    hovering = false;            // touch has no lingering hover after release
     try { canvas.releasePointerCapture(e.pointerId); } catch {}
     canvas.classList.remove('grabbing');
+    requestFrame();
   }
 
   if (!reduced) {
     canvas.addEventListener('pointermove', onMove, { passive: true });
+    canvas.addEventListener('pointerenter', onEnter, { passive: true });
+    canvas.addEventListener('pointerleave', onLeave, { passive: true });
     canvas.addEventListener('pointerdown', onDown, { passive: true });
     canvas.addEventListener('pointerup', onUp, { passive: true });
     canvas.addEventListener('pointercancel', onUp, { passive: true });
@@ -298,8 +323,11 @@ export function initHeart(section) {
     rafId = 0;
     uni.uTime.value = clock.getElapsedTime();
 
-    const active = dragging || performance.now() - lastInteract < 120;
-    uni.uStrength.value += ((active ? 1 : 0) - uni.uStrength.value) * 0.12;
+    // Bloom strength springs toward 1 while interacting and back to 0 otherwise,
+    // overshooting on the way back so the heart reconstructs slowly and bouncy.
+    const target = (hovering || dragging) ? 1 : 0;
+    strengthVel += (target - uni.uStrength.value) * STR_STIFF - strengthVel * STR_DAMP;
+    uni.uStrength.value += strengthVel;
 
     if (!reduced && !dragging) {
       // Coast on the drag's momentum, then glide back to the gentle idle spin.
@@ -310,8 +338,10 @@ export function initHeart(section) {
     }
     renderer.render(scene, camera);
 
-    // Keep going only while something is animating and the heart is on-screen.
-    const animating = !reduced || uni.uStrength.value > 0.001 || active;
+    // Keep going while the heart spins, the spring is still settling, or we are
+    // interacting — and only while it is on-screen.
+    const settling = Math.abs(strengthVel) > 0.0005 || Math.abs(uni.uStrength.value - target) > 0.002;
+    const animating = !reduced || settling || target > 0;
     if (visible && animating) rafId = requestAnimationFrame(frame);
   }
   function requestFrame() {
