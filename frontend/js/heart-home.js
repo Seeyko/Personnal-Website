@@ -19,10 +19,10 @@ import { buildHeartGeometry } from '/js/experiments/heart-geometry.js';
 // is an unmistakable change, not just a recolour.
 // shape: 0 round · 1 square · 2 cross · 3 diamond · 4 ring · 5 star · 6 triangle · 7 heart
 const THEME_STYLES = {
-  default:  { shape: 7, colA: 0x14141a, colB: 0xb23047, accent: 0xff2e55, rainbow: 0, size: 0.17, scatter: 2.4, swirl: 1.0 },
-  terminal: { shape: 1, colA: 0x0a5a0a, colB: 0x49ff49, accent: 0xd6ffd6, rainbow: 0, size: 0.12, scatter: 3.1, swirl: 1.6 },
-  blueprint:{ shape: 2, colA: 0x4f86c6, colB: 0xeaf6ff, accent: 0x76e6ff, rainbow: 0, size: 0.15, scatter: 2.7, swirl: 0.9 },
-  retro90s: { shape: 5, colA: 0x6a00ff, colB: 0xffe600, accent: 0x00ffd0, rainbow: 1, size: 0.18, scatter: 3.6, swirl: 2.4 },
+  default:  { shape: 7, colA: 0x14141a, colB: 0xb23047, accent: 0xff2e55, rainbow: 0, size: 0.17, scatter: 0.55, swirl: 0.35 },
+  terminal: { shape: 1, colA: 0x0a5a0a, colB: 0x49ff49, accent: 0xd6ffd6, rainbow: 0, size: 0.12, scatter: 0.70, swirl: 0.50 },
+  blueprint:{ shape: 2, colA: 0x4f86c6, colB: 0xeaf6ff, accent: 0x76e6ff, rainbow: 0, size: 0.15, scatter: 0.60, swirl: 0.30 },
+  retro90s: { shape: 5, colA: 0x6a00ff, colB: 0xffe600, accent: 0x00ffd0, rainbow: 1, size: 0.18, scatter: 0.85, swirl: 0.80 },
 };
 
 let started = false;
@@ -77,16 +77,16 @@ export function initHeart(section) {
     uPointer: { value: new THREE.Vector2(-10, -10) },
     uStrength: { value: 0 },
     uRadius: { value: 0.34 },
-    uPush: { value: 0.35 },
+    uPush: { value: 0.12 },
     uScatter: { value: style.scatter },
     uSwirl: { value: style.swirl },
     // Click burst + ripple (separate from the gentle hover bloom above).
     uBurst: { value: 0 },                              // global burst strength, springs back with a bounce
     uBurstTime: { value: -100 },                       // time (s) of the last click, drives the ripple ring
     uClickPos: { value: new THREE.Vector2(-10, -10) }, // NDC of the last click, the ripple's origin
-    uRippleSpeed: { value: 1.7 },                      // how fast the ring expands (NDC units / s)
-    uRippleWidth: { value: 0.18 },                     // ring thickness
-    uRippleAmp: { value: 0.5 },                        // how far the ring lifts points along their normal
+    uRippleSpeed: { value: 0.7 },                      // how fast the ring expands (NDC units / s)
+    uRippleWidth: { value: 0.22 },                     // ring thickness
+    uRippleAmp: { value: 0.28 },                       // how far the ring lifts points along their normal
   };
 
   const material = new THREE.ShaderMaterial({
@@ -104,36 +104,38 @@ export function initHeart(section) {
       varying float vInfl;
       varying float vHue;
       varying float vRipple;
+      varying vec2 vNdc;
       void main() {
         vec4 mv0 = modelViewMatrix * vec4(position, 1.0);
         vec4 clip = projectionMatrix * mv0;
         vec2 ndc = clip.xy / clip.w;
         vec2 sp = vec2(ndc.x * uAspect, ndc.y);
 
-        // Hover bloom — localised under the moving pointer; gentle.
-        float d = distance(sp, vec2(uPointer.x * uAspect, uPointer.y));
-        float hov = smoothstep(uRadius, 0.0, d) * uStrength;
+        // Hover bloom — a gentle swell of the WHOLE heart while the pointer is
+        // over it. Because it is global (not tied to the cursor's spot) it springs
+        // back with a slow bounce whenever the pointer leaves (driven JS-side).
+        float hov = uStrength;
 
         // Click burst — radiates from the click point across the whole heart,
         // strongest at the origin and tapering outward, so it reads as a big
         // explosion emanating from where you tapped (much larger than the hover).
         float dc = distance(sp, vec2(uClickPos.x * uAspect, uClickPos.y));
-        float near = mix(0.4, 1.0, smoothstep(1.5, 0.0, dc));
+        float near = mix(0.45, 1.0, smoothstep(1.4, 0.0, dc));
         float clk = uBurst * near;
 
-        // Ripple — a thin ring expanding outward from the click point, fading as
-        // it travels, lifting the points it passes over like a wave.
+        // Ripple — a thin ring expanding slowly out from the click point, fading
+        // as it travels, lifting the points it passes over like a wave.
         float age = uTime - uBurstTime;
         float ringR = age * uRippleSpeed;
         float ring = smoothstep(uRippleWidth, 0.0, abs(dc - ringR));
-        float rip = ring * exp(-age * 2.0) * step(0.0, age) * step(age, 3.0);
+        float rip = ring * exp(-age * 0.9) * step(0.0, age) * step(age, 4.0);
         vRipple = rip;
 
         float infl = hov + clk;
         vInfl = clamp(infl + rip, 0.0, 1.5);
         vHue = fract((position.x + position.z) * 0.28 + 0.5);
 
-        float shimmer = 0.75 + 0.25 * sin(uTime * 7.0 + position.x * 9.0 + position.y * 11.0);
+        float shimmer = 0.82 + 0.18 * sin(uTime * 1.8 + position.x * 9.0 + position.y * 11.0);
         vec3 dpos = position + normal * (infl * uPush * shimmer);
 
         // Ripple rides outward along each surface normal as the ring sweeps past.
@@ -142,17 +144,18 @@ export function initHeart(section) {
         float burst = pow(max(infl, 0.0), 1.6);
         vec3 dir = normalize(normal * 0.4 + aRandom);
         vec3 swirl = vec3(
-          sin(uTime * 2.3 * uSwirl + aRandom.y * 6.28),
-          sin(uTime * 2.7 * uSwirl + aRandom.z * 6.28),
-          sin(uTime * 2.1 * uSwirl + aRandom.x * 6.28)
+          sin(uTime * 1.1 * uSwirl + aRandom.y * 6.28),
+          sin(uTime * 1.3 * uSwirl + aRandom.z * 6.28),
+          sin(uTime * 0.9 * uSwirl + aRandom.x * 6.28)
         );
-        dpos += dir * (burst * uScatter) + swirl * (infl * 0.45);
+        dpos += dir * (burst * uScatter) + swirl * (infl * 0.18);
 
         vec4 mv = modelViewMatrix * vec4(dpos, 1.0);
         vec3 n = normalize(normalMatrix * normal);
         vShade = 0.18 + 0.82 * max(dot(n, normalize(uLightDir)), 0.0);
 
         gl_Position = projectionMatrix * mv;
+        vNdc = gl_Position.xy / gl_Position.w;   // screen position, for the edge fade
         float s = uSize * (0.45 + 0.95 * vShade) * (1.0 + infl * 0.8 + rip * 0.6) * (1.0 - 0.35 * burst);
         gl_PointSize = s * uScale / -mv.z;
       }
@@ -166,6 +169,7 @@ export function initHeart(section) {
       varying float vInfl;
       varying float vHue;
       varying float vRipple;
+      varying vec2 vNdc;
       vec3 hsv2rgb(vec3 c) {
         vec3 p = abs(fract(c.xxx + vec3(0.0, 2.0/3.0, 1.0/3.0)) * 6.0 - 3.0);
         return c.z * mix(vec3(1.0), clamp(p - 1.0, 0.0, 1.0), c.y);
@@ -215,7 +219,12 @@ export function initHeart(section) {
         }
         col = mix(col, uAccent, clamp(vInfl, 0.0, 1.0) * 0.85);
         col += uAccent * vRipple * 0.5;   // ring crest flashes the accent as it sweeps
-        gl_FragColor = vec4(col, m);
+
+        // Soft edge fade: particles dissolve as they near the box edges, so an
+        // overflowing bloom melts away instead of clipping into a hard rectangle.
+        vec2 av = abs(vNdc);
+        float edge = 1.0 - smoothstep(0.86, 1.0, max(av.x, av.y));
+        gl_FragColor = vec4(col, m * edge);
       }
     `,
   });
@@ -257,18 +266,20 @@ export function initHeart(section) {
   heart.add(points);
   scene.add(heart);
 
-  // Fit the heart to (almost) the whole frustum, accounting for perspective:
+  // Fit the heart to the framed "box" it lives in, accounting for perspective:
   // its nearest face sits at camZ - span*s/2, where it is magnified most, so we
-  // solve the scale per axis at that near plane. This makes it as big as
-  // possible while guaranteeing the lobes/tip never get cropped — on any aspect
-  // ratio (wide desktop and tall phone). Recomputed on every resize.
+  // solve the scale per axis at that near plane. HEART_FILL then holds it to a
+  // fraction of that max, leaving a margin so the bloom/explosion expands into
+  // empty space and dissolves (edge fade) instead of clipping at the box edge.
+  // Recomputed on every resize.
+  const HEART_FILL = 0.8;
   function frameHeart() {
     const T = Math.tan((camera.fov * Math.PI / 180) / 2);
     const camZ = camera.position.z;
     const F = 0.96; // leave a hair of margin for the point radius
     const sV = (2 * F * T * camZ) / (heartH + F * T * span);
     const sW = (2 * F * camera.aspect * T * camZ) / (span + F * camera.aspect * T * span);
-    points.scale.setScalar(Math.min(sV, sW));
+    points.scale.setScalar(Math.min(sV, sW) * HEART_FILL);
   }
 
   sizeToSection();
@@ -276,21 +287,22 @@ export function initHeart(section) {
   // --- Interaction: grab to spin (inertial) + hover-bloom — never blocks scroll
   const ROT_Y = new THREE.Vector3(0, 1, 0);
   const ROT_X = new THREE.Vector3(1, 0, 0);
-  const IDLE_SPIN = reduced ? 0 : 0.0018;
+  const IDLE_SPIN = reduced ? 0 : 0.0008;
   const DRAG_K = 0.006;            // pixels -> radians
-  // Hover bloom is driven by a spring (not a snap): it holds while the pointer is
-  // over the heart, then reconstructs slowly with a bouncy overshoot when the
-  // pointer leaves. Lower stiffness = slower, lower damping = bouncier. Tuned soft
-  // & slow here so the whole thing feels smooth and satisfying rather than snappy.
-  const STR_STIFF = 0.022;
-  const STR_DAMP = 0.11;
+  // Hover bloom is driven by a spring (not a snap): the WHOLE heart swells while
+  // the pointer is over the box, then reconstructs slowly with a bouncy overshoot
+  // when the pointer leaves. Lower stiffness = slower, lower damping = bouncier.
+  // Tuned ~3.5x slower than before so the motion feels smooth, languid, satisfying.
+  const STR_STIFF = 0.0018;
+  const STR_DAMP = 0.03;
   // Click burst is a second, separate spring: it pops to BURST_PEAK the instant
   // you press, then springs back to rest overshooting through zero (the same
-  // bounce the hover gets on release) so a click reads as a big explosion that
-  // recoils and reassembles.
-  const BURST_STIFF = 0.05;
-  const BURST_DAMP = 0.12;
-  const BURST_PEAK = 0.85;
+  // bounce the hover gets on release) so a click reads as an explosion that
+  // recoils and reassembles. Also slowed ~3.5x; PEAK kept modest so the blast
+  // stays inside the box (and the edge fade catches any overflow).
+  const BURST_STIFF = 0.004;
+  const BURST_DAMP = 0.035;
+  const BURST_PEAK = 0.6;
   let dragging = false;
   let hovering = false;
   let strengthVel = 0;
@@ -397,9 +409,9 @@ export function initHeart(section) {
     // ripple is still travelling, or we are interacting — and only while on-screen.
     const rippleAge = uni.uTime.value - uni.uBurstTime.value;
     const settling =
-      Math.abs(strengthVel) > 0.0005 || Math.abs(uni.uStrength.value - target) > 0.002 ||
-      Math.abs(burstVel) > 0.0005 || Math.abs(uni.uBurst.value) > 0.002 ||
-      rippleAge < 1.8;
+      Math.abs(strengthVel) > 0.0003 || Math.abs(uni.uStrength.value - target) > 0.002 ||
+      Math.abs(burstVel) > 0.0003 || Math.abs(uni.uBurst.value) > 0.002 ||
+      rippleAge < 4.0;
     const animating = !reduced || settling || target > 0;
     if (visible && animating) rafId = requestAnimationFrame(frame);
   }

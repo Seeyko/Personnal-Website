@@ -994,14 +994,57 @@ body[data-theme="terminal"] .code-comment-marker {
   align-items: center;
   overflow: hidden;
 }
-/* Canvas takes the space above the caption; the heart is centred in it, so the
-   heart and the caption end up sharing the same vertical axis (cleanly stacked,
-   no overlap). */
-.heart-experiment canvas {
+/* The heart lives inside a centred "box" (a glass display case). The box gives
+   the bloom/explosion a defined frame to dissolve into (see the edge fade in the
+   shader) so it never clips into an ugly rectangle, and makes the surrounding
+   margin read as intentional framing rather than a too-small heart. */
+.heart-stage {
   position: relative;
   flex: 1 1 auto;
-  width: 100%;
   min-height: 0;
+  width: min(620px, 88vw);
+  align-self: center;
+  margin: 0 auto;
+  border-radius: 14px;
+  overflow: hidden;
+}
+/* The frame itself — a subtle bevelled case, tinted by the current theme. */
+.heart-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, currentColor 6%, transparent),
+    inset 0 0 40px color-mix(in srgb, currentColor 7%, transparent);
+}
+/* Corner ticks for a precise, "specimen mounted in a case" feel. */
+.heart-stage::after {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: 8px;
+  background:
+    linear-gradient(currentColor, currentColor) left   top    / 14px 1px no-repeat,
+    linear-gradient(currentColor, currentColor) left   top    / 1px 14px no-repeat,
+    linear-gradient(currentColor, currentColor) right  top    / 14px 1px no-repeat,
+    linear-gradient(currentColor, currentColor) right  top    / 1px 14px no-repeat,
+    linear-gradient(currentColor, currentColor) left   bottom / 14px 1px no-repeat,
+    linear-gradient(currentColor, currentColor) left   bottom / 1px 14px no-repeat,
+    linear-gradient(currentColor, currentColor) right  bottom / 14px 1px no-repeat,
+    linear-gradient(currentColor, currentColor) right  bottom / 1px 14px no-repeat;
+  opacity: 0.28;
+}
+.heart-experiment canvas {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
   display: block;
   /* Allow normal page scrolling over the canvas on touch devices while a
      horizontal drag spins the heart. */
@@ -1011,6 +1054,49 @@ body[data-theme="terminal"] .code-comment-marker {
 .heart-experiment canvas.grabbing {
   cursor: grabbing;
 }
+
+/* ── Per-theme framing flavour ──────────────────────────────────────── */
+/* terminal: a crisp green CRT bezel with a faint glow + square corners. */
+body[data-theme="terminal"] .heart-stage { border-radius: 3px; }
+body[data-theme="terminal"] .heart-stage::before {
+  border-color: rgba(73, 255, 73, 0.45);
+  box-shadow:
+    0 0 16px rgba(73, 255, 73, 0.14),
+    inset 0 0 36px rgba(73, 255, 73, 0.08);
+}
+body[data-theme="terminal"] .heart-stage::after { border-radius: 1px; opacity: 0.5; }
+
+/* blueprint: a precise cyan technical frame. */
+body[data-theme="blueprint"] .heart-stage { border-radius: 2px; }
+body[data-theme="blueprint"] .heart-stage::before {
+  border-color: rgba(118, 230, 255, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(118, 230, 255, 0.12);
+}
+body[data-theme="blueprint"] .heart-stage::after {
+  opacity: 0.6;
+  background:
+    linear-gradient(#76e6ff, #76e6ff) left   top    / 18px 1px no-repeat,
+    linear-gradient(#76e6ff, #76e6ff) left   top    / 1px 18px no-repeat,
+    linear-gradient(#76e6ff, #76e6ff) right  top    / 18px 1px no-repeat,
+    linear-gradient(#76e6ff, #76e6ff) right  top    / 1px 18px no-repeat,
+    linear-gradient(#76e6ff, #76e6ff) left   bottom / 18px 1px no-repeat,
+    linear-gradient(#76e6ff, #76e6ff) left   bottom / 1px 18px no-repeat,
+    linear-gradient(#76e6ff, #76e6ff) right  bottom / 18px 1px no-repeat,
+    linear-gradient(#76e6ff, #76e6ff) right  bottom / 1px 18px no-repeat;
+}
+
+/* retro90s: a chunky beige bevelled "window" case. */
+body[data-theme="retro90s"] .heart-stage {
+  border-radius: 0;
+  border: 3px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;   /* outset bevel */
+  background: #c0c0c0;
+}
+body[data-theme="retro90s"] .heart-stage::before {
+  border-color: #000;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+}
+body[data-theme="retro90s"] .heart-stage::after { display: none; }
 .heart-experiment-caption {
   position: relative;
   z-index: 1;
