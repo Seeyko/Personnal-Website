@@ -15,6 +15,9 @@
   --line-white: rgba(255, 255, 255, 0.8);
   --line-white-dim: rgba(255, 255, 255, 0.3);
   --line-white-faint: rgba(255, 255, 255, 0.1);
+  /* Dedicated TEXT shade: --line-white-dim (0.3) is fine for grid lines/borders
+     but only 2.43:1 as text on #003366. 0.72 → ~6:1 (WCAG AA). */
+  --line-white-text: rgba(255, 255, 255, 0.72);
 
   --primary: var(--line-white);
 
@@ -203,7 +206,7 @@ body[data-theme="blueprint"] .brand-suffix::before {
 body[data-theme="blueprint"] .brand-suffix::after {
   content: ' // SN-2026-001';
   font-size: 0.6rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   font-weight: 300;
   margin-left: 0.5rem;
 }
@@ -410,7 +413,7 @@ body[data-theme="blueprint"] .scroll-indicator {
 body[data-theme="blueprint"] .scroll-text {
   font-size: 0.65rem;
   letter-spacing: 0.3em;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .scroll-arrow {
@@ -482,7 +485,7 @@ body[data-theme="blueprint"] #contact .section-title::before {
 body[data-theme="blueprint"] .section-footer {
   margin-top: var(--spacing-md);
   font-size: 0.65rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   display: flex;
   justify-content: space-between;
 }
@@ -713,7 +716,7 @@ body[data-theme="blueprint"] .project-info h3 {
 
 body[data-theme="blueprint"] .project-info p {
   font-size: 0.75rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   line-height: 1.6;
   flex: 1;
   display: -webkit-box;
@@ -732,7 +735,7 @@ body[data-theme="blueprint"] .tags {
 body[data-theme="blueprint"] .tag {
   font-size: 0.55rem;
   letter-spacing: 0.1em;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   border: 1px solid var(--line-white-dim);
   padding: 0.2rem 0.5rem;
   background: transparent;
@@ -751,7 +754,7 @@ body[data-theme="blueprint"] .project-link {
   padding-top: 0.5rem;
   border-top: 1px dashed var(--line-white-dim);
   font-size: 0.65rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .link-icon {
@@ -806,7 +809,7 @@ body[data-theme="blueprint"] .blog-card .card-corner {
   position: absolute;
   width: 12px;
   height: 12px;
-  border-color: var(--line-white-dim);
+  border-color: var(--line-white-text);
   border-style: solid;
   border-width: 0;
   transition: border-color 0.3s ease;
@@ -840,7 +843,7 @@ body[data-theme="blueprint"] .blog-card-placeholder {
   align-items: center;
   justify-content: center;
   background: rgba(0, 34, 68, 0.8);
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
 }
@@ -860,13 +863,13 @@ body[data-theme="blueprint"] .blog-card-title {
 }
 
 body[data-theme="blueprint"] .blog-card-excerpt {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   font-size: 0.85rem;
 }
 
 body[data-theme="blueprint"] .blog-card-meta {
   font-size: 0.75rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .blog-date {
@@ -889,7 +892,7 @@ body[data-theme="blueprint"] .view-all-link:hover {
 }
 
 body[data-theme="blueprint"] .link-bracket {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .link-arrow {
@@ -902,7 +905,7 @@ body[data-theme="blueprint"] .view-all-link:hover .link-arrow {
 }
 
 body[data-theme="blueprint"] .no-articles {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 /* ─── About Section ─── */
@@ -937,7 +940,7 @@ body[data-theme="blueprint"] .about-main .highlight {
 
 body[data-theme="blueprint"] .about-detail {
   font-size: 0.9rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   line-height: 1.7;
 }
 
@@ -959,7 +962,7 @@ body[data-theme="blueprint"] .spec-row {
 
 body[data-theme="blueprint"] .spec-key {
   font-size: 0.65rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   letter-spacing: 0.1em;
 }
 
@@ -980,7 +983,7 @@ body[data-theme="blueprint"] .tech-grid {
 
 body[data-theme="blueprint"] .tech-tag {
   font-size: 0.7rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   border: 1px solid var(--line-white-dim);
   padding: 0.4rem 0.8rem;
   cursor: default;
@@ -1127,7 +1130,7 @@ body[data-theme="blueprint"] .social-links {
 
 body[data-theme="blueprint"] .social-btn {
   font-size: 0.8rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   text-decoration: none;
   letter-spacing: 0.1em;
   transition: all 0.3s ease;
@@ -1174,7 +1177,7 @@ body[data-theme="blueprint"] .footer-info-row {
   align-items: center;
   gap: var(--spacing-sm);
   font-size: 0.7rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .footer-session::before {
@@ -1191,7 +1194,7 @@ body[data-theme="blueprint"] .footer-scale::before {
 
 body[data-theme="blueprint"] .footer-copyright {
   font-size: 0.7rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 /* ─── Animations ─── */
@@ -1338,7 +1341,7 @@ body[data-theme="blueprint"] .visitor-counter::after {
   content: '+';
   position: absolute;
   font-size: 0.7rem;
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .visitor-counter::before {
@@ -1386,7 +1389,7 @@ body[data-theme="blueprint"] .hero-cta:hover {
 
 /* Social Proof */
 body[data-theme="blueprint"] .social-proof {
-  border-color: var(--line-white-dim);
+  border-color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .proof-number {
@@ -1418,7 +1421,7 @@ body[data-theme="blueprint"] .contact-urgency {
 
 /* Response Time */
 body[data-theme="blueprint"] .response-time {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 /* Floating CTA */
@@ -1450,7 +1453,7 @@ body[data-theme="blueprint"] .exit-modal-content {
 }
 
 body[data-theme="blueprint"] .exit-modal-close {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .exit-modal-close:hover {
@@ -1466,7 +1469,7 @@ body[data-theme="blueprint"] .exit-modal-title {
 }
 
 body[data-theme="blueprint"] .exit-modal-text {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .exit-modal-cta {
@@ -1482,7 +1485,7 @@ body[data-theme="blueprint"] .exit-modal-cta:hover {
 }
 
 body[data-theme="blueprint"] .exit-modal-dismiss {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .exit-modal-dismiss:hover {
@@ -1494,7 +1497,7 @@ body[data-theme="blueprint"] .exit-modal-dismiss:hover {
    ═══════════════════════════════════════════════════════════════ */
 
 body[data-theme="blueprint"] .theme-switcher-toggle {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .theme-switcher-toggle:hover {
@@ -1508,7 +1511,7 @@ body[data-theme="blueprint"] .theme-switcher-menu {
 }
 
 body[data-theme="blueprint"] .theme-option {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   border-radius: 0;
   font-family: var(--font-technical);
 }
@@ -1534,7 +1537,7 @@ body[data-theme="blueprint"] .theme-name {
    ═══════════════════════════════════════════════════════════════ */
 
 body[data-theme="blueprint"] .language-switcher-toggle {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   border-color: var(--accent-cyan);
   border-radius: 0;
   font-family: var(--font-technical);
@@ -1555,7 +1558,7 @@ body[data-theme="blueprint"] .language-switcher-menu {
 }
 
 body[data-theme="blueprint"] .language-option {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   border-radius: 0;
   font-family: var(--font-technical);
 }
@@ -1577,11 +1580,11 @@ body[data-theme="blueprint"] .lang-name {
 }
 
 body[data-theme="blueprint"] .lang-flag {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .lang-arrow {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .language-switcher-toggle:hover .lang-arrow {
@@ -1627,7 +1630,7 @@ body[data-theme="blueprint"] #timeline .section-title::before {
 }
 
 body[data-theme="blueprint"] .timeline-subtitle {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   font-family: var(--font-handwritten);
   font-size: 1.1rem;
   letter-spacing: 0.05em;
@@ -1768,7 +1771,7 @@ body[data-theme="blueprint"] .git-detail {
 }
 
 body[data-theme="blueprint"] .git-detail-header {
-  border-bottom-color: var(--line-white-dim);
+  border-bottom-color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .git-detail-hash {
@@ -1807,7 +1810,7 @@ body[data-theme="blueprint"] .git-tag {
 
 /* Scroll Hint */
 body[data-theme="blueprint"] .timeline-scroll-hint {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   font-family: var(--font-handwritten);
 }
 
@@ -1817,7 +1820,7 @@ body[data-theme="blueprint"] .scroll-hint-arrow {
 
 /* Loading */
 body[data-theme="blueprint"] .timeline-loading {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   font-family: var(--font-technical);
   letter-spacing: 0.2em;
 }
@@ -1835,7 +1838,7 @@ body[data-theme="blueprint"] {
   --git-border: var(--line-white-dim);
   --git-text: var(--line-white);
   --git-text-muted: var(--line-white-dim);
-  --git-trunk-color: var(--line-white-dim);
+  --git-trunk-color: var(--line-white-text);
 }
 
 @media (max-width: 1024px) {
@@ -1867,7 +1870,7 @@ body[data-theme="blueprint"] {
   }
 
   body[data-theme="blueprint"] .mobile-commit-chevron {
-    color: var(--line-white-dim);
+    color: var(--line-white-text);
   }
 
   body[data-theme="blueprint"] .mobile-commit.expanded .mobile-commit-chevron {
@@ -1875,7 +1878,7 @@ body[data-theme="blueprint"] {
   }
 
   body[data-theme="blueprint"] .mobile-commit-details {
-    border-top-color: var(--line-white-dim);
+    border-top-color: var(--line-white-text);
   }
 
   body[data-theme="blueprint"] .mobile-commit-company {
@@ -1884,13 +1887,13 @@ body[data-theme="blueprint"] {
   }
 
   body[data-theme="blueprint"] .mobile-commit-location {
-    color: var(--line-white-dim);
+    color: var(--line-white-text);
     font-size: 0.7rem;
     letter-spacing: 0.1em;
   }
 
   body[data-theme="blueprint"] .mobile-commit-description {
-    color: var(--line-white-dim);
+    color: var(--line-white-text);
     font-family: var(--font-handwritten);
     font-style: italic;
   }
@@ -1898,7 +1901,7 @@ body[data-theme="blueprint"] {
   body[data-theme="blueprint"] .mobile-commit-tag {
     background: transparent;
     border: 1px solid var(--line-white-dim);
-    color: var(--line-white-dim);
+    color: var(--line-white-text);
     font-family: var(--font-technical);
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -1914,7 +1917,7 @@ body[data-theme="blueprint"] .overlay-content {
 }
 
 body[data-theme="blueprint"] .overlay-header {
-  border-bottom-color: var(--line-white-dim);
+  border-bottom-color: var(--line-white-text);
 }
 
 body[data-theme="blueprint"] .overlay-hash {
@@ -1923,7 +1926,7 @@ body[data-theme="blueprint"] .overlay-hash {
 }
 
 body[data-theme="blueprint"] .overlay-date {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   letter-spacing: 0.1em;
 }
 
@@ -1938,12 +1941,12 @@ body[data-theme="blueprint"] .overlay-company {
 }
 
 body[data-theme="blueprint"] .overlay-location {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   letter-spacing: 0.1em;
 }
 
 body[data-theme="blueprint"] .overlay-description {
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   font-family: var(--font-handwritten);
   font-style: italic;
 }
@@ -1951,7 +1954,7 @@ body[data-theme="blueprint"] .overlay-description {
 body[data-theme="blueprint"] .overlay-tag {
   background: transparent;
   border: 1px solid var(--line-white-dim);
-  color: var(--line-white-dim);
+  color: var(--line-white-text);
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }

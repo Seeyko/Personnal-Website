@@ -27,9 +27,9 @@ const LanguageSwitcher = (() => {
         container.id = 'language-switcher';
         container.className = 'language-switcher';
         container.innerHTML = `
-            <button class="language-switcher-toggle" aria-label="Switch language">
+            <button class="language-switcher-toggle" aria-label="Language: ${lang.toUpperCase()}">
                 <span class="lang-current">${lang.toUpperCase()}</span>
-                <span class="lang-arrow">&#9662;</span>
+                <span class="lang-arrow" aria-hidden="true">&#9662;</span>
             </button>
             <div class="language-switcher-menu">
                 ${langs.map(l => `
@@ -72,6 +72,7 @@ const LanguageSwitcher = (() => {
             if (!container) return;
             const lang = LanguageManager.currentLang;
             container.querySelector('.lang-current').textContent = lang.toUpperCase();
+            container.querySelector('.language-switcher-toggle')?.setAttribute('aria-label', 'Language: ' + lang.toUpperCase());
             container.querySelectorAll('.language-option').forEach(o =>
                 o.classList.toggle('active', o.dataset.lang === lang)
             );

@@ -11,11 +11,13 @@
   --bg-tertiary: #f3f1ed;
   --bg-warm: #faf9f7;
 
-  /* Text Colors - Softer, more refined */
+  /* Text Colors - Softer, more refined.
+     tertiary/muted darkened to meet WCAG AA (4.5:1) on the #f8f7f4 bg:
+     #8a8279 was 3.53:1 and #b5aea5 only 2.04:1. #6f675e is 5.19:1. */
   --text-primary: #2c2825;
   --text-secondary: #5c5650;
-  --text-tertiary: #8a8279;
-  --text-muted: #b5aea5;
+  --text-tertiary: #6f675e;
+  --text-muted: #6f675e;
 
   /* Accent - Refined teal */
   --accent: #3d7a73;
