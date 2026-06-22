@@ -124,8 +124,10 @@
     body.loading .scroll-progress,
     body.loading .exit-modal,
     body.loading .theme-switcher {
+      /* opacity only (no visibility:hidden): keep the element's geometry while
+         hidden so revealing it is a pure opacity change — never a layout shift. */
       opacity: 0 !important;
-      visibility: hidden !important;
+      pointer-events: none !important;
     }
 
     /* Loading screen */
