@@ -35,9 +35,10 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
 
-  /* Typography */
-  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Typography. 'DM Sans Fallback' is a metric-matched fallback (defined in the
+     index.html critical CSS) so the web font swaps in with zero reflow/CLS. */
+  --font-sans: 'DM Sans', 'DM Sans Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'DM Sans', 'DM Sans Fallback', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Spacing */
   --spacing-xs: 0.5rem;
