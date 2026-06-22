@@ -38,10 +38,10 @@ export function initHeart(section) {
   const themeId = document.body.dataset.theme || 'default';
   const style = THEME_STYLES[themeId] || THEME_STYLES.default;
 
-  // Fewer points than a dense halftone, so each particle is big enough to read
-  // as its theme's shape (a heart, a star, …) rather than a generic speck.
+  // Sparse halftone: fewer, well-spaced points so each particle reads clearly as
+  // its theme's shape (a heart, a star, …) rather than a dense, busy speckle.
   const isSmall = Math.min(window.innerWidth, window.innerHeight) < 640;
-  const RESOLUTION = isSmall ? 38 : 48;
+  const RESOLUTION = isSmall ? 30 : 40;
 
   // --- Renderer (transparent: sits on the theme's own background) ---------
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
@@ -80,6 +80,13 @@ export function initHeart(section) {
     uPush: { value: 0.35 },
     uScatter: { value: style.scatter },
     uSwirl: { value: style.swirl },
+    // Click burst + ripple (separate from the gentle hover bloom above).
+    uBurst: { value: 0 },                              // global burst strength, springs back with a bounce
+    uBurstTime: { value: -100 },                       // time (s) of the last click, drives the ripple ring
+    uClickPos: { value: new THREE.Vector2(-10, -10) }, // NDC of the last click, the ripple's origin
+    uRippleSpeed: { value: 1.7 },                      // how fast the ring expands (NDC units / s)
+    uRippleWidth: { value: 0.18 },                     // ring thickness
+    uRippleAmp: { value: 0.5 },                        // how far the ring lifts points along their normal
   };
 
   const material = new THREE.ShaderMaterial({
@@ -89,23 +96,48 @@ export function initHeart(section) {
     depthWrite: true,
     vertexShader: /* glsl */`
       uniform float uScale, uSize, uTime, uAspect, uStrength, uRadius, uPush, uScatter, uSwirl;
+      uniform float uBurst, uBurstTime, uRippleSpeed, uRippleWidth, uRippleAmp;
       uniform vec3 uLightDir;
-      uniform vec2 uPointer;
+      uniform vec2 uPointer, uClickPos;
       attribute vec3 aRandom;
       varying float vShade;
       varying float vInfl;
       varying float vHue;
+      varying float vRipple;
       void main() {
         vec4 mv0 = modelViewMatrix * vec4(position, 1.0);
         vec4 clip = projectionMatrix * mv0;
         vec2 ndc = clip.xy / clip.w;
-        float d = distance(vec2(ndc.x * uAspect, ndc.y), vec2(uPointer.x * uAspect, uPointer.y));
-        float infl = smoothstep(uRadius, 0.0, d) * uStrength;
-        vInfl = infl;
+        vec2 sp = vec2(ndc.x * uAspect, ndc.y);
+
+        // Hover bloom — localised under the moving pointer; gentle.
+        float d = distance(sp, vec2(uPointer.x * uAspect, uPointer.y));
+        float hov = smoothstep(uRadius, 0.0, d) * uStrength;
+
+        // Click burst — radiates from the click point across the whole heart,
+        // strongest at the origin and tapering outward, so it reads as a big
+        // explosion emanating from where you tapped (much larger than the hover).
+        float dc = distance(sp, vec2(uClickPos.x * uAspect, uClickPos.y));
+        float near = mix(0.4, 1.0, smoothstep(1.5, 0.0, dc));
+        float clk = uBurst * near;
+
+        // Ripple — a thin ring expanding outward from the click point, fading as
+        // it travels, lifting the points it passes over like a wave.
+        float age = uTime - uBurstTime;
+        float ringR = age * uRippleSpeed;
+        float ring = smoothstep(uRippleWidth, 0.0, abs(dc - ringR));
+        float rip = ring * exp(-age * 2.0) * step(0.0, age) * step(age, 3.0);
+        vRipple = rip;
+
+        float infl = hov + clk;
+        vInfl = clamp(infl + rip, 0.0, 1.5);
         vHue = fract((position.x + position.z) * 0.28 + 0.5);
 
         float shimmer = 0.75 + 0.25 * sin(uTime * 7.0 + position.x * 9.0 + position.y * 11.0);
         vec3 dpos = position + normal * (infl * uPush * shimmer);
+
+        // Ripple rides outward along each surface normal as the ring sweeps past.
+        dpos += normal * (rip * uRippleAmp);
 
         float burst = pow(max(infl, 0.0), 1.6);
         vec3 dir = normalize(normal * 0.4 + aRandom);
@@ -121,7 +153,7 @@ export function initHeart(section) {
         vShade = 0.18 + 0.82 * max(dot(n, normalize(uLightDir)), 0.0);
 
         gl_Position = projectionMatrix * mv;
-        float s = uSize * (0.45 + 0.95 * vShade) * (1.0 + infl * 0.8) * (1.0 - 0.35 * burst);
+        float s = uSize * (0.45 + 0.95 * vShade) * (1.0 + infl * 0.8 + rip * 0.6) * (1.0 - 0.35 * burst);
         gl_PointSize = s * uScale / -mv.z;
       }
     `,
@@ -133,6 +165,7 @@ export function initHeart(section) {
       varying float vShade;
       varying float vInfl;
       varying float vHue;
+      varying float vRipple;
       vec3 hsv2rgb(vec3 c) {
         vec3 p = abs(fract(c.xxx + vec3(0.0, 2.0/3.0, 1.0/3.0)) * 6.0 - 3.0);
         return c.z * mix(vec3(1.0), clamp(p - 1.0, 0.0, 1.0), c.y);
@@ -181,6 +214,7 @@ export function initHeart(section) {
           col = mix(uColA, uColB, vShade);
         }
         col = mix(col, uAccent, clamp(vInfl, 0.0, 1.0) * 0.85);
+        col += uAccent * vRipple * 0.5;   // ring crest flashes the accent as it sweeps
         gl_FragColor = vec4(col, m);
       }
     `,
@@ -242,16 +276,25 @@ export function initHeart(section) {
   // --- Interaction: grab to spin (inertial) + hover-bloom — never blocks scroll
   const ROT_Y = new THREE.Vector3(0, 1, 0);
   const ROT_X = new THREE.Vector3(1, 0, 0);
-  const IDLE_SPIN = reduced ? 0 : 0.0026;
+  const IDLE_SPIN = reduced ? 0 : 0.0018;
   const DRAG_K = 0.006;            // pixels -> radians
-  // Bloom strength is driven by a spring (not a snap): it holds while the
-  // pointer is over the heart, then reconstructs slowly with a bouncy overshoot
-  // when the pointer leaves. Lower stiffness = slower, lower damping = bouncier.
-  const STR_STIFF = 0.045;
-  const STR_DAMP = 0.16;
+  // Hover bloom is driven by a spring (not a snap): it holds while the pointer is
+  // over the heart, then reconstructs slowly with a bouncy overshoot when the
+  // pointer leaves. Lower stiffness = slower, lower damping = bouncier. Tuned soft
+  // & slow here so the whole thing feels smooth and satisfying rather than snappy.
+  const STR_STIFF = 0.022;
+  const STR_DAMP = 0.11;
+  // Click burst is a second, separate spring: it pops to BURST_PEAK the instant
+  // you press, then springs back to rest overshooting through zero (the same
+  // bounce the hover gets on release) so a click reads as a big explosion that
+  // recoils and reassembles.
+  const BURST_STIFF = 0.05;
+  const BURST_DAMP = 0.12;
+  const BURST_PEAK = 0.85;
   let dragging = false;
   let hovering = false;
   let strengthVel = 0;
+  let burstVel = 0;
   let activePointer = null;
   let lastX = 0, lastY = 0;
   let velX = IDLE_SPIN, velY = 0;  // current rotation velocity (coasts to idle)
@@ -292,6 +335,11 @@ export function initHeart(section) {
     try { canvas.setPointerCapture(e.pointerId); } catch {}
     canvas.classList.add('grabbing');
     pointerToNDC(e);
+    // Fire a ripple + a big radial burst from exactly where you pressed.
+    uni.uClickPos.value.copy(uni.uPointer.value);
+    uni.uBurstTime.value = clock.getElapsedTime();
+    uni.uBurst.value = BURST_PEAK;
+    burstVel = 0;
     requestFrame();
   }
 
@@ -299,7 +347,9 @@ export function initHeart(section) {
     if (e.pointerId !== activePointer) return;
     dragging = false;
     activePointer = null;
-    hovering = false;            // touch has no lingering hover after release
+    // A mouse stays over the heart after releasing, so keep its bloom alive;
+    // a touch lifts away, so let it spring back (and bounce).
+    hovering = e.pointerType === 'mouse';
     try { canvas.releasePointerCapture(e.pointerId); } catch {}
     canvas.classList.remove('grabbing');
     requestFrame();
@@ -323,11 +373,16 @@ export function initHeart(section) {
     rafId = 0;
     uni.uTime.value = clock.getElapsedTime();
 
-    // Bloom strength springs toward 1 while interacting and back to 0 otherwise,
+    // Hover bloom springs toward 1 while interacting and back to 0 otherwise,
     // overshooting on the way back so the heart reconstructs slowly and bouncy.
     const target = (hovering || dragging) ? 1 : 0;
     strengthVel += (target - uni.uStrength.value) * STR_STIFF - strengthVel * STR_DAMP;
     uni.uStrength.value += strengthVel;
+
+    // Click burst springs back to rest after the pop, overshooting through zero
+    // (a recoil) before settling — the explosion blows out, then reassembles.
+    burstVel += (0 - uni.uBurst.value) * BURST_STIFF - burstVel * BURST_DAMP;
+    uni.uBurst.value += burstVel;
 
     if (!reduced && !dragging) {
       // Coast on the drag's momentum, then glide back to the gentle idle spin.
@@ -338,9 +393,13 @@ export function initHeart(section) {
     }
     renderer.render(scene, camera);
 
-    // Keep going while the heart spins, the spring is still settling, or we are
-    // interacting — and only while it is on-screen.
-    const settling = Math.abs(strengthVel) > 0.0005 || Math.abs(uni.uStrength.value - target) > 0.002;
+    // Keep going while the heart spins, either spring is still settling, the
+    // ripple is still travelling, or we are interacting — and only while on-screen.
+    const rippleAge = uni.uTime.value - uni.uBurstTime.value;
+    const settling =
+      Math.abs(strengthVel) > 0.0005 || Math.abs(uni.uStrength.value - target) > 0.002 ||
+      Math.abs(burstVel) > 0.0005 || Math.abs(uni.uBurst.value) > 0.002 ||
+      rippleAge < 1.8;
     const animating = !reduced || settling || target > 0;
     if (visible && animating) rafId = requestAnimationFrame(frame);
   }
