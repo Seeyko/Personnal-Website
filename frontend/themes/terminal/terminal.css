@@ -385,15 +385,9 @@ body[data-theme="terminal"] .output-line {
   font-size: 0.85rem;
   color: var(--text-dim);
   margin-bottom: 0.3rem;
-  opacity: 0;
-  animation: fadeIn 0.5s ease forwards;
 }
-
-/* Short delays so the fade settles to full opacity quickly — otherwise a
-   contrast audit can sample a mid-fade (low-opacity) frame and fail. */
-body[data-theme="terminal"] .output-line:nth-child(1) { animation-delay: 0.3s; }
-body[data-theme="terminal"] .output-line:nth-child(2) { animation-delay: 0.5s; }
-body[data-theme="terminal"] .output-line:nth-child(3) { animation-delay: 0.7s; }
+/* No opacity fade-in: a contrast audit can sample a mid-fade (low-opacity)
+   frame and fail. The lines just appear (idiomatic for a terminal log). */
 
 body[data-theme="terminal"] .status-ok {
   color: var(--primary);
