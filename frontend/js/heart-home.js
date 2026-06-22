@@ -81,7 +81,7 @@ export function initHeart(section) {
     uScatter: { value: style.scatter },
     uSwirl: { value: style.swirl },
     // Click burst + ripple (separate from the gentle hover bloom above).
-    uBurst: { value: 0 },                              // global burst strength, springs back with a bounce
+    uBurst: { value: 0 },                              // burst strength; kicked by an impulse on press, recoils through zero
     uBurstTime: { value: -100 },                       // time (s) of the last click, drives the ripple ring
     uClickPos: { value: new THREE.Vector2(-10, -10) }, // NDC of the last click, the ripple's origin
     uRippleSpeed: { value: 0.7 },                      // how fast the ring expands (NDC units / s)
@@ -111,10 +111,11 @@ export function initHeart(section) {
         vec2 ndc = clip.xy / clip.w;
         vec2 sp = vec2(ndc.x * uAspect, ndc.y);
 
-        // Hover bloom — a gentle swell of the WHOLE heart while the pointer is
-        // over it. Because it is global (not tied to the cursor's spot) it springs
-        // back with a slow bounce whenever the pointer leaves (driven JS-side).
-        float hov = uStrength;
+        // Hover bloom — localised under the moving pointer: a gentle swell that
+        // follows the cursor across the heart. Springs in/out softly (driven
+        // JS-side) so entering and leaving the heart eases rather than snaps.
+        float d = distance(sp, vec2(uPointer.x * uAspect, uPointer.y));
+        float hov = smoothstep(uRadius, 0.0, d) * uStrength;
 
         // Click burst — radiates from the click point across the whole heart,
         // strongest at the origin and tapering outward, so it reads as a big
@@ -289,20 +290,22 @@ export function initHeart(section) {
   const ROT_X = new THREE.Vector3(1, 0, 0);
   const IDLE_SPIN = reduced ? 0 : 0.0008;
   const DRAG_K = 0.006;            // pixels -> radians
-  // Hover bloom is driven by a spring (not a snap): the WHOLE heart swells while
-  // the pointer is over the box, then reconstructs slowly with a bouncy overshoot
-  // when the pointer leaves. Lower stiffness = slower, lower damping = bouncier.
-  // Tuned ~3.5x slower than before so the motion feels smooth, languid, satisfying.
+  // Hover bloom is driven by a spring (not a snap): a localised swell follows the
+  // pointer across the heart, fading in on enter and easing back out on leave.
+  // Lower stiffness = slower, lower damping = bouncier. Damping is raised here so
+  // the return to idle settles with only a soft, gentle bounce — not the big
+  // overshoot it had before.
   const STR_STIFF = 0.0018;
-  const STR_DAMP = 0.03;
-  // Click burst is a second, separate spring: it pops to BURST_PEAK the instant
-  // you press, then springs back to rest overshooting through zero (the same
-  // bounce the hover gets on release) so a click reads as an explosion that
-  // recoils and reassembles. Also slowed ~3.5x; PEAK kept modest so the blast
-  // stays inside the box (and the edge fade catches any overflow).
-  const BURST_STIFF = 0.004;
-  const BURST_DAMP = 0.035;
-  const BURST_PEAK = 0.6;
+  const STR_DAMP = 0.05;
+  // Click burst is a second, separate spring. Rather than snapping to a peak the
+  // instant you press (which "cut" jarringly from the gentle hover bloom),
+  // pressing kicks the spring with an upward velocity impulse, so the burst grows
+  // continuously out of the hover swell, reaches its peak ~0.2s later, then
+  // recoils through zero and reassembles — a smooth hover -> explosion -> settle
+  // with no hard step between the two states.
+  const BURST_STIFF = 0.011;
+  const BURST_DAMP = 0.055;
+  const BURST_KICK = 0.095;  // impulse velocity -> peak ~0.6 (edge fade catches any overflow)
   let dragging = false;
   let hovering = false;
   let strengthVel = 0;
@@ -347,11 +350,12 @@ export function initHeart(section) {
     try { canvas.setPointerCapture(e.pointerId); } catch {}
     canvas.classList.add('grabbing');
     pointerToNDC(e);
-    // Fire a ripple + a big radial burst from exactly where you pressed.
+    // Fire a ripple + a radial burst from exactly where you pressed — but grow it
+    // out of the current hover bloom with a velocity impulse instead of snapping
+    // straight to the peak, so hover -> click reads as one continuous motion.
     uni.uClickPos.value.copy(uni.uPointer.value);
     uni.uBurstTime.value = clock.getElapsedTime();
-    uni.uBurst.value = BURST_PEAK;
-    burstVel = 0;
+    burstVel += BURST_KICK;
     requestFrame();
   }
 
@@ -385,14 +389,16 @@ export function initHeart(section) {
     rafId = 0;
     uni.uTime.value = clock.getElapsedTime();
 
-    // Hover bloom springs toward 1 while interacting and back to 0 otherwise,
-    // overshooting on the way back so the heart reconstructs slowly and bouncy.
+    // Hover bloom springs toward 1 while the pointer is over the heart and back
+    // to 0 otherwise; the localised swell (shader-side) follows the cursor, and
+    // the softened damping lets it settle back to idle with a gentle bounce.
     const target = (hovering || dragging) ? 1 : 0;
     strengthVel += (target - uni.uStrength.value) * STR_STIFF - strengthVel * STR_DAMP;
     uni.uStrength.value += strengthVel;
 
-    // Click burst springs back to rest after the pop, overshooting through zero
-    // (a recoil) before settling — the explosion blows out, then reassembles.
+    // Click burst spring: the press impulse drives it up to its peak, then it
+    // recoils through zero before settling — the explosion blows out, then
+    // reassembles.
     burstVel += (0 - uni.uBurst.value) * BURST_STIFF - burstVel * BURST_DAMP;
     uni.uBurst.value += burstVel;
 

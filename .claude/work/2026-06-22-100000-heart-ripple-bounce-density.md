@@ -44,7 +44,21 @@ User chose "les 3": fade + stylish box + smaller explosion. Implemented together
 - HEART_FILL 0.8 gives the bloom room inside the box (heart not shrunk noticeably;
   the frame makes the margin read as intentional).
 
+## Follow-up 3 (FR feedback: preferred TARGETED hover; idle bounce too harsh; hover->click cut)
+1. Revert hover to cursor-localised (was made global in follow-up 2):
+   `hov = smoothstep(uRadius,0,d) * uStrength` again — bloom follows the cursor.
+2. Softer idle-return bounce: STR_DAMP 0.03 -> 0.05 (overshoot -0.30 -> -0.10,
+   a gentle bounce instead of a big one).
+3. Smooth hover<->click (no "cut"): the press no longer SNAPS uBurst to its peak.
+   Instead it kicks the burst spring with a velocity impulse (BURST_KICK=0.095,
+   BURST_STIFF 0.004->0.011, BURST_DAMP 0.035->0.055), so the explosion grows
+   continuously out of the hover bloom (peak ~0.6 @ ~0.2s) then recoils & settles.
+   Burst stays centred on the cursor (uClickPos = uPointer), so it erupts from the
+   same spot the hover bloom was lifting.
+
 ## Notes
 - No GPU/browser in remote sandbox -> WebGL + the 4 themed frames NOT visually
   verified here. Frame styles, HEART_FILL, edge-fade band (0.86) and spring
   constants likely want a quick local pass across all themes + mobile.
+- Spring constants tuned via a small offline damped-oscillator simulation (peak,
+  overshoot, settle time) since the feel can't be eyeballed here.
