@@ -467,16 +467,16 @@ const retroThemeConfig = {
 
 // ─── Theme-Specific Effects ───
 function initRetroEffects() {
-    // Visible chrome first.
+    // Only the above-the-fold marquee needs to be set up synchronously.
     setupMarquee();
-    initScrollProgress();
-    initStatusBar();
 
-    // Everything else is decorative and not needed for first paint — run it at
-    // idle so it never inflates load-time TBT (the main thing that hurt this
-    // theme's mobile score).
+    // Everything else is decorative / below-the-fold and not needed for first
+    // paint — run it at idle so it never inflates load-time TBT (the main thing
+    // that hurt this theme's mobile score).
     const idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 200); };
     idle(function () {
+        initScrollProgress();
+        initStatusBar();
         initBounceOnScroll();
         initConstructionWobble();
         initTechTagColors();
