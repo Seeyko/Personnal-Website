@@ -68,6 +68,10 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  /* Reserve the scrollbar gutter from the start so the classic desktop
+     scrollbar appearing once content grows doesn't shrink the viewport and
+     reflow everything (the intermittent desktop CLS). */
+  scrollbar-gutter: stable;
 }
 
 body {
