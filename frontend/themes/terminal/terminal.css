@@ -25,11 +25,12 @@
   --error: #ff3333;
   --border: #1f521f;
   
-  /* Text Colors */
+  /* Text Colors. dim/comment lightened to clear WCAG AA on #0a0a0a:
+     #1a8000 was 3.89:1, #4a6a4a 3.25:1 → #2c9e10 (5.7:1), #6f9a6f (6.2:1). */
   --text-bright: #33ff00;
-  --text-dim: #1a8000;
-  --text-comment: #4a6a4a;
-  
+  --text-dim: #2c9e10;
+  --text-comment: #6f9a6f;
+
   /* Typography */
   --font-terminal: 'JetBrains Mono', 'Fira Code', monospace;
   --font-display: 'VT323', monospace;
@@ -164,8 +165,9 @@ body[data-theme="terminal"]:hover .custom-cursor {
 }
 
 @keyframes blink-slow {
+  /* min 0.7 (not 0.3): the dim frame must still pass WCAG AA contrast. */
   0%, 70% { opacity: 1; }
-  71%, 100% { opacity: 0.3; }
+  71%, 100% { opacity: 0.7; }
 }
 
 body[data-theme="terminal"] .blink-fast {
@@ -383,13 +385,9 @@ body[data-theme="terminal"] .output-line {
   font-size: 0.85rem;
   color: var(--text-dim);
   margin-bottom: 0.3rem;
-  opacity: 0;
-  animation: fadeIn 0.5s ease forwards;
 }
-
-body[data-theme="terminal"] .output-line:nth-child(1) { animation-delay: 1.5s; }
-body[data-theme="terminal"] .output-line:nth-child(2) { animation-delay: 2s; }
-body[data-theme="terminal"] .output-line:nth-child(3) { animation-delay: 2.5s; }
+/* No opacity fade-in: a contrast audit can sample a mid-fade (low-opacity)
+   frame and fail. The lines just appear (idiomatic for a terminal log). */
 
 body[data-theme="terminal"] .status-ok {
   color: var(--primary);
@@ -1147,7 +1145,8 @@ body[data-theme="terminal"] .footer-copyright::after {
 
 body[data-theme="terminal"] .footer-exit {
   font-size: 0.8rem;
-  color: var(--text-dim);
+  /* bright (not dim) so the blink animation's dim frame still passes AA. */
+  color: var(--text-bright);
   margin-top: var(--spacing-sm);
 }
 

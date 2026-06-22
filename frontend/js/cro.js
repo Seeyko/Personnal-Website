@@ -21,6 +21,10 @@
   let exitIntentEnabled = false;
   let scrollReminderShown = false;
   let timeOnPage = 0;
+  let lastScrollTop = 0;
+  let rapidScrollCount = 0;
+  let maxScrollDepth = 0;
+  let docHeight = 0; // cached: scrollHeight - innerHeight (recomputed on resize/load)
 
   // ─── Initialize ───
   function init() {
@@ -29,30 +33,73 @@
       exitIntentShown = true;
     }
 
-    initScrollProgress();
+    initScrollController();
     initFloatingCTA();
     initExitIntent();
-    initScrollReminder();
     initConversionTracking();
     initEngagementTracking();
 
     console.log('%c[CRO] Conversion optimization loaded', 'color: #33ff00;');
   }
 
-  // ─── Scroll Progress Bar ───
-  function initScrollProgress() {
+  // ─── Unified Scroll Controller ───
+  // ONE passive scroll listener, rAF-throttled, that reads scrollY once and
+  // caches docHeight (recomputed on resize/load, NOT per scroll) so there is no
+  // forced synchronous reflow. Fans out to: progress bar, 60%-reminder, mobile
+  // exit-intent, and scroll-depth milestones.
+  function initScrollController() {
     const progressBar = document.getElementById('scroll-progress');
-    if (!progressBar) return;
+    const scrollMilestones = [25, 50, 75, 100];
+    let ticking = false;
 
-    function updateProgress() {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      progressBar.style.width = progress + '%';
+    const recompute = () => { docHeight = document.documentElement.scrollHeight - window.innerHeight; };
+    recompute();
+    window.addEventListener('resize', recompute, { passive: true });
+    window.addEventListener('load', () => { recompute(); setTimeout(recompute, 1000); });
+
+    function onFrame() {
+      ticking = false;
+      const scrollTop = window.scrollY;               // single read
+      const dh = docHeight > 0 ? docHeight : (document.documentElement.scrollHeight - window.innerHeight);
+      const pct = dh > 0 ? (scrollTop / dh) * 100 : 0;
+
+      // Progress bar — write after all reads (no read-after-write thrash).
+      if (progressBar) progressBar.style.width = pct + '%';
+
+      // Attention pulse at 60%.
+      if (!scrollReminderShown && pct >= CRO_CONFIG.scrollTriggerPercent) {
+        scrollReminderShown = true;
+        const fc = document.getElementById('floating-cta');
+        if (fc && !fc.classList.contains('hidden')) {
+          fc.style.animation = 'cta-attention 0.5s ease 3';
+          setTimeout(() => { fc.style.animation = ''; }, 1500);
+        }
+        trackConversion('scroll_60_percent');
+      }
+
+      // Mobile exit-intent: rapid scroll up near the top.
+      if (exitIntentEnabled && !exitIntentShown) {
+        if (scrollTop < lastScrollTop - 100) {
+          rapidScrollCount++;
+          if (rapidScrollCount > 2 && scrollTop < 200) showExitModal();
+        } else {
+          rapidScrollCount = 0;
+        }
+      }
+      lastScrollTop = scrollTop;
+
+      // Scroll-depth milestones.
+      const pctRound = Math.round(pct);
+      for (const m of scrollMilestones) {
+        if (pctRound >= m && maxScrollDepth < m) { maxScrollDepth = m; trackConversion(`scroll_depth_${m}`); }
+      }
     }
 
-    window.addEventListener('scroll', updateProgress, { passive: true });
-    updateProgress();
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(onFrame); }
+    }, { passive: true });
+
+    onFrame();
   }
 
   // ─── Floating CTA ───
@@ -91,27 +138,8 @@
       }
     });
 
-    // Mobile: Detect back button or rapid scroll up
-    let lastScrollTop = 0;
-    let rapidScrollCount = 0;
-
-    window.addEventListener('scroll', () => {
-      if (!exitIntentEnabled || exitIntentShown) return;
-
-      const scrollTop = window.scrollY;
-
-      // Rapid scroll up detection (mobile exit intent)
-      if (scrollTop < lastScrollTop - 100) {
-        rapidScrollCount++;
-        if (rapidScrollCount > 2 && scrollTop < 200) {
-          showExitModal();
-        }
-      } else {
-        rapidScrollCount = 0;
-      }
-
-      lastScrollTop = scrollTop;
-    }, { passive: true });
+    // (Mobile rapid-scroll-up exit-intent is handled by the unified scroll
+    //  controller above — no separate scroll listener here.)
 
     // Close handlers
     closeBtn?.addEventListener('click', hideExitModal);
@@ -162,32 +190,6 @@
     modal.classList.remove('visible');
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
-  }
-
-  // ─── Scroll Reminder (attention grabber at 60% scroll) ───
-  function initScrollReminder() {
-    window.addEventListener('scroll', () => {
-      if (scrollReminderShown) return;
-
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-
-      if (scrollPercent >= CRO_CONFIG.scrollTriggerPercent) {
-        scrollReminderShown = true;
-
-        // Pulse the floating CTA to grab attention
-        const floatingCta = document.getElementById('floating-cta');
-        if (floatingCta && !floatingCta.classList.contains('hidden')) {
-          floatingCta.style.animation = 'cta-attention 0.5s ease 3';
-          setTimeout(() => {
-            floatingCta.style.animation = '';
-          }, 1500);
-        }
-
-        trackConversion('scroll_60_percent');
-      }
-    }, { passive: true });
   }
 
   // ─── Conversion Tracking ───
@@ -253,22 +255,7 @@
       }
     }, 10000);
 
-    // Track scroll depth milestones
-    let maxScrollDepth = 0;
-    const scrollMilestones = [25, 50, 75, 100];
-
-    window.addEventListener('scroll', () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
-
-      scrollMilestones.forEach(milestone => {
-        if (scrollPercent >= milestone && maxScrollDepth < milestone) {
-          maxScrollDepth = milestone;
-          trackConversion(`scroll_depth_${milestone}`);
-        }
-      });
-    }, { passive: true });
+    // (Scroll-depth milestones are tracked by the unified scroll controller.)
 
     // Track page visibility (tab switching)
     document.addEventListener('visibilitychange', () => {

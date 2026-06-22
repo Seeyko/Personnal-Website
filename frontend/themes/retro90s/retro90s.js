@@ -467,25 +467,41 @@ const retroThemeConfig = {
 
 // ─── Theme-Specific Effects ───
 function initRetroEffects() {
+    // Only the above-the-fold marquee needs to be set up synchronously.
     setupMarquee();
-    new CursorTrail();
-    new SparkleEffect();
-    new FlyingShapes();
-    new RetroTooltips();
-    new ClippyHelper();
-    initBounceOnScroll();
-    initConstructionWobble();
-    initTechTagColors();
-    initBlinkBadges();
-    initColorSquares();
-    initScrollProgress();
-    initStatusBar();
-    initAwardsBadges();
-    initWebring();
-    initSecretDoubleClick();
-    initSectionTitleEffects();
-    // Initialize titlebar buttons after cards are rendered
-    setTimeout(initTitlebarButtons, 500);
+
+    // Everything else is decorative / below-the-fold and not needed for first
+    // paint — run it at idle so it never inflates load-time TBT (the main thing
+    // that hurt this theme's mobile score).
+    const idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 200); };
+    idle(function () {
+        initScrollProgress();
+        initStatusBar();
+        initBounceOnScroll();
+        initConstructionWobble();
+        initTechTagColors();
+        initBlinkBadges();
+        initColorSquares();
+        initAwardsBadges();
+        initWebring();
+        initSecretDoubleClick();
+        initSectionTitleEffects();
+        initTitlebarButtons();
+
+        // Pointer-driven / perpetual-rAF decorations (cursor trail, hover
+        // tooltips, Clippy eye-tracking, flying shapes) are useless on touch and
+        // the cursor trail runs an infinite rAF — skip them on coarse pointers
+        // and under reduced-motion. Full desktop experience is unchanged.
+        const finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        new SparkleEffect(); // click-triggered, cheap when idle — keep everywhere
+        if (finePointer && !reduceMotion) {
+            new CursorTrail();
+            new FlyingShapes();
+            new RetroTooltips();
+            new ClippyHelper();
+        }
+    });
 }
 
 // ─── Marquee Setup ───

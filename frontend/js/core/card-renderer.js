@@ -21,6 +21,31 @@ const CardRenderer = (() => {
         }
     };
 
+    // Project screenshots live under /assets and ship responsive WebP variants
+    // (-480/-800/-1200). Emit a <picture> so modern browsers fetch a small WebP
+    // sized to the card, with the original PNG/JPG as universal fallback.
+    // `active:false` defers the fetch (data-src/data-srcset) until the carousel
+    // slide is first shown — see Carousel.hydrateSlide.
+    const IMG_SIZES = '(max-width: 768px) 92vw, 520px';
+
+    function buildPicture(src, alt, { active = true, extraImgClass = 'project-image' } = {}) {
+        const m = /^(\/assets\/.+)\.(png|jpe?g)$/i.exec(src);
+        const dims = 'width="1600" height="900" decoding="async" loading="lazy"';
+        if (!m) {
+            // External / unknown asset: plain lazy img, no WebP sources.
+            const srcAttr = active ? `src="${src}"` : `data-src="${src}"`;
+            return `<img ${srcAttr} alt="${alt}" class="${extraImgClass}" ${dims}>`;
+        }
+        const base = m[1];
+        const srcset = `${base}-480.webp 480w, ${base}-800.webp 800w, ${base}-1200.webp 1200w`;
+        const sourceAttr = active ? `srcset="${srcset}"` : `data-srcset="${srcset}"`;
+        const imgSrc = active ? `src="${src}"` : `data-src="${src}"`;
+        return `<picture>` +
+            `<source type="image/webp" ${sourceAttr} sizes="${IMG_SIZES}">` +
+            `<img ${imgSrc} alt="${alt}" class="${extraImgClass}" ${dims}>` +
+            `</picture>`;
+    }
+
     function createMediaContent(project, carouselId) {
         if (project.images?.length > 1) {
             return `
@@ -28,7 +53,7 @@ const CardRenderer = (() => {
                     <div class="carousel-slides">
                         ${project.images.map((img, i) => `
                             <div class="carousel-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
-                                <img src="${img}" alt="${project.title} - ${i + 1}" class="project-image" loading="lazy">
+                                ${buildPicture(img, `${project.title} - ${i + 1}`, { active: i === 0 })}
                             </div>
                         `).join('')}
                     </div>
@@ -39,10 +64,10 @@ const CardRenderer = (() => {
             `;
         }
         if (project.images?.length === 1) {
-            return `<img src="${project.images[0]}" alt="${project.title}" class="project-image" loading="lazy">`;
+            return buildPicture(project.images[0], project.title, { active: true });
         }
         if (project.video) {
-            return `<video class="project-video" autoplay muted loop playsinline><source src="${project.video}" type="video/mp4"></video>`;
+            return `<video class="project-video" autoplay muted loop playsinline preload="none"><source src="${project.video}" type="video/mp4"></video>`;
         }
         return '';
     }
@@ -113,7 +138,7 @@ const CardRenderer = (() => {
 
         const idx = formatIndex(index, cfg.indexPadding);
         const date = cfg.dateFormat ? cfg.dateFormat(article.publishedAt) : ContentLoader.formatDate(article.publishedAt);
-        const image = article.coverImage ? `<div class="blog-card-image"><img src="${article.coverImage}" alt="${article.title}" loading="lazy"></div>` : '';
+        const image = article.coverImage ? `<div class="blog-card-image"><img src="${article.coverImage}" alt="${article.title}" width="200" height="150" decoding="async" loading="lazy"></div>` : '';
         const header = cfg.headerTemplate ? cfg.headerTemplate(article, idx) : '';
         const indexBadge = cfg.showIndex && !cfg.headerTemplate ? `<span class="blog-index">${cfg.indexPrefix}${idx}</span>` : '';
         const corners = cfg.cornerDecorations ? '<div class="card-corner tl"></div><div class="card-corner tr"></div><div class="card-corner bl"></div><div class="card-corner br"></div>' : '';

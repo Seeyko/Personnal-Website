@@ -11,11 +11,13 @@
   --bg-tertiary: #f3f1ed;
   --bg-warm: #faf9f7;
 
-  /* Text Colors - Softer, more refined */
+  /* Text Colors - Softer, more refined.
+     tertiary/muted darkened to meet WCAG AA (4.5:1) on the #f8f7f4 bg:
+     #8a8279 was 3.53:1 and #b5aea5 only 2.04:1. #6f675e is 5.19:1. */
   --text-primary: #2c2825;
   --text-secondary: #5c5650;
-  --text-tertiary: #8a8279;
-  --text-muted: #b5aea5;
+  --text-tertiary: #6f675e;
+  --text-muted: #6f675e;
 
   /* Accent - Refined teal */
   --accent: #3d7a73;
@@ -33,9 +35,10 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
 
-  /* Typography */
-  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --font-display: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Typography. 'DM Sans Fallback' is a metric-matched fallback (defined in the
+     index.html critical CSS) so the web font swaps in with zero reflow/CLS. */
+  --font-sans: 'DM Sans', 'DM Sans Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'DM Sans', 'DM Sans Fallback', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Spacing */
   --spacing-xs: 0.5rem;

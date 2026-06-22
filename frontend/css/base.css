@@ -68,6 +68,10 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  /* Reserve the scrollbar gutter from the start so the classic desktop
+     scrollbar appearing once content grows doesn't shrink the viewport and
+     reflow everything (the intermittent desktop CLS). */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -324,9 +328,50 @@ section,
   outline-offset: 2px;
 }
 
+/* ─── Skip Link (keyboard bypass to main content) ─── */
+.skip-link {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(-120%);
+  z-index: 100000;
+  margin: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: #0f766e;
+  color: #ffffff;
+  font: 600 0.875rem/1.2 var(--font-sans);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
 /* ─── Hover States ─── */
 a, button {
   cursor: pointer;
+}
+
+/* ─── Reduced motion: kill non-essential animation/transition globally and
+   make sure observer-revealed elements never get stuck hidden. ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fade-in-up {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 /* ─── Base Animations ─── */
@@ -1105,7 +1150,9 @@ body[data-theme="retro90s"] .heart-stage::after { display: none; }
   font-size: 0.8rem;
   letter-spacing: 0.04em;
   color: inherit;
-  opacity: 0.55;
+  /* 0.75 keeps it a "quiet" caption while clearing WCAG AA (≈6:1 on the
+     default #f8f7f4 bg); 0.55 was only 3.42:1. */
+  opacity: 0.75;
   pointer-events: none;
 }
 @media (prefers-reduced-motion: reduce) {

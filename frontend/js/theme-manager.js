@@ -28,7 +28,16 @@ const ThemeManager = (() => {
     async function loadCSS(theme) {
         const link = document.getElementById('theme-css');
         if (!link) throw new Error('Theme CSS link not found');
-        if (link.href?.endsWith(theme.css)) return;
+        // The early inline resolver may have already set the href (so the CSS
+        // starts loading at body-start, not at DOMContentLoaded). If so, just
+        // await it applying; only set + await when it hasn't been set yet.
+        if (link.href?.endsWith(theme.css)) {
+            if (link.sheet) return; // already applied
+            return new Promise(res => {
+                link.addEventListener('load', res, { once: true });
+                link.addEventListener('error', res, { once: true });
+            });
+        }
         return new Promise((res, rej) => { link.onload = res; link.onerror = rej; link.href = theme.css; });
     }
 
@@ -48,6 +57,10 @@ const ThemeManager = (() => {
         try {
             await loadCSS(theme);
             if (window.LanguageManager?.isLoaded) await LanguageManager.loadThemeTranslations(themeId, LanguageManager.currentLang);
+            // Reveal as soon as the theme's CSS (and translations) are applied —
+            // do NOT wait for the heavier theme JS. The static hero is already in
+            // the HTML, so it paints now → much earlier LCP for non-default themes.
+            hideLoading();
             await loadJS(theme);
             console.log(`%c[THEME] Loaded: ${theme.name}`, 'color: #33ff00;');
         } catch (e) {

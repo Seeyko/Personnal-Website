@@ -2,3 +2,7 @@
 node_modules
 .env
 .claude/settings.local.json
+# Lighthouse audit tooling & scratch reports (not committed)
+.tmp-*
+bash.exe.stackdump
+nul

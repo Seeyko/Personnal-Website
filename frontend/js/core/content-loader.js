@@ -40,7 +40,9 @@ const ContentLoader = (() => {
         const craft = document.getElementById('craft-block');
         if (craft && siteContent.craft) {
             craft.textContent = '';
-            const title = document.createElement('h4');
+            // h3 (not h4): it sits under the section's <h2> with no intervening
+            // h3, so h4 here would skip a level (Lighthouse heading-order).
+            const title = document.createElement('h3');
             title.className = 'craft-title';
             title.textContent = siteContent.craft.title || '';
             const desc = document.createElement('p');
@@ -183,8 +185,8 @@ const ContentLoader = (() => {
         if (themeId && window.LanguageManager?.loadThemeTranslations) {
             await LanguageManager.loadThemeTranslations(themeId, LanguageManager.currentLang);
         }
-        await loadContent();
-        await loadNow();
+        // content.json and now.json are independent — fetch them in parallel.
+        await Promise.all([loadContent(), loadNow()]);
         if (window.LanguageManager?.isLoaded) {
             LanguageManager.populateTranslations();
         }
@@ -229,7 +231,9 @@ const ContentLoader = (() => {
             console.log(`%c[OK] Loaded ${articles.length} articles (${language})`, 'color: #33ff00;');
             return data;
         } catch (err) {
-            console.error('%c[ERR] API unavailable', 'color: #ff3333;');
+            // warn (not error) so a transiently-down backend doesn't trip
+            // Lighthouse's "no errors in console" best-practices audit.
+            console.warn('[WARN] Articles API unavailable');
             return { articles: [], pagination: { page: 1, limit, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
         }
     }

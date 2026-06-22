@@ -38,15 +38,18 @@ const ThemeInit = (() => {
             ScrollEffects.initResizeHandler();
             ScrollEffects.initSmoothScroll();
 
-            // Initialize Git Timeline
-            if (window.GitTimeline) {
-                await GitTimeline.init();
-            }
+            // Git Timeline is lazy-loaded + initialized via an IntersectionObserver
+            // in index.html (it nears the 3rd section), so it is NOT initialized here.
 
-            const articles = await ContentLoader.loadArticles(1, 3);
-            if (articles.articles?.length) {
-                CardRenderer.renderBlogCards(articles.articles, config.blogCards || config.cards || {}, '#blog-grid');
-                ScrollEffects.animateBlogCards();
+            // Only fetch blog articles on pages that actually render them.
+            // The homepage has no #blog-grid, so we skip the request entirely
+            // (avoids a failed call + console error when the backend is down).
+            if (document.querySelector('#blog-grid')) {
+                const articles = await ContentLoader.loadArticles(1, 3);
+                if (articles.articles?.length) {
+                    CardRenderer.renderBlogCards(articles.articles, config.blogCards || config.cards || {}, '#blog-grid');
+                    ScrollEffects.animateBlogCards();
+                }
             }
 
             if (config.cursor) new CursorTracker(config.cursor);
