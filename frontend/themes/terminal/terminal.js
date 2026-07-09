@@ -297,17 +297,12 @@ function handleKonami() {
 // head 8x8, body 8x12, arms & legs 2x30 → 12 wide, 50 tall.
 // Eyes: 3x2 px each, edge to edge with a 2px gap (#ed8cff / #cb59ff / #aa1bab).
 const ENDERMAN_COLORS = {
-    '#': '#1a1a1f', // skin base
-    '+': '#26262e', // skin highlight
-    '-': '#101014', // skin shadow
+    '#': '#1e1e24', // skin base
+    '+': '#2a2a33', // skin highlight
+    '-': '#131318', // skin shadow
     'E': '#ed8cff', // eye bright
     'P': '#cb59ff', // eye mid
-    'M': '#aa1bab', // eye dark
-    'G': '#6fae43', // grass bright
-    'g': '#578b34', // grass dark
-    'D': '#8a5f42', // dirt light
-    'd': '#714b33', // dirt mid
-    'b': '#573a27'  // dirt dark
+    'M': '#aa1bab'  // eye dark
 };
 
 const ENDERMAN_PIXELS = [
@@ -337,12 +332,12 @@ const ENDERMAN_PIXELS = [
     '##.#+..##.##',
     '##.##..##.-#',
     '##.##..-#.##',
-    '##.GgGGgG.##', // carried grass block (rows 26-31)
-    '##.gDggDg.##',
-    '##.DdDDbD.##',
-    '#+.dDbdDd.##',
-    '##.DbDdbD.##',
-    '##.bddDdb.##',
+    '##.##..##.##',
+    '##.-#..##.+#',
+    '##.##..##.##',
+    '#+.##..#+.##',
+    '##.##..##.##',
+    '##.+#..##.##',
     '##.##..##.##',
     '#-.##..#+.##',
     '##.##..##.##',
@@ -364,30 +359,45 @@ const ENDERMAN_PIXELS = [
 ];
 
 // Build an SVG from a pixel map, merging horizontal runs of identical
-// pixels into single rects. Layers split eyes/block from skin so they
-// can be styled (glow) independently.
+// pixels into single rects. Pixels are grouped per body part so each
+// limb can be animated independently (dance!); the eyes live inside the
+// head group so they follow it, in their own sub-group for the glow.
 function buildPixelSvg(pixels, colors) {
-    const layers = { skin: [], eyes: [], block: [] };
-    const layerOf = (ch) => 'EPM'.includes(ch) ? 'eyes' : 'GgDdb'.includes(ch) ? 'block' : 'skin';
+    const parts = { head: [], eyes: [], body: [], armL: [], armR: [], legL: [], legR: [] };
+    const partOf = (x, y, ch) => {
+        if ('EPM'.includes(ch)) return 'eyes';
+        if (y <= 7) return 'head';
+        if (x <= 1) return 'armL';
+        if (x >= 10) return 'armR';
+        if (y <= 19) return 'body';
+        return x <= 5 ? 'legL' : 'legR';
+    };
 
     pixels.forEach((row, y) => {
         let x = 0;
         while (x < row.length) {
             const ch = row[x];
             if (!colors[ch]) { x++; continue; }
+            const part = partOf(x, y, ch);
             let w = 1;
-            while (x + w < row.length && row[x + w] === ch) w++;
-            layers[layerOf(ch)].push(`<rect x="${x}" y="${y}" width="${w}" height="1" fill="${colors[ch]}"/>`);
+            while (x + w < row.length && row[x + w] === ch && partOf(x + w, y, ch) === part) w++;
+            parts[part].push(`<rect x="${x}" y="${y}" width="${w}" height="1" fill="${colors[ch]}"/>`);
             x += w;
         }
     });
 
     const height = pixels.length;
     const width = pixels[0].length;
+    const g = (name, cls) => parts[name].length ? `<g class="edm-part ${cls}">${parts[name].join('')}</g>` : '';
+    const eyes = parts.eyes.length ? `<g class="edm-eyes">${parts.eyes.join('')}</g>` : '';
+    const head = (parts.head.length || parts.eyes.length) ? `<g class="edm-part edm-head">${parts.head.join('')}${eyes}</g>` : '';
     return `<svg viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges" aria-hidden="true">` +
-        `<g class="edm-skin">${layers.skin.join('')}</g>` +
-        `<g class="edm-block">${layers.block.join('')}</g>` +
-        `<g class="edm-eyes">${layers.eyes.join('')}</g>` +
+        g('armL', 'edm-arm-l') +
+        g('armR', 'edm-arm-r') +
+        g('legL', 'edm-leg-l') +
+        g('legR', 'edm-leg-r') +
+        g('body', 'edm-body') +
+        head +
         `</svg>`;
 }
 
@@ -414,7 +424,7 @@ window.enderman = function() {
             setTimeout(() => {
                 endermanEl.classList.remove('visible', 'teleport');
             }, 500);
-        }, 3000);
+        }, 5500);
     }
 };
 
@@ -449,7 +459,7 @@ function createEndermanElement() {
                     enderman.classList.remove('visible', 'teleport');
                     eyes.classList.remove('triggered');
                 }, 500);
-            }, 3000);
+            }, 5500);
         }, 2000);
     });
 
