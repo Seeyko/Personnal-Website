@@ -33,6 +33,7 @@ window.help = function() {
 ║  hack()      - Hack the mainframe     ║
 ║  ship()      - Ship it now!           ║
 ║  enderman()  - Summon an Enderman     ║
+║  sound()     - Toggle UI sound FX     ║
 ║  reset()     - Reset to default       ║
 ╚═══════════════════════════════════════╝
 `, 'color: #33ff00; font-family: monospace;');
@@ -193,6 +194,7 @@ function initTerminalEffects() {
     initKeyboardShortcuts();
     randomGlitch();
     createEndermanElement();
+    initTerminalSfx();
 }
 
 // ─── Typewriter Initialization ───
@@ -452,6 +454,288 @@ const DIRT_BALL_COLORS = {
     'b': '#573a27'
 };
 
+// ─── Terminal Sound Design (synthesized with Web Audio, no assets) ───
+let terminalAudioCtx = null;
+let endermanStareNodes = null;
+let sfxEnabled = true;
+try { sfxEnabled = localStorage.getItem('terminal-sfx') !== 'off'; } catch (e) { /* private mode */ }
+
+// Browsers only allow audio after a user gesture; every click/keypress
+// doubles as an unlock so sounds work as soon as possible.
+function ensureAudioCtx() {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    if (!terminalAudioCtx) terminalAudioCtx = new Ctx();
+    if (terminalAudioCtx.state === 'suspended') terminalAudioCtx.resume();
+    return terminalAudioCtx;
+}
+
+// Console command to mute/unmute all site sounds (persisted)
+window.sound = function(on) {
+    sfxEnabled = on === undefined ? !sfxEnabled : !!on;
+    try { localStorage.setItem('terminal-sfx', sfxEnabled ? 'on' : 'off'); } catch (e) { /* private mode */ }
+    console.log(`%c[AUDIO] UI sounds ${sfxEnabled ? 'enabled' : 'disabled'}`, 'color: #33ff00;');
+};
+
+// Soft mechanical keyboard hit: muted low "thock" body + felt noise,
+// slightly detuned per press so repeated clicks feel organic.
+function sfxKeyInto(ctx, dest, t, up) {
+    const jitter = 0.92 + Math.random() * 0.16;
+    const vol = up ? 0.05 : 0.11;
+
+    const osc = ctx.createOscillator();
+    const og = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime((up ? 220 : 155) * jitter, t);
+    osc.frequency.exponentialRampToValueAtTime((up ? 115 : 72) * jitter, t + 0.05);
+    og.gain.setValueAtTime(0, t);
+    og.gain.linearRampToValueAtTime(vol, t + 0.006);
+    og.gain.exponentialRampToValueAtTime(0.001, t + (up ? 0.06 : 0.09));
+    osc.connect(og);
+    og.connect(dest);
+    osc.start(t);
+    osc.stop(t + 0.12);
+
+    const dur = up ? 0.03 : 0.045;
+    const len = Math.ceil(ctx.sampleRate * dur);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = (up ? 2200 : 1500) * jitter;
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(0, t);
+    ng.gain.linearRampToValueAtTime(vol * 0.8, t + 0.004);
+    ng.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    src.connect(lp);
+    lp.connect(ng);
+    ng.connect(dest);
+    src.start(t);
+    src.stop(t + dur + 0.02);
+}
+
+// Gentle blip for card reveals; consecutive reveals climb a pentatonic step
+function sfxBlipInto(ctx, dest, t, step) {
+    const ratios = [1, 1.125, 1.25, 1.5, 1.6667];
+    const f = 392 * ratios[step % ratios.length];
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(f, t);
+    osc.frequency.exponentialRampToValueAtTime(f * 1.35, t + 0.07);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.055, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+    osc.connect(g);
+    g.connect(dest);
+    osc.start(t);
+    osc.stop(t + 0.18);
+}
+
+const sfxLast = { down: 0, up: 0, blip: 0 };
+
+function playKeySound(kind) {
+    if (!sfxEnabled) return;
+    const ctx = terminalAudioCtx;
+    if (!ctx || ctx.state !== 'running') return;
+    const now = performance.now();
+    if (now - sfxLast[kind] < 35) return;
+    sfxLast[kind] = now;
+    sfxKeyInto(ctx, ctx.destination, ctx.currentTime, kind === 'up');
+}
+
+function playCardBlip(step) {
+    if (!sfxEnabled) return;
+    const ctx = terminalAudioCtx;
+    if (!ctx || ctx.state !== 'running') return;
+    const now = performance.now();
+    if (now - sfxLast.blip < 90) return;
+    sfxLast.blip = now;
+    sfxBlipInto(ctx, ctx.destination, ctx.currentTime, step);
+}
+
+// Soft blip when project/blog cards scroll into view, cascading up in
+// pitch when several reveal in a row. Watches future cards too (they
+// render after the JSON data loads).
+function initCardRevealSounds() {
+    if (!('IntersectionObserver' in window) || !('MutationObserver' in window)) return;
+    let cascade = 0;
+    let lastReveal = 0;
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            io.unobserve(entry.target);
+            const now = performance.now();
+            cascade = now - lastReveal < 900 ? cascade + 1 : 0;
+            lastReveal = now;
+            playCardBlip(cascade);
+        });
+    }, { threshold: 0.25 });
+    const seen = new WeakSet();
+    const scan = () => document.querySelectorAll('.project-card, .blog-card').forEach(el => {
+        if (!seen.has(el)) {
+            seen.add(el);
+            io.observe(el);
+        }
+    });
+    scan();
+    new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
+}
+
+// Keyboard thock on clicks and keystrokes, site-wide
+function initTerminalSfx() {
+    document.addEventListener('pointerdown', (e) => {
+        ensureAudioCtx();
+        if (e.pointerType !== 'touch') playKeySound('down');
+    });
+    document.addEventListener('pointerup', (e) => {
+        if (e.pointerType !== 'touch') playKeySound('up');
+    });
+    // Touch taps: sound on click only, so scroll flicks stay silent
+    document.addEventListener('click', (e) => {
+        ensureAudioCtx();
+        if (e.pointerType === 'touch') {
+            playKeySound('down');
+            setTimeout(() => playKeySound('up'), 70);
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.repeat) return;
+        ensureAudioCtx();
+        playKeySound('down');
+    });
+    document.addEventListener('keyup', () => playKeySound('up'));
+    initCardRevealSounds();
+}
+
+// Schedule the full soundtrack relative to t0 (the moment the enderman
+// becomes visible). Works on both live and OfflineAudioContext, which is
+// also how the demo video's audio track is rendered.
+function scheduleEndermanSounds(ctx, dest, t0) {
+    const tone = (at, dur, vol, type, from, to) => {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(from, at);
+        if (to !== from) osc.frequency.exponentialRampToValueAtTime(Math.max(to, 1), at + dur);
+        g.gain.setValueAtTime(0, at);
+        g.gain.linearRampToValueAtTime(vol, at + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, at + dur);
+        osc.connect(g);
+        g.connect(dest);
+        osc.start(at);
+        osc.stop(at + dur + 0.05);
+    };
+    const noise = (at, dur, vol, from, to, q) => {
+        const len = Math.ceil(ctx.sampleRate * dur);
+        const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        const bp = ctx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.Q.value = q;
+        bp.frequency.setValueAtTime(from, at);
+        if (to !== from) bp.frequency.exponentialRampToValueAtTime(to, at + dur);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0, at);
+        g.gain.linearRampToValueAtTime(vol, at + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, at + dur);
+        src.connect(bp);
+        bp.connect(g);
+        g.connect(dest);
+        src.start(at);
+        src.stop(at + dur + 0.05);
+    };
+
+    // Teleport in: airy downward vwoop
+    tone(t0, 0.35, 0.22, 'sawtooth', 700, 90);
+    noise(t0, 0.3, 0.15, 1200, 250, 1.2);
+
+    // Deep warbly enderman voice: once dancing, once staring mouth agape
+    tone(t0 + 1.2, 0.55, 0.1, 'triangle', 150, 85);
+    tone(t0 + 5.5, 0.6, 0.12, 'triangle', 170, 80);
+
+    // Goofy chiptune groove locked to the 0.45s half-beat bounce
+    const bassline = [110, 130.81, 164.81, 130.81];
+    for (let i = 0; i < 20; i++) {
+        const t = t0 + 0.5 + i * 0.45;
+        if (i % 2 === 0) {
+            tone(t, 0.12, 0.16, 'sine', 120, 45);
+            const f = bassline[(i / 2) % 4];
+            tone(t, 0.22, 0.055, 'square', f, f);
+        } else {
+            noise(t, 0.05, 0.05, 6000, 6000, 3);
+        }
+    }
+
+    // The dirt block pops into his hands (40% of the act)
+    tone(t0 + 4.1, 0.09, 0.22, 'sine', 350, 900);
+
+    // Toss: rising whoosh
+    noise(t0 + 4.64, 0.5, 0.18, 400, 2600, 1.5);
+
+    // Cartoon falling whistle while he watches, jaw dropping
+    tone(t0 + 5.35, 0.7, 0.07, 'sine', 1400, 600);
+
+    // Volley kick: thump + launch whoosh + block whistling away
+    tone(t0 + 6.12, 0.18, 0.3, 'sine', 160, 45);
+    noise(t0 + 6.12, 0.1, 0.18, 900, 300, 1);
+    noise(t0 + 6.2, 0.5, 0.2, 800, 3800, 1.2);
+    tone(t0 + 6.22, 0.65, 0.06, 'sine', 900, 1900);
+
+    // Victory arpeggios during the celebration
+    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) =>
+        tone(t0 + 6.8 + i * 0.12, 0.14, 0.09, 'square', f, f));
+    [659.25, 783.99, 1046.5, 1318.5].forEach((f, i) =>
+        tone(t0 + 8.0 + i * 0.12, 0.14, 0.08, 'square', f, f));
+
+    // Teleport out: rising vwoop
+    tone(t0 + 9.6, 0.35, 0.2, 'sawtooth', 120, 800);
+    noise(t0 + 9.6, 0.3, 0.14, 300, 1400, 1.2);
+}
+
+function playEndermanSoundtrack() {
+    const ctx = terminalAudioCtx;
+    if (!sfxEnabled || !ctx || ctx.state !== 'running') return; // silent until a user gesture
+    const master = ctx.createGain();
+    master.gain.value = 0.55;
+    master.connect(ctx.destination);
+    scheduleEndermanSounds(ctx, master, ctx.currentTime + 0.05);
+}
+
+// Low tension drone that swells while you stare at the hidden eyes
+function startEndermanStareSound() {
+    const ctx = terminalAudioCtx;
+    if (!sfxEnabled || !ctx || ctx.state !== 'running' || endermanStareNodes) return;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(45, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(75, ctx.currentTime + 2);
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.09, ctx.currentTime + 1.9);
+    osc.connect(g);
+    g.connect(ctx.destination);
+    osc.start();
+    endermanStareNodes = { osc, g };
+}
+
+function stopEndermanStareSound() {
+    if (!endermanStareNodes) return;
+    const ctx = terminalAudioCtx;
+    const { osc, g } = endermanStareNodes;
+    endermanStareNodes = null;
+    g.gain.cancelScheduledValues(ctx.currentTime);
+    g.gain.setValueAtTime(Math.max(g.gain.value, 0.0001), ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
+    osc.stop(ctx.currentTime + 0.2);
+}
+
 window.enderman = function() {
     console.log(`
 %c    ▄██████▄
@@ -468,8 +752,9 @@ window.enderman = function() {
 `, 'color: #1a1a1f; background: #0a0a0a;', 'color: #cb59ff;', 'color: #1a1a1f;', 'color: #cb59ff;', 'color: #1a1a1f;', 'color: #cb59ff;');
 
     const endermanEl = document.querySelector('.enderman-pixel');
-    if (endermanEl) {
+    if (endermanEl && !endermanEl.classList.contains('visible')) {
         endermanEl.classList.add('visible');
+        playEndermanSoundtrack();
         setTimeout(() => {
             endermanEl.classList.add('teleport');
             setTimeout(() => {
@@ -500,9 +785,14 @@ function createEndermanElement() {
 
     eyes.addEventListener('mouseenter', () => {
         eyes.classList.add('watching');
+        startEndermanStareSound();
         hoverTimer = setTimeout(() => {
             eyes.classList.add('triggered');
-            enderman.classList.add('visible');
+            stopEndermanStareSound();
+            if (!enderman.classList.contains('visible')) {
+                enderman.classList.add('visible');
+                playEndermanSoundtrack();
+            }
             console.log('%c[ENTITY] You looked at it for too long...', 'color: #ff00ff;');
 
             setTimeout(() => {
@@ -517,6 +807,7 @@ function createEndermanElement() {
 
     eyes.addEventListener('mouseleave', () => {
         eyes.classList.remove('watching');
+        stopEndermanStareSound();
         if (hoverTimer) {
             clearTimeout(hoverTimer);
             hoverTimer = null;
