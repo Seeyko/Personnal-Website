@@ -1567,24 +1567,22 @@ body[data-theme="terminal"] .language-switcher-toggle:hover .lang-arrow {
 
 /* ─── Enderman Easter Egg ─── */
 
-/* Hidden eyes that watch you */
+/* Hidden eyes that watch you (pixel-art, authentic 3x2 eyes) */
 body[data-theme="terminal"] .enderman-hidden-eyes {
   position: fixed;
   bottom: 120px;
   left: 25px;
-  font-family: var(--font-terminal);
-  font-size: 0.5rem;
-  display: flex;
-  gap: 3px;
+  width: 24px;
   cursor: default;
   z-index: 100;
-  opacity: 0.6;
+  opacity: 0.55;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-body[data-theme="terminal"] .enderman-hidden-eyes .eye {
-  color: #cc00ff;
-  text-shadow: 0 0 4px #ff00ff, 0 0 8px #aa00ff;
+body[data-theme="terminal"] .enderman-hidden-eyes svg {
+  display: block;
+  width: 100%;
+  height: auto;
   animation: enderman-eyes-glow 3s ease-in-out infinite;
 }
 
@@ -1592,9 +1590,8 @@ body[data-theme="terminal"] .enderman-hidden-eyes:hover {
   opacity: 1;
 }
 
-body[data-theme="terminal"] .enderman-hidden-eyes.watching .eye {
+body[data-theme="terminal"] .enderman-hidden-eyes.watching svg {
   animation: enderman-eyes-intense 0.5s ease-in-out infinite;
-  text-shadow: 0 0 6px #ff00ff, 0 0 12px #ff00ff, 0 0 20px #aa00ff;
 }
 
 body[data-theme="terminal"] .enderman-hidden-eyes.triggered {
@@ -1603,86 +1600,500 @@ body[data-theme="terminal"] .enderman-hidden-eyes.triggered {
 }
 
 @keyframes enderman-eyes-intense {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%, 100% {
+    filter: drop-shadow(0 0 4px #cb59ff) drop-shadow(0 0 8px #aa1bab);
+  }
+  50% {
+    filter: drop-shadow(0 0 7px #ed8cff) drop-shadow(0 0 14px #cb59ff);
+  }
 }
 
-/* Full Enderman body */
-body[data-theme="terminal"] .enderman-ascii {
+/* Full Enderman body (pixel art, real model proportions: 12x50).
+   Kept away from the screen edge so the dance arm swings never get
+   cropped by the viewport. */
+body[data-theme="terminal"] .enderman-pixel {
   position: fixed;
-  bottom: 60px;
-  left: 15px;
-  font-family: var(--font-terminal);
-  font-size: 0.55rem;
-  line-height: 1.1;
-  color: #3a2a4a;
+  bottom: 56px;
+  left: 120px;
+  width: 48px;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  z-index: 99;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  text-shadow: 0 0 8px rgba(100, 0, 150, 0.5);
+  z-index: 9997;
+  transform-origin: 50% 100%;
 }
 
-body[data-theme="terminal"] .enderman-ascii pre {
-  margin: 0;
-  font-family: inherit;
+body[data-theme="terminal"] .enderman-pixel svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Limbs swing outside the 12x50 viewBox while dancing */
+  overflow: visible;
+  filter: drop-shadow(0 0 2px rgba(203, 89, 255, 0.9)) drop-shadow(0 0 9px rgba(170, 27, 171, 0.5));
 }
 
-body[data-theme="terminal"] .enderman-ascii .enderman-eyes {
-  color: #ff44ff;
-  text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 20px #cc00ff, 0 0 30px #8800ff;
+body[data-theme="terminal"] .enderman-pixel .edm-eyes {
   animation: enderman-eyes-glow 2s ease-in-out infinite;
 }
 
-body[data-theme="terminal"] .enderman-ascii.visible {
+body[data-theme="terminal"] .enderman-pixel .edm-mouth {
+  filter: drop-shadow(0 0 1.5px #cb59ff) drop-shadow(0 0 3px #aa1bab);
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible {
   opacity: 1;
   visibility: visible;
   animation: enderman-appear 0.5s ease forwards;
 }
 
-body[data-theme="terminal"] .enderman-ascii.teleport {
+/* Dance! Whole-body groove bounce + per-limb moves (starts after appear) */
+body[data-theme="terminal"] .enderman-pixel svg .edm-part {
+  transform-box: fill-box;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible > svg {
+  animation: enderman-groove 0.45s ease-in-out 0.5s infinite alternate;
+}
+
+/* One-shot 9s act (percent = seconds / 9):
+   0-40%   goofy dance, floppy bent limbs, jaw chattering
+   40-46%  a dirt block materializes in his hands
+   46-53%  he tosses it high above his head
+   53-62%  the block falls while he watches, mouth open
+   62-67%  volley kick! left leg snaps, block rockets away
+   67-100% celebration: jaw wide open, overhead arm pumps */
+body[data-theme="terminal"] .enderman-pixel.visible .edm-head {
+  transform-origin: 50% 90%;
+  animation: enderman-act-head 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-jaw {
+  animation: enderman-act-jaw 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-arm-l {
+  transform-origin: 50% 4%;
+  animation: enderman-act-arm-l 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-arm-r {
+  transform-origin: 50% 4%;
+  animation: enderman-act-arm-r 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-fore-l {
+  transform-origin: 50% 2%;
+  animation: enderman-act-fore-l 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-fore-r {
+  transform-origin: 50% 2%;
+  animation: enderman-act-fore-r 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-leg-l {
+  transform-origin: 50% 2%;
+  animation: enderman-act-leg-l 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-leg-r {
+  transform-origin: 50% 2%;
+  animation: enderman-act-leg-r 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-shin-l {
+  transform-origin: 50% 2%;
+  animation: enderman-act-shin-l 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-shin-r {
+  transform-origin: 50% 2%;
+  animation: enderman-act-shin-r 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-body {
+  transform-origin: 50% 100%;
+  animation: enderman-act-body 9s ease-in-out 0.5s 1 forwards;
+}
+
+/* The dirt block he juggles */
+body[data-theme="terminal"] .enderman-pixel .edm-ball {
+  position: absolute;
+  left: 12px;
+  top: 132px;
+  width: 24px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-ball {
+  animation: enderman-act-ball 9s ease-in-out 0.5s 1 forwards;
+}
+
+body[data-theme="terminal"] .enderman-pixel.teleport {
   animation: enderman-teleport 0.5s ease forwards;
+}
+
+/* Ender particles (purple sparkles drifting around the body) */
+body[data-theme="terminal"] .enderman-pixel .edm-particles {
+  position: absolute;
+  inset: -20px -16px -8px -16px;
+  pointer-events: none;
+}
+
+body[data-theme="terminal"] .enderman-pixel .edm-particles span {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #cb59ff;
+  opacity: 0;
+}
+
+body[data-theme="terminal"] .enderman-pixel.visible .edm-particles span {
+  animation: enderman-particle 1.6s linear infinite;
+}
+
+body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(1)  { left: 8%;  top: 70%; background: #ed8cff; }
+body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(2)  { left: 85%; top: 55%; animation-delay: 0.2s; }
+body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(3)  { left: 20%; top: 30%; background: #aa1bab; animation-delay: 0.45s; }
+body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(4)  { left: 92%; top: 80%; background: #ed8cff; animation-delay: 0.6s; }
+body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(5)  { left: 3%;  top: 45%; animation-delay: 0.85s; }
+body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(6)  { left: 70%; top: 20%; background: #aa1bab; animation-delay: 1s; }
+body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(7)  { left: 40%; top: 90%; background: #ed8cff; animation-delay: 1.15s; }
+body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(8)  { left: 60%; top: 65%; animation-delay: 1.3s; }
+body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(9)  { left: 12%; top: 15%; background: #ed8cff; animation-delay: 1.45s; }
+body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(10) { left: 78%; top: 40%; background: #aa1bab; animation-delay: 1.55s; }
+
+@keyframes enderman-particle {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-4px, -22px);
+  }
 }
 
 @keyframes enderman-eyes-glow {
   0%, 100% {
-    text-shadow: 0 0 8px #ff00ff, 0 0 15px #ff00ff, 0 0 25px #8800ff;
+    filter: drop-shadow(0 0 1px #ed8cff) drop-shadow(0 0 3px #cb59ff);
   }
   50% {
-    text-shadow: 0 0 12px #ff00ff, 0 0 25px #ff00ff, 0 0 40px #8800ff;
+    filter: drop-shadow(0 0 2px #ed8cff) drop-shadow(0 0 5px #cb59ff) drop-shadow(0 0 9px #aa1bab);
   }
 }
 
+/* Dance moves */
+@keyframes enderman-groove {
+  from { transform: translateY(0); }
+  to { transform: translateY(2.5px); }
+}
+
+@keyframes enderman-act-head {
+  0%, 40%, 70%, 100% { transform: rotate(0); }
+  5% { transform: rotate(-14deg); }
+  10% { transform: rotate(10deg); }
+  15% { transform: rotate(-12deg); }
+  20% { transform: rotate(14deg); }
+  25% { transform: rotate(-16deg); }
+  30% { transform: rotate(12deg); }
+  35% { transform: rotate(-8deg); }
+  50% { transform: rotate(-6deg); }
+  58% { transform: rotate(-4deg); }
+  64% { transform: rotate(-10deg); }
+  67% { transform: rotate(8deg); }
+  75% { transform: rotate(-10deg); }
+  82% { transform: rotate(10deg); }
+  89% { transform: rotate(-12deg); }
+  96% { transform: rotate(4deg); }
+}
+
+/* Jaw drops down to open the mouth (2 units = fully agape) */
+@keyframes enderman-act-jaw {
+  0% { transform: translateY(0.2px); }
+  5% { transform: translateY(1.3px); }
+  10% { transform: translateY(0.3px); }
+  15% { transform: translateY(1.5px); }
+  20% { transform: translateY(0.3px); }
+  25% { transform: translateY(1.6px); }
+  30% { transform: translateY(0.4px); }
+  35% { transform: translateY(1.2px); }
+  40%, 46% { transform: translateY(0.2px); }
+  50% { transform: translateY(1.2px); }
+  56% { transform: translateY(1.8px); }
+  62%, 67% { transform: translateY(2px); }
+  75% { transform: translateY(1.2px); }
+  80% { transform: translateY(2px); }
+  86% { transform: translateY(0.8px); }
+  92% { transform: translateY(1.8px); }
+  100% { transform: translateY(0.4px); }
+}
+
+/* Upper arms: floppy asymmetric swings, then hold / toss / flail / pumps */
+@keyframes enderman-act-arm-l {
+  0%, 100% { transform: rotate(-6deg); }
+  5% { transform: rotate(100deg); }
+  10% { transform: rotate(30deg); }
+  15% { transform: rotate(120deg); }
+  20% { transform: rotate(20deg); }
+  25% { transform: rotate(95deg); }
+  30% { transform: rotate(130deg); }
+  35% { transform: rotate(40deg); }
+  40%, 46% { transform: rotate(14deg); }
+  49% { transform: rotate(150deg); }
+  54% { transform: rotate(120deg); }
+  58% { transform: rotate(45deg); }
+  61% { transform: rotate(20deg); }
+  64% { transform: rotate(110deg); }
+  67% { transform: rotate(60deg); }
+  70% { transform: rotate(20deg); }
+  75% { transform: rotate(130deg); }
+  82% { transform: rotate(55deg); }
+  89% { transform: rotate(138deg); }
+  96% { transform: rotate(15deg); }
+}
+
+@keyframes enderman-act-arm-r {
+  0%, 100% { transform: rotate(6deg); }
+  5% { transform: rotate(-20deg); }
+  10% { transform: rotate(-110deg); }
+  15% { transform: rotate(-35deg); }
+  20% { transform: rotate(-125deg); }
+  25% { transform: rotate(-90deg); }
+  30% { transform: rotate(-15deg); }
+  35% { transform: rotate(-105deg); }
+  40%, 46% { transform: rotate(-14deg); }
+  49% { transform: rotate(-150deg); }
+  54% { transform: rotate(-120deg); }
+  58% { transform: rotate(-45deg); }
+  61% { transform: rotate(-25deg); }
+  64% { transform: rotate(-70deg); }
+  67% { transform: rotate(-100deg); }
+  70% { transform: rotate(-25deg); }
+  75% { transform: rotate(-130deg); }
+  82% { transform: rotate(-55deg); }
+  89% { transform: rotate(-138deg); }
+  96% { transform: rotate(-15deg); }
+}
+
+/* Forearms: elbows bend inward to cradle the block, wiggle while dancing */
+@keyframes enderman-act-fore-l {
+  0%, 100% { transform: rotate(0); }
+  5% { transform: rotate(-35deg); }
+  10% { transform: rotate(20deg); }
+  15% { transform: rotate(-40deg); }
+  20% { transform: rotate(15deg); }
+  25% { transform: rotate(-30deg); }
+  30% { transform: rotate(-35deg); }
+  35% { transform: rotate(10deg); }
+  40%, 46% { transform: rotate(-50deg); }
+  49% { transform: rotate(-5deg); }
+  54% { transform: rotate(-15deg); }
+  58% { transform: rotate(-30deg); }
+  64% { transform: rotate(-20deg); }
+  67% { transform: rotate(-35deg); }
+  70% { transform: rotate(-15deg); }
+  75% { transform: rotate(-30deg); }
+  82% { transform: rotate(-10deg); }
+  89% { transform: rotate(-35deg); }
+  96% { transform: rotate(-5deg); }
+}
+
+@keyframes enderman-act-fore-r {
+  0%, 100% { transform: rotate(0); }
+  5% { transform: rotate(20deg); }
+  10% { transform: rotate(35deg); }
+  15% { transform: rotate(15deg); }
+  20% { transform: rotate(40deg); }
+  25% { transform: rotate(30deg); }
+  30% { transform: rotate(10deg); }
+  35% { transform: rotate(38deg); }
+  40%, 46% { transform: rotate(50deg); }
+  49% { transform: rotate(5deg); }
+  54% { transform: rotate(15deg); }
+  58% { transform: rotate(30deg); }
+  64% { transform: rotate(25deg); }
+  67% { transform: rotate(35deg); }
+  70% { transform: rotate(15deg); }
+  75% { transform: rotate(30deg); }
+  82% { transform: rotate(10deg); }
+  89% { transform: rotate(35deg); }
+  96% { transform: rotate(5deg); }
+}
+
+/* Left leg: step-touches, then winds up and volleys the block away */
+@keyframes enderman-act-leg-l {
+  0%, 5%, 20%, 30%, 40%, 75%, 89%, 100% { transform: rotate(0); }
+  10% { transform: rotate(18deg); }
+  15% { transform: rotate(2deg); }
+  25% { transform: rotate(14deg); }
+  35% { transform: rotate(10deg); }
+  46%, 57% { transform: rotate(3deg); }
+  59%, 62% { transform: rotate(22deg); }
+  64% { transform: rotate(-70deg); }
+  67% { transform: rotate(-30deg); }
+  70% { transform: rotate(4deg); }
+  82% { transform: rotate(10deg); }
+  96% { transform: rotate(6deg); }
+}
+
+@keyframes enderman-act-shin-l {
+  0%, 5%, 15%, 20%, 30%, 40%, 75%, 89%, 100% { transform: rotate(0); }
+  10% { transform: rotate(-25deg); }
+  25% { transform: rotate(-20deg); }
+  35% { transform: rotate(-15deg); }
+  46%, 57% { transform: rotate(5deg); }
+  59%, 62% { transform: rotate(45deg); }
+  64% { transform: rotate(5deg); }
+  67% { transform: rotate(-10deg); }
+  70% { transform: rotate(5deg); }
+  82% { transform: rotate(-15deg); }
+  96% { transform: rotate(-8deg); }
+}
+
+/* Right leg: support leg, plants and braces during the kick */
+@keyframes enderman-act-leg-r {
+  0%, 10%, 20%, 30%, 82%, 100% { transform: rotate(0); }
+  5% { transform: rotate(-18deg); }
+  15% { transform: rotate(-10deg); }
+  25% { transform: rotate(-3deg); }
+  35% { transform: rotate(-12deg); }
+  40% { transform: rotate(-2deg); }
+  46% { transform: rotate(-4deg); }
+  59% { transform: rotate(-8deg); }
+  64% { transform: rotate(-12deg); }
+  67% { transform: rotate(-6deg); }
+  75% { transform: rotate(-10deg); }
+  89% { transform: rotate(-8deg); }
+  96% { transform: rotate(-4deg); }
+}
+
+@keyframes enderman-act-shin-r {
+  0%, 10%, 20%, 30%, 82%, 100% { transform: rotate(0); }
+  5% { transform: rotate(25deg); }
+  15% { transform: rotate(12deg); }
+  25% { transform: rotate(5deg); }
+  35% { transform: rotate(15deg); }
+  40% { transform: rotate(2deg); }
+  46% { transform: rotate(8deg); }
+  59% { transform: rotate(10deg); }
+  64% { transform: rotate(14deg); }
+  67% { transform: rotate(6deg); }
+  75% { transform: rotate(10deg); }
+  89% { transform: rotate(8deg); }
+  96% { transform: rotate(4deg); }
+}
+
+@keyframes enderman-act-body {
+  0%, 40%, 70%, 100% { transform: rotate(0); }
+  5% { transform: rotate(3deg); }
+  10% { transform: rotate(-3deg); }
+  15% { transform: rotate(4deg); }
+  20% { transform: rotate(-4deg); }
+  25% { transform: rotate(5deg); }
+  30% { transform: rotate(-4deg); }
+  35% { transform: rotate(3deg); }
+  46% { transform: rotate(2deg); }
+  50% { transform: rotate(-3deg); }
+  59% { transform: rotate(-6deg); }
+  64% { transform: rotate(5deg); }
+  75% { transform: rotate(-4deg); }
+  82% { transform: rotate(4deg); }
+  89% { transform: rotate(-5deg); }
+  96% { transform: rotate(2deg); }
+}
+
+/* The dirt block: materializes, gets tossed up, falls, then gets
+   volleyed off screen spinning. Rise decelerates, fall accelerates. */
+@keyframes enderman-act-ball {
+  0%, 39% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0) scale(0.3);
+  }
+  41% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0) scale(1.15);
+  }
+  43% {
+    transform: translate(0, 0) rotate(0) scale(1);
+  }
+  46% {
+    transform: translate(0, 0) rotate(0) scale(1);
+    animation-timing-function: cubic-bezier(0.15, 0.7, 0.4, 1);
+  }
+  53% {
+    transform: translate(3px, -172px) rotate(200deg) scale(1);
+    animation-timing-function: cubic-bezier(0.55, 0.05, 0.9, 0.4);
+  }
+  62% {
+    transform: translate(10px, 48px) rotate(330deg) scale(1);
+  }
+  64% {
+    transform: translate(30px, 8px) rotate(400deg) scale(1);
+    animation-timing-function: cubic-bezier(0.1, 0.6, 0.5, 1);
+  }
+  72% {
+    opacity: 1;
+    transform: translate(240px, -280px) rotate(1440deg) scale(1);
+  }
+  74%, 100% {
+    opacity: 0;
+    transform: translate(285px, -335px) rotate(1650deg) scale(1);
+  }
+}
+
+/* Materialize with a static-like flicker */
 @keyframes enderman-appear {
   0% {
     opacity: 0;
-    transform: translateY(20px) scale(0.8);
+    transform: translateY(14px);
+    filter: brightness(3) blur(2px);
+  }
+  20% {
+    opacity: 0.9;
+  }
+  35% {
+    opacity: 0.3;
   }
   50% {
-    opacity: 0.5;
+    opacity: 1;
+    filter: brightness(1.6) blur(0.5px);
+  }
+  65% {
+    opacity: 0.6;
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
+    filter: none;
   }
 }
 
+/* Warp away: vertical stretch + purple flash */
 @keyframes enderman-teleport {
   0% {
     opacity: 1;
     transform: scale(1);
-    filter: blur(0);
+    filter: none;
   }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.2);
-    filter: blur(2px);
+  30% {
+    opacity: 1;
+    transform: scaleX(1.05) scaleY(1.06) translateY(-3px);
+    filter: brightness(2.5) drop-shadow(0 0 14px #cb59ff);
+  }
+  60% {
+    opacity: 0.5;
+    transform: scaleX(0.6) scaleY(1.3) translateY(-14px);
+    filter: blur(2px) drop-shadow(0 0 18px #aa1bab);
   }
   100% {
     opacity: 0;
-    transform: scale(0.5) translateY(-50px);
-    filter: blur(5px);
+    transform: scaleX(0.1) scaleY(1.6) translateY(-40px);
+    filter: blur(6px);
   }
 }
 
