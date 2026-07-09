@@ -58,3 +58,17 @@ particles, carried grass block.
   time 5.5s → 8s (two full cycles).
 - Reminder: arm rotations below 90deg point DOWN-out from the shoulder
   pivot; overhead poses need angles past horizontal.
+
+## Follow-up 3: articulated goofy act with block volley (2026-07-09)
+- Skeleton now has real joints: forearms nest inside upper arms (elbow
+  pivot), shins inside thighs (knee pivot), jaw inside head. A purple
+  glowing mouth-interior rect sits behind the jaw and is revealed when
+  the jaw drops (translateY up to 2 units = fully agape).
+- Replaced the dance loop with a one-shot 9s act (all part animations
+  `9s ... 1 forwards`, groove bounce stays infinite): goofy floppy dance
+  → dirt block materializes in his hands → tossed high → falls while he
+  watches mouth open → left-leg volley kick → block rockets off spinning
+  → celebration with jaw wide open. Visible time 8s → 9.6s.
+- The dirt block is a separate `.edm-ball` div (flat pixel SVG via new
+  `buildFlatSvg`) animated with per-keyframe timing functions for
+  gravity (decelerate up, accelerate down).

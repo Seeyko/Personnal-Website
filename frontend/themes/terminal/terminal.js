@@ -359,18 +359,25 @@ const ENDERMAN_PIXELS = [
 ];
 
 // Build an SVG from a pixel map, merging horizontal runs of identical
-// pixels into single rects. Pixels are grouped per body part so each
-// limb can be animated independently (dance!); the eyes live inside the
-// head group so they follow it, in their own sub-group for the glow.
+// pixels into single rects. Pixels are grouped per body part with real
+// joints: forearms nest inside upper arms (elbows), shins inside thighs
+// (knees) and the jaw inside the head, so limbs can bend and the mouth
+// can open. The eyes live in their own sub-group for the glow.
 function buildPixelSvg(pixels, colors) {
-    const parts = { head: [], eyes: [], body: [], armL: [], armR: [], legL: [], legR: [] };
+    const parts = {
+        skull: [], jaw: [], eyes: [], body: [],
+        armLu: [], armLd: [], armRu: [], armRd: [],
+        legLu: [], legLd: [], legRu: [], legRd: []
+    };
     const partOf = (x, y, ch) => {
         if ('EPM'.includes(ch)) return 'eyes';
-        if (y <= 7) return 'head';
-        if (x <= 1) return 'armL';
-        if (x >= 10) return 'armR';
+        if (y <= 5) return 'skull';
+        if (y <= 7) return 'jaw';
+        if (x <= 1) return y <= 22 ? 'armLu' : 'armLd';
+        if (x >= 10) return y <= 22 ? 'armRu' : 'armRd';
         if (y <= 19) return 'body';
-        return x <= 5 ? 'legL' : 'legR';
+        if (x <= 5) return y <= 34 ? 'legLu' : 'legLd';
+        return y <= 34 ? 'legRu' : 'legRd';
     };
 
     pixels.forEach((row, y) => {
@@ -388,18 +395,62 @@ function buildPixelSvg(pixels, colors) {
 
     const height = pixels.length;
     const width = pixels[0].length;
+    const limb = (up, lo, upCls, loCls) => parts[up].length
+        ? `<g class="edm-part ${upCls}">${parts[up].join('')}` +
+          (parts[lo].length ? `<g class="edm-part ${loCls}">${parts[lo].join('')}</g>` : '') + `</g>`
+        : '';
     const g = (name, cls) => parts[name].length ? `<g class="edm-part ${cls}">${parts[name].join('')}</g>` : '';
     const eyes = parts.eyes.length ? `<g class="edm-eyes">${parts.eyes.join('')}</g>` : '';
-    const head = (parts.head.length || parts.eyes.length) ? `<g class="edm-part edm-head">${parts.head.join('')}${eyes}</g>` : '';
+    // Purple mouth interior, fully covered by the jaw when closed and
+    // revealed as the jaw drops (rows 6-7 of the 8-wide head)
+    const mouth = parts.jaw.length
+        ? '<rect class="edm-mouth" x="3" y="6" width="6" height="2" fill="#a833c9"/>'
+        : '';
+    const head = (parts.skull.length || parts.eyes.length)
+        ? `<g class="edm-part edm-head">${parts.skull.join('')}${mouth}${eyes}${g('jaw', 'edm-jaw')}</g>`
+        : '';
     return `<svg viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges" aria-hidden="true">` +
-        g('armL', 'edm-arm-l') +
-        g('armR', 'edm-arm-r') +
-        g('legL', 'edm-leg-l') +
-        g('legR', 'edm-leg-r') +
+        limb('armLu', 'armLd', 'edm-arm-l', 'edm-fore-l') +
+        limb('armRu', 'armRd', 'edm-arm-r', 'edm-fore-r') +
+        limb('legLu', 'legLd', 'edm-leg-l', 'edm-shin-l') +
+        limb('legRu', 'legRd', 'edm-leg-r', 'edm-shin-r') +
         g('body', 'edm-body') +
         head +
         `</svg>`;
 }
+
+// Flat (ungrouped) pixel SVG, for props like the dirt block
+function buildFlatSvg(pixels, colors) {
+    const rects = [];
+    pixels.forEach((row, y) => {
+        let x = 0;
+        while (x < row.length) {
+            const ch = row[x];
+            if (!colors[ch]) { x++; continue; }
+            let w = 1;
+            while (x + w < row.length && row[x + w] === ch) w++;
+            rects.push(`<rect x="${x}" y="${y}" width="${w}" height="1" fill="${colors[ch]}"/>`);
+            x += w;
+        }
+    });
+    return `<svg viewBox="0 0 ${pixels[0].length} ${pixels.length}" shape-rendering="crispEdges" aria-hidden="true">${rects.join('')}</svg>`;
+}
+
+// The dirt block he juggles with
+const DIRT_BALL_PIXELS = [
+    'DbDDdD',
+    'dDdbDd',
+    'DdDDbD',
+    'bDdDdD',
+    'DbdDDb',
+    'dDDbdD'
+];
+
+const DIRT_BALL_COLORS = {
+    'D': '#8a5f42',
+    'd': '#714b33',
+    'b': '#573a27'
+};
 
 window.enderman = function() {
     console.log(`
@@ -424,7 +475,7 @@ window.enderman = function() {
             setTimeout(() => {
                 endermanEl.classList.remove('visible', 'teleport');
             }, 500);
-        }, 8000);
+        }, 9600);
     }
 };
 
@@ -441,6 +492,7 @@ function createEndermanElement() {
     enderman.className = 'enderman-pixel';
     const particles = Array.from({ length: 10 }, () => '<span></span>').join('');
     enderman.innerHTML = buildPixelSvg(ENDERMAN_PIXELS, ENDERMAN_COLORS) +
+        `<div class="edm-ball">${buildFlatSvg(DIRT_BALL_PIXELS, DIRT_BALL_COLORS)}</div>` +
         `<div class="edm-particles">${particles}</div>`;
     document.body.appendChild(enderman);
 
@@ -459,7 +511,7 @@ function createEndermanElement() {
                     enderman.classList.remove('visible', 'teleport');
                     eyes.classList.remove('triggered');
                 }, 500);
-            }, 8000);
+            }, 9600);
         }, 2000);
     });
 
