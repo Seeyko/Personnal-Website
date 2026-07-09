@@ -293,24 +293,120 @@ function handleKonami() {
 }
 
 // ─── Enderman Easter Egg ───
+// Pixel map based on the actual Minecraft Enderman model:
+// head 8x8, body 8x12, arms & legs 2x30 → 12 wide, 50 tall.
+// Eyes: 3x2 px each, edge to edge with a 2px gap (#ed8cff / #cb59ff / #aa1bab).
+const ENDERMAN_COLORS = {
+    '#': '#1a1a1f', // skin base
+    '+': '#26262e', // skin highlight
+    '-': '#101014', // skin shadow
+    'E': '#ed8cff', // eye bright
+    'P': '#cb59ff', // eye mid
+    'M': '#aa1bab', // eye dark
+    'G': '#6fae43', // grass bright
+    'g': '#578b34', // grass dark
+    'D': '#8a5f42', // dirt light
+    'd': '#714b33', // dirt mid
+    'b': '#573a27'  // dirt dark
+};
+
+const ENDERMAN_PIXELS = [
+    '..########..', // head (rows 0-7)
+    '..#+######..',
+    '..######+#..',
+    '..########..',
+    '..PEP##PEP..', // eyes
+    '..MPM##MPM..',
+    '..########..',
+    '..#-####-#..',
+    '############', // body + shoulders (rows 8-19)
+    '#+##########',
+    '##########-#',
+    '############',
+    '####+#######',
+    '############',
+    '############',
+    '#-######+###',
+    '############',
+    '############',
+    '###+######-#',
+    '############',
+    '##.##..##.##', // arms + legs (rows 20-37)
+    '##.##..##.##',
+    '#+.##..##.##',
+    '##.#+..##.##',
+    '##.##..##.-#',
+    '##.##..-#.##',
+    '##.GgGGgG.##', // carried grass block (rows 26-31)
+    '##.gDggDg.##',
+    '##.DdDDbD.##',
+    '#+.dDbdDd.##',
+    '##.DbDdbD.##',
+    '##.bddDdb.##',
+    '##.##..##.##',
+    '#-.##..#+.##',
+    '##.##..##.##',
+    '##.+#..##.#+',
+    '##.##..##.##',
+    '##.##..##.##',
+    '...##..##...', // legs only (rows 38-49)
+    '...#+..##...',
+    '...##..-#...',
+    '...##..##...',
+    '...##..##...',
+    '...-#..##...',
+    '...##..#+...',
+    '...##..##...',
+    '...##..##...',
+    '...+#..##...',
+    '...##..##...',
+    '...##..##...'
+];
+
+// Build an SVG from a pixel map, merging horizontal runs of identical
+// pixels into single rects. Layers split eyes/block from skin so they
+// can be styled (glow) independently.
+function buildPixelSvg(pixels, colors) {
+    const layers = { skin: [], eyes: [], block: [] };
+    const layerOf = (ch) => 'EPM'.includes(ch) ? 'eyes' : 'GgDdb'.includes(ch) ? 'block' : 'skin';
+
+    pixels.forEach((row, y) => {
+        let x = 0;
+        while (x < row.length) {
+            const ch = row[x];
+            if (!colors[ch]) { x++; continue; }
+            let w = 1;
+            while (x + w < row.length && row[x + w] === ch) w++;
+            layers[layerOf(ch)].push(`<rect x="${x}" y="${y}" width="${w}" height="1" fill="${colors[ch]}"/>`);
+            x += w;
+        }
+    });
+
+    const height = pixels.length;
+    const width = pixels[0].length;
+    return `<svg viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges" aria-hidden="true">` +
+        `<g class="edm-skin">${layers.skin.join('')}</g>` +
+        `<g class="edm-block">${layers.block.join('')}</g>` +
+        `<g class="edm-eyes">${layers.eyes.join('')}</g>` +
+        `</svg>`;
+}
+
 window.enderman = function() {
     console.log(`
-%c      ▄██████▄
-      █ %c▓▓%c  %c▓▓%c █
-      █      █
-      ▀██████▀
-         ██
-       ██████
-      ██ ██ ██
-     ██  ██  ██
-         ██
-        ████
-       ██  ██
-      ██    ██
+%c    ▄██████▄
+    █%c▓▓%c██%c▓▓%c█
+    ▀██████▀
+   ██ ████ ██
+   ██ ████ ██
+   ██ █  █ ██
+   ██ █  █ ██
+      █  █
+      █  █
+      █  █
 %c[ENTITY] Enderman spotted... Don't look directly at it!
-`, 'color: #1a1a1a; background: #0a0a0a;', 'color: #ff00ff;', 'color: #1a1a1a;', 'color: #ff00ff;', 'color: #1a1a1a;', 'color: #ff00ff;');
+`, 'color: #1a1a1f; background: #0a0a0a;', 'color: #cb59ff;', 'color: #1a1a1f;', 'color: #cb59ff;', 'color: #1a1a1f;', 'color: #cb59ff;');
 
-    const endermanEl = document.querySelector('.enderman-ascii');
+    const endermanEl = document.querySelector('.enderman-pixel');
     if (endermanEl) {
         endermanEl.classList.add('visible');
         setTimeout(() => {
@@ -327,24 +423,15 @@ function createEndermanElement() {
     // Create the hidden eyes that trigger the enderman
     const eyes = document.createElement('div');
     eyes.className = 'enderman-hidden-eyes';
-    eyes.innerHTML = '<span class="eye">▓▓</span><span class="eye">▓▓</span>';
+    eyes.innerHTML = buildPixelSvg(['PEP..PEP', 'MPM..MPM'], ENDERMAN_COLORS);
     document.body.appendChild(eyes);
 
     // Create the full enderman (hidden by default)
     const enderman = document.createElement('div');
-    enderman.className = 'enderman-ascii';
-    enderman.innerHTML = `<pre>      ▄██████▄
-      █ <span class="enderman-eyes">▓▓</span>  <span class="enderman-eyes">▓▓</span> █
-      █      █
-      ▀██████▀
-         ██
-       ██████
-      ██ ██ ██
-     ██  ██  ██
-         ██
-        ████
-       ██  ██
-      ██    ██</pre>`;
+    enderman.className = 'enderman-pixel';
+    const particles = Array.from({ length: 10 }, () => '<span></span>').join('');
+    enderman.innerHTML = buildPixelSvg(ENDERMAN_PIXELS, ENDERMAN_COLORS) +
+        `<div class="edm-particles">${particles}</div>`;
     document.body.appendChild(enderman);
 
     let hoverTimer = null;
