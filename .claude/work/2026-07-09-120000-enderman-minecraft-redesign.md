@@ -47,3 +47,14 @@ particles, carried grass block.
   99 → 9997 (above content, below CRT overlay + cursor).
 - Skin brightened slightly + 2px purple rim light so the dark limbs stay
   readable against the dark background while dancing.
+
+## Follow-up 2: crop fix + elaborate choreography (2026-07-09)
+- Limbs were clipped by the SVG viewBox and the viewport edge while
+  dancing → `overflow: visible` on the svg + moved left 14px → 120px so
+  full arm swings (which pass through horizontal) always fit on screen.
+- Choreography upgraded to a 3.6s / 8 half-beat cycle: double overhead
+  arm pumps (115deg), disco points above the head (135deg, alternating
+  left/right), bigger head/torso leans, step-touch leg kicks. Visible
+  time 5.5s → 8s (two full cycles).
+- Reminder: arm rotations below 90deg point DOWN-out from the shoulder
+  pivot; overhead poses need angles past horizontal.

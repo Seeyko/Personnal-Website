@@ -424,7 +424,7 @@ window.enderman = function() {
             setTimeout(() => {
                 endermanEl.classList.remove('visible', 'teleport');
             }, 500);
-        }, 5500);
+        }, 8000);
     }
 };
 
@@ -459,7 +459,7 @@ function createEndermanElement() {
                     enderman.classList.remove('visible', 'teleport');
                     eyes.classList.remove('triggered');
                 }, 500);
-            }, 5500);
+            }, 8000);
         }, 2000);
     });
 
