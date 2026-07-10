@@ -71,7 +71,9 @@ Le **build se cite toujours en premier**, la transmission en conséquence. Ordre
 
 ### Le principe : Blip, le curseur apprivoisé
 
-Le curseur bloc qui clignote dans `tom@dev:~$` depuis toujours a ouvert les yeux : **Blip** est la mascotte de la marque. Un rectangle pixel-art (grille 12×12) avec deux yeux, un smirk asymétrique et deux petites pattes — goofy, coloré, et littéralement né du prompt du site. Choisi parmi 15 concepts (5 designers, 3 juges) puis fusionné avec les meilleures idées du panel.
+Le curseur du prompt `tom@dev:~$` a ouvert les yeux : **Blip** est la mascotte de la marque. Sa silhouette est un **hybride curseur-souris / curseur-terminal** : bord gauche vertical, diagonale taillée depuis la pointe haut-gauche (tête de pointeur), corps bloc (grille 24×24). Exécution pixel-art complète : rampe de 4 tons, lumière sur la diagonale, dithering dans les ombres, scanlines CRT dans le corps, catchlights, blush ambre, smirk asymétrique, deux pattes. Choisi parmi 15 concepts (5 designers, 3 juges), puis durci en exécution après le verdict impitoyable du panel d'amis (« tu t'es pas foulé »). À 16 px, il lit littéralement comme un pointeur de souris.
+
+**Compagnon officiel : Cathode** — le petit moniteur CRT sur pattes (coque crème, antenne à boule rouge, LED, bouton ambre) dont **l'écran-visage prend la couleur du thème actif** (phosphore, cyan, magenta, teal). Il incarne le theme switcher : illustrations, loading screen, easter eggs. Blip est le logo ; Cathode est le pet du site. Les deux ne se concurrencent jamais sur les mêmes surfaces.
 
 **Le rituel signature — le clignement** : toutes les ~1.06 s (`steps(1)`, cadence d'un vrai curseur), les pixels du visage s'éteignent une frame : Blip redevient exactement le curseur bloc plein du terminal, puis rouvre les yeux. Ce blink est contractuel sur tous les supports animés (site, favicon SVG, header), désactivé par `prefers-reduced-motion`.
 
@@ -94,6 +96,7 @@ Le curseur bloc qui clignote dans `tom@dev:~$` depuis toujours a ouvert les yeux
 | Blip par thème (corps + costume) | `frontend/assets/brand/blip-{terminal,blueprint,retro90s,default}.svg` | Reskin au switch de thème |
 | **Blip en skate** (pose héro) | `frontend/assets/brand/blip-skate.svg` | Bannières, og:image, easter egg Konami (l'ollie), page d'accueil |
 | **Blip erreur** (bras de T-Rex) | `frontend/assets/brand/blip-error.svg` | 404, écrans d'erreur, messages [WARN] |
+| **Cathode** (compagnon) | `frontend/assets/brand/cathode.svg` + `cathode-{blueprint,retro90s,default}.svg` | Theme switcher, loading screen, illustrations, easter eggs — jamais en logo/avatar (territoire de Blip) |
 | **Heartbit** (sceau émotionnel) | `frontend/assets/brand/heartbit.svg` | Footer « Built with heart », fin d'articles, stickers — le cœur pixel du site avec un bit-curseur vert qui clignote à la place du pixel manquant : jamais fini, toujours en build |
 | Favicons thémés (tête de Blip) | `frontend/assets/brand/favicon-{theme}.svg` | Onglet, swap à chaud par theme-manager |
 | Avatar réseaux | `frontend/assets/brand/avatar-512.png` | GitHub, LinkedIn, email — LE MÊME partout |

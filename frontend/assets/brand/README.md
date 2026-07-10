@@ -4,14 +4,18 @@ Référence complète : [`/BRANDING.md`](../../../BRANDING.md). Règles rapides 
 
 ## Blip — la mascotte (mark principal)
 
-Le curseur bloc du prompt `tom@dev:~$` devenu créature pixel (grille 12×12, contour encre `#1a1a1a` constant).
+Silhouette **curseur de souris** (pointe haut-gauche, bord gauche vertical, diagonale) sur corps bloc terminal. Grille 24×24, pixel-art complet : rampe 4 tons, lumière sur la diagonale, dithering, scanlines CRT, contour encre `#12120f` constant.
 
-- `blip.svg` — version universelle (corps phosphore `#33ff00`, smirk, pattes).
-- `blip-{terminal,blueprint,retro90s,default}.svg` — reskin par thème : corps `#33ff00`/`#00FFFF`/`#FF00FF`/`#3d7a73` + costume (lunettes / casque or / casquette rouge / rien).
+- `blip.svg` — version universelle (corps phosphore, smirk, blush, pattes).
+- `blip-{terminal,blueprint,retro90s,default}.svg` — reskin par thème (swap de palette) + costume : lunettes noires / casque or sur la pente / casquette rouge à l'envers + visière / teal nature.
 - `blip-skate.svg` — pose héro (deck ambre, roues rouges) : bannières, og:image, easter egg Konami.
-- `blip-error.svg` — pose 404/erreur (corps rouge, bras de T-Rex, bouche ouverte).
-- **Rituel blink (contractuel)** : visage éteint 1 frame toutes les ~1.06 s (`steps(1)`) → Blip redevient le curseur plein, puis rouvre les yeux. Respecter `prefers-reduced-motion`.
+- `blip-error.svg` — pose 404/erreur (palette rouge, bras de T-Rex, bouche ouverte + langue).
+- **Rituel blink (contractuel)** : visage éteint 1 frame toutes les ~1.06 s (`steps(1)`) → Blip redevient un simple curseur, puis rouvre les yeux. Respecter `prefers-reduced-motion`.
 - **Règle anti-générique** : jamais publié sans au moins un marqueur propriétaire (smirk asymétrique, pattes, ou costume).
+
+## Cathode — le compagnon
+
+Moniteur CRT sur pattes dont l'écran-visage suit le thème : `cathode.svg` (terminal) + `cathode-{blueprint,retro90s,default}.svg`. Territoire : theme switcher, loading screen, illustrations, easter eggs. Jamais en logo/avatar (c'est Blip).
 
 ## Autres assets
 
