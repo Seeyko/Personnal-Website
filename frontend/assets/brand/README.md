@@ -13,6 +13,11 @@ Silhouette **curseur de souris** (pointe haut-gauche, bord gauche vertical, diag
 - **Rituel blink (contractuel)** : visage éteint 1 frame toutes les ~1.06 s (`steps(1)`) → Blip redevient un simple curseur, puis rouvre les yeux. Respecter `prefers-reduced-motion`.
 - **Règle anti-générique** : jamais publié sans au moins un marqueur propriétaire (smirk asymétrique, pattes, ou costume).
 
+## Props
+
+- `prop-coffee.svg` — le café du builder de nuit : mug crème à liseré ambre, 2 frames de vapeur (`.s1`/`.s2`, à alterner en `steps(1)` 1.2 s). Accessoire d'idle de Blip.
+- `heartbit.svg` fait aussi office de ballon : la jongle rebondit sur la pointe de Blip (specs dans BRANDING.md §Animations).
+
 ## Cathode — le compagnon
 
 Moniteur CRT sur pattes dont l'écran-visage suit le thème : `cathode.svg` (terminal) + `cathode-{blueprint,retro90s,default}.svg`. Territoire : theme switcher, loading screen, illustrations, easter eggs. Jamais en logo/avatar (c'est Blip).

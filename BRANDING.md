@@ -107,6 +107,19 @@ Le curseur du prompt `tom@dev:~$` a ouvert les yeux : **Blip** est la mascotte d
 
 **Skate = vitesse incarnée** : la pose héro vient de Ride My Park (sa vraie vie) et remplace les chiffres nulle part — le contrepoids « toujours un chiffre de vitesse à côté d'un signal de jeu » s'applique aussi à elle.
 
+### Les animations (specs)
+
+Règle d'or : tout est animé en `steps()` — du 8 fps assumé, jamais d'easing lisse (le lissage casse l'illusion pixel-art) — et désactivé par `prefers-reduced-motion`.
+
+| Animation | Cible | Durée / rythme | Détail |
+|---|---|---|---|
+| **Blink** (signature, contractuel) | visage de Blip | 1.06 s `steps(1)` | visage éteint 1 frame → redevient simple curseur |
+| Bob (idle) | Blip entier | 1.6 s `steps(2)` | respiration ±1 px ; accessoire : café fumant (`prop-coffee.svg`, 2 frames de vapeur alternées 1.2 s) |
+| Jongle | Heartbit au-dessus de la pointe | 1.9 s `steps(5)` | le cœur rebondit sur la pointe du curseur, squash `scaleY(.82)` à l'impact, Blip encaisse (−1 px) |
+| Ollie | groupe skate | 4.6 s `steps(4)` | `translateY −13 px + rotate −9°` à 76 %, retombée avec micro-rebond, poussière 3 px derrière les roues |
+| Zap de chaîne | écran de Cathode | 0.5 s `steps(4)` | `scaleY → 0.08` (ligne blanche, flash 85 %) → swap couleur d'écran → ré-expansion ; déclenché au switch de thème |
+| Neige | écran de Cathode (idle) | 9 s `steps(1)` | 3 % du cycle : parasites blancs/gris sur l'écran, puis retour du visage |
+
 ### Palette
 
 | Couleur | Hex | Rôle et règles |
