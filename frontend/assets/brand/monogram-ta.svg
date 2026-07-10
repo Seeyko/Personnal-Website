@@ -1,0 +1,7 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-label="TA">
+  <path d="M3 6 L17 6"/>
+  <path d="M7.5 20 L12 7.5"/>
+  <path d="M16.5 20 L12 7.5"/>
+  <path d="M9.6 15 L14.4 15" stroke-linecap="butt"/>
+  <rect x="19" y="4.75" width="2.5" height="2.5" fill="currentColor" stroke="none"/>
+</svg>

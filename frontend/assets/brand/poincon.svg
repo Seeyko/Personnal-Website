@@ -1,0 +1,10 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" aria-label="Tom Andrieu — fait main">
+  <g stroke-width="1.5">
+    <path d="M2 6 V2 H6"/><path d="M26 2 H30 V6"/><path d="M30 26 V30 H26"/><path d="M6 30 H2 V26"/>
+  </g>
+  <g fill="currentColor" stroke="none">
+    <rect x="7" y="9" width="11" height="3"/>
+    <rect x="11" y="9" width="3" height="14"/>
+    <rect x="19.5" y="15.5" width="5" height="7.5"/>
+  </g>
+</svg>
