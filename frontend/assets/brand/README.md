@@ -2,14 +2,28 @@
 
 Référence complète : [`/BRANDING.md`](../../../BRANDING.md). Règles rapides :
 
-- **In-site : toujours le monochrome `currentColor`.** Les marks héritent de l'encre du thème actif (phosphore, blanc, navy, encre). Jamais de version multicolore dans le site.
-- `mark.svg` — T▮, mark principal (viewBox 24). Le curseur peut clignoter in-site (`steps(2)` ~1.1s, respecter `prefers-reduced-motion`).
-- `mark-16.svg` — variante grille entière pour ≤ 32px (favicon).
-- `favicon-{theme}.svg` — couleurs figées pour l'onglet ; à swapper par `theme-manager.js` au changement de thème.
-- `monogram-ta.svg` — monogramme alternatif TA (avatar rond de secours).
-- `roue-mono.svg` / `roue-couleur.svg` — usage secondaire ; la version couleur UNIQUEMENT sur fonds contrôlés `#0a0a0a` / `#f8f7f4`.
-- `poincon.svg` — tampon (fin d'article, badge « fait main », fonds bruités retro90s).
-- `avatar-512.png` — LE MÊME avatar partout (GitHub, LinkedIn, email).
-- `og-image.png` — 1200×630 pour les balises `og:image` / `twitter:image`.
+## Blip — la mascotte (mark principal)
 
-Couleurs : encre `#1a1a1a` · papier `#f8f7f4` · noir CRT `#0a0a0a` · phosphore `#33ff00` (petite surface, jamais en fond, jamais sur papier) · ambre `#ffb000` (encre light-safe `#805800`) · rouge incident `#ff3333` (réservé aux échecs documentés).
+Le curseur bloc du prompt `tom@dev:~$` devenu créature pixel (grille 12×12, contour encre `#1a1a1a` constant).
+
+- `blip.svg` — version universelle (corps phosphore `#33ff00`, smirk, pattes).
+- `blip-{terminal,blueprint,retro90s,default}.svg` — reskin par thème : corps `#33ff00`/`#00FFFF`/`#FF00FF`/`#3d7a73` + costume (lunettes / casque or / casquette rouge / rien).
+- `blip-skate.svg` — pose héro (deck ambre, roues rouges) : bannières, og:image, easter egg Konami.
+- `blip-error.svg` — pose 404/erreur (corps rouge, bras de T-Rex, bouche ouverte).
+- **Rituel blink (contractuel)** : visage éteint 1 frame toutes les ~1.06 s (`steps(1)`) → Blip redevient le curseur plein, puis rouvre les yeux. Respecter `prefers-reduced-motion`.
+- **Règle anti-générique** : jamais publié sans au moins un marqueur propriétaire (smirk asymétrique, pattes, ou costume).
+
+## Autres assets
+
+- `heartbit.svg` — sceau « Built with heart » : cœur pixel rouge, bit-curseur vert clignotant à la place du pixel manquant. Footer, fin d'article, stickers. (Contraste rouge/vert validé en niveaux de gris : lum 0.24 vs 0.72.)
+- `favicon-{theme}.svg` — tête de Blip sur fond du thème ; à swapper par `theme-manager.js` au changement de thème.
+- `avatar-512.png` — LE MÊME avatar partout (GitHub, LinkedIn, email).
+- `og-image.png` — 1200×630 (tagline + Blip en skate) pour `og:image` / `twitter:image`.
+
+## Registre sobre (CV, propales, contextes corporate)
+
+- `mark.svg` / `mark-16.svg` — monogramme T▮ monochrome en `currentColor`.
+- `monogram-ta.svg`, `roue-mono.svg`, `roue-couleur.svg` (fonds contrôlés uniquement), `poincon.svg`.
+- Même ADN que Blip : le curseur bloc, la baseline, le pixel.
+
+Couleurs : encre `#1a1a1a` · papier `#f8f7f4` · noir CRT `#0a0a0a` · phosphore `#33ff00` · cyan `#00FFFF` · magenta `#FF00FF` · teal `#3d7a73` · ambre `#ffb000` (deck, encre light-safe `#805800`) · rouge incident `#ff3333` (échecs, roues du skate, Heartbit).

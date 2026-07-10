@@ -69,27 +69,40 @@ Le **build se cite toujours en premier**, la transmission en conséquence. Ordre
 
 ## 5. L'identité visuelle
 
-### Le principe : un logo caméléon
+### Le principe : Blip, le curseur apprivoisé
 
-L'identité du site est déjà « un même contenu, quatre interfaces ». Le logo suit la même loi : **monochrome par construction, en `currentColor`**, il hérite de l'encre du thème actif — vert phosphore sur terminal, blanc sur blueprint, navy sur chrome retro90s, encre chaude sur papier default. C'est le mécanisme déjà éprouvé par les ticks d'angle et craft-blocks de `base.css`. **Aucune version multicolore in-site, jamais.**
+Le curseur bloc qui clignote dans `tom@dev:~$` depuis toujours a ouvert les yeux : **Blip** est la mascotte de la marque. Un rectangle pixel-art (grille 12×12) avec deux yeux, un smirk asymétrique et deux petites pattes — goofy, coloré, et littéralement né du prompt du site. Choisi parmi 15 concepts (5 designers, 3 juges) puis fusionné avec les meilleures idées du panel.
 
-### Le système de marks
+**Le rituel signature — le clignement** : toutes les ~1.06 s (`steps(1)`, cadence d'un vrai curseur), les pixels du visage s'éteignent une frame : Blip redevient exactement le curseur bloc plein du terminal, puis rouvre les yeux. Ce blink est contractuel sur tous les supports animés (site, favicon SVG, header), désactivé par `prefers-reduced-motion`.
 
-| Mark | Fichier | Usage |
+**Le caméléon** : comme le site, Blip se reskinne par thème — seul le fill du corps change, le contour encre `#1a1a1a` reste constant (c'est lui qui garantit la lisibilité sur les 4 fonds). Chaque thème a son costume :
+
+| Thème | Corps | Costume |
 |---|---|---|
-| **T▮ — le curseur de Tom** (principal) | `frontend/assets/brand/mark.svg` | Header, loading screen, watermarks, partout |
-| T▮ pixel-perfect | `frontend/assets/brand/mark-16.svg` | Favicon, tailles ≤ 32px |
-| Favicons thémés (couleurs figées) | `frontend/assets/brand/favicon-{terminal,default,blueprint,retro90s}.svg` | Onglet navigateur, swap par theme-manager |
-| **TA étêté** (monogramme alternatif) | `frontend/assets/brand/monogram-ta.svg` | Avatar rond de secours, cachet |
-| **Roue des angles** mono | `frontend/assets/brand/roue-mono.svg` | Illustration theme switcher, page /brand |
-| **Roue des angles** couleur | `frontend/assets/brand/roue-couleur.svg` | UNIQUEMENT fonds contrôlés (#0a0a0a / #f8f7f4) : og:image, slides |
-| **Poinçon** (cadre 4 ticks) | `frontend/assets/brand/poincon.svg` | Tampon fin d'article, badge « fait main », fonds bruités (retro90s) |
+| terminal | `#33ff00` phosphore | lunettes noires |
+| blueprint | `#00FFFF` cyan | casque de chantier `#FFD700` |
+| retro90s | `#FF00FF` magenta | casquette rouge à l'envers |
+| default | `#3d7a73` teal | aucun (le calme) |
+
+**Règle anti-générique** (un rectangle à deux yeux n'appartient à personne) : Blip ne se publie jamais sans au moins un de ses trois marqueurs propriétaires — le smirk asymétrique, les deux pattes, ou un costume de thème. Et jamais d'autres cœurs pixel ou pièces de tétromino dans la communication : le monopole interne du motif fait la propriété.
+
+### Le système
+
+| Asset | Fichier | Usage |
+|---|---|---|
+| **Blip** (mascotte, mark principal) | `frontend/assets/brand/blip.svg` | Logo, header, loading screen, partout |
+| Blip par thème (corps + costume) | `frontend/assets/brand/blip-{terminal,blueprint,retro90s,default}.svg` | Reskin au switch de thème |
+| **Blip en skate** (pose héro) | `frontend/assets/brand/blip-skate.svg` | Bannières, og:image, easter egg Konami (l'ollie), page d'accueil |
+| **Blip erreur** (bras de T-Rex) | `frontend/assets/brand/blip-error.svg` | 404, écrans d'erreur, messages [WARN] |
+| **Heartbit** (sceau émotionnel) | `frontend/assets/brand/heartbit.svg` | Footer « Built with heart », fin d'articles, stickers — le cœur pixel du site avec un bit-curseur vert qui clignote à la place du pixel manquant : jamais fini, toujours en build |
+| Favicons thémés (tête de Blip) | `frontend/assets/brand/favicon-{theme}.svg` | Onglet, swap à chaud par theme-manager |
 | Avatar réseaux | `frontend/assets/brand/avatar-512.png` | GitHub, LinkedIn, email — LE MÊME partout |
-| og:image | `frontend/assets/brand/og-image.png` | Balises og:/twitter: du site |
+| og:image (tagline + Blip en skate) | `frontend/assets/brand/og-image.png` | Balises og:/twitter: du site |
+| Registre sobre : T▮, monogramme TA, roue, poinçon | `frontend/assets/brand/mark*.svg`, `monogram-ta.svg`, `roue-*.svg`, `poincon.svg` | CV, propales, contextes corporate où la mascotte serait déplacée — même ADN (curseur bloc, baseline, pixel) |
 
-**Pourquoi le T▮** : le curseur bloc est le glyphe du positionnement — l'endroit exact où l'humain dirige la machine, et le symbole du statut EN BUILD (la phrase n'est jamais finie). Ce n'est pas un `</>` décoratif : c'est une masse-lettre du monogramme, posée sur la baseline, géométrie CRT. Il se dégrade en pur texte (`TOM▮`, `T_`) dans un README ou une signature mail. Sur le site, le curseur clignote (animation CSS `steps(2)` ~1.1s, désactivée par `prefers-reduced-motion`) ; statique partout ailleurs.
+**Deux registres, un squelette** : Blip est le visage public (site, réseaux, contenus) ; le T▮ sobre reste disponible pour les documents formels. Les deux partagent le même glyphe fondateur — le curseur bloc — donc la marque reste une.
 
-**La roue des angles** est la réincarnation honnête de l'ancien logo « A » en cercle 4 quartiers : les 4 segments racontent enfin quelque chose de vrai — une personne, quatre interfaces — avec le pixel-curseur au centre. Elle est cantonnée aux surfaces à fond maîtrisé.
+**Skate = vitesse incarnée** : la pose héro vient de Ride My Park (sa vraie vie) et remplace les chiffres nulle part — le contrepoids « toujours un chiffre de vitesse à côté d'un signal de jeu » s'applique aussi à elle.
 
 ### Palette
 
@@ -117,7 +130,7 @@ L'identité du site est déjà « un même contenu, quatre interfaces ». Le log
 
 1. **Favicon** : le site n'en a AUCUN. `<link rel="icon">` vers les favicons thémés + swap à chaud dans `theme-manager.js` (le mécanisme de swap CSS existe déjà) + apple-touch-icon.
 2. **og:image + balises og:/twitter:** : absentes du `<head>` — tout partage LinkedIn/Slack du site est aveugle aujourd'hui. `frontend/assets/brand/og-image.png` est prête.
-3. **Header** : ajouter le curseur bloc clignotant en `::after` du `.brand-name` — première implémentation du wordmark `TOM ANDRIEU▮`, habillé par thème comme les brand-prefix/suffix existants.
+3. **Header** : ajouter le curseur bloc clignotant en `::after` du `.brand-name` (wordmark `TOM ANDRIEU▮`) — et/ou mini-Blip (16 px) devant le nom, qui change de costume avec le thème.
 4. **Purge des contradictions CRO** : supprimer « J'accepte de nouveaux clients pour Q2 » / exit modal / « Réponse sous 24h » (contradiction directe avec now.json ; seule zone du site où la voix n'est pas la sienne). Remplacer par deux portes : **« Voir l'atelier »** (projets + GitHub) et **« Compagnonnage »** (offre productisée : 2 semaines en binôme, une feature en prod, l'équipe repart avec la méthode).
 
 ### Ensuite
@@ -126,6 +139,7 @@ L'identité du site est déjà « un même contenu, quatre interfaces ». Le log
 6. **Loading screen** : remplacer le spinner générique par `tom@dev:~$ ▮` en machine à écrire.
 7. **Badges de statut projets** façon levels.io, en cadre-poinçon : `[EN PROD]` vert, `[EN BUILD]` ambre, `[ABANDONNÉ — autopsié]` rouge + lien post-mortem, `[POUR LE FUN]` — et synchroniser la vitrine avec 2026 (BVN, ScanR, Olympus†) au lieu de s'arrêter à 2023.
 8. **Blog → « Notes de chantier »** : deux niveaux (essais / notes datées), + un article vitrine « Les secrets de tomandrieu.com » (l'enderman, le cœur, l'architecture 4 thèmes sans build system).
+8bis. **Easter egg Konami v2** : un deck de skate ambre traîne en bas de page ; au Konami code, Blip saute dessus et fait un ollie (`translateY -8px + rotate -6°→-14°`, 0.5 s). La 404 affiche Blip-erreur et ses bras de T-Rex.
 9. **Page `/brand`** (ou ce fichier servi) : documenter le système pour qu'il survive aux retouches pressées.
 
 ### Hors-site

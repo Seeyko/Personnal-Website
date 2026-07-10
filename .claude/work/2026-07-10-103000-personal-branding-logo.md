@@ -18,6 +18,7 @@ Analyser le site, rechercher les principes du personal branding fort, proposer u
 - [x] Design du système de marks (T▮, TA, roue, poinçon) validé visuellement sur les 4 thèmes, 16→200px
 - [x] Génération avatar-512.png et og-image.png (1200×630)
 - [x] BRANDING.md + README assets
+- [x] Round 2 (feedback client « plus créatif, coloré, goofy ») : 15 concepts (5 designers) + 3 juges → mascotte **Blip** (curseur apprivoisé, fusion BLIP×KICKCURSOR), garde-robe par thème, pose skate, pose erreur T-Rex, sceau Heartbit ; avatar/og régénérés ; le T▮ sobre reste en registre corporate
 
 ## Notes/Discoveries
 - Le site n'a AUCUN favicon ni balise og:/twitter: — quick win prioritaire.
