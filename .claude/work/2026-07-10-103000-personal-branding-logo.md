@@ -1,6 +1,6 @@
 # Personal branding & logo system
 
-**Status**: completed
+**Status**: in_progress
 **Branch**: `claude/personal-branding-logo-ytdk6j`
 **Started**: 2026-07-10 10:30
 
@@ -9,7 +9,11 @@ Analyser le site, rechercher les principes du personal branding fort, proposer u
 
 ## Files Being Modified
 - BRANDING.md (nouveau — plateforme de marque complète)
-- frontend/assets/brand/* (nouveau — système de logos SVG, favicons thémés, avatar, og:image)
+- frontend/assets/brand/* (nouveau — système de logos SVG, favicons thémés, avatar, og:image, scènes motion)
+- frontend/js/core/effects/blip-cursor.js + frontend/css/blip-cursor.css (en cours — curseur Blip interactif)
+- frontend/js/core/effects/cathode-guide.js + frontend/css/cathode-guide.css (en cours — guide par section)
+- frontend/index.html, frontend/js/theme-manager.js (en cours — favicon thémé, og meta, chargement modules)
+- i18n/locales/fr.json + en.json (en cours — textes des bulles cathodeGuide)
 
 ## Progress
 - [x] Analyse contenu + ADN visuel des 4 thèmes
