@@ -13,8 +13,9 @@
  * Two run modes, picked from the primary pointer type:
  * - 'cursor' (fine pointer): Blip replaces the mouse pointer, any viewport.
  * - 'touch'  (coarse pointer): no pointer to replace, so Blip becomes a tap
- *   companion — he pops up right above each tap, follows drags with the same
- *   spring, then dozes off and fades away until the next touch.
+ *   companion — he lands with his cursor tip exactly on each tap point (same
+ *   hotspot contract as cursor mode), follows drags with the same spring,
+ *   then dozes off and fades away until the next touch.
  */
 const BlipCursor = (() => {
     const THEMES = ['terminal', 'default', 'blueprint', 'retro90s'];
@@ -51,8 +52,6 @@ const BlipCursor = (() => {
     const SNOOZE_AFTER_MS = 25000;   // cursor mode: doze off after this idle time
     const TOUCH_SNOOZE_MS = 9000;    // touch mode: doze sooner (he's a guest, not a pointer)
     const TOUCH_AWAY_MS = 22000;     // touch mode: fade out entirely after this
-    const TOUCH_OFFSET_X = 10;       // px right of the finger, so it doesn't cover him
-    const TOUCH_OFFSET_Y = -34;      // px above the finger
 
     // Suiveur à ressort sous-amorti : Blip traîne derrière la souris, dépasse
     // légèrement la cible et se pose avec un petit rebond (ζ ≈ 0.62).
@@ -291,14 +290,16 @@ const BlipCursor = (() => {
         play('bc-click');
     }
 
-    // Touch mode: Blip pops up just above the finger. First appearance (or a
-    // return from bc-away) teleports him there instead of springing across
-    // the whole screen from wherever he faded out.
+    // Touch mode: Blip lands with his cursor tip exactly on the tap point,
+    // like a real pointer (the hotspot contract puts the tip at the root's
+    // origin). First appearance (or a return from bc-away) teleports him
+    // there instead of springing across the whole screen from wherever he
+    // faded out.
     function onTouchPoint(e) {
         if (e.pointerType && e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
         const wasHidden = !seenMove || away;
-        targetX = e.clientX + TOUCH_OFFSET_X;
-        targetY = e.clientY + TOUCH_OFFSET_Y;
+        targetX = e.clientX;
+        targetY = e.clientY;
         if (wasHidden) {
             curX = targetX;
             curY = targetY;
@@ -312,8 +313,8 @@ const BlipCursor = (() => {
     function onTouchDrag(e) {
         if (e.pointerType && e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
         if (!seenMove || away) return;
-        targetX = e.clientX + TOUCH_OFFSET_X;
-        targetY = e.clientY + TOUCH_OFFSET_Y;
+        targetX = e.clientX;
+        targetY = e.clientY;
         lastMoveAt = Date.now();
     }
 
