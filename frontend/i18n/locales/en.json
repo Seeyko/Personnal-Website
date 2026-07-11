@@ -93,6 +93,15 @@
     "pressAnyKey": "[Press any key to continue...]",
     "bestViewed": "Best viewed with Netscape Navigator 4.0 at 800x600 resolution"
   },
+  "cathodeGuide": {
+    "hero": "Welcome to the workshop. Everything's handmade, even me.",
+    "now": "Radar's on: here's what I'm tinkering with right now.",
+    "work": "My projects. The ones that shine and the ones that fought back.",
+    "writing": "Notes on code and life, typed between two deploys.",
+    "timeline": "My path in commits. Scroll to see the full diff.",
+    "about": "The human behind the screen runs on coffee and CSS.",
+    "contact": "Got an idea to build? Faster reply than a Jira ticket."
+  },
   "stats": {
     "yearsExperience": "Years Experience",
     "usersReached": "Users Reached",

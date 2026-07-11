@@ -32,6 +32,11 @@ const ThemeManager = (() => {
         return new Promise((res, rej) => { link.onload = res; link.onerror = rej; link.href = theme.css; });
     }
 
+    function updateFavicon(themeId) {
+        const favicon = document.getElementById('favicon');
+        if (favicon) favicon.href = `/assets/brand/favicon-${themeId}.svg`;
+    }
+
     async function loadJS(theme) {
         document.getElementById('theme-js')?.remove();
         const script = document.createElement('script');
@@ -44,6 +49,7 @@ const ThemeManager = (() => {
         const theme = THEMES[themeId] || THEMES[DEFAULT_THEME];
         document.body.dataset.theme = themeId;
         currentThemeId = themeId;
+        updateFavicon(theme.id);
 
         try {
             await loadCSS(theme);

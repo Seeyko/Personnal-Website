@@ -31,8 +31,21 @@ const BlipCursor = (() => {
     };
 
     const SNOOZE_AFTER_MS = 25000;
-    const SMOOTH = 0.45; // light follow easing; converges within a couple of frames
-    const SNAP_EPSILON = 0.4;
+
+    // Suiveur à ressort sous-amorti : Blip traîne derrière la souris, dépasse
+    // légèrement la cible et se pose avec un petit rebond (ζ ≈ 0.62).
+    const SPRING_K = 190;          // raideur (s^-2)
+    const SPRING_C = 17;           // friction (s^-1)
+    const MAX_DT = 1 / 30;         // clamp du pas de temps (retour d'onglet, freeze)
+    const SETTLE_DIST = 0.15;      // px — seuil de pose
+    const SETTLE_VEL = 4;          // px/s
+    // Body language piloté par la vitesse (appliqué au wrapper .bc-motion,
+    // jamais aux groupes du kit ni au hotspot).
+    const TILT_PER_V = 0.016;      // deg par px/s de vitesse horizontale
+    const TILT_MAX = 12;           // deg
+    const STRETCH_PER_V = 1 / 5200; // étirement par px/s de vitesse
+    const STRETCH_MAX = 0.16;      // +16 % max, squash perpendiculaire équivalent
+    const BODY_MIN_SPEED = 6;      // px/s — en dessous, repos strict
 
     let root = null;
     let isActive = false;      // module fully torn down vs. alive (init/destroy)
@@ -44,6 +57,9 @@ const BlipCursor = (() => {
     let lastGag = null;
 
     let curX = -100, curY = -100, targetX = -100, targetY = -100;
+    let velX = 0, velY = 0;
+    let lastTickAt = 0;
+    let motionEl = null;
     let rafId = null;
     let blinkTimer = null;
     let gagTimer = null;
@@ -90,7 +106,8 @@ const BlipCursor = (() => {
         root.id = 'blip-cursor';
         root.setAttribute('aria-hidden', 'true');
         root.className = 'bc bc-theme-' + currentTheme();
-        root.innerHTML = SVG_MARKUP;
+        root.innerHTML = '<div class="bc-motion">' + SVG_MARKUP + '</div>';
+        motionEl = root.firstChild;
         document.body.appendChild(root);
         applyTransform(); // park off-screen until the first real pointermove
     }
@@ -98,24 +115,56 @@ const BlipCursor = (() => {
     function removeDom() {
         if (root && root.parentNode) root.parentNode.removeChild(root);
         root = null;
+        motionEl = null;
     }
 
     function applyTransform() {
         if (root) root.style.transform = 'translate3d(' + curX + 'px,' + curY + 'px,0)';
     }
 
-    function tick() {
-        const dx = targetX - curX;
-        const dy = targetY - curY;
-        if (Math.abs(dx) < SNAP_EPSILON && Math.abs(dy) < SNAP_EPSILON) {
-            curX = targetX;
-            curY = targetY;
-        } else {
-            curX += dx * SMOOTH;
-            curY += dy * SMOOTH;
+    function tick(now) {
+        if (!lastTickAt) lastTickAt = now;
+        let dt = (now - lastTickAt) / 1000;
+        lastTickAt = now;
+        if (dt > MAX_DT) dt = MAX_DT;
+        if (dt > 0) {
+            velX += ((targetX - curX) * SPRING_K - velX * SPRING_C) * dt;
+            velY += ((targetY - curY) * SPRING_K - velY * SPRING_C) * dt;
+            curX += velX * dt;
+            curY += velY * dt;
+            if (Math.abs(targetX - curX) < SETTLE_DIST && Math.abs(targetY - curY) < SETTLE_DIST &&
+                Math.abs(velX) < SETTLE_VEL && Math.abs(velY) < SETTLE_VEL) {
+                curX = targetX;
+                curY = targetY;
+                velX = 0;
+                velY = 0;
+            }
         }
         applyTransform();
+        applyBodyLanguage();
         rafId = requestAnimationFrame(tick);
+    }
+
+    // Il s'incline dans le sens du déplacement et s'étire le long de sa
+    // trajectoire (volume conservé) ; le tremblé de pose vient du ressort.
+    function applyBodyLanguage() {
+        if (!motionEl) return;
+        const speed = Math.hypot(velX, velY);
+        if (speed < BODY_MIN_SPEED) {
+            if (motionEl.style.transform) motionEl.style.transform = '';
+            return;
+        }
+        let tilt = velX * TILT_PER_V;
+        if (tilt > TILT_MAX) tilt = TILT_MAX;
+        else if (tilt < -TILT_MAX) tilt = -TILT_MAX;
+        let s = 1 + speed * STRETCH_PER_V;
+        if (s > 1 + STRETCH_MAX) s = 1 + STRETCH_MAX;
+        const ang = Math.atan2(velY, velX);
+        motionEl.style.transform =
+            'rotate(' + tilt.toFixed(2) + 'deg)' +
+            ' rotate(' + ang.toFixed(3) + 'rad)' +
+            ' scale(' + s.toFixed(3) + ',' + (1 / s).toFixed(3) + ')' +
+            ' rotate(' + (-ang).toFixed(3) + 'rad)';
     }
 
     function calm() {
@@ -245,6 +294,8 @@ const BlipCursor = (() => {
         lastGag = null;
         curX = targetX = -100;
         curY = targetY = -100;
+        velX = velY = 0;
+        lastTickAt = 0;
         createDom();
         attachListeners();
         rafId = requestAnimationFrame(tick);

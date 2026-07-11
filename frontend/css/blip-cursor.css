@@ -75,3 +75,7 @@ html.bc-active select {
 body.blip-cursor-active .custom-cursor {
   display: none !important;
 }
+
+/* Wrapper du body language piloté par la vitesse (ressort JS) : pivote autour
+   du hotspot (origine du root), n'interfère jamais avec les groupes du kit. */
+.bc .bc-motion{transform-origin:0 0;will-change:transform}
