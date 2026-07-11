@@ -798,6 +798,18 @@ body[data-theme="retro90s"] #cathode-guide .cg-bar::after {
 }
 body[data-theme="retro90s"] #cathode-guide .cg-body { padding: 6px 8px 7px; }
 
+/* ── Screen phosphor = mascot constant, not per-theme bubble ink ──────────
+   The per-theme --cg-ink above reskins ONLY the speech bubble (dark ink on
+   light paper for default/retro90s, pale ink on blueprint, etc.). The CRT
+   screen is part of the constant sprite: Cathode's face and every idle
+   expression are drawn in currentColor on the near-black screen glass. Left
+   on --cg-ink, any theme whose bubble ink is dark paints the face
+   dark-on-dark and it disappears — only terminal, whose ink is already
+   phosphor green, escaped. Lock the screen to a bright phosphor on every
+   theme so the face reads everywhere; --cg-phosphor stays a hook for future
+   per-theme tinting but defaults to the constant CRT green. */
+#cathode-guide .cg-scr { color: var(--cg-phosphor, #33ff00); }
+
 /* Proportional-face themes (all but terminal): fade lines in instead of
    the ch-typed reveal, and lift the ch clamp so nothing ever gets cropped
    mid-word. Terminal keeps the kit's typewriter + caret untouched. */
