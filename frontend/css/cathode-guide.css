@@ -318,8 +318,10 @@
 
 #cathode-guide {
   position: fixed;
-  z-index: 9500; /* under the theme/language switchers (9998/9999) and the
-                    Blip cursor (max int) — Cathode never sits on top of them */
+  z-index: 2147483000; /* above every site layer (switchers 9998/9999, retro
+                          tooltip 99999, exit-modal 1000000...) — nothing may
+                          ever cover or crop Cathode. Only the Blip cursor
+                          (2147483647, a pointer) stays above her. */
   --cg-size: 74px;
 }
 
@@ -333,10 +335,11 @@ body.loading #cathode-guide {
   visibility: hidden;
 }
 
-/* Below ~380px there's no room to do this kit justice (SPEC.md) — stay out
-   of the way entirely rather than clip the bubble or crowd the layout. */
+/* Below ~380px: shrink instead of vanishing — she's part of the site's
+   personality now, so she stays, just smaller and with a narrower bubble. */
 @media (max-width: 379px) {
-  #cathode-guide { display: none; }
+  #cathode-guide { --cg-size: 46px; }
+  #cathode-guide .cg-bubble { max-width: 19ch; }
 }
 
 /* Docked bottom-left at every width (deliberately opposite the bottom-right
@@ -366,8 +369,8 @@ body.loading #cathode-guide {
    bottom-right) so it never collides with the floating CTA button, which
    docks bottom-right at every width including mobile. Only hero + #contact
    ever drive the idle state / bubble here (handled in JS); elsewhere
-   Cathode just idles quietly in the corner without reacting, to stay out
-   of the way on small screens. */
+   Cathode just idles quietly without reacting, to stay out of the way on
+   small screens. */
 @media (max-width: 899px) {
   #cathode-guide {
     --cg-size: 56px;
@@ -376,30 +379,258 @@ body.loading #cathode-guide {
   }
 }
 
-/* Per-theme phosphor / bubble paper. The kit's own root default (kept as-is
-   above) already matches the terminal theme's palette; the other three
-   themes get their own currentColor + paper tuned to look native. The
-   cream chrome shell itself never changes across themes — that's the
-   mascot's constant, on purpose. */
+/* ── Life engine (cathode-guide.js) ──────────────────────────────────────
+   Once the engine is running it owns the root's position through a single
+   translate3d (px along the floor, py above it): the static dock insets
+   above are zeroed out so the transform is the only source of truth. The
+   static rules keep applying whenever the engine is off (reduced motion,
+   no JS), so Cathode still shows up docked bottom-left in that case. */
+#cathode-guide.cg-alive {
+  left: 0;
+  right: auto;
+  bottom: 0;
+  will-change: transform;
+}
+
+/* She faces where she goes: the JS sets --cg-dir (1 right / -1 left) and
+   the whole sprite mirrors. Bubble and title bar stay unmirrored. */
+#cathode-guide .cg-sprite {
+  transform: scaleX(var(--cg-dir, 1));
+}
+
+/* Stroll waddle: a quick two-step bounce on the kit's hop wrapper. Declared
+   after the kit's own .cg-hop rules so it wins while cg-walking is set. */
+#cathode-guide.cg-walking .cg-hop {
+  animation: cg-life-waddle .46s linear infinite;
+}
+@keyframes cg-life-waddle {
+  0%   { transform: translateY(0)      rotate(-1.7deg); }
+  25%  { transform: translateY(-2.6px) rotate(0deg); }
+  50%  { transform: translateY(0)      rotate(1.7deg); }
+  75%  { transform: translateY(-2.6px) rotate(0deg); }
+  100% { transform: translateY(0)      rotate(-1.7deg); }
+}
+
+/* Full spin on herself, with a bit of squash going in and out. Runs on the
+   sprite wrapper so the shadow spins along — deliberately cartoony. */
+#cathode-guide.cg-spinning .cg-sprite {
+  animation: cg-life-spin .95s cubic-bezier(.45,.05,.55,.95) 1 both;
+}
+@keyframes cg-life-spin {
+  0%   { transform: scaleX(var(--cg-dir, 1)) rotate(0turn)   scale(1); }
+  30%  { transform: scaleX(var(--cg-dir, 1)) rotate(.38turn) scale(.9); }
+  70%  { transform: scaleX(var(--cg-dir, 1)) rotate(.8turn)  scale(.94); }
+  100% { transform: scaleX(var(--cg-dir, 1)) rotate(1turn)   scale(1); }
+}
+
+/* Airborne: light stretch while the JS flies her along the jump parabola;
+   landing: one-shot squash. Both on .cg-pop, which the kit only animates
+   during enter/exit/off — states the engine never jumps in. */
+#cathode-guide.cg-jumping .cg-pop {
+  transform: scaleY(1.07) scaleX(.95);
+}
+#cathode-guide.cg-jumping .cg-shadow {
+  transform: scaleX(.72);
+  opacity: .22;
+}
+#cathode-guide.cg-landing .cg-pop {
+  animation: cg-life-land .3s cubic-bezier(.2,.75,.3,1) 1 both;
+}
+@keyframes cg-life-land {
+  0%   { transform: scale(1.1, .84); }
+  55%  { transform: scale(.95, 1.05); }
+  100% { transform: scale(1, 1); }
+}
+
+/* What she lands on gives a little under her weight, then springs back.
+   !important so the momentary squish beats theme hover transforms; both
+   classes are removed within ~700ms by the engine. */
+.cg-perch-squish {
+  transform: translateY(3px) scale(1.015, .955) !important;
+  transform-origin: 50% 100% !important;
+  transition: transform .16s cubic-bezier(.2,.75,.3,1) !important;
+}
+.cg-perch-release {
+  transition: transform .32s cubic-bezier(.25,1.5,.45,1) !important;
+}
+
+/* While she roams, the bubble opens toward whichever side has room:
+   default = opens up-and-right (left anchor, set above); .cg-bub-right
+   restores the kit's own up-and-left orientation for the right half. */
+#cathode-guide.cg-bub-right .cg-bubble {
+  left: auto;
+  right: -4px;
+  transform-origin: calc(100% - 16px) calc(100% + 12px);
+}
+#cathode-guide.cg-bub-right .cg-bubble::after,
+#cathode-guide.cg-bub-right .cg-bubble::before {
+  left: auto;
+  right: 12px;
+}
+
+/* ── Per-theme bubble skins ──────────────────────────────────────────────
+   The bubble is no longer "a terminal window with different colors": each
+   theme gets its own fiction. Terminal keeps the kit's phosphor window
+   (dots, $ prompt, typed lines, caret). Default becomes a quiet cream
+   card. Blueprint becomes a hand-written drawing annotation. Retro90s
+   becomes a Win95-titled comic box. The cream chrome shell of the sprite
+   itself never changes across themes — that's the mascot's constant, on
+   purpose.
+
+   Typing caveat: the kit's cg-type reveal measures lines in ch, which only
+   holds for monospace faces. Terminal + blueprint use mono faces and keep
+   the typewriter; default + retro90s use proportional faces, so their
+   lines fade in (cg-life-fadeline) instead of typing, and the ch-based
+   max-width clamp is lifted to never crop a line. */
+
+/* terminal: kit look, unchanged palette */
 body[data-theme="terminal"] #cathode-guide {
   --cg-ink: #33ff00;
   --cg-ink-dim: rgba(51, 255, 0, .14);
   --cg-paper: rgba(9, 13, 7, .96);
 }
-body[data-theme="blueprint"] #cathode-guide {
-  --cg-ink: #e8f1ff;
-  --cg-ink-dim: rgba(232, 241, 255, .12);
-  --cg-paper: rgba(0, 26, 51, .96);
-}
-body[data-theme="retro90s"] #cathode-guide {
-  --cg-ink: #00ff00;
-  --cg-ink-dim: rgba(0, 255, 0, .14);
-  --cg-paper: rgba(0, 0, 0, .95);
-}
+
+/* default: warm atelier card — light paper, teal accent, DM Sans */
 body[data-theme="default"] #cathode-guide {
-  --cg-ink: #5a9d95;
-  --cg-ink-dim: rgba(61, 122, 115, .14);
-  --cg-paper: rgba(44, 40, 37, .95);
+  --cg-ink: #2c2825;
+  --cg-ink-dim: rgba(61, 122, 115, .08);
+  --cg-paper: #fffdf7;
+  font-family: 'DM Sans', -apple-system, sans-serif;
+}
+body[data-theme="default"] #cathode-guide .cg-bubble {
+  border: 1px solid rgba(61, 122, 115, .55);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(44, 40, 37, .14);
+  max-width: 200px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+body[data-theme="default"] #cathode-guide .cg-bubble::after,
+body[data-theme="default"] #cathode-guide .cg-bubble::before {
+  border-color: rgba(61, 122, 115, .55);
+}
+body[data-theme="default"] #cathode-guide .cg-bar {
+  background: none;
+  border-bottom: 1px dashed rgba(61, 122, 115, .35);
+  padding: 4px 9px 3px;
+}
+body[data-theme="default"] #cathode-guide .cg-bar i { display: none; }
+body[data-theme="default"] #cathode-guide .cg-bar b {
+  margin-left: 0;
+  font-size: 8.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #3d7a73;
+  opacity: .9;
+}
+body[data-theme="default"] #cathode-guide .cg-body { padding: 7px 9px 8px; }
+
+/* blueprint: drawing annotation — deep blue paper, dashed frame,
+   Architects Daughter handwriting */
+body[data-theme="blueprint"] #cathode-guide {
+  --cg-ink: #dcf3ff;
+  --cg-ink-dim: rgba(125, 211, 255, .1);
+  --cg-paper: rgba(8, 34, 61, .96);
+  font-family: 'Architects Daughter', 'Comic Sans MS', cursive;
+}
+body[data-theme="blueprint"] #cathode-guide .cg-bubble {
+  border: 1px dashed rgba(125, 211, 255, .8);
+  border-radius: 2px;
+  box-shadow: 0 0 0 3px rgba(8, 34, 61, .35), 4px 4px 0 rgba(0, 0, 0, .25);
+  max-width: 200px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+body[data-theme="blueprint"] #cathode-guide .cg-bubble::after,
+body[data-theme="blueprint"] #cathode-guide .cg-bubble::before {
+  border-style: dashed;
+  border-top: none;
+  border-color: rgba(125, 211, 255, .8);
+}
+body[data-theme="blueprint"] #cathode-guide .cg-bar {
+  background: none;
+  border-bottom: 1px solid rgba(125, 211, 255, .4);
+  padding: 3px 8px;
+}
+body[data-theme="blueprint"] #cathode-guide .cg-bar i { display: none; }
+body[data-theme="blueprint"] #cathode-guide .cg-bar b {
+  margin-left: 0;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 7.5px;
+  letter-spacing: .18em;
+  color: #7dd3ff;
+  opacity: .95;
+}
+body[data-theme="blueprint"] #cathode-guide .cg-body {
+  padding: 6px 9px 7px;
+}
+
+/* retro90s: Win95 window meets comic strip — hard black border, magenta
+   drop, navy title bar, Comic Sans body */
+body[data-theme="retro90s"] #cathode-guide {
+  --cg-ink: #111111;
+  --cg-ink-dim: rgba(0, 0, 128, .07);
+  --cg-paper: #fffef2;
+  font-family: 'Comic Sans MS', 'Comic Neue', cursive;
+}
+body[data-theme="retro90s"] #cathode-guide .cg-bubble {
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0 #ff00ff;
+  max-width: 210px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+body[data-theme="retro90s"] #cathode-guide .cg-bubble::after,
+body[data-theme="retro90s"] #cathode-guide .cg-bubble::before {
+  border-color: #000;
+  border-top: none;
+}
+body[data-theme="retro90s"] #cathode-guide .cg-bar {
+  background: linear-gradient(90deg, #000080, #1084d0);
+  border-bottom: 2px solid #000;
+  padding: 3px 6px;
+}
+body[data-theme="retro90s"] #cathode-guide .cg-bar i { display: none; }
+body[data-theme="retro90s"] #cathode-guide .cg-bar b {
+  margin-left: 0;
+  color: #fff;
+  font-weight: 700;
+  font-size: 8px;
+  letter-spacing: .04em;
+  opacity: 1;
+}
+body[data-theme="retro90s"] #cathode-guide .cg-bar::after {
+  content: "×";
+  margin-left: auto;
+  width: 9px;
+  height: 9px;
+  background: #c0c0c0;
+  border: 1px solid #000;
+  color: #000;
+  font: 700 7px/8px monospace;
+  text-align: center;
+}
+body[data-theme="retro90s"] #cathode-guide .cg-body { padding: 6px 8px 7px; }
+
+/* Proportional-face themes (all but terminal): fade lines in instead of
+   the ch-typed reveal, and lift the ch clamp so nothing ever gets cropped
+   mid-word. Terminal keeps the kit's typewriter + caret untouched. */
+body[data-theme="default"] #cathode-guide .cg-bubble.cg-show .cg-line,
+body[data-theme="blueprint"] #cathode-guide .cg-bubble.cg-show .cg-line,
+body[data-theme="retro90s"] #cathode-guide .cg-bubble.cg-show .cg-line {
+  animation: cg-life-fadeline .38s ease var(--cg-delay, 0ms) both;
+  max-width: none;
+  overflow: visible;
+  white-space: normal;
+}
+body[data-theme="default"] #cathode-guide .cg-line::after,
+body[data-theme="blueprint"] #cathode-guide .cg-line::after,
+body[data-theme="retro90s"] #cathode-guide .cg-line::after {
+  display: none; /* no terminal caret outside terminal fictions */
+}
+@keyframes cg-life-fadeline {
+  0% { opacity: 0; transform: translateY(3px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* Footer "reinvoke" link (see indexInsertions) — deliberately understated,

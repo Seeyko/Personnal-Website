@@ -100,7 +100,75 @@
     "writing": "Notes on code and life, typed between two deploys.",
     "timeline": "My path in commits. Scroll to see the full diff.",
     "about": "The human behind the screen runs on coffee and CSS.",
-    "contact": "Got an idea to build? Faster reply than a Jira ticket."
+    "contact": "Got an idea to build? Faster reply than a Jira ticket.",
+    "themes": {
+      "terminal": {
+        "hero": "boot ok. welcome to the machine, human.",
+        "now": "tail -f /var/log/tom : here's what's running right now.",
+        "work": "ls projects/ : some shine, some segfaulted first.",
+        "writing": "cat notes.md : code and life, between two deploys.",
+        "timeline": "git log --oneline : his whole path, committed here.",
+        "about": "whoami : a human running on coffee and CSS.",
+        "contact": "ping tom : replies in under 24h. really."
+      },
+      "default": {
+        "hero": "Welcome to the workshop. Everything's handmade, even me.",
+        "now": "On the bench right now: watch it take shape.",
+        "work": "His projects. The ones that shine, and the ones that resisted.",
+        "writing": "Notes on code and life, written between two releases.",
+        "timeline": "His path, step by step. Take your time scrolling.",
+        "about": "The human behind all this runs on coffee and care.",
+        "contact": "Got an idea? Write to him — quick, thoughtful replies."
+      },
+      "blueprint": {
+        "hero": "General plan: Tom's workshop. Scale 1:1, everything is real.",
+        "now": "Current revision: here's the piece on the drawing board.",
+        "work": "Section B-02: delivered works, dimensions checked on site.",
+        "writing": "Notes block: freehand sketches of code and life.",
+        "timeline": "Project phasing: every step measured and dated.",
+        "about": "Detail E-05: the author of the plans. Coffee and clean lines.",
+        "contact": "Contact annex: drop your project, reply within 24h."
+      },
+      "retro90s": {
+        "hero": "WELCOME to Tom's homepage!! You are visitor no. 001337!",
+        "now": "*** HOT NEWS *** Here's what he's hacking on RIGHT NOW!",
+        "work": "His SUPER COOL projects! Click around, totally worth it!!",
+        "writing": "His personal zine: code, life, 100% popup-free!",
+        "timeline": "His whole story! Scroll it, beats any CD-ROM!",
+        "about": "The About page: a human powered by coffee AND HTML!",
+        "contact": "Sign the guestbook or send a mail, he replies FAST!!"
+      }
+    },
+    "quips": {
+      "terminal": [
+        "chmod +x this card. done.",
+        "monitoring is better up here.",
+        "perched. uptime 100%.",
+        "no bugs found up here. weird.",
+        "sudo make me a sandwich."
+      ],
+      "default": [
+        "Better view from up here, no?",
+        "Nice work, this one.",
+        "Just doing my rounds.",
+        "Shh. I'm observing.",
+        "Comfy card, this one."
+      ],
+      "blueprint": [
+        "Site inspection: all clear.",
+        "Dimension checked: 74px. Exact.",
+        "Structure sound. Signed: C.",
+        "Viewpoint approved.",
+        "Rated load: 1 mascot."
+      ],
+      "retro90s": [
+        "THIS CARD IS SO COOL!!",
+        "Amazing view ★★★★★",
+        "CLIMB SUCCESSFUL! +100 pts",
+        "I'm the webmaster up here!",
+        "Best spot on the site!!"
+      ]
+    }
   },
   "stats": {
     "yearsExperience": "Years Experience",
