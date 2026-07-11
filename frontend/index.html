@@ -6,6 +6,19 @@
   <title>Tom Andrieu — Product Builder · Transformation IA</title>
   <meta name="description" content="Product Builder et Transformation IA. Je construis des produits, et je transforme par l'IA les équipes qui construisent des produits. CBA · AgatheYOU." />
 
+  <!-- Favicon (swapped per-theme by theme-manager.js) -->
+  <link id="favicon" rel="icon" type="image/svg+xml" href="/assets/brand/favicon-terminal.svg" />
+  <link rel="apple-touch-icon" href="/assets/brand/avatar-512.png" />
+
+  <!-- Social / Open Graph -->
+  <meta property="og:title" content="Tom Andrieu — Product Builder · Transformation IA" />
+  <meta property="og:description" content="Product Builder et Transformation IA. Je construis des produits, et je transforme par l'IA les équipes qui construisent des produits. CBA · AgatheYOU." />
+  <meta property="og:image" content="https://tomandrieu.com/assets/brand/og-image.png" />
+  <meta property="og:url" content="https://tomandrieu.com" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://tomandrieu.com/assets/brand/og-image.png" />
+
   <!-- PostHog Analytics (centralized) -->
   <script src="/js/analytics.js"></script>
 
@@ -24,8 +37,14 @@
   <!-- Language Switcher UI Styles -->
   <link rel="stylesheet" href="/css/language-switcher.css" />
 
+  <!-- Cathode Guide Styles (on-page CRT mascot guide) -->
+  <link rel="stylesheet" href="/css/cathode-guide.css" />
+
   <!-- Theme CSS (dynamically loaded) -->
   <link id="theme-css" rel="stylesheet" href="" />
+
+  <!-- Blip Cursor (mascot pointer, all themes) -->
+  <link rel="stylesheet" href="/css/blip-cursor.css" />
 
   <!-- Google Fonts - Common for all themes -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -571,6 +590,7 @@
       <div class="best-viewed" data-i18n="footer.bestViewed">
         Best viewed with Netscape Navigator 4.0 at 800x600 resolution
       </div>
+      <button id="cathode-guide-toggle" class="cathode-guide-toggle" type="button">[cathode --on]</button>
     </div>
   </footer>
 </main>
@@ -592,6 +612,13 @@
 <script src="/js/core/effects/header-scroll.js"></script>
 <script src="/js/core/effects/mobile-menu.js"></script>
 <script src="/js/core/effects/konami.js"></script>
+<script src="/js/core/effects/blip-cursor.js"></script>
+<script src="/js/core/effects/cathode-guide.js"></script>
+<script>
+  document.readyState === 'loading'
+    ? document.addEventListener('DOMContentLoaded', CathodeGuide.init)
+    : CathodeGuide.init();
+</script>
 <script src="/js/core/theme-init.js"></script>
 
 <!-- Git Timeline -->
@@ -628,6 +655,9 @@
     }, { rootMargin: '300px 0px' });
     io.observe(section);
   }
+</script>
+<script>
+  if (window.BlipCursor) BlipCursor.init();
 </script>
 </body>
 </html>

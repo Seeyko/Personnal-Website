@@ -1,0 +1,10 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" aria-label="Une personne, quatre interfaces">
+  <g stroke-width="2">
+    <path d="M5.71 4.23 A10 10 0 0 1 18.29 4.23" stroke="#33ff00"/>
+    <path d="M19.77 5.71 A10 10 0 0 1 19.77 18.29" stroke="#00FFFF"/>
+    <path d="M18.29 19.77 A10 10 0 0 1 5.71 19.77" stroke="#FF00FF"/>
+    <path d="M4.23 18.29 A10 10 0 0 1 4.23 5.71" stroke="#3d7a73"/>
+  </g>
+  <path d="M12 3 L12 21 M3 12 L21 12" stroke-width="1.5" stroke="currentColor"/>
+  <rect x="10.75" y="10.75" width="2.5" height="2.5" fill="currentColor"/>
+</svg>

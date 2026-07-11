@@ -93,6 +93,15 @@
     "pressAnyKey": "[Appuyez sur une touche pour continuer...]",
     "bestViewed": "Meilleur affichage avec Netscape Navigator 4.0 à 800x600"
   },
+  "cathodeGuide": {
+    "hero": "Bienvenue dans l'atelier. Tout ici est fait main, même moi.",
+    "now": "Le radar est allumé : voici ce que je bricole en ce moment.",
+    "work": "Mes projets. Ceux qui brillent et ceux qui m'ont fait ramer.",
+    "writing": "Des notes de code et de vie, tapées entre deux deploys.",
+    "timeline": "Mon parcours en commits. Scroll pour voir tout le diff.",
+    "about": "L'humain derrière l'écran carbure au café et au CSS.",
+    "contact": "Une idée à construire ? Il répond plus vite qu'un ticket Jira."
+  },
   "stats": {
     "yearsExperience": "Ans d'XP",
     "usersReached": "Utilisateurs",
