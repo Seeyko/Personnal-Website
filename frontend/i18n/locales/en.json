@@ -168,6 +168,58 @@
         "I'm the webmaster up here!",
         "Best spot on the site!!"
       ]
+    },
+    "meet": {
+      "terminal": [
+        "oh hey blip. handshake?",
+        "ping blip... pong. he's here.",
+        "my prod buddy.",
+        "two processes, zero conflicts."
+      ],
+      "default": [
+        "Oh, hey you.",
+        "We make a good pair, no?",
+        "Always around, this one.",
+        "My favorite colleague."
+      ],
+      "blueprint": [
+        "Fellow site worker!",
+        "Quick summit meeting.",
+        "Two mascots, one blueprint.",
+        "He double-checks my measures."
+      ],
+      "retro90s": [
+        "MY BUDDY BLIP!!",
+        "High five! Mascot duo!",
+        "We're the stars of this site!!",
+        "Souvenir photo? Too late!"
+      ]
+    },
+    "gyro": {
+      "dizzy": {
+        "terminal": ["core dumped. where am i?", "segfault avoided. barely.", "stack trace: ouch ouch ouch."],
+        "default": ["Oops. Still spinning a little.", "That landing... debatable.", "I meant to do that. Really."],
+        "blueprint": ["Fall not compliant with the plan.", "Recomputing my attitude...", "My plumb line needs work."],
+        "retro90s": ["WIPEOUT!! Did you SEE that?!", "3 stars for that stunt!!", "Again! Again!"]
+      },
+      "flipped": {
+        "terminal": ["gravity inverted. dmesg is full.", "am i running on the ceiling?"],
+        "default": ["The world is upside down, right?", "Fine. I'll just stay here a bit."],
+        "blueprint": ["The plan rotated 180°.", "Ceiling view. Unusual."],
+        "retro90s": ["ANTI-GRAVITY MODE: ON!!", "Is the screen upside down?!?"]
+      },
+      "broken": {
+        "terminal": ["scr33n s3gf@ult... blip?!", "br0ken pix3ls... h3lp...", "err 0x5OS: call bl!p..."],
+        "default": ["My screen... Blip? Help...", "Cracked... anyone seen Blip?", "It's crackling... Blip, quick..."],
+        "blueprint": ["Glazing cracked... call Blip.", "Damage report... Blip?!", "Screen structure: down. SOS..."],
+        "retro90s": ["SCREEN'S BUSTED!! BLIP HELP!!", "M@YD@Y!! BIG BUG!!", "404: screen not found!!"]
+      },
+      "fixed": {
+        "terminal": ["reboot ok. thanks blip. <3", "screen patched. 0 dead pixels."],
+        "default": ["Good as new. Thanks, Blip.", "He fixes everything, that one."],
+        "blueprint": ["Work inspection: compliant.", "Repaired by the book."],
+        "retro90s": ["FIXED!! BLIP IS THE BOSS!!", "GG BLIP! Brand new screen!!"]
+      }
     }
   },
   "stats": {

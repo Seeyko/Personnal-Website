@@ -392,11 +392,18 @@ body.loading #cathode-guide {
   will-change: transform;
 }
 
-/* She faces where she goes: the JS sets --cg-dir (1 right / -1 left) and
-   the whole sprite mirrors. Bubble and title bar stay unmirrored. */
+/* She faces where she goes (--cg-dir mirrors the sprite) and carries one
+   rotation channel (--cg-rot): a few degrees of lean when standing on a
+   slope, full turns while tumbling. scaleX sits innermost so rotation
+   always reads in page space, whichever way she faces. Bubble and title
+   bar stay unmirrored. */
 #cathode-guide .cg-sprite {
-  transform: scaleX(var(--cg-dir, 1));
+  transform: rotate(var(--cg-rot, 0deg)) scaleX(var(--cg-dir, 1));
+  transform-origin: 50% 88%;
 }
+/* Rolling bodies rotate about their middle, and cast no believable shadow */
+#cathode-guide.cg-tumbling .cg-sprite { transform-origin: 50% 50%; }
+#cathode-guide.cg-tumbling .cg-shadow { opacity: 0; }
 
 /* Stroll waddle: a quick two-step bounce on the kit's hop wrapper. Declared
    after the kit's own .cg-hop rules so it wins while cg-walking is set. */
@@ -454,6 +461,162 @@ body.loading #cathode-guide {
   transition: transform .32s cubic-bezier(.25,1.5,.45,1) !important;
 }
 
+/* Sliding under gravity (gyroscope): quick scramble steps, flattened
+   shadow - she's being dragged and her feet know it. */
+#cathode-guide.cg-sliding .cg-hop {
+  animation: cg-life-scramble .22s linear infinite;
+}
+@keyframes cg-life-scramble {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-1.8px); }
+  100% { transform: translateY(0); }
+}
+#cathode-guide.cg-sliding .cg-shadow {
+  transform: scaleX(1.3);
+  opacity: .28;
+}
+
+/* ── Forced expressions (mimiques) ───────────────────────────────────────
+   Scene/physics faces layered over whatever idle animation is running:
+   kill the kit's face animations, pin the wanted eyes+mouth, and make sure
+   the *face* screen-layer is the one showing (idle-work & co swap it out). */
+#cathode-guide.cg-face-happy .cg-ef, #cathode-guide.cg-face-heart .cg-ef,
+#cathode-guide.cg-face-ouch .cg-ef, #cathode-guide.cg-face-dizzy .cg-ef,
+#cathode-guide.cg-face-happy .cg-mf, #cathode-guide.cg-face-heart .cg-mf,
+#cathode-guide.cg-face-ouch .cg-mf, #cathode-guide.cg-face-dizzy .cg-mf {
+  opacity: 0;
+  animation: none !important;
+}
+#cathode-guide.cg-face-happy .cg-face, #cathode-guide.cg-face-ouch .cg-face,
+#cathode-guide.cg-face-dizzy .cg-face {
+  opacity: 1 !important;
+}
+#cathode-guide.cg-face-happy .cg-live, #cathode-guide.cg-face-happy .cg-pictos,
+#cathode-guide.cg-face-happy .cg-read, #cathode-guide.cg-face-happy .cg-gitlog,
+#cathode-guide.cg-face-happy .cg-heartl,
+#cathode-guide.cg-face-ouch .cg-live, #cathode-guide.cg-face-ouch .cg-pictos,
+#cathode-guide.cg-face-ouch .cg-read, #cathode-guide.cg-face-ouch .cg-gitlog,
+#cathode-guide.cg-face-ouch .cg-heartl,
+#cathode-guide.cg-face-dizzy .cg-live, #cathode-guide.cg-face-dizzy .cg-pictos,
+#cathode-guide.cg-face-dizzy .cg-read, #cathode-guide.cg-face-dizzy .cg-gitlog,
+#cathode-guide.cg-face-dizzy .cg-heartl {
+  opacity: 0 !important;
+}
+#cathode-guide.cg-face-happy .cg-ef-happy { opacity: 1; }
+#cathode-guide.cg-face-happy .cg-mf-grin { opacity: 1; }
+#cathode-guide.cg-face-ouch .cg-ef-wide { opacity: 1; }
+#cathode-guide.cg-face-ouch .cg-mf-o { opacity: 1; }
+#cathode-guide.cg-face-dizzy .cg-ef-half { opacity: 1; }
+#cathode-guide.cg-face-dizzy .cg-mf-wavy { opacity: 1; }
+#cathode-guide.cg-face-dizzy .cg-nod {
+  animation: cg-life-dizzy-wobble 1.5s ease-in-out infinite !important;
+}
+@keyframes cg-life-dizzy-wobble {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+/* Heart face: the kit's contact pictogram takes the whole screen + beats */
+#cathode-guide.cg-face-heart .cg-face, #cathode-guide.cg-face-heart .cg-live,
+#cathode-guide.cg-face-heart .cg-pictos, #cathode-guide.cg-face-heart .cg-read,
+#cathode-guide.cg-face-heart .cg-gitlog {
+  opacity: 0 !important;
+}
+#cathode-guide.cg-face-heart .cg-heartl { opacity: 1 !important; }
+#cathode-guide.cg-face-heart .cg-heartp {
+  animation: cg-c-beat 2.2s linear infinite !important;
+}
+
+/* ── Cracked screen + repair (Blip's house call) ─────────────────────────
+   The crack is an overlay pinned to the tube's screen area (viewBox rect
+   7,9→15,15 of 24 ⇒ the percentages below); the kit SVG itself stays
+   untouched. Broken = dim flickering phosphor + red LED distress. */
+#cathode-guide .cg-crack {
+  position: absolute;
+  left: 29.17%;
+  top: 37.5%;
+  width: 33.33%;
+  height: 25%;
+  pointer-events: none;
+}
+#cathode-guide .cg-crack svg { display: block; width: 100%; height: 100%; }
+#cathode-guide .cg-crack path {
+  fill: none;
+  stroke: #eaf6ff;
+  stroke-width: .55;
+  stroke-linecap: square;
+  opacity: .85;
+}
+#cathode-guide .cg-crack.cg-crack-heal {
+  animation: cg-life-crack-heal .55s ease both;
+}
+@keyframes cg-life-crack-heal {
+  to { opacity: 0; transform: scale(.55); }
+}
+#cathode-guide.cg-broken .cg-scr {
+  opacity: .32;
+  animation: cg-life-broken-flicker 1.1s steps(2, jump-none) infinite;
+}
+@keyframes cg-life-broken-flicker {
+  0% { opacity: .32; }
+  47% { opacity: .18; }
+  53% { opacity: .38; }
+  100% { opacity: .26; }
+}
+#cathode-guide.cg-broken .cg-ledg { opacity: 0 !important; animation: none !important; }
+#cathode-guide.cg-broken .cg-ledr {
+  opacity: .9 !important;
+  animation: cg-ledbreathe 1.4s linear infinite !important;
+}
+#cathode-guide.cg-fixed-flash .cg-scr {
+  animation: cg-life-fixed-flash .55s steps(3, jump-none) both;
+}
+@keyframes cg-life-fixed-flash {
+  0% { opacity: .2; }
+  40% { opacity: 1; }
+  60% { opacity: .5; }
+  100% { opacity: 1; }
+}
+
+/* ── FX layer: pixel hearts / stars / dust / sparks ──────────────────────
+   Fire-and-forget particles in a fixed layer just beneath Cathode. */
+#cathode-fx {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147482998;
+}
+#cathode-fx .cg-fx {
+  position: absolute;
+  width: var(--fx-size, 8px);
+  height: var(--fx-size, 8px);
+  margin: calc(var(--fx-size, 8px) / -2) 0 0 calc(var(--fx-size, 8px) / -2);
+}
+#cathode-fx .cg-fx svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+  filter: drop-shadow(0 0 3px currentColor);
+}
+#cathode-fx .cg-fx-float {
+  animation: cg-fx-float var(--fx-dur, 1s) cubic-bezier(.2, .75, .3, 1) var(--fx-delay, 0ms) both;
+}
+@keyframes cg-fx-float {
+  0% { opacity: 0; transform: translate(0, 0) scale(.4); }
+  14% { opacity: 1; transform: translate(calc(var(--fx-dx, 0px) * .3), calc(var(--fx-dy, -30px) * .25)) scale(1.05); }
+  100% { opacity: 0; transform: translate(var(--fx-dx, 0px), var(--fx-dy, -30px)) scale(.8); }
+}
+#cathode-fx .cg-fx-orbit {
+  animation: cg-fx-orbit var(--fx-dur, 1.2s) linear var(--fx-delay, 0ms) 2 both;
+}
+@keyframes cg-fx-orbit {
+  0% { opacity: 0; transform: rotate(var(--fx-angle, 0deg)) translateX(15px) rotate(calc(var(--fx-angle, 0deg) * -1)) scale(.7); }
+  15% { opacity: .95; }
+  85% { opacity: .8; }
+  100% { opacity: 0; transform: rotate(calc(var(--fx-angle, 0deg) + 360deg)) translateX(15px) rotate(calc((var(--fx-angle, 0deg) + 360deg) * -1)) scale(1); }
+}
+
 /* While she roams, the bubble opens toward whichever side has room:
    default = opens up-and-right (left anchor, set above); .cg-bub-right
    restores the kit's own up-and-left orientation for the right half. */
@@ -466,6 +629,29 @@ body.loading #cathode-guide {
 #cathode-guide.cg-bub-right .cg-bubble::before {
   left: auto;
   right: 12px;
+}
+
+/* High up (ceiling rest, tall perch): the bubble hangs below her instead,
+   tail pointing up. Composes with .cg-bub-right for the horizontal side. */
+#cathode-guide.cg-bub-below .cg-bubble {
+  bottom: auto;
+  top: calc(100% + 10px);
+  transform-origin: 16px -12px;
+}
+#cathode-guide.cg-bub-right.cg-bub-below .cg-bubble {
+  transform-origin: calc(100% - 16px) -12px;
+}
+#cathode-guide.cg-bub-below .cg-bubble::after {
+  top: auto;
+  bottom: 100%;
+  border-top: 1px solid var(--cg-ink);
+  border-bottom: none;
+}
+#cathode-guide.cg-bub-below .cg-bubble::before {
+  top: auto;
+  bottom: calc(100% + 5px);
+  border-top: 1px solid var(--cg-ink);
+  border-bottom: none;
 }
 
 /* ── Per-theme bubble skins ──────────────────────────────────────────────

@@ -1,8 +1,34 @@
 # Blip mobile + Cathode alive (post-merge fixes & upgrades)
 
-**Status**: completed
-**Branch**: `claude/affectionate-wozniak-nqo7si`
+**Status**: completed (round 2: gyroscope physics + Blip×Cathode scenes + screen break/repair)
+**Branch**: `claude/affectionate-wozniak-nqo7si` (PR #63)
 **Started**: 2026-07-11 09:00
+
+## Round 2 additions
+- Gyroscope (phones, pointer:coarse only; iOS permission on first touch):
+  in-plane gravity vector from beta/gamma (+screen-rotation correction).
+  Mild felt slope (>8°) = lean + slide with scramble feet; steep (>30°) =
+  full 2D tumble: she rolls (angular velocity from wall contact), bounces
+  off all four viewport walls (squash + dust), settles wherever gravity
+  points - flip the phone and she falls to the ceiling and rests there
+  (rot 180°). Settling = dizzy mimique (half eyes + wavy mouth + wobble +
+  orbiting stars) + themed line (dizzy/flipped variants). devicemotion
+  shakes kick her; shaking mid-tumble pumps energy in.
+- Screen break: ≥2 brutal impacts (>820 px/s) in one tumble session may
+  crack the screen (overlay SVG on the tube area, kit SVG untouched) →
+  dim flicker + red LED + garbled SOS lines. Blip repairs: auto-summoned
+  on touch devices (spring target override), or when the visitor brings
+  the cursor close on desktop. Repair scene: waves, sparks, flash back
+  on, happy face, hearts, thank-you line, twirl.
+- Meet scenes when Blip lingers near her (~350ms within 96px, 16s+
+  cooldown): check (wave + star burst + spin), hug (heart screen + pixel
+  hearts + Blip blush), talk (themed meet line + Blip listens/laughs),
+  dance (synchronized twirls + stars). Scene steps carry a token and
+  re-validate Blip proximity - graceful aborts.
+- BlipCursor public API: getPosition(), react(whitelist), summon(x,y)
+  (touch mode only). bc-twirl one-shot added below the kit marker.
+- Bubble now opens downward when she's high up (cg-bub-below).
+- FX layer (#cathode-fx): pixel hearts/stars/dust/sparks, fire-and-forget.
 
 ## Task
 Follow-up on the merged Blip/Cathode MR:

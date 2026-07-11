@@ -86,3 +86,16 @@ body.blip-cursor-active .custom-cursor {
 /* Wrapper du body language piloté par la vitesse (ressort JS) : pivote autour
    du hotspot (origine du root), n'interfère jamais avec les groupes du kit. */
 .bc .bc-motion{transform-origin:0 0;will-change:transform}
+
+/* Duo dance with Cathode (BlipCursor.react('twirl')): one full spin around
+   the hotspot with a touch of squash going in and overshoot coming out.
+   Runs on .bc-motion (ours), so it never fights the kit's groups; the CSS
+   animation also outranks the inline body-language transform while active. */
+.bc.bc-twirl .bc-motion{animation:bc-life-twirl .9s cubic-bezier(.45,.05,.55,.95) 1 both}
+@keyframes bc-life-twirl{
+  0%{transform:rotate(0turn) scale(1)}
+  22%{transform:rotate(.3turn) scale(.88,1.08)}
+  55%{transform:rotate(.72turn) scale(.94)}
+  82%{transform:rotate(1.03turn) scale(1.05,.95)}
+  100%{transform:rotate(1turn) scale(1)}
+}
