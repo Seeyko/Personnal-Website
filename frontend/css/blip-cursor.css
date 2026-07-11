@@ -50,8 +50,8 @@ html.bc-active,html.bc-active *{cursor:none!important}
   #blip-cursor:not(.bc-touch) { display: none !important; }
 }
 
-/* Touch companion: pops in above each tap (see onTouchPoint), then fades
-   out entirely once he's been snoozing long enough. */
+/* Touch companion: lands tip-on-tap like a real cursor (see onTouchPoint),
+   then fades out entirely once he's been snoozing long enough. */
 .bc.bc-touch { transition: opacity .45s ease; }
 .bc.bc-touch.bc-away { opacity: 0; }
 
