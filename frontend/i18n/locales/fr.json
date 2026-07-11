@@ -100,7 +100,75 @@
     "writing": "Des notes de code et de vie, tapées entre deux deploys.",
     "timeline": "Mon parcours en commits. Scroll pour voir tout le diff.",
     "about": "L'humain derrière l'écran carbure au café et au CSS.",
-    "contact": "Une idée à construire ? Il répond plus vite qu'un ticket Jira."
+    "contact": "Une idée à construire ? Il répond plus vite qu'un ticket Jira.",
+    "themes": {
+      "terminal": {
+        "hero": "boot ok. bienvenue dans la machine, humain.",
+        "now": "tail -f /var/log/tom : voilà ce qui tourne en ce moment.",
+        "work": "ls projets/ : certains brillent, d'autres ont segfault.",
+        "writing": "cat notes.md : du code et de la vie, entre deux deploys.",
+        "timeline": "git log --oneline : tout son parcours committé ici.",
+        "about": "whoami : un humain qui carbure au café et au CSS.",
+        "contact": "ping tom : réponse en moins de 24h, si si."
+      },
+      "default": {
+        "hero": "Bienvenue dans l'atelier. Tout ici est fait main, même moi.",
+        "now": "En ce moment, sur l'établi : regardez ce qui prend forme.",
+        "work": "Ses projets. Ceux qui brillent, et ceux qui ont résisté.",
+        "writing": "Des notes de code et de vie, écrites entre deux livraisons.",
+        "timeline": "Son parcours, étape par étape. Prenez le temps de dérouler.",
+        "about": "L'humain derrière tout ça carbure au café et au détail.",
+        "contact": "Une idée en tête ? Écrivez-lui, il répond vite et bien."
+      },
+      "blueprint": {
+        "hero": "Plan général : l'atelier de Tom. Échelle 1:1, tout est réel.",
+        "now": "Révision en cours : voici la pièce sur la table à dessin.",
+        "work": "Coupe B-02 : ses ouvrages livrés, cotes vérifiées sur site.",
+        "writing": "Cartouche notes : croquis de code et de vie, à main levée.",
+        "timeline": "Phasage du chantier : chaque étape est cotée et datée.",
+        "about": "Détail E-05 : l'auteur des plans. Café et précision au trait.",
+        "contact": "Annexe contact : déposez votre projet, réponse sous 24h."
+      },
+      "retro90s": {
+        "hero": "BIENVENUE sur la homepage de Tom !! T'es le visiteur nº 001337 !",
+        "now": "*** NEWS FRAÎCHES *** Voilà ce qu'il bidouille EN CE MOMENT !",
+        "work": "Ses projets TROP COOL ! Clique partout, ça vaut le détour !!",
+        "writing": "Son zine perso : du code, de la vie, 100% sans popup !",
+        "timeline": "Toute son histoire ! Scroll, c'est mieux qu'un CD-ROM !",
+        "about": "La page About : un humain qui tourne au café ET au HTML !",
+        "contact": "Signe le guestbook ou envoie un mail, il répond VITE !!"
+      }
+    },
+    "quips": {
+      "terminal": [
+        "chmod +x cette carte. voilà.",
+        "je monitore mieux d'ici.",
+        "perchée. uptime 100%.",
+        "aucun bug détecté ici. étonnant.",
+        "sudo make me a sandwich."
+      ],
+      "default": [
+        "On voit mieux d'ici, non ?",
+        "Joli travail, celui-là.",
+        "Je fais juste ma tournée.",
+        "Chut. J'observe.",
+        "Confortable, cette carte."
+      ],
+      "blueprint": [
+        "Inspection de chantier : RAS.",
+        "Cote vérifiée : 74 px. Exact.",
+        "Structure saine. Signé : C.",
+        "Point de vue validé.",
+        "Charge admissible : 1 mascotte."
+      ],
+      "retro90s": [
+        "TROP COOL cette carte !!",
+        "Vue imprenable ★★★★★",
+        "GRIMPÉE RÉUSSIE ! +100 pts",
+        "C'est moi la webmaster ici !",
+        "Meilleur spot du site !!"
+      ]
+    }
   },
   "stats": {
     "yearsExperience": "Ans d'XP",

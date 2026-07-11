@@ -38,15 +38,22 @@ html.bc-active,html.bc-active *{cursor:none!important}
    Everything above this line is the vendor cursor-kit, unmodified.
    ============================================================ */
 
-/* Belt-and-suspenders: JS already gates activation on pointer type,
-   reduced-motion and viewport width, but a stray resize/JS-timing gap
-   should never leave a leftover cursor on screen. */
-@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+/* Belt-and-suspenders: JS already gates activation on pointer type and
+   reduced-motion, but a stray JS-timing gap should never leave a leftover
+   cursor on screen. Reduced motion kills Blip in any mode; a coarse pointer
+   only kills the *cursor* incarnation — the touch companion (.bc-touch,
+   spawned by JS precisely for coarse pointers) is the one allowed there. */
+@media (prefers-reduced-motion: reduce) {
   #blip-cursor { display: none !important; }
 }
-@media (max-width: 899px) {
-  #blip-cursor { display: none !important; }
+@media (pointer: coarse) {
+  #blip-cursor:not(.bc-touch) { display: none !important; }
 }
+
+/* Touch companion: pops in above each tap (see onTouchPoint), then fades
+   out entirely once he's been snoozing long enough. */
+.bc.bc-touch { transition: opacity .45s ease; }
+.bc.bc-touch.bc-away { opacity: 0; }
 
 /* Discreet mode over native text fields: Blip stays on-screen (so the
    pointer never "disappears") but fades back while the browser's own

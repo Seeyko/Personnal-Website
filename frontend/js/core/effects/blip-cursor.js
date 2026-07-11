@@ -9,11 +9,16 @@
  * at grid unit (6,3), and the CSS shifts the SVG by (-6s,-3s) so the origin
  * of #blip-cursor itself IS the hotspot. Positioning the div at
  * translate3d(clientX, clientY, 0) drops the tip exactly under the pointer.
+ *
+ * Two run modes, picked from the primary pointer type:
+ * - 'cursor' (fine pointer): Blip replaces the mouse pointer, any viewport.
+ * - 'touch'  (coarse pointer): no pointer to replace, so Blip becomes a tap
+ *   companion — he pops up right above each tap, follows drags with the same
+ *   spring, then dozes off and fades away until the next touch.
  */
 const BlipCursor = (() => {
     const THEMES = ['terminal', 'default', 'blueprint', 'retro90s'];
     const DEFAULT_THEME = 'default';
-    const MIN_WIDTH = 900;
 
     // Links/buttons get the "leaning toward target" hover state. Native form
     // controls are handled separately below (real caret, dimmed Blip).
@@ -30,7 +35,11 @@ const BlipCursor = (() => {
         'bc-wake': 420
     };
 
-    const SNOOZE_AFTER_MS = 25000;
+    const SNOOZE_AFTER_MS = 25000;   // cursor mode: doze off after this idle time
+    const TOUCH_SNOOZE_MS = 9000;    // touch mode: doze sooner (he's a guest, not a pointer)
+    const TOUCH_AWAY_MS = 22000;     // touch mode: fade out entirely after this
+    const TOUCH_OFFSET_X = 10;       // px right of the finger, so it doesn't cover him
+    const TOUCH_OFFSET_Y = -34;      // px above the finger
 
     // Suiveur à ressort sous-amorti : Blip traîne derrière la souris, dépasse
     // légèrement la cible et se pose avec un petit rebond (ζ ≈ 0.62).
@@ -50,8 +59,10 @@ const BlipCursor = (() => {
     let root = null;
     let isActive = false;      // module fully torn down vs. alive (init/destroy)
     let isRunning = false;     // currently attached (guards can flip this off/on live)
+    let runMode = null;        // 'cursor' | 'touch' | null
     let seenMove = false;
     let snoozing = false;
+    let away = false;          // touch mode: faded out, waiting for the next tap
     let busyUntil = 0;
     let lastMoveAt = 0;
     let lastGag = null;
@@ -68,7 +79,6 @@ const BlipCursor = (() => {
 
     let mqCoarse = null;
     let mqReduced = null;
-    let resizeTimer = null;
     let themeObserver = null;
 
     const handlers = {};
@@ -81,12 +91,13 @@ const BlipCursor = (() => {
         return !!(mqCoarse && mqCoarse.matches);
     }
 
-    function viewportWide() {
-        return window.innerWidth >= MIN_WIDTH;
-    }
-
-    function shouldRun() {
-        return !isCoarsePointer() && !prefersReduced() && viewportWide();
+    // Pointer type decides the mode; reduced-motion turns Blip off entirely.
+    // No viewport-width gate: a mouse deserves Blip even in a half-screen
+    // window (the old >=900px check silently left the legacy theme cursor in
+    // charge on smaller desktop windows).
+    function desiredMode() {
+        if (prefersReduced()) return null;
+        return isCoarsePointer() ? 'touch' : 'cursor';
     }
 
     function currentTheme() {
@@ -105,11 +116,11 @@ const BlipCursor = (() => {
         root = document.createElement('div');
         root.id = 'blip-cursor';
         root.setAttribute('aria-hidden', 'true');
-        root.className = 'bc bc-theme-' + currentTheme();
+        root.className = 'bc bc-theme-' + currentTheme() + (runMode === 'touch' ? ' bc-touch bc-away' : '');
         root.innerHTML = '<div class="bc-motion">' + SVG_MARKUP + '</div>';
         motionEl = root.firstChild;
         document.body.appendChild(root);
-        applyTransform(); // park off-screen until the first real pointermove
+        applyTransform(); // park off-screen until the first real pointermove/tap
     }
 
     function removeDom() {
@@ -172,7 +183,7 @@ const BlipCursor = (() => {
     }
 
     function idleForGags() {
-        return calm() && !root.classList.contains('bc-hover-link') && !root.classList.contains('bc-native');
+        return calm() && !away && !root.classList.contains('bc-hover-link') && !root.classList.contains('bc-native');
     }
 
     function play(cls) {
@@ -190,6 +201,10 @@ const BlipCursor = (() => {
 
     function wake() {
         lastMoveAt = Date.now();
+        if (away) {
+            away = false;
+            root.classList.remove('bc-away');
+        }
         if (snoozing) {
             snoozing = false;
             root.classList.remove('bc-snooze');
@@ -200,8 +215,12 @@ const BlipCursor = (() => {
     function activate() {
         if (!seenMove) {
             seenMove = true;
-            document.documentElement.classList.add('bc-active');
-            document.body.classList.add('blip-cursor-active');
+            // Only cursor mode hijacks the real pointer; in touch mode Blip is
+            // a companion sprite, the native touch behavior stays untouched.
+            if (runMode === 'cursor') {
+                document.documentElement.classList.add('bc-active');
+                document.body.classList.add('blip-cursor-active');
+            }
         }
         wake();
     }
@@ -230,12 +249,20 @@ const BlipCursor = (() => {
     }
 
     function startSnoozeWatch() {
+        const snoozeAfter = runMode === 'touch' ? TOUCH_SNOOZE_MS : SNOOZE_AFTER_MS;
         snoozeInterval = setInterval(() => {
-            if (!root || snoozing || !seenMove || prefersReduced()) return;
-            if (Date.now() - lastMoveAt > SNOOZE_AFTER_MS && calm()) {
+            if (!root || !seenMove || prefersReduced()) return;
+            const idleFor = Date.now() - lastMoveAt;
+            if (!snoozing && idleFor > snoozeAfter && calm()) {
                 snoozing = true;
                 root.classList.remove('bc-hover-link', 'bc-native');
                 root.classList.add('bc-snooze');
+            }
+            // Touch mode only: after snoozing a while longer, tiptoe out
+            // completely so he never squats a corner of a page being read.
+            if (runMode === 'touch' && !away && idleFor > TOUCH_AWAY_MS) {
+                away = true;
+                root.classList.add('bc-away');
             }
         }, 1000);
     }
@@ -249,6 +276,32 @@ const BlipCursor = (() => {
     function onPointerDown() {
         activate();
         play('bc-click');
+    }
+
+    // Touch mode: Blip pops up just above the finger. First appearance (or a
+    // return from bc-away) teleports him there instead of springing across
+    // the whole screen from wherever he faded out.
+    function onTouchPoint(e) {
+        if (e.pointerType && e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+        const wasHidden = !seenMove || away;
+        targetX = e.clientX + TOUCH_OFFSET_X;
+        targetY = e.clientY + TOUCH_OFFSET_Y;
+        if (wasHidden) {
+            curX = targetX;
+            curY = targetY;
+            velX = velY = 0;
+        }
+        activate();
+        if (wasHidden) play('bc-wake');
+        else play('bc-click');
+    }
+
+    function onTouchDrag(e) {
+        if (e.pointerType && e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+        if (!seenMove || away) return;
+        targetX = e.clientX + TOUCH_OFFSET_X;
+        targetY = e.clientY + TOUCH_OFFSET_Y;
+        lastMoveAt = Date.now();
     }
 
     function onMouseOver(e) {
@@ -267,6 +320,13 @@ const BlipCursor = (() => {
     }
 
     function attachListeners() {
+        if (runMode === 'touch') {
+            handlers.pointerdown = onTouchPoint;
+            handlers.pointermove = onTouchDrag;
+            document.addEventListener('pointerdown', handlers.pointerdown, { passive: true });
+            document.addEventListener('pointermove', handlers.pointermove, { passive: true });
+            return;
+        }
         handlers.pointermove = onPointerMove;
         handlers.pointerdown = onPointerDown;
         handlers.mouseover = onMouseOver;
@@ -285,11 +345,13 @@ const BlipCursor = (() => {
         Object.keys(handlers).forEach(k => delete handlers[k]);
     }
 
-    function start() {
+    function start(mode) {
         if (isRunning) return;
         isRunning = true;
+        runMode = mode;
         seenMove = false;
         snoozing = false;
+        away = mode === 'touch';
         busyUntil = 0;
         lastGag = null;
         curX = targetX = -100;
@@ -307,6 +369,8 @@ const BlipCursor = (() => {
     function stop() {
         if (!isRunning) return;
         isRunning = false;
+        runMode = null;
+        away = false;
         detachListeners();
         if (rafId) cancelAnimationFrame(rafId);
         rafId = null;
@@ -323,13 +387,10 @@ const BlipCursor = (() => {
 
     function evaluateActivation() {
         if (!isActive) return;
-        if (shouldRun()) start();
-        else stop();
-    }
-
-    function onResize() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(evaluateActivation, 150);
+        const mode = desiredMode();
+        if (mode === runMode && isRunning === !!mode) return;
+        stop();
+        if (mode) start(mode);
     }
 
     function addMqListener(mq, fn) {
@@ -353,12 +414,11 @@ const BlipCursor = (() => {
         mqReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
         addMqListener(mqCoarse, evaluateActivation);
         addMqListener(mqReduced, evaluateActivation);
-        window.addEventListener('resize', onResize, { passive: true });
 
         themeObserver = new MutationObserver(syncTheme);
         themeObserver.observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
 
-        if (shouldRun()) start();
+        evaluateActivation();
     }
 
     function destroy() {
@@ -367,9 +427,6 @@ const BlipCursor = (() => {
         stop();
         removeMqListener(mqCoarse, evaluateActivation);
         removeMqListener(mqReduced, evaluateActivation);
-        window.removeEventListener('resize', onResize);
-        clearTimeout(resizeTimer);
-        resizeTimer = null;
         if (themeObserver) themeObserver.disconnect();
         themeObserver = null;
         mqCoarse = null;
