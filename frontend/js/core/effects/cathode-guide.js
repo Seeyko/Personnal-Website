@@ -329,6 +329,7 @@ const CathodeGuide = (() => {
         barEl = null;
         bodyEl = null;
         spriteEl = null;
+        crackEl = null; // lived inside .cg-sprite, gone with the root
         mounted = false;
     }
 
@@ -338,15 +339,21 @@ const CathodeGuide = (() => {
         offState = true;
         hideBubble();
         // Powered-down TVs don't sit on shelves they climbed onto: put her
-        // back on the floor before the sag animation plays.
+        // back on the floor before the sag animation plays. Physics states
+        // (tumble/dizzy/rest) keep their spot - gravity doesn't care that
+        // the screen is off, and teleporting her would look far worse.
         if (alive) {
+            cancelScene();
             jumpArc = null;
             if (perchEl) {
                 perchEl.classList.remove('cg-perch-squish', 'cg-perch-release');
                 perchEl = null;
             }
-            py = 0;
-            setLifeState('stand');
+            if (lifeState !== 'tumble' && lifeState !== 'dizzy' && lifeState !== 'rest') {
+                py = 0;
+                setLifeState('stand');
+            }
+            setFace(null);
             root.classList.remove('cg-walking', 'cg-jumping', 'cg-landing', 'cg-spinning');
             applyLifeTransform();
         }
@@ -403,6 +410,73 @@ const CathodeGuide = (() => {
         QUIP_VISIBLE_MS: 4600
     };
 
+    /* Gyroscope physics (phones). Gravity is projected onto the page plane:
+       a gentle tilt makes her lean and slide, a steep one knocks her off her
+       feet into a full 2D tumble - she rolls, bounces off all four viewport
+       walls, and settles wherever gravity says "down" now is (flip the phone
+       and the ceiling becomes her floor). Violent impacts can crack her
+       screen; Blip is the repairman. All units: px, s, and g as a 0..1
+       fraction of full gravity in the page plane. */
+    const GYRO = {
+        // Direction thresholds are on the *unit* in-plane gravity (nx):
+        // 0.14 ≈ an 8° felt slope, 0.5 ≈ 30° - past that she loses footing.
+        LEAN_ONLY: 0.06,     // below SLIDE but above this: she just leans
+        SLIDE: 0.14,         // enough felt slope to drag her along the floor
+        TUMBLE: 0.5,         // she can't keep her feet anymore
+        PERCH_SLIP: 0.3,     // perched grip starts failing
+        G: 2300,             // px/s² under full in-plane gravity
+        RESTITUTION: 0.38,   // wall bounce energy
+        FLOOR_DRAG: 3.2,     // tangential friction against the resting wall (1/s)
+        AIR_DRAG: 0.25,      // while airborne (1/s)
+        SETTLE_SPEED: 30,    // px/s: below this against the floor she can settle
+        SETTLE_MS: 550,
+        BUMP_SPEED: 170,     // impact speed worth a squash + dust
+        BREAK_SPEED: 820,    // a *hard* impact; two of those in one tumble may crack
+        BREAK_COOLDOWN: 90000,
+        SHAKE_ACCEL: 16,     // m/s² (devicemotion, gravity removed) = a real shake
+        STALE_MS: 1500       // no orientation data newer than this: gyro idle
+    };
+
+    const MEET = {
+        DIST: 96,            // px between Blip's hotspot and her center
+        HOLD_MS: 350,        // sustained closeness before a scene starts
+        COOLDOWN: 16000,
+        CHECK_EVERY: 180     // proximity poll period inside the rAF loop
+    };
+
+    // Gyro state
+    let gyroBound = false;
+    let gyroPermHooked = false;
+    let gyroGranted = false;
+    let gyroAskRef = null;
+    let gvx = 0, gvy = 0;        // gravity vector, page coords (x right, y down)
+    let gyroAt = -1e9;           // perf-clock time of the last orientation event
+    let velX = 0, velY = 0;      // free-body velocity (tumble; velX doubles for slide)
+    let pyTop = 0;               // top coord (viewport px) while off the bottom floor
+    let rot = 0;                 // sprite rotation shown via --cg-rot
+    let angVel = 0;              // deg/s while tumbling
+    let leanShown = 0;           // smoothed standing lean
+    let restEdge = 'bottom';     // which wall she's resting against
+    let settledMs = 0;
+    let perchSlipMs = 0;
+    let bumpCooldownAt = 0;
+    let hardBumps = 0;           // brutal impacts within the current tumble
+
+    // Screen break / repair state
+    let broken = false;
+    let lastBreakAt = -1e9;
+    let nextSosAt = 0;
+    let repairing = false;
+    let crackEl = null;
+
+    // Meet (Blip) state
+    let meetNearMs = 0;
+    let meetCooldownUntil = 0;
+    let meetCheckAt = 0;
+    let sceneToken = 0;          // bumping it aborts a scene's pending steps
+    let fxLayer = null;
+    const lastLineIdx = {};      // anti-repeat per i18n path
+
     let alive = false;
     let lifeRaf = null;
     let lifeLastTs = 0;
@@ -420,7 +494,6 @@ const CathodeGuide = (() => {
     let floorBase = 20;
     let floorProbeAt = -1;
     let bubbleOwner = null;      // 'section' | 'quip' - who opened the bubble
-    let lastQuip = -1;
     const lifeTimers = new Set();
     const lifeHandlers = {};
 
@@ -451,10 +524,15 @@ const CathodeGuide = (() => {
 
     function applyLifeTransform() {
         if (!root) return;
-        root.style.transform = 'translate3d(' + px.toFixed(1) + 'px,' + (-(floorBase + py)).toFixed(1) + 'px,0)';
+        root.style.transform = 'translate3d(' + px.toFixed(1) + 'px,' + (-currentYGap()).toFixed(1) + 'px,0)';
         root.style.setProperty('--cg-dir', dir < 0 ? '-1' : '1');
-        // Bubble opens toward the roomy side of the screen.
+        // One rotation channel: standing lean (small) or tumble rotation (full).
+        const shown = (lifeState === 'tumble' || lifeState === 'dizzy' || lifeState === 'rest') ? rot : leanShown;
+        root.style.setProperty('--cg-rot', shown.toFixed(2) + 'deg');
+        // Bubble opens toward the roomy side of the screen - and downward
+        // when she's high up (resting on the ceiling, tall perches).
         root.classList.toggle('cg-bub-right', px + spriteSize() / 2 > window.innerWidth / 2);
+        root.classList.toggle('cg-bub-below', window.innerHeight - currentYGap() - spriteSize() < 150);
     }
 
     function setLifeState(s) {
@@ -462,6 +540,8 @@ const CathodeGuide = (() => {
         if (!root) return;
         root.classList.toggle('cg-walking', s === 'walk');
         root.classList.toggle('cg-jumping', s === 'jump');
+        root.classList.toggle('cg-sliding', s === 'slide');
+        root.classList.toggle('cg-tumbling', s === 'tumble' || s === 'dizzy' || s === 'rest');
     }
 
     function bubbleShowing() {
@@ -568,29 +648,40 @@ const CathodeGuide = (() => {
         }, 300);
     }
 
-    function quipsForTheme() {
+    // Themed line arrays under a cathodeGuide.* path (quips, meet, gyro...).
+    function themedLines(pathBase) {
         if (!window.LanguageManager || !LanguageManager.isLoaded) return null;
-        const key = 'cathodeGuide.quips.' + currentTheme();
-        const v = LanguageManager.t(key);
+        const v = LanguageManager.t(pathBase + '.' + currentTheme());
         return Array.isArray(v) && v.length ? v : null;
     }
 
-    // A short perched one-liner, in the current theme's voice. Never talks
-    // over a section bubble, and its auto-hide never closes someone else's.
-    function maybeQuip() {
-        if (!bubbleEl || bubbleShowing() || Math.random() > LIFE.QUIP_CHANCE) return;
-        const arr = quipsForTheme();
-        if (!arr) return;
-        let idx;
-        do { idx = Math.floor(Math.random() * arr.length); } while (arr.length > 1 && idx === lastQuip);
-        lastQuip = idx;
+    // Throwaway speech (owner 'quip'): never talks over a section bubble,
+    // and its auto-hide never closes someone else's bubble.
+    function speakLine(text, visibleMs) {
+        if (!bubbleEl || bubbleShowing() || offState) return false;
         const def = SECTION_MAP[currentSectionKey];
         const bar = def && def.bar ? (def.bar[currentTheme()] || def.bar.terminal) : 'cathode';
-        if (!fillBubble(bar, arr[idx])) return;
+        if (!fillBubble(bar, text)) return false;
         bubbleOwner = 'quip';
         bubbleEl.classList.remove('cg-hide');
         bubbleEl.classList.add('cg-show');
-        lifeSetTimeout(() => { if (bubbleOwner === 'quip') hideBubble(); }, LIFE.QUIP_VISIBLE_MS);
+        lifeSetTimeout(() => { if (bubbleOwner === 'quip') hideBubble(); }, visibleMs || LIFE.QUIP_VISIBLE_MS);
+        return true;
+    }
+
+    function speakFrom(pathBase, visibleMs) {
+        const arr = themedLines(pathBase);
+        if (!arr) return false;
+        let idx;
+        do { idx = Math.floor(Math.random() * arr.length); } while (arr.length > 1 && idx === lastLineIdx[pathBase]);
+        lastLineIdx[pathBase] = idx;
+        return speakLine(arr[idx], visibleMs);
+    }
+
+    // A short perched one-liner, in the current theme's voice.
+    function maybeQuip() {
+        if (broken || Math.random() > LIFE.QUIP_CHANCE) return;
+        speakFrom('cathodeGuide.quips');
     }
 
     function landJump(now) {
@@ -647,7 +738,7 @@ const CathodeGuide = (() => {
         }
 
         // The visitor has settled somewhere: time to climb on things.
-        if (now - lastUserAct > LIFE.IDLE_BEFORE_CLIMB_MS && now > climbCooldownUntil) {
+        if (!broken && now - lastUserAct > LIFE.IDLE_BEFORE_CLIMB_MS && now > climbCooldownUntil) {
             const target = pickPerch();
             if (target) {
                 perchHops = 0;
@@ -660,6 +751,14 @@ const CathodeGuide = (() => {
         // Mid-walk check found nothing to climb: just keep strolling.
         if (lifeState === 'walk') {
             nextThinkAt = now + 2000;
+            return;
+        }
+
+        // A broken screen kills the joie de vivre: no spins, no hops, no
+        // climbing - just slow sad pacing until Blip shows up with his tools.
+        if (broken) {
+            if (Math.random() < 0.4) startWalk(now);
+            else { setLifeState('stand'); nextThinkAt = now + 2400 + Math.random() * 3000; }
             return;
         }
 
@@ -686,6 +785,37 @@ const CathodeGuide = (() => {
         if (dt > 0.05) dt = 0.05; // tab-return / freeze clamp
         probeFloor(ts);
 
+        const gv = gravityNow();
+        const onFloorState = lifeState === 'stand' || lifeState === 'walk' || lifeState === 'slide';
+
+        // --- Gravity triggers -------------------------------------------
+        if (gv.live && onFloorState) {
+            if (dominantEdge(gv) !== 'bottom' || Math.abs(gv.nx) > GYRO.TUMBLE) {
+                // Floor isn't "down" anymore, or the slope is hopeless: tumble.
+                enterTumble(ts, velX, 0);
+            } else if (Math.abs(gv.nx) > GYRO.SLIDE && lifeState !== 'slide') {
+                cancelScene();
+                setLifeState('slide');
+            }
+        }
+        if (gv.live && lifeState === 'perch') {
+            if (Math.abs(gv.nx) > GYRO.TUMBLE || dominantEdge(gv) !== 'bottom') {
+                enterTumble(ts, gv.x * 220, -60);
+            } else if (Math.abs(gv.nx) > GYRO.PERCH_SLIP) {
+                perchSlipMs += dt * 1000;
+                if (perchSlipMs > 500) { perchSlipMs = 0; hopDown(ts); }
+            } else {
+                perchSlipMs = 0;
+            }
+        }
+
+        // Standing lean: she leans with the slope (and into her slide).
+        let leanTarget = 0;
+        if (onFloorState && gv.live) leanTarget = Math.max(-14, Math.min(14, gv.nx * 24));
+        if (lifeState === 'slide') leanTarget += Math.max(-8, Math.min(8, velX * 0.03));
+        leanShown += (leanTarget - leanShown) * Math.min(1, dt * 9);
+
+        // --- States -------------------------------------------------------
         if (lifeState === 'walk') {
             px += LIFE.WALK_SPEED * dt * dir;
             if ((dir > 0 && px >= walkTarget) || (dir < 0 && px <= walkTarget)) {
@@ -695,6 +825,47 @@ const CathodeGuide = (() => {
             } else if (ts > nextThinkAt && ts - lastUserAct > LIFE.IDLE_BEFORE_CLIMB_MS) {
                 think(ts); // the visitor settled mid-stroll: allowed to climb now
             }
+        } else if (lifeState === 'slide') {
+            velX += gv.x * GYRO.G * 0.62 * dt;
+            velX -= velX * 2.2 * dt; // ground friction
+            px += velX * dt;
+            const lo = 4, hi = window.innerWidth - spriteSize() - 4;
+            if (px <= lo || px >= hi) {
+                const impact = Math.abs(velX);
+                px = Math.max(lo, Math.min(hi, px));
+                velX = -velX * GYRO.RESTITUTION;
+                if (impact > GYRO.BUMP_SPEED && ts > bumpCooldownAt) {
+                    bumpCooldownAt = ts + 250;
+                    root.classList.add('cg-landing');
+                    lifeSetTimeout(() => { if (root) root.classList.remove('cg-landing'); }, 300);
+                    const c = spriteCenter();
+                    spawnFx(px <= lo ? px + 4 : px + spriteSize() - 4, c.y, 'dust', 3, { spread: 10 });
+                    setFace('cg-face-ouch', 420);
+                }
+            }
+            if (Math.abs(velX) > 20) dir = velX > 0 ? 1 : -1;
+            if ((!gv.live || Math.abs(gv.nx) < GYRO.LEAN_ONLY) && Math.abs(velX) < 18) {
+                velX = 0;
+                setLifeState('stand');
+                nextThinkAt = ts + 700 + Math.random() * 1200;
+            }
+        } else if (lifeState === 'tumble') {
+            tumbleStep(dt, ts);
+        } else if (lifeState === 'dizzy') {
+            // Settle into the wall's resting pose (enterDizzy normalized rot
+            // so this lerp takes the short way); the woozy wobble is CSS.
+            rot += (restRotFor(restEdge) - rot) * Math.min(1, dt * 8);
+            if (ts > nextThinkAt) leaveDizzy(ts);
+        } else if (lifeState === 'rest') {
+            // Glued to a non-bottom wall while gravity pins her there.
+            if (!gv.live || dominantEdge(gv) === 'bottom') {
+                enterTumble(ts, 0, 0); // gravity flipped back: fall home
+            } else if (dominantEdge(gv) !== restEdge) {
+                enterTumble(ts, 0, 0);
+            }
+        } else if (lifeState === 'meet') {
+            // Scenes drive everything via timers; just keep her grounded.
+            if (py > 0 && !perchEl) py = Math.max(0, py - 500 * dt);
         } else if (lifeState === 'jump' && jumpArc) {
             const t = Math.min(1, (ts - jumpArc.start) / jumpArc.dur);
             const e = t * (2 - t); // ease-out on the horizontal
@@ -728,6 +899,9 @@ const CathodeGuide = (() => {
             if (py > 0) py = Math.max(0, py - 900 * dt); // safety: settle down
             if (ts > nextThinkAt) think(ts);
         }
+
+        meetCheck(ts);
+        brokenBeacon(ts);
         applyLifeTransform();
     }
 
@@ -735,12 +909,15 @@ const CathodeGuide = (() => {
     // furniture. Also feeds the "visitor is busy" clock that gates climbing.
     function onUserActivity() {
         lastUserAct = performance.now();
+        if (lifeState === 'meet') cancelScene(); // may hand back a perch state
         if (lifeState === 'perch') {
             hopDown(lastUserAct);
         } else if (lifeState === 'jump' && jumpArc && jumpArc.perch) {
             jumpArc.perch = null; // retarget mid-air: land on the floor instead
             jumpArc.toY = 0;
         }
+        // Tumble/dizzy/rest are pure physics against the viewport - scrolling
+        // the page beneath her doesn't disturb them.
     }
 
     function onLifeResize() {
@@ -776,16 +953,25 @@ const CathodeGuide = (() => {
         window.addEventListener('touchmove', lifeHandlers.touchmove, { passive: true });
         window.addEventListener('keydown', lifeHandlers.keydown);
         window.addEventListener('resize', lifeHandlers.resize);
+        hookGyroPermission(); // attaches right away except on iOS (gesture-gated)
         lifeRaf = requestAnimationFrame(lifeTick);
     }
 
     function stopLife() {
         if (!alive) return;
         alive = false;
+        sceneToken++;
+        repairing = false;
         if (lifeRaf) cancelAnimationFrame(lifeRaf);
         lifeRaf = null;
         lifeTimers.forEach(id => clearTimeout(id));
         lifeTimers.clear();
+        detachGyro();
+        if (gyroAskRef) {
+            document.removeEventListener('touchend', gyroAskRef);
+            gyroAskRef = null;
+            gyroPermHooked = false;
+        }
         ['scroll', 'wheel', 'touchmove', 'keydown', 'resize'].forEach(k => {
             if (lifeHandlers[k]) window.removeEventListener(k, lifeHandlers[k]);
             delete lifeHandlers[k];
@@ -797,9 +983,542 @@ const CathodeGuide = (() => {
         }
         if (root) {
             py = 0; // never freeze mid-air
+            rot = 0;
+            leanShown = 0;
+            setFace(null);
             setLifeState('stand');
-            root.classList.remove('cg-walking', 'cg-jumping', 'cg-landing', 'cg-spinning');
+            root.classList.remove('cg-walking', 'cg-jumping', 'cg-landing', 'cg-spinning',
+                'cg-sliding', 'cg-tumbling', 'cg-fixed-flash');
             applyLifeTransform();
+        }
+    }
+
+    /* ---------- FX particles (hearts, stars, dust, sparks) ----------
+       Tiny pixel-art SVGs in a fixed full-screen layer just under Cathode.
+       Everything is fire-and-forget: CSS animates, animationend removes. */
+
+    const FX_SHAPES = {
+        heart: '<svg viewBox="0 0 7 6"><path d="M1 0h2v1h1V0h2v1h1v2h-1v1h-1v1h-1v1h-1V5h-1V4H1V3H0V1h1z"/></svg>',
+        star: '<svg viewBox="0 0 5 5"><path d="M2 0h1v2h2v1H3v2H2V3H0V2h2z"/></svg>',
+        dust: '<svg viewBox="0 0 3 3"><path d="M0 0h2v2H0z"/></svg>',
+        spark: '<svg viewBox="0 0 5 5"><path d="M2 0h1v1h1v1h1v1H4v1H3v1H2V4H1V3H0V2h1V1h1z"/></svg>'
+    };
+    const FX_HEART_COLOR = {
+        terminal: '#33ff00', default: '#e0685e', blueprint: '#ff8aa8', retro90s: '#ff00aa'
+    };
+
+    function fxColor(kind) {
+        if (kind === 'heart') return FX_HEART_COLOR[currentTheme()] || '#e0685e';
+        return (root && getComputedStyle(root).getPropertyValue('--cg-ink').trim()) || '#33ff00';
+    }
+
+    function ensureFxLayer() {
+        if (fxLayer && document.contains(fxLayer)) return fxLayer;
+        fxLayer = document.createElement('div');
+        fxLayer.id = 'cathode-fx';
+        fxLayer.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(fxLayer);
+        return fxLayer;
+    }
+
+    // kind: heart|star|dust|spark; opts.spread px, opts.up bias, opts.orbit
+    function spawnFx(x, y, kind, count, opts) {
+        if (prefersReduced()) return;
+        const layer = ensureFxLayer();
+        const o = opts || {};
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement('i');
+            p.className = 'cg-fx cg-fx-' + (o.orbit ? 'orbit' : 'float');
+            p.innerHTML = FX_SHAPES[kind] || FX_SHAPES.star;
+            const spread = o.spread || 26;
+            const dx = (Math.random() - 0.5) * spread * 2;
+            const rise = (o.up === false ? 8 : 34) + Math.random() * 26;
+            p.style.left = (x + dx) + 'px';
+            p.style.top = (y + (Math.random() - 0.5) * (o.spread || 26)) + 'px';
+            p.style.color = fxColor(kind);
+            p.style.setProperty('--fx-dx', ((Math.random() - 0.5) * 30).toFixed(1) + 'px');
+            p.style.setProperty('--fx-dy', (-rise).toFixed(1) + 'px');
+            p.style.setProperty('--fx-dur', (700 + Math.random() * 600).toFixed(0) + 'ms');
+            p.style.setProperty('--fx-delay', (i * (o.stagger || 40)) + 'ms');
+            p.style.setProperty('--fx-size', (o.size || (kind === 'dust' ? 5 : 8)) + 'px');
+            if (o.orbit) p.style.setProperty('--fx-angle', (i * (360 / count)).toFixed(0) + 'deg');
+            p.addEventListener('animationend', () => { if (p.parentNode) p.parentNode.removeChild(p); });
+            layer.appendChild(p);
+            // Backstop removal in case animationend is swallowed (display:none tab)
+            lifeSetTimeout(() => { if (p.parentNode) p.parentNode.removeChild(p); }, 3200);
+        }
+    }
+
+    function spriteCenter() {
+        const s = spriteSize();
+        return { x: px + s / 2, y: window.innerHeight - currentYGap() - s / 2 };
+    }
+
+    /* ---------- Facial expressions (mimiques) ----------
+       Forced looks layered over the kit's idle faces via site-integration
+       classes; mutually exclusive, optionally self-clearing. */
+
+    const FACE_CLASSES = ['cg-face-happy', 'cg-face-heart', 'cg-face-ouch', 'cg-face-dizzy'];
+
+    function setFace(cls, ms) {
+        if (!root) return;
+        FACE_CLASSES.forEach(c => root.classList.remove(c));
+        if (cls) {
+            root.classList.add(cls);
+            if (ms) lifeSetTimeout(() => { if (root) root.classList.remove(cls); }, ms);
+        }
+    }
+
+    /* ---------- Gyroscope: gravity in the page plane ----------
+       deviceorientation beta/gamma → unit gravity vector (gvx right, gvy
+       down), corrected for the browser's own screen rotation. Held upright
+       ⇒ (0, 1); rolled left ⇒ gravity points left; phone upside down ⇒
+       gravity points to the page's top edge. */
+
+    function onDeviceOrientation(e) {
+        if (e.beta == null || e.gamma == null) return;
+        const b = e.beta * Math.PI / 180;
+        const g = e.gamma * Math.PI / 180;
+        // Gravity in device frame (x right, y up-screen), projected on-screen
+        let dx = Math.sin(g) * Math.cos(b);
+        let dy = Math.sin(b); // device +y is up-screen; page +y is down: flip below
+        const angle = (screen.orientation && typeof screen.orientation.angle === 'number')
+            ? screen.orientation.angle
+            : (typeof window.orientation === 'number' ? window.orientation : 0);
+        const a = -angle * Math.PI / 180;
+        gvx = dx * Math.cos(a) - dy * Math.sin(a);
+        gvy = dx * Math.sin(a) + dy * Math.cos(a);
+        gyroAt = performance.now();
+    }
+
+    // A hard shake kicks her airborne - and shaking harder WHILE she
+    // tumbles pumps energy in instead of being ignored, which is exactly
+    // how screens end up cracked.
+    function onDeviceMotion(e) {
+        const acc = e.acceleration;
+        if (!acc || acc.x == null) return;
+        const mag = Math.hypot(acc.x, acc.y || 0);
+        if (mag < GYRO.SHAKE_ACCEL) return;
+        const now = performance.now();
+        if (lifeState === 'tumble') {
+            velX += -acc.x * 20 + (Math.random() - 0.5) * 60;
+            velY += -(acc.y || 0) * 16 - 60;
+            angVel += (Math.random() - 0.5) * 300;
+            return;
+        }
+        if (now < bumpCooldownAt) return;
+        enterTumble(now,
+            -acc.x * 24 + (Math.random() - 0.5) * 80,
+            -Math.abs(acc.y || 0) * 18 - 160);
+    }
+
+    function gyroLive() {
+        return performance.now() - gyroAt < GYRO.STALE_MS;
+    }
+
+    // In-plane gravity with a default "page down" when the phone lies flat
+    // (real gravity then points into the screen and the page has no pull).
+    // x/y drive the physics (strength included); nx/ny are the unit
+    // direction - thresholds use those, so "how tilted does it FEEL" doesn't
+    // depend on how far back the phone is pitched.
+    function gravityNow() {
+        if (!gyroLive()) return { x: 0, y: 1, nx: 0, ny: 1, live: false };
+        const mag = Math.hypot(gvx, gvy);
+        if (mag < 0.22) return { x: 0, y: 0.7, nx: 0, ny: 1, live: false };
+        return { x: gvx, y: gvy, nx: gvx / mag, ny: gvy / mag, live: true };
+    }
+
+    function attachGyro() {
+        if (gyroBound || typeof window.DeviceOrientationEvent === 'undefined') return;
+        gyroBound = true;
+        lifeHandlers.deviceorientation = onDeviceOrientation;
+        window.addEventListener('deviceorientation', lifeHandlers.deviceorientation, { passive: true });
+        if (typeof window.DeviceMotionEvent !== 'undefined') {
+            lifeHandlers.devicemotion = onDeviceMotion;
+            window.addEventListener('devicemotion', lifeHandlers.devicemotion, { passive: true });
+        }
+    }
+
+    function detachGyro() {
+        if (!gyroBound) return;
+        gyroBound = false;
+        if (lifeHandlers.deviceorientation) window.removeEventListener('deviceorientation', lifeHandlers.deviceorientation);
+        if (lifeHandlers.devicemotion) window.removeEventListener('devicemotion', lifeHandlers.devicemotion);
+        delete lifeHandlers.deviceorientation;
+        delete lifeHandlers.devicemotion;
+    }
+
+    // iOS 13+ gates motion events behind a permission that MUST be requested
+    // from a user gesture; hook the first touch. Everything stays silent if
+    // the visitor declines - she simply doesn't feel gravity.
+    function hookGyroPermission() {
+        if (gyroPermHooked || typeof window.DeviceOrientationEvent === 'undefined') return;
+        // Phones/tablets only: some convertible laptops expose the sensor
+        // too, and nobody wants their mascot sliding around mid-mouse-work.
+        if (!window.matchMedia || !window.matchMedia('(pointer: coarse)').matches) return;
+        const needsAsk = typeof DeviceOrientationEvent.requestPermission === 'function';
+        if (!needsAsk || gyroGranted) { attachGyro(); return; }
+        gyroPermHooked = true;
+        gyroAskRef = () => {
+            gyroAskRef = null;
+            gyroPermHooked = false;
+            const asks = [DeviceOrientationEvent.requestPermission()];
+            if (typeof DeviceMotionEvent !== 'undefined' &&
+                typeof DeviceMotionEvent.requestPermission === 'function') {
+                asks.push(DeviceMotionEvent.requestPermission());
+            }
+            Promise.allSettled(asks).then(res => {
+                if (res[0].status === 'fulfilled' && res[0].value === 'granted') {
+                    gyroGranted = true;
+                    if (alive) attachGyro();
+                }
+            });
+        };
+        document.addEventListener('touchend', gyroAskRef, { once: true, passive: true });
+    }
+
+    /* ---------- Tumble: free-body physics against the viewport ---------- */
+
+    function currentYGap() {
+        if (lifeState === 'tumble' || lifeState === 'dizzy' || lifeState === 'rest') {
+            return window.innerHeight - spriteSize() - pyTop;
+        }
+        return floorBase + py;
+    }
+
+    function dominantEdge(gv) {
+        if (Math.abs(gv.y) >= Math.abs(gv.x)) return gv.y >= 0 ? 'bottom' : 'top';
+        return gv.x >= 0 ? 'right' : 'left';
+    }
+
+    // Sprite rotation so her feet touch the given wall.
+    function restRotFor(edge) {
+        return edge === 'bottom' ? 0 : edge === 'top' ? 180 : edge === 'left' ? 90 : -90;
+    }
+
+    function enterTumble(now, kickX, kickY) {
+        if (!alive || !root) return;
+        cancelScene();
+        if (perchEl) {
+            perchEl.classList.remove('cg-perch-squish', 'cg-perch-release');
+            perchEl = null;
+        }
+        jumpArc = null;
+        pyTop = window.innerHeight - spriteSize() - currentYGapForFloor();
+        velX = (kickX != null ? kickX : velX);
+        velY = (kickY != null ? kickY : 0);
+        // A pinch of chaos so even a straight fall reads as a real tumble.
+        angVel = velX * 2.4 + (Math.random() - 0.5) * 280;
+        settledMs = 0;
+        hardBumps = 0; // fresh tumble session (mid-tumble shakes don't pass here)
+        setFace('cg-face-ouch', 700);
+        setLifeState('tumble');
+        nextThinkAt = now + 500;
+    }
+
+    function currentYGapForFloor() {
+        // Y-gap as if still in floor coordinates (used only on transition in)
+        return floorBase + py;
+    }
+
+    function tumbleStep(dt, ts) {
+        const s = spriteSize();
+        const gv = gravityNow();
+        velX += gv.x * GYRO.G * dt;
+        velY += gv.y * GYRO.G * dt;
+        velX -= velX * GYRO.AIR_DRAG * dt;
+        velY -= velY * GYRO.AIR_DRAG * dt;
+        px += velX * dt;
+        pyTop += velY * dt;
+
+        const minX = 4, maxXw = window.innerWidth - s - 4;
+        const minY = 4, maxYw = window.innerHeight - s - Math.max(4, floorBase - 8);
+        let bumpSpeed = 0, bumpAt = null, onEdge = null;
+
+        if (px <= minX) { bumpSpeed = Math.max(bumpSpeed, -velX); px = minX; velX = -velX * GYRO.RESTITUTION; velY *= (1 - GYRO.FLOOR_DRAG * dt); onEdge = 'left'; bumpAt = { x: px + 2, y: pyTop + s / 2 }; }
+        else if (px >= maxXw) { bumpSpeed = Math.max(bumpSpeed, velX); px = maxXw; velX = -velX * GYRO.RESTITUTION; velY *= (1 - GYRO.FLOOR_DRAG * dt); onEdge = 'right'; bumpAt = { x: px + s - 2, y: pyTop + s / 2 }; }
+        if (pyTop <= minY) { bumpSpeed = Math.max(bumpSpeed, -velY); pyTop = minY; velY = -velY * GYRO.RESTITUTION; velX *= (1 - GYRO.FLOOR_DRAG * dt); onEdge = 'top'; bumpAt = { x: px + s / 2, y: pyTop + 2 }; }
+        else if (pyTop >= maxYw) { bumpSpeed = Math.max(bumpSpeed, velY); pyTop = maxYw; velY = -velY * GYRO.RESTITUTION; velX *= (1 - GYRO.FLOOR_DRAG * dt); onEdge = 'bottom'; bumpAt = { x: px + s / 2, y: pyTop + s - 2 }; }
+
+        // Rolling: angular velocity follows the tangential speed against the
+        // wall she's touching; airborne it just decays.
+        const touchingEdge = dominantEdge(gv);
+        const resting =
+            (touchingEdge === 'bottom' && pyTop >= maxYw - 1) ||
+            (touchingEdge === 'top' && pyTop <= minY + 1) ||
+            (touchingEdge === 'left' && px <= minX + 1) ||
+            (touchingEdge === 'right' && px >= maxXw - 1);
+        if (resting) {
+            const tangential = (touchingEdge === 'bottom') ? velX
+                : (touchingEdge === 'top') ? -velX
+                : (touchingEdge === 'left') ? -velY : velY;
+            angVel = tangential / (s / 2) * 57.3;
+        } else {
+            angVel *= (1 - 0.5 * dt);
+        }
+        rot += angVel * dt;
+
+        if (bumpSpeed > GYRO.BUMP_SPEED && ts > bumpCooldownAt) {
+            bumpCooldownAt = ts + 220;
+            root.classList.add('cg-landing');
+            lifeSetTimeout(() => { if (root) root.classList.remove('cg-landing'); }, 300);
+            if (bumpAt) spawnFx(bumpAt.x, bumpAt.y, 'dust', 4, { spread: 14, up: true });
+            setFace('cg-face-ouch', 450);
+            // Breaking the screen is a rare, earned event: it takes repeated
+            // brutal impacts in one tumble (a wild shake), not a single flip.
+            if (bumpSpeed > GYRO.BREAK_SPEED) {
+                hardBumps++;
+                if (!broken && ts - lastBreakAt > GYRO.BREAK_COOLDOWN &&
+                    (hardBumps >= 3 || (hardBumps >= 2 && Math.random() < 0.5))) {
+                    crackScreen(ts);
+                }
+            }
+        }
+
+        // Settle: slow, resting against the wall gravity points at.
+        const speed = Math.hypot(velX, velY);
+        if (resting && speed < GYRO.SETTLE_SPEED) {
+            settledMs += dt * 1000;
+            if (settledMs > GYRO.SETTLE_MS) enterDizzy(ts, touchingEdge);
+        } else {
+            settledMs = 0;
+        }
+    }
+
+    function enterDizzy(ts, edge) {
+        restEdge = edge;
+        velX = velY = angVel = 0;
+        // Re-express the accumulated tumble turns as the nearest equivalent
+        // of the resting pose, so the dizzy branch can lerp there the short
+        // way instead of unwinding three full rotations.
+        const target = restRotFor(edge);
+        const diff = ((target - rot) % 360 + 540) % 360 - 180;
+        rot = target - diff;
+        setLifeState('dizzy');
+        setFace('cg-face-dizzy');
+        const c = spriteCenter();
+        spawnFx(c.x, c.y - spriteSize() * 0.55, 'star', 3, { orbit: true, spread: 6, size: 7 });
+        speakFrom(broken ? 'cathodeGuide.gyro.broken' : (edge === 'bottom' ? 'cathodeGuide.gyro.dizzy' : 'cathodeGuide.gyro.flipped'), 3800);
+        nextThinkAt = ts + 2600 + Math.random() * 1000;
+    }
+
+    // dizzy → rest (stuck to a wall) or back to normal floor life.
+    function leaveDizzy(ts) {
+        setFace(null);
+        if (restEdge === 'bottom') {
+            py = Math.max(0, window.innerHeight - spriteSize() - pyTop - floorBase);
+            rot = 0;
+            setLifeState('stand');
+            nextThinkAt = ts + 1200 + Math.random() * 1500;
+        } else {
+            setLifeState('rest');
+        }
+    }
+
+    /* ---------- Cracked screen + Blip the repairman ---------- */
+
+    function crackScreen(ts) {
+        broken = true;
+        lastBreakAt = ts;
+        nextSosAt = ts + 2500;
+        if (root && !crackEl) {
+            const sprite = root.querySelector('.cg-sprite');
+            crackEl = document.createElement('div');
+            crackEl.className = 'cg-crack';
+            crackEl.innerHTML = '<svg viewBox="0 0 16 12" preserveAspectRatio="none">' +
+                '<path d="M8 0 L7 3 L9 5 L6 7 L8 9 L7 12" />' +
+                '<path d="M8 5 L11 4 L13 6" /><path d="M7 6 L4 8 L3 7" />' +
+                '<path d="M9 5 L10 8" /></svg>';
+            sprite.appendChild(crackEl);
+        }
+        if (root) root.classList.add('cg-broken');
+        const c = spriteCenter();
+        spawnFx(c.x, c.y, 'spark', 6, { spread: 18 });
+    }
+
+    // SOS beacon while broken: garbled themed lines + red LED (CSS), and on
+    // touch devices Blip is summoned to hurry over on his own.
+    function brokenBeacon(ts) {
+        if (!broken || repairing || offState) return;
+        if (ts < nextSosAt) return;
+        nextSosAt = ts + 9000 + Math.random() * 5000;
+        speakFrom('cathodeGuide.gyro.broken', 3600);
+        if (window.BlipCursor && BlipCursor.summon) {
+            const c = spriteCenter();
+            BlipCursor.summon(c.x + spriteSize() * 0.9, c.y - spriteSize() * 0.4);
+        }
+    }
+
+    function startRepair(ts, blipPos) {
+        if (repairing || !broken) return;
+        repairing = true;
+        const token = ++sceneToken;
+        setLifeState('meet');
+        dir = blipPos.x >= px + spriteSize() / 2 ? 1 : -1;
+        const step = (ms, fn) => lifeSetTimeout(() => { if (sceneToken === token && alive) fn(); }, ms);
+
+        if (window.BlipCursor && BlipCursor.react) BlipCursor.react('wave');
+        step(500, () => {
+            const c = spriteCenter();
+            spawnFx(c.x + dir * spriteSize() * 0.4, c.y - 6, 'spark', 5, { spread: 10, stagger: 130 });
+            if (window.BlipCursor && BlipCursor.react) BlipCursor.react('wave');
+        });
+        step(1250, () => {
+            const c = spriteCenter();
+            spawnFx(c.x, c.y - 4, 'spark', 4, { spread: 12, stagger: 110 });
+        });
+        step(2000, () => {
+            // Fixed! Screen flickers back on.
+            broken = false;
+            if (root) {
+                root.classList.remove('cg-broken');
+                root.classList.add('cg-fixed-flash');
+                lifeSetTimeout(() => { if (root) root.classList.remove('cg-fixed-flash'); }, 700);
+            }
+            if (crackEl) {
+                const el = crackEl;
+                crackEl = null;
+                el.classList.add('cg-crack-heal');
+                lifeSetTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 650);
+            }
+            setFace('cg-face-happy', 2400);
+            speakFrom('cathodeGuide.gyro.fixed', 4200);
+        });
+        step(2600, () => {
+            const c = spriteCenter();
+            spawnFx((c.x + blipPos.x) / 2, c.y - spriteSize() * 0.6, 'heart', 3, { spread: 12, stagger: 150 });
+            if (window.BlipCursor && BlipCursor.react) BlipCursor.react('twirl');
+            playSpin();
+        });
+        step(3600, () => {
+            repairing = false;
+            meetCooldownUntil = performance.now() + MEET.COOLDOWN;
+            setLifeState('stand');
+            nextThinkAt = performance.now() + 1500;
+        });
+    }
+
+    /* ---------- Meet scenes: Blip × Cathode ----------
+       Four little two-character numbers. Every step re-validates its scene
+       token (user can yank the cursor away mid-scene) and, where it makes
+       sense, that Blip is still around. */
+
+    function cancelScene() {
+        sceneToken++;
+        if (repairing) repairing = false;
+        if (lifeState === 'meet') {
+            setFace(null);
+            if (perchEl && document.contains(perchEl)) setLifeState('perch');
+            else setLifeState('stand');
+            nextThinkAt = performance.now() + 800;
+        }
+    }
+
+    function blipNear(maxDist) {
+        if (!window.BlipCursor || !BlipCursor.getPosition) return null;
+        const p = BlipCursor.getPosition();
+        if (!p) return null;
+        const c = spriteCenter();
+        const d = Math.hypot(p.x - c.x, p.y - c.y);
+        return d <= maxDist ? { x: p.x, y: p.y, dist: d } : null;
+    }
+
+    function startMeet(ts, blipPos) {
+        const scenes = ['check', 'hug', 'talk', 'dance'];
+        const scene = scenes[Math.floor(Math.random() * scenes.length)];
+        const token = ++sceneToken;
+        const wasPerched = lifeState === 'perch';
+        const anchorPerch = perchEl;
+        setLifeState('meet');
+        dir = blipPos.x >= px + spriteSize() / 2 ? 1 : -1;
+        meetCooldownUntil = ts + MEET.COOLDOWN + Math.random() * 8000;
+
+        // Steps only run while the scene is still valid and Blip hasn't left.
+        const step = (ms, fn, needBlip) => lifeSetTimeout(() => {
+            if (sceneToken !== token || !alive) return;
+            if (needBlip !== false && !blipNear(230)) { cancelScene(); return; }
+            fn();
+        }, ms);
+        const endAt = (ms) => lifeSetTimeout(() => {
+            if (sceneToken !== token || !alive) return;
+            setFace(null);
+            if (wasPerched && anchorPerch && document.contains(anchorPerch)) {
+                perchEl = anchorPerch;
+                setLifeState('perch');
+            } else {
+                setLifeState('stand');
+            }
+            nextThinkAt = performance.now() + 1200 + Math.random() * 1600;
+        }, ms, false);
+
+        if (scene === 'check') {
+            setFace('cg-face-happy');
+            step(160, () => { if (window.BlipCursor) BlipCursor.react('wave'); });
+            step(480, () => {
+                root.classList.add('cg-landing'); // little anticipation squash
+                lifeSetTimeout(() => { if (root) root.classList.remove('cg-landing'); }, 300);
+            });
+            step(640, () => {
+                const c = spriteCenter();
+                const near = blipNear(230) || blipPos;
+                spawnFx((c.x + near.x) / 2, Math.min(c.y, near.y) - 8, 'star', 5, { spread: 14, stagger: 60 });
+            });
+            step(1150, () => playSpin());
+            endAt(2300);
+        } else if (scene === 'hug') {
+            setFace('cg-face-heart');
+            step(220, () => { if (window.BlipCursor) BlipCursor.react('joy'); });
+            step(700, () => {
+                const c = spriteCenter();
+                const near = blipNear(230) || blipPos;
+                spawnFx((c.x + near.x) / 2, Math.min(c.y, near.y) - 10, 'heart', 4, { spread: 12, stagger: 170 });
+            });
+            step(1500, () => {
+                const c = spriteCenter();
+                spawnFx(c.x, c.y - spriteSize() * 0.7, 'heart', 2, { spread: 8, stagger: 200 });
+            });
+            endAt(2900);
+        } else if (scene === 'talk') {
+            setFace('cg-face-happy');
+            step(150, () => speakFrom('cathodeGuide.meet', 3600), false);
+            step(700, () => { if (window.BlipCursor) BlipCursor.react('listen'); });
+            step(2100, () => { if (window.BlipCursor) BlipCursor.react('joy'); });
+            endAt(3900);
+        } else { // dance
+            setFace('cg-face-happy');
+            step(260, () => {
+                playSpin();
+                if (window.BlipCursor) BlipCursor.react('twirl');
+            });
+            step(700, () => {
+                const c = spriteCenter();
+                const near = blipNear(230) || blipPos;
+                spawnFx((c.x + near.x) / 2, Math.min(c.y, near.y) - 6, 'star', 6, { spread: 20, stagger: 70 });
+            });
+            endAt(2100);
+        }
+    }
+
+    // Called from the rAF loop, throttled: is Blip hanging around close by?
+    function meetCheck(ts) {
+        if (ts < meetCheckAt) return;
+        meetCheckAt = ts + MEET.CHECK_EVERY;
+        if (offState || !root) return;
+        const okState = lifeState === 'stand' || lifeState === 'walk' || lifeState === 'perch';
+        if (!okState) { meetNearMs = 0; return; }
+        const near = blipNear(MEET.DIST);
+        if (!near) { meetNearMs = 0; return; }
+        // A broken screen turns any close encounter into the repair scene.
+        if (broken) {
+            meetNearMs += MEET.CHECK_EVERY;
+            if (meetNearMs >= MEET.HOLD_MS) { meetNearMs = 0; startRepair(ts, near); }
+            return;
+        }
+        if (ts < meetCooldownUntil || (bubbleShowing() && bubbleOwner === 'section')) return;
+        meetNearMs += MEET.CHECK_EVERY;
+        if (meetNearMs >= MEET.HOLD_MS) {
+            meetNearMs = 0;
+            startMeet(ts, near);
         }
     }
 
@@ -872,6 +1591,9 @@ const CathodeGuide = (() => {
         }
         reducedHandler = null;
         unmountRoot();
+        if (fxLayer && fxLayer.parentNode) fxLayer.parentNode.removeChild(fxLayer);
+        fxLayer = null;
+        broken = false;
 
         mqMobile = null;
         mqReduced = null;

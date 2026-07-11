@@ -168,6 +168,58 @@
         "C'est moi la webmaster ici !",
         "Meilleur spot du site !!"
       ]
+    },
+    "meet": {
+      "terminal": [
+        "tiens, blip. handshake ?",
+        "ping blip... pong. il est là.",
+        "mon binôme de prod.",
+        "deux process, zéro conflit."
+      ],
+      "default": [
+        "Tiens, salut toi.",
+        "On fait la paire, non ?",
+        "Toujours dans le coin, lui.",
+        "Mon collègue préféré."
+      ],
+      "blueprint": [
+        "Collègue de chantier !",
+        "Réunion au sommet, vite fait.",
+        "Deux mascottes, un seul plan.",
+        "Il vérifie mes cotes, je crois."
+      ],
+      "retro90s": [
+        "MON POTE BLIP !!",
+        "Check ! Duo de mascottes !",
+        "On est les stars du site !!",
+        "Photo souvenir ? Trop tard !"
+      ]
+    },
+    "gyro": {
+      "dizzy": {
+        "terminal": ["core dumped. je suis où ?", "segfault évité. de justesse.", "stack trace : aïe aïe aïe."],
+        "default": ["Oups. Tout tourne encore un peu.", "Atterrissage... discutable.", "Je l'ai fait exprès. Si si."],
+        "blueprint": ["Chute non conforme au plan.", "Recalcul de l'assiette en cours...", "L'aplomb laisse à désirer."],
+        "retro90s": ["WIPEOUT !! T'as vu ça ?!", "3 étoiles cette cascade !!", "Encore ! Encore !"]
+      },
+      "flipped": {
+        "terminal": ["gravité inversée. dmesg est plein.", "je tourne au plafond, là ?"],
+        "default": ["Le monde est à l'envers, non ?", "Bon. Je vais rester là un instant."],
+        "blueprint": ["Le plan a pivoté de 180°.", "Vue en plafond. Peu courant."],
+        "retro90s": ["MODE ANTI-GRAVITÉ : ON !!", "L'écran est à l'envers ?!?"]
+      },
+      "broken": {
+        "terminal": ["s3gf@ult écr#n... blip ?!", "pixels c@ssés... au s3cours...", "err 0x5OS : appelez bl!p..."],
+        "default": ["Mon écran... Blip ? À l'aide...", "Fêlé... quelqu'un a vu Blip ?", "Ça grésille... Blip, vite..."],
+        "blueprint": ["Vitrage fissuré... appelez Blip.", "Sinistre à déclarer... Blip ?!", "Structure écran : HS. SOS..."],
+        "retro90s": ["ÉCRAN CASSÉ !! BLIP HELP !!", "M@YD@Y !! GROS BUG !!", "404 : écran introuvable !!"]
+      },
+      "fixed": {
+        "terminal": ["reboot ok. merci blip. <3", "écran patché. 0 pixel mort."],
+        "default": ["Comme neuf. Merci Blip.", "Il répare tout, ce petit."],
+        "blueprint": ["Réception des travaux : conforme.", "Réparé dans les règles de l'art."],
+        "retro90s": ["RÉPARÉ !! BLIP C'EST LE BOSS !!", "GG BLIP ! Écran tout neuf !!"]
+      }
     }
   },
   "stats": {
