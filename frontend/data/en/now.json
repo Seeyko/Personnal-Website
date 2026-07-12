@@ -1,8 +1,8 @@
 {
-  "date": "April 2026",
+  "date": "July 2026",
   "headerLabel": "WHERE I'M AT",
   "intro": "",
   "paragraph": [
-    { "text": "Last month I took on a 6-month mission on top of the Lead Front-End role: Platform Architect at CBA, working on the dev platform and agentic AI for product and tech teams. AgatheYou keeps shipping. Two side projects in the oven, no freelance window this quarter." }
+    { "text": "For a few months now I've been running a Platform Architect mission at CBA alongside the Lead Front-End role: dev platform and agentic AI for the product and tech teams. Right in the thick of it. I'm also wrapping up the RideMyPark rebuild — the old WordPress site rebuilt from scratch in React + Go, coded end to end with AI. A rewrite I'd been putting off for four years, done in a month. No freelance availability right now, my hands are already full." }
   ]
 }
