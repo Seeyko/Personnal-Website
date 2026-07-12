@@ -3,6 +3,8 @@
   "headerLabel": "WHERE I'M AT",
   "intro": "",
   "paragraph": [
-    { "text": "For a few months now I've been running a Platform Architect mission at CBA alongside the Lead Front-End role. I set the architecture and standards around agentic AI, and I'm building the internal platform that will carry it all: composing agentic workflows, sharing plugins and skills, everything to equip the product and tech teams. I support those teams day to day, and I've trained around a hundred people on LLMs — the theory, the best practices, how to actually work with Claude — an effort that's still going. I'm also wrapping up the RideMyPark rebuild: the old WordPress site rebuilt from scratch in React + Go, coded end to end with AI. A rewrite I'd been putting off for four years, done in a month. No freelance availability right now, my hands are already full." }
+    { "text": "For a few months now I've been running a Platform Architect mission at CBA alongside the Lead Front-End role. I set the architecture and standards around agentic AI, and I'm building the internal platform that will carry it all — a solution built on " },
+    { "link": { "text": "MnM", "url": "https://github.com/AlphaLuppi/mnm" } },
+    { "text": " : composing agentic workflows, sharing plugins and skills, everything to equip the product and tech teams. I support those teams day to day, and I've trained around a hundred people on LLMs — the theory, the best practices, how to actually work with Claude — an effort that's still going. I'm also wrapping up the RideMyPark rebuild: the old WordPress site rebuilt from scratch in React + Go, coded end to end with AI. A rewrite I'd been putting off for four years, done in a month. No freelance availability right now, my hands are already full." }
   ]
 }
