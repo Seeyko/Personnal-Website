@@ -3,10 +3,10 @@
   "headerLabel": "OÙ J'EN SUIS",
   "intro": "",
   "paragraph": [
-    { "text": "Ça fait quelques mois que je mène, en parallèle du Lead Front-End, une mission de Platform Architect chez CBA. J'y définis l'archi et les standards autour de l'IA agentique, et je construis la plateforme interne qui va porter tout ça — une solution basée sur " },
+    { "text": "Ça fait quelques mois que je mène, en parallèle du Lead Front-End, une mission de Platform Architect chez CBA. J'y définis l'archi et les standards autour de l'IA agentique, et je construis la plateforme interne qui va porter tout ça. Une solution basée sur " },
     { "link": { "text": "MnM", "url": "https://github.com/AlphaLuppi/mnm" } },
     { "text": " : création de workflows agentiques, partage de plugins et de skills, de quoi outiller les équipes produit et tech. Je ne fais pas ça tout seul : avec " },
     { "link": { "text": "Gabriel Desbouis", "url": "https://fr.linkedin.com/in/gabriel-desbouis" } },
-    { "text": ", ingénieur IA, on a formé une centaine de personnes aux LLM — lui sur la théorie, moi sur la pratique et l'accompagnement au quotidien — et le chantier continue. Gabriel développe aussi, par-dessus la plateforme, tout un catalogue d'outils sur mesure, du simple agent à de vrais outils agentiques plus poussés. En ce moment je termine aussi la refonte de RideMyPark : l'ancien site WordPress repart de zéro en React + Go, codé de bout en bout avec l'IA. Une refonte que je repoussais depuis quatre ans, bouclée en un mois. Pas de dispo freelance en ce moment, j'ai déjà les mains bien pleines." }
+    { "text": ", ingénieur IA, on a formé une centaine de personnes aux LLM : lui sur la théorie, moi sur la pratique et l'accompagnement au quotidien. Et le chantier continue. Gabriel développe aussi, par-dessus la plateforme, des outils sur mesure, du simple agent à de vrais outils agentiques plus poussés. En ce moment je termine aussi la refonte de RideMyPark : l'ancien site WordPress repart de zéro en React + Go, codé de bout en bout avec l'IA. Une refonte que je repoussais depuis quatre ans, bouclée en un mois. Pas de dispo freelance en ce moment, j'ai déjà les mains bien pleines." }
   ]
 }

@@ -73,7 +73,7 @@
         {
           "hash": "rmp2026",
           "date": "2026-06",
-          "message": "Full rebuild — React + Go, coded with AI",
+          "message": "Full rebuild in React + Go, coded with AI",
           "author": "Ride My Park",
           "details": {
             "title": "Technical rebuild",
@@ -169,7 +169,7 @@
         {
           "hash": "cba2026pa",
           "date": "2026-04",
-          "message": "Platform Architect mission — Platform & Agentic AI (6 months)",
+          "message": "Platform Architect mission: Platform & Agentic AI (6 months)",
           "author": "CBA Informatique Liberale",
           "details": {
             "title": "Platform Architect (Platform & Agentic AI)",
@@ -177,7 +177,7 @@
             "company": "CBA Informatique Liberale",
             "location": "Avignon, France",
             "dateRange": "Apr 2026 → Sept 2026",
-            "description": "6-month mission (Apr. 2026 → Sept. 2026) alongside the Lead Front-End role. Designing the architecture and standards around agentic AI and building the internal platform (based on MnM): agentic workflows, plugin and skill sharing for product and tech teams. With Gabriel Desbouis (AI engineer), trained around a hundred people on LLMs — him on the theory, me on the hands-on side and day-to-day support.",
+            "description": "6-month mission (Apr. 2026 → Sept. 2026) alongside the Lead Front-End role. Designing the architecture and standards around agentic AI and building the internal platform (based on MnM): agentic workflows, plugin and skill sharing for product and tech teams. With Gabriel Desbouis (AI engineer), trained around a hundred people on LLMs: him on the theory, me on the hands-on side and day-to-day support.",
             "tags": ["Agentic AI", "Platform Engineering", "LLM & Training", "Developer Experience"]
           }
         }

@@ -73,7 +73,7 @@
         {
           "hash": "rmp2026",
           "date": "2026-06",
-          "message": "Refonte complète — React + Go, codée avec l'IA",
+          "message": "Refonte complète en React + Go, codée avec l'IA",
           "author": "Ride My Park",
           "details": {
             "title": "Refonte technique",
@@ -169,7 +169,7 @@
         {
           "hash": "cba2026pa",
           "date": "2026-04",
-          "message": "Mission Platform Architect — Plateforme & IA Agentique (6 mois)",
+          "message": "Mission Platform Architect : Plateforme & IA Agentique (6 mois)",
           "author": "CBA Informatique Liberale",
           "details": {
             "title": "Platform Architect (Plateforme & IA Agentique)",
@@ -177,7 +177,7 @@
             "company": "CBA Informatique Liberale",
             "location": "Avignon, France",
             "dateRange": "Avr 2026 → Sept 2026",
-            "description": "Mission de 6 mois (avr. 2026 → sept. 2026) menée en parallèle du Lead Front-End. Conception de l'architecture et des standards autour de l'IA agentique, et construction de la plateforme interne (basée sur MnM) : workflows agentiques, partage de plugins et de skills pour les équipes produit et tech. Avec Gabriel Desbouis (ingénieur IA), formation d'une centaine de personnes aux LLM — lui la théorie, moi la pratique et l'accompagnement au quotidien.",
+            "description": "Mission de 6 mois (avr. 2026 → sept. 2026) menée en parallèle du Lead Front-End. Conception de l'architecture et des standards autour de l'IA agentique, et construction de la plateforme interne (basée sur MnM) : workflows agentiques, partage de plugins et de skills pour les équipes produit et tech. Avec Gabriel Desbouis (ingénieur IA), formation d'une centaine de personnes aux LLM : lui la théorie, moi la pratique et l'accompagnement au quotidien.",
             "tags": ["IA Agentique", "Platform Engineering", "LLM & Formation", "Developer Experience"]
           }
         }
