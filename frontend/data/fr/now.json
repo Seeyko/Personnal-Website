@@ -3,6 +3,6 @@
   "headerLabel": "OÙ J'EN SUIS",
   "intro": "",
   "paragraph": [
-    { "text": "Ça fait quelques mois que je mène, en parallèle du Lead Front-End, une mission de Platform Architect chez CBA : plateforme dev et IA agentique pour les équipes produit et tech. En plein dedans. En ce moment je termine aussi la refonte de RideMyPark — l'ancien site WordPress repart de zéro en React + Go, codé de bout en bout avec l'IA. Une refonte que je repoussais depuis quatre ans, bouclée en un mois. Pas de dispo freelance en ce moment, j'ai déjà les mains bien pleines." }
+    { "text": "Ça fait quelques mois que je mène, en parallèle du Lead Front-End, une mission de Platform Architect chez CBA. J'y définis l'archi et les standards autour de l'IA agentique, et je construis la plateforme interne qui va porter tout ça : création de workflows agentiques, partage de plugins et de skills, de quoi outiller les équipes produit et tech. J'accompagne ces équipes au quotidien, et j'ai formé une centaine de personnes aux LLM — les bases théoriques, les bonnes pratiques, comment vraiment bosser avec Claude — un chantier de formation qui continue. En ce moment je termine aussi la refonte de RideMyPark : l'ancien site WordPress repart de zéro en React + Go, codé de bout en bout avec l'IA. Une refonte que je repoussais depuis quatre ans, bouclée en un mois. Pas de dispo freelance en ce moment, j'ai déjà les mains bien pleines." }
   ]
 }
