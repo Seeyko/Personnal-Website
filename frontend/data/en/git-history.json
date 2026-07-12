@@ -69,6 +69,20 @@
             "description": "The largest database of skateparks, street spots, pumptracks, events and shops for extreme sports. 30K+ users reached.",
             "tags": ["Flutter", "WordPress", "API REST", "UX/UI"]
           }
+        },
+        {
+          "hash": "rmp2026",
+          "date": "2026-06",
+          "message": "Full rebuild — React + Go, coded with AI",
+          "author": "Ride My Park",
+          "details": {
+            "title": "Technical rebuild",
+            "markerLabel": "RMP rebuild",
+            "company": "Ride My Park",
+            "location": "ridemypark.com",
+            "description": "Migrating the old WordPress site to a new React + Go stack, coded end to end with AI. A rewrite put off for four years, done in a month.",
+            "tags": ["React", "Go", "AI", "Rebuild"]
+          }
         }
       ]
     },
@@ -163,8 +177,8 @@
             "company": "CBA Informatique Liberale",
             "location": "Avignon, France",
             "dateRange": "Apr 2026 → Sept 2026",
-            "description": "6-month mission (Apr. 2026 → Sept. 2026) alongside the Lead Front-End role. Design and evolve a development and design platform, integrate agentic capabilities, support product and tech teams, spread a platform culture.",
-            "tags": ["Agentic AI", "Platform Engineering", "Developer Experience", "Product Experience"]
+            "description": "6-month mission (Apr. 2026 → Sept. 2026) alongside the Lead Front-End role. Designing the architecture and standards around agentic AI and building the internal platform (based on MnM): agentic workflows, plugin and skill sharing for product and tech teams. With Gabriel Desbouis (AI engineer), trained around a hundred people on LLMs — him on the theory, me on the hands-on side and day-to-day support.",
+            "tags": ["Agentic AI", "Platform Engineering", "LLM & Training", "Developer Experience"]
           }
         }
       ]

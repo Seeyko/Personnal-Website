@@ -1,8 +1,12 @@
 {
-  "date": "April 2026",
+  "date": "July 2026",
   "headerLabel": "WHERE I'M AT",
   "intro": "",
   "paragraph": [
-    { "text": "Last month I took on a 6-month mission on top of the Lead Front-End role: Platform Architect at CBA, working on the dev platform and agentic AI for product and tech teams. AgatheYou keeps shipping. Two side projects in the oven, no freelance window this quarter." }
+    { "text": "For a few months now I've been running a Platform Architect mission at CBA alongside the Lead Front-End role. I set the architecture and standards around agentic AI, and I'm building the internal platform that will carry it all — a solution built on " },
+    { "link": { "text": "MnM", "url": "https://github.com/AlphaLuppi/mnm" } },
+    { "text": " : composing agentic workflows, sharing plugins and skills, everything to equip the product and tech teams. I'm not doing this solo: with " },
+    { "link": { "text": "Gabriel Desbouis", "url": "https://fr.linkedin.com/in/gabriel-desbouis" } },
+    { "text": ", an AI engineer, we've trained around a hundred people on LLMs — him on the theory, me on the hands-on side and day-to-day support — and it's still going. Gabriel also builds, on top of the platform, a whole catalogue of custom tools, from simple agents to more advanced agentic ones. I'm also wrapping up the RideMyPark rebuild: the old WordPress site rebuilt from scratch in React + Go, coded end to end with AI. A rewrite I'd been putting off for four years, done in a month. No freelance availability right now, my hands are already full." }
   ]
 }
