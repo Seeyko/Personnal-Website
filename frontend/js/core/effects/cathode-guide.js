@@ -405,7 +405,7 @@ const CathodeGuide = (() => {
         CTA_CLEARANCE: 150,          // keep clear of the bottom-right floating CTA
         IDLE_BEFORE_CLIMB_MS: 9000,  // visitor inactivity before she climbs things
         MAX_PERCH_HOPS: 4,           // stepping-stone hops before coming down
-        PERCH_SELECTOR: '.project-card, .git-commit-marker, .now-card, .about-card, .contact-card, .hero-cta',
+        PERCH_SELECTOR: '.project-card, .git-commit-marker, .mobile-commit, .now-card, .about-card, .contact-card, .hero-cta',
         QUIP_CHANCE: 0.65,
         QUIP_VISIBLE_MS: 4600
     };
@@ -575,15 +575,24 @@ const CathodeGuide = (() => {
         nextThinkAt = now + 1500 + Math.random() * 1400;
     }
 
+    // Both timeline layouts are "stepping stones over water": the desktop
+    // horizontal markers (.git-commit-marker) and the mobile vertical commit
+    // cards (.mobile-commit), which replace them below 1024px. The desktop
+    // markers are display:none on mobile, so without the mobile class she'd
+    // have nothing on the timeline to hop across on a phone.
+    function isTimelineStone(el) {
+        return !!(el && el.classList &&
+            (el.classList.contains('git-commit-marker') || el.classList.contains('mobile-commit')));
+    }
+
     function startJump(toX, toY, perch, now) {
         const dist = Math.hypot(toX - px, toY - py);
-        // Timeline commit markers are stepping stones over water. When she's
-        // hopping onto one (the first climb) or between them (stone to stone),
-        // stretch the leap: slower, with a taller arc, so it reads as a
-        // careful hop with a real hang at the apex instead of a quick skip.
-        // Every other perch (cards, CTAs) keeps the snappy default hop.
-        const steppingStone = !!(perch && perch.classList &&
-            perch.classList.contains('git-commit-marker'));
+        // Timeline commits are stepping stones over water. When she's hopping
+        // onto one (the first climb) or between them (stone to stone), stretch
+        // the leap: slower, with a taller arc, so it reads as a careful hop
+        // with a real hang at the apex instead of a quick skip. Every other
+        // perch (cards, CTAs) keeps the snappy default hop.
+        const steppingStone = isTimelineStone(perch);
         const dur = steppingStone
             ? Math.min(1400, 680 + dist * 0.85)
             : Math.min(950, 420 + dist * 0.55);
@@ -633,18 +642,32 @@ const CathodeGuide = (() => {
         return c[Math.floor(Math.random() * Math.min(3, c.length))];
     }
 
-    // Stepping stones: from one timeline commit to a close-enough neighbor.
+    // Stepping stones: from one timeline commit to a close-enough neighbor of
+    // the same kind. Desktop markers sit in a horizontal row, so she steps
+    // sideways to the nearest one; the mobile commit cards stack vertically,
+    // so she steps down (or up) the list to the card above/below.
     function nextMarkerFrom(el) {
-        if (!el || !el.classList || !el.classList.contains('git-commit-marker')) return null;
+        if (!isTimelineStone(el)) return null;
+        const mobile = el.classList.contains('mobile-commit');
         const from = el.getBoundingClientRect();
-        let best = null, bestDx = Infinity;
+        let best = null, bestD = Infinity;
         perchCandidates().forEach(cand => {
-            if (!cand.classList.contains('git-commit-marker')) return;
+            if (cand === el) return;
+            if (mobile ? !cand.classList.contains('mobile-commit')
+                       : !cand.classList.contains('git-commit-marker')) return;
             const r = cand.getBoundingClientRect();
-            const dx = Math.abs(r.left - from.left);
-            if (dx > 30 && dx < 420 && Math.abs(r.top - from.top) < 220 && dx < bestDx) {
-                best = cand;
-                bestDx = dx;
+            if (mobile) {
+                const dy = Math.abs(r.top - from.top);
+                if (dy > 30 && dy < 460 && Math.abs(r.left - from.left) < 60 && dy < bestD) {
+                    best = cand;
+                    bestD = dy;
+                }
+            } else {
+                const dx = Math.abs(r.left - from.left);
+                if (dx > 30 && dx < 420 && Math.abs(r.top - from.top) < 220 && dx < bestD) {
+                    best = cand;
+                    bestD = dx;
+                }
             }
         });
         return best;
