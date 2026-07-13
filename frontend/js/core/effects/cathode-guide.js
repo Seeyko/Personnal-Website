@@ -76,6 +76,7 @@ const CathodeGuide = (() => {
     let mqReduced = null;
 
     let currentSectionKey = null;
+    let hasBooted = false;      // the CRT power-on entrance plays once, not per section
     const visited = new Set();
     const timers = new Set();
 
@@ -254,7 +255,20 @@ const CathodeGuide = (() => {
                 setLifeState('stand');
                 nextThinkAt = performance.now() + 3000;
             }
-            playEnter(key, true);
+            if (!hasBooted) {
+                // Very first reaction of the visit: the full TV pop / boot entrance.
+                hasBooted = true;
+                playEnter(key, true);
+            } else {
+                // Every later new section: she's already on screen, so don't
+                // replay the power-on animation (that read as if she reloaded on
+                // each scroll). Just switch to this section's idle look and let
+                // her say her line, no reflow-restarted pop/boot.
+                root.classList.remove('cg-enter', 'cg-enter-boot', 'cg-exit');
+                setIdle(key);
+                setTimer(() => showBubble(key), prefersReduced() ? 0 : 200);
+                setTimer(() => hideBubble(), (prefersReduced() ? 0 : 200) + BUBBLE_VISIBLE_MS);
+            }
         } else {
             // Section revisited: screen state still updates, but quietly -
             // no re-entry pop, no repeat bubble.
