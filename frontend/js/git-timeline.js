@@ -15,6 +15,12 @@ const GitTimeline = (() => {
     let overlay = null;
     let activeCommit = null;
     let scrollContainer = null;
+    // Guards listeners attached to persistent objects (window/document/the
+    // scroll container). render() re-runs on every resize, so without this
+    // flag those listeners would stack on each render — and because the
+    // resize handler itself calls render(), the count would compound on
+    // every resize until the tab runs out of memory and reloads.
+    let globalListenersBound = false;
 
     // ═══════════════════════════════════════════════════════════════
     // CONFIGURATION
@@ -571,7 +577,14 @@ const GitTimeline = (() => {
     // ═══════════════════════════════════════════════════════════════
 
     /**
-     * Set up all event listeners
+     * Set up per-render event listeners.
+     *
+     * These bind to nodes that render() recreates every time (the commit
+     * markers and the overlay), so re-binding here is correct: the previous
+     * nodes are discarded with the old innerHTML and their listeners are
+     * garbage-collected along with them. Listeners on persistent objects
+     * (window/document/scroll container) must NOT live here — see
+     * setupGlobalListeners().
      */
     function setupEvents() {
         // Commit marker hover/click
@@ -592,26 +605,43 @@ const GitTimeline = (() => {
             });
         });
 
-        // Overlay hover
+        // Overlay hover (overlay is recreated by createOverlay() each render,
+        // and the old one is removed, so this does not accumulate)
         if (overlay) {
             overlay.addEventListener('mouseleave', hideOverlay);
         }
 
-        // Click outside
+        // Listeners on window/document/scroll container — bound exactly once
+        setupGlobalListeners();
+    }
+
+    /**
+     * Set up listeners on persistent objects (window, document, the scroll
+     * container). These survive re-renders, so they are bound a single time.
+     * Binding them per render() would stack duplicates and, via the resize
+     * handler that re-invokes render(), compound on every resize — the memory
+     * leak that made the page lag and eventually reload.
+     */
+    function setupGlobalListeners() {
+        if (globalListenersBound) return;
+        globalListenersBound = true;
+
+        // Click outside → hide overlay
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.git-commit-marker') && !e.target.closest('.git-timeline-overlay')) {
                 hideOverlay();
             }
         });
 
-        // Update overlay position on scroll
+        // Update overlay position on scroll (reads the module-scoped
+        // scrollContainer / overlay / activeCommit at event time)
         scrollContainer?.addEventListener('scroll', () => {
             if (activeCommit && overlay?.classList.contains('active')) {
                 showOverlay(activeCommit);
             }
         });
 
-        // Scroll-jacking for horizontal scroll
+        // Scroll-jacking for horizontal scroll + resize re-render
         setupScrollJacking();
     }
 

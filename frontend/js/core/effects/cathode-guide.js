@@ -577,10 +577,22 @@ const CathodeGuide = (() => {
 
     function startJump(toX, toY, perch, now) {
         const dist = Math.hypot(toX - px, toY - py);
+        // Timeline commit markers are stepping stones over water. When she's
+        // hopping onto one (the first climb) or between them (stone to stone),
+        // stretch the leap: slower, with a taller arc, so it reads as a
+        // careful hop with a real hang at the apex instead of a quick skip.
+        // Every other perch (cards, CTAs) keeps the snappy default hop.
+        const steppingStone = !!(perch && perch.classList &&
+            perch.classList.contains('git-commit-marker'));
+        const dur = steppingStone
+            ? Math.min(1400, 680 + dist * 0.85)
+            : Math.min(950, 420 + dist * 0.55);
+        const peak = steppingStone
+            ? 70 + Math.min(120, dist * 0.3)
+            : 36 + Math.min(90, dist * 0.22);
         jumpArc = {
             fromX: px, fromY: py, toX, toY, perch: perch || null,
-            start: now, dur: Math.min(950, 420 + dist * 0.55),
-            peak: 36 + Math.min(90, dist * 0.22)
+            start: now, dur, peak
         };
         if (Math.abs(toX - px) > 4) dir = toX >= px ? 1 : -1;
         setLifeState('jump');
