@@ -18,8 +18,19 @@
  *   then dozes off and fades away until the next touch.
  */
 const BlipCursor = (() => {
-    const THEMES = ['terminal', 'default', 'blueprint', 'retro90s'];
+    const THEMES = ['terminal', 'default', 'blueprint', 'retro90s', 'fps'];
     const DEFAULT_THEME = 'default';
+
+    // FPS theme wants a tactical crosshair feel: Blip must SNAP to the pointer
+    // with zero overshoot instead of trailing on the under-damped spring the
+    // other themes use. Guarded so every other theme's motion is untouched.
+    function isFpsSnap() {
+        return document.body && document.body.dataset && document.body.dataset.theme === 'fps';
+    }
+
+    // fps only: how far down-right of the crosshair Blip's tip parks, so the two
+    // never overlap into a double-cursor (matches the menu mockup's +20px offset).
+    const FPS_SNAP_OFFSET = 20;
 
     // Links/buttons get the "leaning toward target" hover state. Native form
     // controls are handled separately below (real caret, dimmed Blip).
@@ -151,16 +162,30 @@ const BlipCursor = (() => {
         lastTickAt = now;
         if (dt > MAX_DT) dt = MAX_DT;
         if (dt > 0) {
-            velX += ((targetX - curX) * SPRING_K - velX * SPRING_C) * dt;
-            velY += ((targetY - curY) * SPRING_K - velY * SPRING_C) * dt;
-            curX += velX * dt;
-            curY += velY * dt;
-            if (Math.abs(targetX - curX) < SETTLE_DIST && Math.abs(targetY - curY) < SETTLE_DIST &&
-                Math.abs(velX) < SETTLE_VEL && Math.abs(velY) < SETTLE_VEL) {
-                curX = targetX;
-                curY = targetY;
-                velX = 0;
-                velY = 0;
+            if (isFpsSnap()) {
+                // Direct follow: derive velocity from the frame delta (drives the
+                // dry tilt/stretch body language) then hard-snap. Offset down-right
+                // of the pointer (like the menu mockup's Blip) so he sits beside
+                // the tactical crosshair as a companion, not stacked on top of it
+                // as a second cursor.
+                const fx = targetX + FPS_SNAP_OFFSET;
+                const fy = targetY + FPS_SNAP_OFFSET;
+                velX = (fx - curX) / dt;
+                velY = (fy - curY) / dt;
+                curX = fx;
+                curY = fy;
+            } else {
+                velX += ((targetX - curX) * SPRING_K - velX * SPRING_C) * dt;
+                velY += ((targetY - curY) * SPRING_K - velY * SPRING_C) * dt;
+                curX += velX * dt;
+                curY += velY * dt;
+                if (Math.abs(targetX - curX) < SETTLE_DIST && Math.abs(targetY - curY) < SETTLE_DIST &&
+                    Math.abs(velX) < SETTLE_VEL && Math.abs(velY) < SETTLE_VEL) {
+                    curX = targetX;
+                    curY = targetY;
+                    velX = 0;
+                    velY = 0;
+                }
             }
         }
         applyTransform();

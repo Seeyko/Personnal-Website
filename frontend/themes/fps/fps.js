@@ -1,0 +1,539 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * FPS ARENA PORTFOLIO — Theme JavaScript
+ * "de_portfolio" — CS Panorama tactical main-menu aesthetic.
+ *
+ * The HUD chrome (background scene, left rail, profile/rank card, friends
+ * list, telemetry bar, crosshair, hit FX) is INJECTED into the DOM at
+ * runtime — it wraps the real single-page site rather than replacing it.
+ * The existing sections (#now/#work/#timeline/#about/#contact) stay the
+ * source of truth; the top nav tabs (the real header nav, restyled) and the
+ * left rail simply navigate to them.
+ *
+ * Everything is ultra-snappy: instant hovers, pixel-snap crosshair, no
+ * smoothing. Sound is a tiny synthesized Web Audio module (mute persisted).
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+console.log('%c[de_portfolio] FPS menu online', 'color:#54a3ff;font-weight:bold;');
+
+const RM_FPS = !!(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches);
+
+/* ───────────────────────── Synthesized SFX ─────────────────────────
+   Same shape as the terminal theme's Web Audio infra: lazily-created
+   context unlocked on the first gesture, a mute flag persisted in
+   localStorage, and a handful of short cues (hit / hover / tab). */
+const FpsSound = (() => {
+    let ctx = null;
+    let on = true;
+    try { on = localStorage.getItem('fps-sfx') !== 'off'; } catch (e) { /* private mode */ }
+
+    function ensure() {
+        const C = window.AudioContext || window.webkitAudioContext;
+        if (C && !ctx) ctx = new C();
+        if (ctx && ctx.state === 'suspended') ctx.resume();
+        return ctx;
+    }
+    function tone(t, d, v, type, f0, f1) {
+        if (!ctx) return;
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = type;
+        o.frequency.setValueAtTime(f0, t);
+        if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(f1, 1), t + d);
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(v, t + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0008, t + d);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(t); o.stop(t + d + 0.03);
+    }
+    const running = () => on && ctx && ctx.state === 'running';
+    return {
+        ensure,
+        isOn: () => on,
+        setOn(v) {
+            on = v === undefined ? !on : !!v;
+            try { localStorage.setItem('fps-sfx', on ? 'on' : 'off'); } catch (e) { /* ignore */ }
+            return on;
+        },
+        hit() { if (!running()) return; const t = ctx.currentTime; tone(t, 0.05, 0.12, 'square', 1700, 2200); tone(t + 0.006, 0.05, 0.08, 'square', 2500, 2600); },
+        hover() { if (!running()) return; tone(ctx.currentTime, 0.02, 0.04, 'square', 900, 900); },
+        tab() { if (!running()) return; const t = ctx.currentTime; tone(t, 0.04, 0.08, 'square', 560, 720); }
+    };
+})();
+
+// Console mute toggle (persisted), mirrors the terminal theme's window.sound.
+window.sound = function (v) {
+    const state = FpsSound.setOn(v);
+    const btn = document.getElementById('fps-mute');
+    if (btn) btn.classList.toggle('fps-muted', !state);
+    console.log(`%c[AUDIO] UI sounds ${state ? 'enabled' : 'disabled'}`, 'color:#8fce5b;');
+    return state;
+};
+
+/* ───────────────────────── Buy-menu tiles ─────────────────────────
+   Weapon-style icons + a fictional money-green price, cycled by slot. */
+const FPS_WEAPONS = [
+    '<svg viewBox="0 0 48 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 15h9l3-6h14l4 6h14"/><circle cx="12" cy="15" r="2.4"/><circle cx="34" cy="15" r="2.4"/></svg>',
+    '<svg viewBox="0 0 48 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="10" y="4" width="28" height="12"/><path d="M24 4v12"/></svg>',
+    '<svg viewBox="0 0 48 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 16l10-12 6 8 5-5 9 9"/></svg>',
+    '<svg viewBox="0 0 48 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="24" cy="10" r="6"/><path d="M8 10h10M30 10h10"/></svg>',
+    '<svg viewBox="0 0 48 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6h20l6 4-6 4H6z"/><path d="M32 10h10"/></svg>'
+];
+const FPS_PRICES = [4700, 3500, 5200, 2600, 3900, 4500, 2700, 5000];
+
+function fpsWeaponIcon(n) { return `<span class="fps-buy-icon">${FPS_WEAPONS[(n - 1) % FPS_WEAPONS.length]}</span>`; }
+function fpsPrice(n) { return FPS_PRICES[(n - 1) % FPS_PRICES.length]; }
+
+const fpsThemeConfig = {
+    name: 'FPS',
+
+    cards: {
+        // Buy-menu tile: reuses the shared card renderer (title/desc/tags come
+        // from the real project data + i18n); we only theme the chrome.
+        wrapperClass: 'project-card fps-buy fade-in-up',
+        tagWrapper: '{tag}',
+        headerTemplate: (project, idx) => {
+            const n = parseInt(idx, 10);
+            return `
+                <div class="fps-buy-head">
+                    <span class="fps-buy-num">${n}</span>
+                    <span class="fps-buy-price">$${fpsPrice(n)}</span>
+                </div>
+                ${fpsWeaponIcon(n)}
+            `;
+        },
+        footerTemplate: (project, idx) => {
+            const n = parseInt(idx, 10);
+            return `
+                <div class="fps-buy-foot">
+                    <span class="fps-buy-slot">SLOT ${n}</span>
+                    <span class="fps-buy-cta">BUY&nbsp;&#9656;</span>
+                </div>
+            `;
+        }
+    },
+
+    blogCards: {
+        wrapperClass: 'blog-card fps-buy fade-in-up',
+        headerTemplate: (article, idx) => `<div class="fps-buy-head"><span class="fps-buy-num">${parseInt(idx, 10)}</span><span class="fps-buy-price">INTEL</span></div>`
+    },
+
+    initEffects: initFpsEffects,
+
+    onReady: () => console.log('%c[de_portfolio] READY — GLHF', 'color:#8fce5b;')
+};
+
+/* ───────────────────────── Chrome injection ───────────────────────── */
+function initFpsEffects() {
+    injectScene();
+    injectHud();
+    decorateTabs();
+    injectPlayerBadge();
+    injectMenuChrome();
+    buildSidePanel();
+    initCrosshairAndFx();
+    initParallax();
+    initTelemetry();
+    initScrollSpy();
+    bindSfx();
+}
+
+// Daylight parallax scene + scrim, fixed behind the scrolling content.
+function injectScene() {
+    if (document.getElementById('fps-scene')) return;
+    const scene = document.createElement('div');
+    scene.id = 'fps-scene';
+    scene.setAttribute('aria-hidden', 'true');
+    scene.innerHTML = `
+        <div class="fps-layer fps-sky" data-depth="6"><span class="fps-sun"></span></div>
+        <div class="fps-layer fps-skyline" data-depth="16">
+            <svg width="100%" height="100%" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMax slice">
+                <g fill="#8b97a1" opacity="0.55"><rect x="90" y="360" width="150" height="340"/><rect x="250" y="300" width="60" height="400"/><rect x="1000" y="330" width="120" height="370"/></g>
+                <path d="M430 700 C430 560 400 520 440 380 C470 470 470 560 470 700 Z" fill="#7c8892" opacity="0.6"/>
+                <path d="M560 700 C560 560 530 520 570 380 C600 470 600 560 600 700 Z" fill="#77838d" opacity="0.6"/>
+                <rect x="405" y="500" width="220" height="200" fill="#6d7883" opacity="0.5"/>
+                <g stroke="#5c6771" stroke-width="3" opacity="0.4"><line x1="120" y1="150" x2="120" y2="700"/><line x1="120" y1="180" x2="300" y2="230"/><line x1="120" y1="230" x2="300" y2="280"/></g>
+            </svg>
+        </div>
+        <div class="fps-layer fps-agent" data-depth="30">
+            <svg height="100%" viewBox="0 0 300 640" preserveAspectRatio="xMaxYMax meet">
+                <g fill="#2b3742"><path d="M150 40 q46 0 60 46 q10 40 -4 92 q30 14 40 70 l16 150 q6 60 -10 130 l-24 12 -10-120 -6 220 -104 0 -6-220 -10 120 -24-12 q-16-70 -10-130 l16-150 q10-56 40-70 q-14-52 -4-92 q14-46 60-46 Z"/></g>
+                <g fill="#0f1720"><circle cx="130" cy="96" r="12"/><circle cx="176" cy="96" r="12"/></g>
+                <rect x="120" y="120" width="60" height="10" fill="#1a232d"/>
+                <rect x="196" y="300" width="150" height="20" fill="#232f3a" transform="rotate(12 196 300)"/>
+            </svg>
+        </div>
+        <div class="fps-scrim"></div>
+    `;
+    document.body.insertBefore(scene, document.body.firstChild);
+}
+
+// Left icon rail (maps to the real sections) + top HUD accents + mute toggle.
+function injectHud() {
+    if (document.getElementById('fps-rail')) return;
+    const SECTIONS = [
+        { id: 'now', label: 'Now', icon: '<path d="M8 5v14l11-7z"/>', fill: true },
+        { id: 'work', label: 'Buy', icon: '<rect x="3" y="7" width="18" height="13"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>' },
+        { id: 'timeline', label: 'Log', icon: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>' },
+        { id: 'about', label: 'Profile', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>' },
+        { id: 'contact', label: 'Invite', icon: '<path d="M12 3v9"/><path d="M6.6 6.6a8 8 0 1 0 10.8 0"/>', warn: true }
+    ];
+    const rail = document.createElement('nav');
+    rail.id = 'fps-rail';
+    rail.setAttribute('aria-label', 'FPS menu rail');
+    rail.innerHTML = SECTIONS.map(s => `
+        <button class="fps-rail-btn${s.warn ? ' fps-warn' : ''}" data-target="${s.id}" title="${s.label}" aria-label="${s.label}">
+            <svg viewBox="0 0 24 24" ${s.fill ? 'fill="currentColor"' : 'fill="none" stroke="currentColor" stroke-width="2"'}>${s.icon}</svg>
+        </button>
+    `).join('') + `
+        <span class="fps-rail-gap"></span>
+        <button class="fps-rail-btn fps-mute" id="fps-mute" title="Sound" aria-label="Toggle sound">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="fps-sndwave" d="M16 9a4 4 0 0 1 0 6M18.5 7a7 7 0 0 1 0 10"/></svg>
+        </button>
+    `;
+    document.body.appendChild(rail);
+
+    rail.addEventListener('click', (e) => {
+        const btn = e.target.closest('.fps-rail-btn');
+        if (!btn) return;
+        FpsSound.ensure();
+        if (btn.id === 'fps-mute') {
+            const state = FpsSound.setOn();
+            btn.classList.toggle('fps-muted', !state);
+            FpsSound.tab();
+            return;
+        }
+        const target = document.getElementById(btn.dataset.target);
+        if (target) { target.scrollIntoView({ behavior: RM_FPS ? 'auto' : 'smooth', block: 'start' }); FpsSound.tab(); }
+    });
+    if (!FpsSound.isOn()) document.getElementById('fps-mute').classList.add('fps-muted');
+}
+
+// Turn the real header nav links into CS-style numbered tabs and wire SFX.
+function decorateTabs() {
+    const nav = document.getElementById('main-nav');
+    if (!nav) return;
+    nav.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.add('fps-tab');
+        link.addEventListener('click', () => { FpsSound.ensure(); FpsSound.tab(); });
+    });
+}
+
+// Tactical player badge, folded into the top-right HUD next to the (reskinned)
+// theme + language chips. Mirrors the mockup's top-right player mini-card so the
+// zone reads as HUD chrome instead of a loud default palette emoji. Data-driven.
+function injectPlayerBadge() {
+    const host = document.getElementById('header-controls');
+    if (!host || document.getElementById('fps-badge')) return;
+    const content = (window.ContentLoader && ContentLoader.content) || {};
+    const full = (content.meta && content.meta.name) || 'Tom Andrieu';
+    const handle = full.trim().toUpperCase().replace(/\s+/g, '_');
+    const initials = full.split(/\s+/).map(w => w[0] || '').join('').slice(0, 2).toUpperCase() || 'TA';
+    const badge = document.createElement('div');
+    badge.id = 'fps-badge';
+    badge.setAttribute('aria-hidden', 'true');
+    badge.innerHTML = `
+        <span class="fps-badge-av">${initials}</span>
+        <span class="fps-badge-who"><b>${handle}</b><small>&#9679; OPEN TO TALK</small></span>
+        <span class="fps-badge-shield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3.5v6c0 5.2-3.6 8.6-8 10-4.4-1.4-8-4.8-8-10v-6z"/><path d="M8.5 12l2.4 2.4L16 9"/></svg></span>
+    `;
+    host.insertBefore(badge, host.firstChild);
+}
+
+// Injects the CS main-menu framing the mockup leans on but the wrapped site
+// lacks: the boot-strip ribbon across the top, the NEWS + BUY-MENU panel-header
+// bars (with a live clock and a fake budget / buy-time countdown) and the hero
+// eyebrow. fps-only — this file never runs under another theme and a theme
+// switch full-reloads the page, so nothing here leaks elsewhere.
+function injectMenuChrome() {
+    if (!document.getElementById('fps-ribbon')) {
+        const rib = document.createElement('div');
+        rib.id = 'fps-ribbon';
+        rib.setAttribute('aria-hidden', 'true');
+        rib.innerHTML = `<span><b>de_portfolio</b> &middot; aper&ccedil;u th&egrave;me FPS</span>
+            <span class="fps-ribbon-sep">|</span>
+            <span>bouge la souris &middot; clique &middot; change d'onglet</span>`;
+        document.body.appendChild(rib);
+    }
+
+    const content = (window.ContentLoader && ContentLoader.content) || {};
+    const tier = (content.meta && content.meta.title) || '';
+
+    const hero = document.querySelector('.hero-content');
+    if (hero && !hero.querySelector('.fps-eyebrow')) {
+        const eyebrow = document.createElement('div');
+        eyebrow.className = 'fps-eyebrow';
+        eyebrow.textContent = tier
+            ? tier.toUpperCase().replace(/\s*·\s*/g, ' // ')
+            : 'PRODUCT BUILDER // AI TRANSFORMATION';
+        hero.insertBefore(eyebrow, hero.firstChild);
+
+        const newsH = document.createElement('div');
+        newsH.className = 'fps-menu-h fps-news-h';
+        newsH.setAttribute('aria-hidden', 'true');
+        newsH.innerHTML = `<span><span class="fps-h-dot"></span>NEWS &middot; EN CE MOMENT</span>
+            <span class="fps-clock" id="fps-clock">--:--:--</span>`;
+        hero.insertBefore(newsH, hero.firstChild);
+    }
+
+    // Secondary ghost CTA next to the filled hero CTA, mirroring the mockup's
+    // "Voir le travail" outline button. Text is i18n-driven (theme override).
+    const heroCta = document.getElementById('hero-cta');
+    if (heroCta && !document.getElementById('fps-cta-ghost')) {
+        const label = (window.LanguageManager && LanguageManager.t('ui.seeWork')) || 'Voir le travail';
+        const ghost = document.createElement('a');
+        ghost.id = 'fps-cta-ghost';
+        ghost.className = 'hero-cta fps-cta-ghost';
+        ghost.href = '#work';
+        ghost.innerHTML = `<span>${label}</span><span class="hero-cta-arrow">&#9656;</span>`;
+        ghost.addEventListener('click', () => {
+            const target = document.getElementById('work');
+            if (target) { FpsSound.ensure(); FpsSound.tab(); }
+        });
+        heroCta.insertAdjacentElement('afterend', ghost);
+    }
+
+    const workGrid = document.getElementById('work-grid');
+    if (workGrid && workGrid.parentNode && !document.getElementById('fps-buy-h')) {
+        const buyH = document.createElement('div');
+        buyH.id = 'fps-buy-h';
+        buyH.className = 'fps-menu-h fps-buy-menu-h';
+        buyH.setAttribute('aria-hidden', 'true');
+        buyH.innerHTML = `<span><span class="fps-h-dot"></span>WORK &middot; BUY MENU</span>
+            <span class="fps-buy-budget">$16&nbsp;000 &middot; BUY TIME <b id="fps-buytime">01:47</b></span>`;
+        workGrid.parentNode.insertBefore(buyH, workGrid);
+    }
+
+    startMenuClocks();
+}
+
+// Drives the NEWS clock + the fake buy-time countdown. The clock is plain text
+// (updates each second); the countdown only runs when motion is allowed.
+function startMenuClocks() {
+    const clock = document.getElementById('fps-clock');
+    const buytime = document.getElementById('fps-buytime');
+    const two = n => String(n).padStart(2, '0');
+    let remain = 107; // 01:47, loops
+    const tick = () => {
+        if (clock) {
+            const d = new Date();
+            clock.textContent = `${d.getFullYear()}-${two(d.getMonth() + 1)} · ${two(d.getHours())}:${two(d.getMinutes())}:${two(d.getSeconds())}`;
+        }
+        if (buytime && !RM_FPS) {
+            remain = remain > 0 ? remain - 1 : 107;
+            buytime.textContent = `${two(Math.floor(remain / 60))}:${two(remain % 60)}`;
+        }
+    };
+    tick();
+    // Under reduced motion, render a single static timestamp — no per-second
+    // repaint (the buy-time countdown is already frozen inside tick()).
+    if (!RM_FPS && (clock || buytime)) setInterval(tick, 1000);
+}
+
+// Profile/rank card + friends list, injected on the right. Data comes from the
+// already-populated DOM (social links + email + proof stats) so it stays
+// i18n-correct and never hardcodes content.
+function buildSidePanel() {
+    if (document.getElementById('fps-side')) return;
+    const content = (window.ContentLoader && ContentLoader.content) || {};
+    const name = (content.meta && content.meta.name) || 'TOM ANDRIEU';
+    // Keep the rank tier to a single segment ("Product Builder · AI Transf." →
+    // "Product Builder") so the profile card's tier line stays one tidy row
+    // instead of wrapping to three under the fixed-width side panel.
+    const rawTier = (content.meta && content.meta.title) || 'PRODUCT BUILDER';
+    const tier = rawTier.split('·')[0].trim() || rawTier;
+
+    // Rank stats from the hero social-proof block (data-driven).
+    const proof = [...document.querySelectorAll('.social-proof .proof-stat')].slice(0, 3).map(s => ({
+        n: (s.querySelector('.proof-number') || {}).textContent || '',
+        l: (s.querySelector('.proof-label') || {}).textContent || ''
+    }));
+    const statsHtml = proof.length
+        ? proof.map(p => `<div class="fps-stat"><b>${p.n}</b><small>${p.l}</small></div>`).join('')
+        : '<div class="fps-stat"><b>8+</b><small>years</small></div><div class="fps-stat"><b>30K</b><small>users</small></div><div class="fps-stat"><b>4</b><small>products</small></div>';
+
+    // Friends list from the real contact/social data.
+    const contacts = [];
+    const social = (content.contact && content.contact.social) || {};
+    const gh = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5a3.9 3.9 0 0 1 1-2.7c-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.3 9.3 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .3.3.6.9.6 1.8v2.7c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg>';
+    const li = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16"/><path d="M7 10v6M7 7v.01M11 16v-4a2 2 0 0 1 4 0v4"/></svg>';
+    const mail = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14"/><path d="M3 6l9 7 9-7"/></svg>';
+    if (social.github) contacts.push({ href: social.github, ext: true, icon: gh, name: 'GitHub', sub: 'shipping', st: '' });
+    if (social.linkedin) contacts.push({ href: social.linkedin, ext: true, icon: li, name: 'LinkedIn', sub: 'online', st: '' });
+    const emailEl = document.getElementById('email-link');
+    const emailHref = emailEl ? emailEl.getAttribute('href') : 'mailto:contact@tomandrieu.com';
+    const emailAddr = (content.contact && content.contact.email) || 'contact@tomandrieu.com';
+    contacts.push({ href: emailHref, ext: false, icon: mail, name: 'Email', sub: emailAddr.toLowerCase(), st: 'idle' });
+
+    const contactsHtml = contacts.map(c => `
+        <a class="fps-friend" href="${c.href}"${c.ext ? ' target="_blank" rel="noopener"' : ''}>
+            <span class="fps-friend-av">${c.icon}</span>
+            <span class="fps-friend-who"><b>${c.name}</b><small>${c.sub}</small></span>
+            <span class="fps-friend-st ${c.st}"></span>
+        </a>
+    `).join('');
+
+    const side = document.createElement('aside');
+    side.id = 'fps-side';
+    side.setAttribute('aria-hidden', 'true');
+    side.innerHTML = `
+        <section class="fps-panel fps-rankcard">
+            <div class="fps-panel-h"><span>PROFILE</span><span>PRIME</span></div>
+            <div class="fps-panel-b">
+                <div class="fps-rank-top">
+                    <div class="fps-medal">
+                        <svg viewBox="0 0 44 44"><path d="M22 3l16 7v11c0 10-7 17-16 20C13 38 6 31 6 21V10z" fill="rgba(242,177,52,.12)" stroke="#f2b134" stroke-width="2"/><path d="M15 22l5 5 9-12" fill="none" stroke="#f2b134" stroke-width="2.6"/></svg>
+                    </div>
+                    <div><div class="fps-rank-name">${name}</div><div class="fps-rank-tier">RANK &middot; ${tier}</div></div>
+                </div>
+                <div class="fps-xp"><div class="fps-xp-bar"><i></i></div><div class="fps-xp-lbl"><span>LVL 8+ YRS</span><span>NEXT: SHIP</span></div></div>
+                <div class="fps-stats">${statsHtml}</div>
+            </div>
+        </section>
+        <section class="fps-panel fps-friends">
+            <div class="fps-panel-h"><span>CONTACTS</span><span>${contacts.length} online</span></div>
+            ${contactsHtml}
+        </section>
+    `;
+    document.body.appendChild(side);
+}
+
+/* ─── Pixel-snap crosshair + hitmarker + damage numbers ─── */
+let fpsMouseX = window.innerWidth / 2;
+let fpsMouseY = window.innerHeight / 2;
+
+function initCrosshairAndFx() {
+    if (document.getElementById('fps-xhair')) return;
+    const xhair = document.createElement('div');
+    xhair.id = 'fps-xhair';
+    xhair.setAttribute('aria-hidden', 'true');
+    xhair.innerHTML = '<span class="fps-x-g"></span><span class="fps-x-d"></span>';
+    document.body.appendChild(xhair);
+
+    const fxLayer = document.createElement('div');
+    fxLayer.id = 'fps-fx';
+    fxLayer.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(fxLayer);
+
+    document.addEventListener('pointermove', (e) => {
+        fpsMouseX = e.clientX; fpsMouseY = e.clientY;
+        xhair.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
+        xhair.classList.add('on');
+    }, { passive: true });
+    document.addEventListener('pointerleave', () => xhair.classList.remove('on'));
+
+    document.addEventListener('pointerdown', (e) => {
+        FpsSound.ensure();
+        FpsSound.hit();
+        const h = document.createElement('div');
+        h.className = 'fps-hit';
+        h.style.left = e.clientX + 'px'; h.style.top = e.clientY + 'px';
+        h.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><line x1="4" y1="4" x2="9" y2="9"/><line x1="20" y1="4" x2="15" y2="9"/><line x1="4" y1="20" x2="9" y2="15"/><line x1="20" y1="20" x2="15" y2="15"/></svg>';
+        fxLayer.appendChild(h);
+        setTimeout(() => h.remove(), 200);
+
+        // Damage number when a real interactive tile / control is hit.
+        const tile = e.target.closest('.fps-buy, .fps-tab, .fps-rail-btn, .fps-friend, .hero-cta, .email-link, .social-btn');
+        if (tile) {
+            const d = document.createElement('div');
+            d.className = 'fps-dmg';
+            const money = tile.classList.contains('hero-cta') || tile.classList.contains('fps-buy');
+            d.textContent = money ? '+MVP' : '-' + (70 + Math.floor(Math.abs(fpsMouseX) % 60));
+            if (money) d.classList.add('fps-dmg-gold');
+            d.style.left = e.clientX + 'px'; d.style.top = (e.clientY - 14) + 'px';
+            fxLayer.appendChild(d);
+            setTimeout(() => d.remove(), 540);
+        }
+    }, { passive: true });
+}
+
+// Parallax on the background scene + Cathode (guarded off under reduced motion).
+function initParallax() {
+    if (RM_FPS) return;
+    const layers = [...document.querySelectorAll('#fps-scene .fps-layer')];
+    let ticking = false;
+    document.addEventListener('pointermove', () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            const ox = (fpsMouseX / window.innerWidth - 0.5);
+            const oy = (fpsMouseY / window.innerHeight - 0.5);
+            layers.forEach(l => {
+                const d = +l.dataset.depth || 10;
+                l.style.transform = `translate(${(-ox * d).toFixed(1)}px,${(-oy * d * 0.6).toFixed(1)}px)`;
+            });
+            if (window.CathodeGuide && CathodeGuide.setParallax) CathodeGuide.setParallax(-ox * 14, -oy * 8);
+            ticking = false;
+        });
+    }, { passive: true });
+}
+
+// Live telemetry numerals in the bottom bar.
+function initTelemetry() {
+    if (document.getElementById('fps-telemetry')) return;
+    const bar = document.createElement('div');
+    bar.id = 'fps-telemetry';
+    bar.setAttribute('aria-hidden', 'true');
+    bar.innerHTML = `
+        <span class="fps-m"><i>fps</i><b id="fps-t-fps">240</b></span>
+        <span class="fps-m"><i>var</i><b id="fps-t-var">0.2</b>ms</span>
+        <span class="fps-m"><i>ping</i><b id="fps-t-ping" class="fps-good">0</b>ms</span>
+        <span class="fps-m"><i>loss</i><b class="fps-good">0%</b></span>
+        <span class="fps-m"><i>choke</i><b class="fps-good">0%</b></span>
+        <span class="fps-m"><i>tick</i><b>128.0</b></span>
+        <span class="fps-m"><i>sv</i><b id="fps-t-sv">0.0</b></span>
+        <span class="fps-m"><i>rate</i><b>786432</b></span>
+        <span class="fps-m fps-map"><i>map</i><b>de_portfolio</b></span>
+    `;
+    document.body.appendChild(bar);
+    if (RM_FPS) return;
+    const fps = document.getElementById('fps-t-fps'),
+        vari = document.getElementById('fps-t-var'),
+        ping = document.getElementById('fps-t-ping'),
+        sv = document.getElementById('fps-t-sv');
+    let seed = 7;
+    const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+    setInterval(() => {
+        fps.textContent = 236 + Math.floor(rnd() * 9);
+        vari.textContent = (0.1 + rnd() * 0.4).toFixed(1);
+        ping.textContent = Math.floor(rnd() * 3);
+        sv.textContent = (rnd() * 0.6).toFixed(1);
+    }, 400);
+}
+
+// Scroll-spy: highlight the active tab + rail button for the section in view.
+function initScrollSpy() {
+    const ids = ['now', 'work', 'timeline', 'about', 'contact'];
+    const sections = ids.map(id => document.getElementById(id)).filter(Boolean);
+    if (!sections.length || !('IntersectionObserver' in window)) return;
+    const setActive = (id) => {
+        document.querySelectorAll('#main-nav .fps-tab').forEach(t =>
+            t.classList.toggle('fps-tab-active', (t.getAttribute('href') || '') === '#' + id));
+        document.querySelectorAll('#fps-rail .fps-rail-btn').forEach(b =>
+            b.classList.toggle('fps-rail-active', b.dataset.target === id));
+    };
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+    }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+    sections.forEach(s => io.observe(s));
+}
+
+// Hover cues on interactive chrome.
+function bindSfx() {
+    const bind = () => document.querySelectorAll('.fps-buy, .fps-tab, .fps-rail-btn, .fps-friend, .hero-cta')
+        .forEach(el => {
+            if (el.dataset.fpsHover) return;
+            el.dataset.fpsHover = '1';
+            el.addEventListener('pointerenter', () => { FpsSound.ensure(); FpsSound.hover(); });
+        });
+    bind();
+    // Buy tiles render after data loads; re-bind when the grid mutates.
+    const grid = document.getElementById('work-grid');
+    if (grid && 'MutationObserver' in window) new MutationObserver(bind).observe(grid, { childList: true });
+}
+
+/* ─── Init ─── */
+ThemeInit.exportBlogRenderer((article, index) =>
+    CardRenderer.renderBlogCard(article, index, fpsThemeConfig.blogCards));
+
+ThemeInit.whenReady(() => ThemeInit.init(fpsThemeConfig));
