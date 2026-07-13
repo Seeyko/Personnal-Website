@@ -7,18 +7,20 @@
    ═══════════════════════════════════════════════════════════════ */
 
 body[data-theme="fps"] {
-  /* bright Dust II daylight — hazy blue sky over sun-baked sand */
-  --sky-1:#8db6de; --sky-2:#bcd6ec; --sky-3:#ecdcb6; --haze:#f2e7cd;
-  --sand-1:#dcc79b; --sand-2:#cbb07d; --sand-3:#b7965f;
-  /* dark frosted glass — the HUD floats over the bright map */
-  --glass:rgba(12,18,26,.62); --glass-2:rgba(18,26,36,.72);
-  --glass-line:rgba(150,180,205,.24); --glass-line-2:rgba(150,180,205,.13);
+  /* bright Dust II daylight — one warm, luminous, sunlit sand field */
+  --sand-1:#e3d0a1;
+  /* crisp cool-navy HUD glass — opaque enough to stay clean over the warm sand
+     (a translucent dark just muddies to brown), so it reads as a real HUD */
+  --glass:rgba(11,17,27,.88); --glass-2:rgba(16,24,36,.93);
+  --glass-line:rgba(150,190,228,.34); --glass-line-2:rgba(150,190,228,.15);
+  /* soft warm drop-shadow lifts every HUD plate off the sand */
+  --hud-shadow:0 16px 34px -14px rgba(28,18,3,.55), 0 3px 8px rgba(28,18,3,.20);
   /* ink + text */
-  --fg:#eaf1f7; --fg-dim:#aebecc; --muted:#7f8f9d;
+  --fg:#eef4fa; --fg-dim:#b3c2d0; --muted:#8496a4;
   /* dark ink for text that sits directly on the bright sand (no panel) */
-  --ink:#1a2530; --ink-dim:#33424f;
-  /* accents — bright marks read on the dark glass panels */
-  --accent:#2f7fe0; --accent-2:#7bbcff; --money:#8fce5b; --gold:#f2b134;
+  --ink:#1a2530; --ink-dim:#3a4a57;
+  /* accents — warm sand + cool blue is the complementary pair; green/gold pop */
+  --accent:#2f80e6; --accent-2:#7cbcff; --money:#8fd25c; --gold:#f4b73a;
   --red:#ff4655;
   /* crosshair: light core + dark outline so it pops on sand AND on glass */
   --xhair:#eafcff;
@@ -28,7 +30,7 @@ body[data-theme="fps"] {
 
   font-family: var(--body);
   color: var(--fg);
-  background: #d3bd92;
+  background: #e3d0a1;
   text-transform: none;
 }
 body[data-theme="fps"], body[data-theme="fps"] * { -webkit-font-smoothing: antialiased; }
@@ -67,8 +69,9 @@ body[data-theme="fps"] main#main-content { padding-left: 64px; padding-bottom: 5
 
 /* ───────── header → glass topbar + numbered tabs ───────── */
 body[data-theme="fps"] .header {
-  background: var(--glass); backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
-  border-bottom: 1px solid var(--glass-line); box-shadow: none;
+  background: var(--glass); backdrop-filter: blur(10px) saturate(1.05); -webkit-backdrop-filter: blur(10px) saturate(1.05);
+  border-bottom: 1px solid var(--glass-line);
+  box-shadow: 0 8px 22px -10px rgba(28,18,3,.45);
 }
 body[data-theme="fps"] .brand-name { font-family: var(--disp); letter-spacing: .04em; color: var(--fg); text-transform: uppercase; }
 body[data-theme="fps"] .brand-name b, body[data-theme="fps"] .brand-prefix { color: var(--accent); }
@@ -91,8 +94,9 @@ body[data-theme="fps"] .fps-tab.fps-tab-active::before { opacity: .85; }
 #fps-rail {
   position: fixed; z-index: 40; left: .7rem; top: 50%; transform: translateY(-50%);
   display: flex; flex-direction: column; gap: 6px; padding: 8px 6px;
-  background: var(--glass); border: 1px solid var(--glass-line);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--hud-shadow);
 }
 #fps-rail .fps-rail-btn {
   width: 44px; height: 44px; display: grid; place-items: center; background: transparent; border: 0;
@@ -125,8 +129,9 @@ body[data-theme="fps"] .about-card,
 body[data-theme="fps"] .contact-card,
 body[data-theme="fps"] .git-timeline-viewport {
   background: var(--glass); border: 1px solid var(--glass-line);
-  backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
-  border-radius: 0; box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter: blur(10px) saturate(1.05); -webkit-backdrop-filter: blur(10px) saturate(1.05);
+  border-radius: 2px;
+  box-shadow: var(--hud-shadow), inset 0 1px 0 rgba(255,255,255,.08), inset 0 0 0 1px rgba(10,16,26,.4);
 }
 body[data-theme="fps"] .hero-title {
   font-family: var(--disp); color: var(--fg); text-transform: uppercase; text-shadow: none;
@@ -162,9 +167,13 @@ body[data-theme="fps"] #work-grid {
 body[data-theme="fps"] .fps-buy {
   position: relative; display: flex; flex-direction: column; gap: .15rem; padding: .8rem .85rem .7rem;
   background: var(--glass-2); border: 1px solid var(--glass-line-2); border-left: 2px solid transparent;
+  box-shadow: 0 10px 22px -16px rgba(28,18,3,.55), inset 0 1px 0 rgba(255,255,255,.05);
   transition: none; text-decoration: none; color: var(--fg); overflow: hidden;
 }
-body[data-theme="fps"] .fps-buy:hover { border-color: var(--accent); border-left-color: var(--accent); background: rgba(30,44,60,.72); }
+body[data-theme="fps"] .fps-buy:hover {
+  border-color: var(--accent); border-left-color: var(--accent); background: rgba(28,42,60,.95);
+  box-shadow: 0 14px 26px -14px rgba(28,18,3,.6), 0 0 0 1px rgba(47,128,230,.4), inset 0 1px 0 rgba(255,255,255,.06);
+}
 /* Buy tiles are compact: hide the project media/carousel. */
 body[data-theme="fps"] .fps-buy .project-media-container { display: none !important; }
 body[data-theme="fps"] .fps-buy-head { display: flex; align-items: center; justify-content: space-between; }
@@ -204,8 +213,8 @@ body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); }
   position: fixed; z-index: 35; right: 1rem; top: 84px; width: 288px;
   display: none; flex-direction: column; gap: 14px;
 }
-#fps-side .fps-panel { background: var(--glass); border: 1px solid var(--glass-line);
-  backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); }
+#fps-side .fps-panel { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: var(--hud-shadow); }
 #fps-side .fps-panel-h { display: flex; align-items: center; justify-content: space-between; padding: .5rem .8rem;
   border-bottom: 1px solid var(--glass-line-2); font-family: var(--mono); font-size: .62rem; letter-spacing: .18em;
   text-transform: uppercase; color: var(--fg-dim); }
@@ -502,8 +511,9 @@ body[data-theme="fps"] .fps-eyebrow {
 /* ───────── top-right player badge ───────── */
 #fps-badge {
   display: flex; align-items: center; gap: .5rem; padding: .28rem .5rem; margin-right: .5rem;
-  background: var(--glass); border: 1px solid var(--glass-line);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 18px -10px rgba(28,18,3,.5);
 }
 #fps-badge .fps-badge-av {
   width: 30px; height: 30px; display: grid; place-items: center; flex: 0 0 auto;
