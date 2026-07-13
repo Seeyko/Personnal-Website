@@ -29,8 +29,9 @@ const BlipCursor = (() => {
     }
 
     // fps only: how far down-right of the crosshair Blip's tip parks, so the two
-    // never overlap into a double-cursor (matches the menu mockup's +20px offset).
-    const FPS_SNAP_OFFSET = 20;
+    // never overlap into a double-cursor. Tight so he reads as a snappy companion
+    // hugging the reticle rather than a laggy second pointer.
+    const FPS_SNAP_OFFSET = 13;
 
     // Links/buttons get the "leaning toward target" hover state. Native form
     // controls are handled separately below (real caret, dimmed Blip).
@@ -92,6 +93,7 @@ const BlipCursor = (() => {
 
     let curX = -100, curY = -100, targetX = -100, targetY = -100;
     let velX = 0, velY = 0;
+    let fpsKick = 0;           // fps recoil: shot kicks Blip up, then decays
     let lastTickAt = 0;
     let motionEl = null;
     let rafId = null;
@@ -172,8 +174,11 @@ const BlipCursor = (() => {
                 const fy = targetY + FPS_SNAP_OFFSET;
                 velX = (fx - curX) / dt;
                 velY = (fy - curY) / dt;
+                // Recoil: each shot kicks him up off the crosshair, then he settles.
+                if (fpsKick > 0.3) fpsKick -= fpsKick * Math.min(1, dt * 11);
+                else fpsKick = 0;
                 curX = fx;
-                curY = fy;
+                curY = fy - fpsKick;
             } else {
                 velX += ((targetX - curX) * SPRING_K - velX * SPRING_C) * dt;
                 velY += ((targetY - curY) * SPRING_K - velY * SPRING_C) * dt;
@@ -313,6 +318,7 @@ const BlipCursor = (() => {
     function onPointerDown() {
         activate();
         play('bc-click');
+        if (isFpsSnap()) fpsKick = 12;
     }
 
     // Touch mode: Blip lands with his cursor tip exactly on the tap point,

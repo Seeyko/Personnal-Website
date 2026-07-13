@@ -144,27 +144,10 @@ function injectScene() {
     const scene = document.createElement('div');
     scene.id = 'fps-scene';
     scene.setAttribute('aria-hidden', 'true');
-    scene.innerHTML = `
-        <div class="fps-layer fps-sky" data-depth="6"><span class="fps-sun"></span></div>
-        <div class="fps-layer fps-skyline" data-depth="16">
-            <svg width="100%" height="100%" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMax slice">
-                <g fill="#8b97a1" opacity="0.55"><rect x="90" y="360" width="150" height="340"/><rect x="250" y="300" width="60" height="400"/><rect x="1000" y="330" width="120" height="370"/></g>
-                <path d="M430 700 C430 560 400 520 440 380 C470 470 470 560 470 700 Z" fill="#7c8892" opacity="0.6"/>
-                <path d="M560 700 C560 560 530 520 570 380 C600 470 600 560 600 700 Z" fill="#77838d" opacity="0.6"/>
-                <rect x="405" y="500" width="220" height="200" fill="#6d7883" opacity="0.5"/>
-                <g stroke="#5c6771" stroke-width="3" opacity="0.4"><line x1="120" y1="150" x2="120" y2="700"/><line x1="120" y1="180" x2="300" y2="230"/><line x1="120" y1="230" x2="300" y2="280"/></g>
-            </svg>
-        </div>
-        <div class="fps-layer fps-agent" data-depth="30">
-            <svg height="100%" viewBox="0 0 300 640" preserveAspectRatio="xMaxYMax meet">
-                <g fill="#2b3742"><path d="M150 40 q46 0 60 46 q10 40 -4 92 q30 14 40 70 l16 150 q6 60 -10 130 l-24 12 -10-120 -6 220 -104 0 -6-220 -10 120 -24-12 q-16-70 -10-130 l16-150 q10-56 40-70 q-14-52 -4-92 q14-46 60-46 Z"/></g>
-                <g fill="#0f1720"><circle cx="130" cy="96" r="12"/><circle cx="176" cy="96" r="12"/></g>
-                <rect x="120" y="120" width="60" height="10" fill="#1a232d"/>
-                <rect x="196" y="300" width="150" height="20" fill="#232f3a" transform="rotate(12 196 300)"/>
-            </svg>
-        </div>
-        <div class="fps-scrim"></div>
-    `;
+    // Plain, bright sand backdrop (Dust-II daylight) — no scenery, just a flat
+    // sunlit map for the dark HUD to float over. The scrim only grounds the
+    // fixed chrome top/bottom; the solid fill lives in CSS on #fps-scene.
+    scene.innerHTML = `<div class="fps-scrim"></div>`;
     document.body.insertBefore(scene, document.body.firstChild);
 }
 
@@ -365,8 +348,12 @@ function buildSidePanel() {
     const emailAddr = (content.contact && content.contact.email) || 'contact@tomandrieu.com';
     contacts.push({ href: emailHref, ext: false, icon: mail, name: 'Email', sub: emailAddr.toLowerCase(), st: 'idle' });
 
+    // The aside is aria-hidden (decorative HUD dressing that duplicates the real
+    // #contact links), so its anchors must leave the tab order too — a focusable
+    // node inside aria-hidden is a WCAG trap. tabindex="-1" keeps them clickable
+    // by mouse without stealing keyboard focus.
     const contactsHtml = contacts.map(c => `
-        <a class="fps-friend" href="${c.href}"${c.ext ? ' target="_blank" rel="noopener"' : ''}>
+        <a class="fps-friend" href="${c.href}" tabindex="-1"${c.ext ? ' target="_blank" rel="noopener"' : ''}>
             <span class="fps-friend-av">${c.icon}</span>
             <span class="fps-friend-who"><b>${c.name}</b><small>${c.sub}</small></span>
             <span class="fps-friend-st ${c.st}"></span>
@@ -407,7 +394,14 @@ function initCrosshairAndFx() {
     const xhair = document.createElement('div');
     xhair.id = 'fps-xhair';
     xhair.setAttribute('aria-hidden', 'true');
-    xhair.innerHTML = '<span class="fps-x-g"></span><span class="fps-x-d"></span>';
+    xhair.innerHTML =
+        '<div class="fps-x-core">' +
+        '<span class="fps-x-arm fps-x-t"></span><span class="fps-x-arm fps-x-r"></span>' +
+        '<span class="fps-x-arm fps-x-b"></span><span class="fps-x-arm fps-x-l"></span>' +
+        '<span class="fps-x-dot"></span>' +
+        '<span class="fps-x-brk fps-x-tl"></span><span class="fps-x-brk fps-x-tr"></span>' +
+        '<span class="fps-x-brk fps-x-bl"></span><span class="fps-x-brk fps-x-br"></span>' +
+        '</div>';
     document.body.appendChild(xhair);
 
     const fxLayer = document.createElement('div');
@@ -415,16 +409,30 @@ function initCrosshairAndFx() {
     fxLayer.setAttribute('aria-hidden', 'true');
     document.body.appendChild(fxLayer);
 
+    // Anything worth "aiming at" locks the reticle (brackets + accent snap).
+    const LOCK_SELECTOR = 'a, button, [role="button"], .fps-buy, .fps-tab, .fps-rail-btn, .fps-friend, .hero-cta, .social-btn, .email-link, input, textarea, select';
+
     document.addEventListener('pointermove', (e) => {
         fpsMouseX = e.clientX; fpsMouseY = e.clientY;
         xhair.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
         xhair.classList.add('on');
+        const onTarget = !!(e.target && e.target.closest && e.target.closest(LOCK_SELECTOR));
+        xhair.classList.toggle('fps-lock', onTarget);
     }, { passive: true });
-    document.addEventListener('pointerleave', () => xhair.classList.remove('on'));
+    document.addEventListener('pointerleave', () => xhair.classList.remove('on', 'fps-lock'));
+
+    // Fire kick: retrigger the bloom on every shot (remove → reflow → add).
+    function fireCrosshair() {
+        if (RM_FPS) return;
+        xhair.classList.remove('fps-fire');
+        void xhair.offsetWidth;
+        xhair.classList.add('fps-fire');
+    }
 
     document.addEventListener('pointerdown', (e) => {
         FpsSound.ensure();
         FpsSound.hit();
+        fireCrosshair();
         const h = document.createElement('div');
         h.className = 'fps-hit';
         h.style.left = e.clientX + 'px'; h.style.top = e.clientY + 'px';
@@ -462,7 +470,7 @@ function initParallax() {
                 const d = +l.dataset.depth || 10;
                 l.style.transform = `translate(${(-ox * d).toFixed(1)}px,${(-oy * d * 0.6).toFixed(1)}px)`;
             });
-            if (window.CathodeGuide && CathodeGuide.setParallax) CathodeGuide.setParallax(-ox * 14, -oy * 8);
+            if (window.CathodeGuide && CathodeGuide.setParallax) CathodeGuide.setParallax(-ox * 24, -oy * 13);
             ticking = false;
         });
     }, { passive: true });

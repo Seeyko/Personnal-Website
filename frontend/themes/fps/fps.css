@@ -7,23 +7,28 @@
    ═══════════════════════════════════════════════════════════════ */
 
 body[data-theme="fps"] {
-  /* daylight scene */
-  --sky-1:#b9c6d2; --sky-2:#cdd7df; --sky-3:#9fb0be; --haze:#dfe6ec;
-  /* dark frosted glass */
-  --glass:rgba(14,20,28,.56); --glass-2:rgba(20,28,38,.66);
-  --glass-line:rgba(150,180,205,.22); --glass-line-2:rgba(150,180,205,.12);
+  /* bright Dust II daylight — hazy blue sky over sun-baked sand */
+  --sky-1:#8db6de; --sky-2:#bcd6ec; --sky-3:#ecdcb6; --haze:#f2e7cd;
+  --sand-1:#dcc79b; --sand-2:#cbb07d; --sand-3:#b7965f;
+  /* dark frosted glass — the HUD floats over the bright map */
+  --glass:rgba(12,18,26,.62); --glass-2:rgba(18,26,36,.72);
+  --glass-line:rgba(150,180,205,.24); --glass-line-2:rgba(150,180,205,.13);
   /* ink + text */
   --fg:#eaf1f7; --fg-dim:#aebecc; --muted:#7f8f9d;
-  /* accents */
-  --accent:#54a3ff; --accent-2:#8fd0ff; --money:#8fce5b; --gold:#f2b134;
-  --red:#ff4655; --xhair:#37e0ff;
+  /* dark ink for text that sits directly on the bright sand (no panel) */
+  --ink:#1a2530; --ink-dim:#33424f;
+  /* accents — bright marks read on the dark glass panels */
+  --accent:#2f7fe0; --accent-2:#7bbcff; --money:#8fce5b; --gold:#f2b134;
+  --red:#ff4655;
+  /* crosshair: light core + dark outline so it pops on sand AND on glass */
+  --xhair:#eafcff;
   --disp:'Arial Narrow','Roboto Condensed',Impact,'Haettenschweiler',sans-serif;
   --body:'DM Sans',ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   --mono:'Roboto Mono','JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
 
   font-family: var(--body);
   color: var(--fg);
-  background: #0b0f14;
+  background: #d3bd92;
   text-transform: none;
 }
 body[data-theme="fps"], body[data-theme="fps"] * { -webkit-font-smoothing: antialiased; }
@@ -43,23 +48,16 @@ body[data-theme="fps"] .hero-decoration,
 body[data-theme="fps"] .scroll-indicator,
 body[data-theme="fps"] .hero-annotation { display: none !important; }
 
-/* ───────── background scene ───────── */
-#fps-scene { position: fixed; inset: -6%; z-index: 0; overflow: hidden; pointer-events: none; }
-#fps-scene .fps-layer { position: absolute; inset: 0; will-change: transform; transition: transform .05s linear; }
-#fps-scene .fps-sky {
-  background:
-    radial-gradient(120% 80% at 30% 0%, var(--sky-2), transparent 60%),
-    linear-gradient(180deg, var(--sky-1) 0%, var(--haze) 55%, var(--sky-3) 100%);
-}
-#fps-scene .fps-sun { position: absolute; top: -8%; right: 14%; width: 46vmax; height: 46vmax; border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,.55), rgba(255,255,255,0) 60%); filter: blur(6px); }
-#fps-scene .fps-agent { position: absolute; inset: 0; }
-#fps-scene .fps-agent svg { position: absolute; right: 4%; bottom: 0; height: 96%; opacity: .85; filter: drop-shadow(0 20px 40px rgba(0,0,0,.35)); }
+/* ───────── background — plain bright sand (Dust II daylight) ─────────
+   No scenery: a flat, sunlit sand fill for the dark HUD to float over. */
+#fps-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  background: var(--sand-1); }
+/* Scrim only grounds the fixed chrome (top ribbon / bottom telemetry) with a
+   whisper of warmth — the field stays uniform. */
 #fps-scene .fps-scrim { position: absolute; inset: 0;
   background:
-    linear-gradient(90deg, rgba(8,11,15,.74) 0%, rgba(8,11,15,.4) 34%, rgba(8,11,15,.05) 60%),
-    linear-gradient(0deg, rgba(8,11,15,.82) 0%, rgba(8,11,15,0) 32%),
-    linear-gradient(180deg, rgba(8,11,15,.62) 0%, rgba(8,11,15,0) 18%); }
+    linear-gradient(180deg, rgba(255,250,238,.12) 0%, rgba(255,250,238,0) 20%),
+    linear-gradient(0deg, rgba(58,44,26,.28) 0%, rgba(58,44,26,0) 14%); }
 
 /* Content rides above the scene. */
 body[data-theme="fps"] #main-content { position: relative; z-index: 1; }
@@ -109,11 +107,15 @@ body[data-theme="fps"] .fps-tab.fps-tab-active::before { opacity: .85; }
 #fps-rail .fps-mute.fps-muted .fps-sndwave { display: none; }
 #fps-rail .fps-mute.fps-muted { color: var(--red); }
 
-/* ───────── section headers ───────── */
+/* ───────── section headers (sit directly on the bright sand) ───────── */
 body[data-theme="fps"] .section-title {
-  font-family: var(--disp); text-transform: uppercase; letter-spacing: .03em; color: var(--fg); text-shadow: none;
+  font-family: var(--disp); text-transform: uppercase; letter-spacing: .03em;
+  color: var(--ink); text-shadow: 0 1px 0 rgba(255,252,244,.5), 0 0 18px rgba(255,250,235,.5);
 }
-body[data-theme="fps"] .section-number { color: var(--accent-2); font-family: var(--mono); }
+body[data-theme="fps"] .section-number {
+  color: var(--accent); font-family: var(--mono);
+  text-shadow: 0 1px 0 rgba(255,252,244,.55);
+}
 body[data-theme="fps"] .section-header { border: 0; }
 
 /* ───────── glass panels for the real content cards ───────── */
@@ -184,7 +186,18 @@ body[data-theme="fps"] .fps-buy-foot { display: flex; align-items: center; justi
   font-family: var(--mono); font-size: .58rem; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
 body[data-theme="fps"] .fps-buy-cta { color: var(--accent-2); }
 body[data-theme="fps"] .fps-buy:hover .fps-buy-cta { color: #fff; }
-body[data-theme="fps"] .section-footer .footer-info, body[data-theme="fps"] .coord-marker { font-family: var(--mono); color: var(--muted); }
+body[data-theme="fps"] .section-footer .footer-info, body[data-theme="fps"] .coord-marker {
+  font-family: var(--mono); color: var(--ink-dim); text-shadow: 0 1px 0 rgba(255,252,244,.4);
+}
+/* Site footer sits on the bare sand too — dark ink keeps it legible. */
+body[data-theme="fps"] .footer-session,
+body[data-theme="fps"] .footer-version,
+body[data-theme="fps"] .footer-copyright,
+body[data-theme="fps"] .footer-sep,
+body[data-theme="fps"] .cathode-guide-toggle {
+  color: var(--ink-dim); font-family: var(--mono); text-shadow: 0 1px 0 rgba(255,252,244,.4);
+}
+body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); }
 
 /* ───────── right column: profile + friends ───────── */
 #fps-side {
@@ -241,15 +254,57 @@ body[data-theme="fps"] .section-footer .footer-info, body[data-theme="fps"] .coo
 #fps-telemetry .fps-good { color: var(--money) !important; }
 #fps-telemetry .fps-map b { color: var(--accent-2); }
 
-/* ───────── crosshair + hit FX ───────── */
-#fps-xhair { position: fixed; z-index: 60; left: 0; top: 0; width: 26px; height: 26px; pointer-events: none;
-  opacity: 0; margin: -13px 0 0 -13px; }
+/* ───────── crosshair + hit FX ─────────
+   Four gapped arms + center dot (CS default crosshair). Light core with a dark
+   outline so it reads on bright sand AND over the dark glass panels. The outer
+   node carries only the JS-driven translate; the inner .fps-x-core owns scale so
+   the fire-bloom and hover-lock never fight the pointer follow. */
+#fps-xhair { position: fixed; z-index: 60; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0; }
 #fps-xhair.on { opacity: 1; }
-#fps-xhair::before, #fps-xhair::after { content: ""; position: absolute; background: var(--xhair); box-shadow: 0 0 3px rgba(0,0,0,.7); }
-#fps-xhair::before { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); }
-#fps-xhair::after { top: 50%; left: 0; height: 2px; width: 100%; transform: translateY(-50%); }
-#fps-xhair .fps-x-g { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; transform: translate(-50%,-50%); box-shadow: 0 0 0 2px rgba(0,0,0,.25); }
-#fps-xhair .fps-x-d { position: absolute; left: 50%; top: 50%; width: 2px; height: 2px; background: var(--xhair); transform: translate(-50%,-50%); }
+#fps-xhair .fps-x-core { position: absolute; left: 0; top: 0; transform: translate(-50%,-50%);
+  transition: transform .13s cubic-bezier(.2,.85,.3,1); }
+#fps-xhair .fps-x-arm { position: absolute; background: var(--xhair);
+  box-shadow: 0 0 0 1px rgba(6,12,20,.9), 0 0 4px rgba(0,0,0,.45); }
+#fps-xhair .fps-x-t, #fps-xhair .fps-x-b { width: 2px; height: 7px; left: -1px; }
+#fps-xhair .fps-x-l, #fps-xhair .fps-x-r { height: 2px; width: 7px; top: -1px; }
+#fps-xhair .fps-x-t { bottom: 4px; } #fps-xhair .fps-x-b { top: 4px; }
+#fps-xhair .fps-x-l { right: 4px; } #fps-xhair .fps-x-r { left: 4px; }
+#fps-xhair .fps-x-dot { position: absolute; width: 2px; height: 2px; left: -1px; top: -1px;
+  background: var(--xhair); box-shadow: 0 0 0 1px rgba(6,12,20,.9); }
+/* corner brackets — hidden until a target is under the crosshair */
+#fps-xhair .fps-x-brk { position: absolute; width: 6px; height: 6px; opacity: 0;
+  border: 2px solid var(--accent-2); filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); transition: opacity .07s; }
+#fps-xhair .fps-x-tl { left: -13px; top: -13px; border-right: 0; border-bottom: 0; }
+#fps-xhair .fps-x-tr { right: -13px; top: -13px; border-left: 0; border-bottom: 0; }
+#fps-xhair .fps-x-bl { left: -13px; bottom: -13px; border-right: 0; border-top: 0; }
+#fps-xhair .fps-x-br { right: -13px; bottom: -13px; border-left: 0; border-top: 0; }
+/* target lock: arms snap to accent, brackets bloom in, whole reticle grows a hair */
+#fps-xhair.fps-lock .fps-x-arm, #fps-xhair.fps-lock .fps-x-dot { background: var(--accent-2); }
+#fps-xhair.fps-lock .fps-x-brk { opacity: 1; }
+#fps-xhair.fps-lock .fps-x-core { transform: translate(-50%,-50%) scale(1.14); }
+/* fire kick: the reticle blooms out then snaps back on every shot (pointerdown) */
+#fps-xhair.fps-fire .fps-x-core { animation: fps-x-fire .17s ease-out; }
+@keyframes fps-x-fire {
+  0%   { transform: translate(-50%,-50%) scale(2); }
+  100% { transform: translate(-50%,-50%) scale(1); }
+}
+
+/* ───────── keyboard focus ─────────
+   The crosshair replaces the mouse pointer, so keyboard users get no cursor —
+   give every interactive control a clear focus ring instead. */
+body[data-theme="fps"] a:focus-visible,
+body[data-theme="fps"] button:focus-visible,
+body[data-theme="fps"] [tabindex="0"]:focus-visible,
+body[data-theme="fps"] .fps-tab:focus-visible,
+body[data-theme="fps"] .fps-rail-btn:focus-visible,
+body[data-theme="fps"] .fps-buy:focus-visible,
+body[data-theme="fps"] .theme-option:focus-visible,
+body[data-theme="fps"] .language-option:focus-visible,
+body[data-theme="fps"] .theme-switcher-toggle:focus-visible,
+body[data-theme="fps"] .language-switcher-toggle:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+}
 
 #fps-fx { position: fixed; inset: 0; z-index: 61; pointer-events: none; }
 #fps-fx .fps-hit { position: fixed; width: 30px; height: 30px; color: #fff; transform: translate(-50%,-50%);
@@ -279,15 +334,14 @@ body[data-theme="fps"] .section-footer .footer-info, body[data-theme="fps"] .coo
   #fps-rail .fps-rail-active::before { left: 8px; right: 8px; top: auto; bottom: -4px; width: auto; height: 3px; }
   #fps-side { display: none !important; }
   body[data-theme="fps"] #work-grid { grid-template-columns: 1fr; }
-  /* Mobile: the parallax daylight scene washed content out. Darken the scrim
-     and give every panel/tile a near-opaque backing so text stays legible and
-     the scene can't bleed through (also cheaper — drop the blur on mobile). */
+  /* Mobile keeps the bright map, but the panels/tiles go near-opaque (below) so
+     the daylight can't wash out body copy. Keep only a soft warm scrim so the
+     top ribbon/header still read, and drop the blur (cheaper on mobile). */
   #fps-scene .fps-scrim {
-    background: linear-gradient(180deg, rgba(8,11,15,.88) 0%, rgba(8,11,15,.8) 100%);
+    background:
+      linear-gradient(180deg, rgba(38,28,16,.34) 0%, rgba(38,28,16,0) 14%),
+      linear-gradient(0deg, rgba(48,36,20,.4) 0%, rgba(48,36,20,0) 16%);
   }
-  /* The big agent silhouette sits right behind the WORK tiles on narrow screens
-     and dragged their contrast down — drop it on mobile. */
-  #fps-scene .fps-agent { display: none; }
   /* GSAP/observer reveal safety net: never let a stuck reveal hide tiles. */
   body[data-theme="fps"] .fps-buy.fade-in-up { opacity: 1; }
   body[data-theme="fps"] .hero-content,
@@ -362,7 +416,7 @@ body[data-theme="fps"] #heart-experiment { display: none !important; }
    clamp cropped the (proportionally-rendered) fps copy mid-word. Lift the
    clamp and fade lines in instead — same treatment the other non-terminal
    themes already get — so the bubble text never clips. */
-body[data-theme="fps"] #cathode-guide .cg-bubble { max-width: 210px; }
+body[data-theme="fps"] #cathode-guide .cg-bubble { max-width: 244px; }
 body[data-theme="fps"] #cathode-guide .cg-bubble.cg-show .cg-line {
   animation: cg-life-fadeline .38s ease var(--cg-delay, 0ms) both;
   max-width: none; overflow: visible; white-space: normal;
