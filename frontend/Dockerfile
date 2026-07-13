@@ -4,6 +4,7 @@ FROM nginx:alpine AS production
 ARG API_URL=https://api.tomandrieu.com
 ARG FRONTEND_URL=https://tomandrieu.com
 ARG ADMIN_SECRET_PATH=_mx9k7
+ARG ENVIRONMENT=production
 
 # Copy nginx config template and inject ADMIN_SECRET_PATH
 COPY nginx/default.conf /tmp/default.conf.template
@@ -24,7 +25,7 @@ COPY frontend/experiments/ /usr/share/nginx/html/experiments/
 
 # Copy config template and generate config.js with environment variables
 COPY frontend/config.template.js /tmp/config.template.js
-RUN envsubst '${API_URL} ${FRONTEND_URL} ${ADMIN_SECRET_PATH}' < /tmp/config.template.js > /usr/share/nginx/html/config.js && \
+RUN envsubst '${API_URL} ${FRONTEND_URL} ${ADMIN_SECRET_PATH} ${ENVIRONMENT}' < /tmp/config.template.js > /usr/share/nginx/html/config.js && \
     rm /tmp/config.template.js
 
 EXPOSE 4200

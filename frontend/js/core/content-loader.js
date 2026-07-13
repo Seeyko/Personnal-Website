@@ -212,9 +212,18 @@ const ContentLoader = (() => {
     }
 
     async function loadArticles(page = 1, limit = 6, lang = null) {
-        const apiBase = Utils.getApiBaseUrl();
         const language = lang || getCurrentLang();
+        const empty = { articles: [], pagination: { page: 1, limit, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
 
+        // The articles/blog backend only exists in production. Off-production
+        // (local dev, preview sandboxes) there is nothing to call, so skip the
+        // request entirely — no failed fetch, no console noise. Production is
+        // unaffected. See APP_CONFIG.FEATURES in config.js.
+        if (!window.APP_CONFIG?.FEATURES?.articlesApi) {
+            return empty;
+        }
+
+        const apiBase = Utils.getApiBaseUrl();
         try {
             const response = await fetch(`${apiBase}/api/articles?page=${page}&limit=${limit}&lang=${language}`);
             if (!response.ok) throw new Error('Failed to fetch articles');
@@ -229,8 +238,10 @@ const ContentLoader = (() => {
             console.log(`%c[OK] Loaded ${articles.length} articles (${language})`, 'color: #33ff00;');
             return data;
         } catch (err) {
-            console.error('%c[ERR] API unavailable', 'color: #ff3333;');
-            return { articles: [], pagination: { page: 1, limit, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
+            // Enabled but unreachable (e.g. a transient backend blip in prod):
+            // degrade to an empty list with a warning rather than a hard error.
+            console.warn('%c[WARN] Articles API unavailable — showing none', 'color: #ffb000;');
+            return empty;
         }
     }
 
