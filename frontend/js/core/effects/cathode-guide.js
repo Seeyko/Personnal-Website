@@ -404,7 +404,7 @@ const CathodeGuide = (() => {
         EDGE_PAD: 10,                // min gap to the viewport edges
         CTA_CLEARANCE: 150,          // keep clear of the bottom-right floating CTA
         IDLE_BEFORE_CLIMB_MS: 9000,  // visitor inactivity before she climbs things
-        MAX_PERCH_HOPS: 4,           // stepping-stone hops before coming down
+        HOP_TILT: 13,                // deg she rocks onto the pushing foot mid-hop
         PERCH_SELECTOR: '.project-card, .git-commit-marker, .mobile-commit, .now-card, .about-card, .contact-card, .hero-cta',
         QUIP_CHANCE: 0.65,
         QUIP_VISIBLE_MS: 4600
@@ -488,6 +488,9 @@ const CathodeGuide = (() => {
     let jumpArc = null;          // {fromX,fromY,toX,toY,start,dur,peak,perch}
     let perchEl = null;
     let perchHops = 0;
+    let hopDir = 0;              // timeline crossing direction (+1/-1, 0 = not crossing)
+    let hopFoot = 1;             // which "foot" pushes off next - flips every stone hop
+    let jumpTilt = 0;            // current airborne lean (deg) - the skip rock
     let nextThinkAt = 0;
     let lastUserAct = 0;
     let climbCooldownUntil = 0;  // pause between climb sessions - she's alive, not manic
@@ -526,8 +529,12 @@ const CathodeGuide = (() => {
         if (!root) return;
         root.style.transform = 'translate3d(' + px.toFixed(1) + 'px,' + (-currentYGap()).toFixed(1) + 'px,0)';
         root.style.setProperty('--cg-dir', dir < 0 ? '-1' : '1');
-        // One rotation channel: standing lean (small) or tumble rotation (full).
-        const shown = (lifeState === 'tumble' || lifeState === 'dizzy' || lifeState === 'rest') ? rot : leanShown;
+        // One rotation channel: tumble rotation (full), the skip rock while
+        // hopping across stones, or the standing lean (small) otherwise.
+        let shown;
+        if (lifeState === 'tumble' || lifeState === 'dizzy' || lifeState === 'rest') shown = rot;
+        else if (lifeState === 'jump') shown = leanShown + jumpTilt;
+        else shown = leanShown;
         root.style.setProperty('--cg-rot', shown.toFixed(2) + 'deg');
         // Bubble opens toward the roomy side of the screen - and downward
         // when she's high up (resting on the ceiling, tall perches).
@@ -587,21 +594,22 @@ const CathodeGuide = (() => {
 
     function startJump(toX, toY, perch, now) {
         const dist = Math.hypot(toX - px, toY - py);
-        // Timeline commits are stepping stones over water. When she's hopping
-        // onto one (the first climb) or between them (stone to stone), stretch
-        // the leap: slower, with a taller arc, so it reads as a careful hop
-        // with a real hang at the apex instead of a quick skip. Every other
-        // perch (cards, CTAs) keeps the snappy default hop.
+        // Timeline commits are stepping stones over water, and she crosses the
+        // whole run of them like a kid skipping across a pond: quick, springy
+        // hops in close succession, rocking onto the opposite foot each time
+        // (see hopFoot -> jumpTilt). Snappy and light, not a slow careful hop.
+        // Every other perch (cards, CTAs) keeps the plain default hop.
         const steppingStone = isTimelineStone(perch);
         const dur = steppingStone
-            ? Math.min(1400, 680 + dist * 0.85)
+            ? Math.min(560, 300 + dist * 0.5)
             : Math.min(950, 420 + dist * 0.55);
         const peak = steppingStone
-            ? 70 + Math.min(120, dist * 0.3)
+            ? 40 + Math.min(78, dist * 0.3)
             : 36 + Math.min(90, dist * 0.22);
+        if (steppingStone) hopFoot = -hopFoot;
         jumpArc = {
             fromX: px, fromY: py, toX, toY, perch: perch || null,
-            start: now, dur, peak
+            start: now, dur, peak, foot: steppingStone ? hopFoot : 0
         };
         if (Math.abs(toX - px) > 4) dir = toX >= px ? 1 : -1;
         setLifeState('jump');
@@ -642,35 +650,65 @@ const CathodeGuide = (() => {
         return c[Math.floor(Math.random() * Math.min(3, c.length))];
     }
 
-    // Stepping stones: from one timeline commit to a close-enough neighbor of
-    // the same kind. Desktop markers sit in a horizontal row, so she steps
-    // sideways to the nearest one; the mobile commit cards stack vertically,
-    // so she steps down (or up) the list to the card above/below.
-    function nextMarkerFrom(el) {
+    // The next stepping stone along the travel direction `dir` (+1 = right on
+    // the desktop row / down the mobile list, -1 = the other way). Desktop
+    // markers sit in a horizontal row, the mobile commit cards stack
+    // vertically; either way she keeps to that one rail and only ever steps
+    // forward, so a crossing runs cleanly from one end to the other without
+    // bouncing between two neighbours. dir 0 falls back to nearest either way.
+    function nextMarkerFrom(el, dir) {
         if (!isTimelineStone(el)) return null;
         const mobile = el.classList.contains('mobile-commit');
         const from = el.getBoundingClientRect();
-        let best = null, bestD = Infinity;
+        const fromPos = mobile ? from.top : from.left;
+        let best = null, bestGap = Infinity;
         perchCandidates().forEach(cand => {
             if (cand === el) return;
             if (mobile ? !cand.classList.contains('mobile-commit')
                        : !cand.classList.contains('git-commit-marker')) return;
             const r = cand.getBoundingClientRect();
-            if (mobile) {
-                const dy = Math.abs(r.top - from.top);
-                if (dy > 30 && dy < 460 && Math.abs(r.left - from.left) < 60 && dy < bestD) {
-                    best = cand;
-                    bestD = dy;
-                }
-            } else {
-                const dx = Math.abs(r.left - from.left);
-                if (dx > 30 && dx < 420 && Math.abs(r.top - from.top) < 220 && dx < bestD) {
-                    best = cand;
-                    bestD = dx;
-                }
+            // Stay on the rail: ignore stones drifting off the perpendicular axis.
+            if (mobile ? Math.abs(r.left - from.left) > 60
+                       : Math.abs(r.top - from.top) > 220) return;
+            const gap = (mobile ? r.top : r.left) - fromPos;
+            const along = dir ? gap * dir : Math.abs(gap); // only forward when dir set
+            if (along > 24 && along < 480 && along < bestGap) {
+                best = cand;
+                bestGap = along;
             }
         });
         return best;
+    }
+
+    // The visible timeline stones in travel order (left->right on the desktop
+    // row, top->bottom down the mobile list). Null unless there's a real run.
+    function timelineStonesInOrder() {
+        const stones = perchCandidates().filter(isTimelineStone);
+        if (stones.length < 2) return null;
+        const mobile = stones[0].classList.contains('mobile-commit');
+        stones.sort((a, b) => {
+            const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+            return mobile ? ra.top - rb.top : ra.left - rb.left;
+        });
+        return { stones, mobile };
+    }
+
+    // Start a crossing at the end nearest her and head for the far end, so one
+    // run skips across the whole line of stones. Returns {entry, dir} or null.
+    function pickTimelineRun() {
+        const run = timelineStonesInOrder();
+        if (!run) return null;
+        const { stones, mobile } = run;
+        const first = stones[0], last = stones[stones.length - 1];
+        const axis = (el) => {
+            const r = el.getBoundingClientRect();
+            return mobile ? r.top + r.height / 2 : r.left + r.width / 2;
+        };
+        // She lives on the floor: on the vertical mobile list the nearest end
+        // is the bottom one; on the desktop row it's whichever end her x is by.
+        const myPos = mobile ? window.innerHeight : px + spriteSize() / 2;
+        const nearFirst = Math.abs(axis(first) - myPos) <= Math.abs(axis(last) - myPos);
+        return nearFirst ? { entry: first, dir: 1 } : { entry: last, dir: -1 };
     }
 
     function squishPerch(el) {
@@ -724,6 +762,7 @@ const CathodeGuide = (() => {
         py = jumpArc.toY;
         const perch = jumpArc.perch;
         jumpArc = null;
+        jumpTilt = 0;
         if (root) {
             root.classList.add('cg-landing');
             lifeSetTimeout(() => { if (root) root.classList.remove('cg-landing'); }, 340);
@@ -733,8 +772,17 @@ const CathodeGuide = (() => {
             perchHops++;
             setLifeState('perch');
             squishPerch(perch);
-            nextThinkAt = now + 3800 + Math.random() * 3200;
-            lifeSetTimeout(maybeQuip, 520);
+            // Mid-crossing she barely touches down before the next hop, so the
+            // run reads as a continuous skip across every stone. Only when she
+            // has arrived somewhere to stay (a card, or the far end of the
+            // timeline) does she take the long, relaxed dwell.
+            const crossing = hopDir && isTimelineStone(perch) && nextMarkerFrom(perch, hopDir);
+            if (crossing) {
+                nextThinkAt = now + 120 + Math.random() * 110;
+            } else {
+                nextThinkAt = now + 3800 + Math.random() * 3200;
+                lifeSetTimeout(maybeQuip, 520);
+            }
         } else {
             perchEl = null;
             py = 0;
@@ -745,6 +793,7 @@ const CathodeGuide = (() => {
 
     function hopDown(now) {
         perchEl = null;
+        hopDir = 0; // back on the floor: the crossing is over
         const lo = LIFE.EDGE_PAD, hi = lifeMaxX();
         const tx = Math.min(hi, Math.max(lo, px + (Math.random() < 0.5 ? -1 : 1) * (30 + Math.random() * 60)));
         startJump(tx, 0, null, now);
@@ -756,27 +805,52 @@ const CathodeGuide = (() => {
         if (bubbleShowing() && bubbleOwner === 'section') { nextThinkAt = now + 1500; return; }
 
         if (lifeState === 'perch') {
+            // On the timeline she commits to the whole crossing: straight on to
+            // the next stone along the way, no dawdling, until she runs out -
+            // then a little victory spin and down onto the floor.
+            if (hopDir && isTimelineStone(perchEl)) {
+                const next = nextMarkerFrom(perchEl, hopDir);
+                if (next) {
+                    const p = perchTop(next);
+                    startJump(p.x, p.y, next, now);
+                } else {
+                    // Reached the far bank: a victory spin, then step down on
+                    // the next beat (hopDir is 0 now, so that beat takes the
+                    // ordinary card/CTA branch below and hops her onto the floor).
+                    playSpin();
+                    hopDir = 0;
+                    nextThinkAt = now + 1100 + Math.random() * 400;
+                    climbCooldownUntil = now + 9000 + Math.random() * 9000;
+                }
+                return;
+            }
+            // On a card / CTA: a beat, maybe a spin, then back down.
             if (Math.random() < 0.25) {
                 playSpin(); // a little victory spin right there on the perch
                 nextThinkAt = now + 2500 + Math.random() * 2500;
                 return;
             }
-            const next = nextMarkerFrom(perchEl);
-            if (next && perchHops < LIFE.MAX_PERCH_HOPS && Math.random() < 0.7) {
-                const p = perchTop(next);
-                startJump(p.x, p.y, next, now);
-            } else {
-                hopDown(now);
-                climbCooldownUntil = now + 8000 + Math.random() * 9000;
-            }
+            hopDown(now);
+            climbCooldownUntil = now + 8000 + Math.random() * 9000;
             return;
         }
 
-        // The visitor has settled somewhere: time to climb on things.
+        // The visitor has settled somewhere: time to climb on things. If the
+        // timeline is in view she skips across the whole run of stones;
+        // otherwise she picks a nearby perch to sit on.
         if (!broken && now - lastUserAct > LIFE.IDLE_BEFORE_CLIMB_MS && now > climbCooldownUntil) {
+            const run = pickTimelineRun();
+            if (run) {
+                perchHops = 0;
+                hopDir = run.dir;
+                const p = perchTop(run.entry);
+                startJump(p.x, p.y, run.entry, now);
+                return;
+            }
             const target = pickPerch();
             if (target) {
                 perchHops = 0;
+                hopDir = 0;
                 const p = perchTop(target);
                 startJump(p.x, p.y, target, now);
                 return;
@@ -906,6 +980,10 @@ const CathodeGuide = (() => {
             const e = t * (2 - t); // ease-out on the horizontal
             px = jumpArc.fromX + (jumpArc.toX - jumpArc.fromX) * e;
             py = jumpArc.fromY + (jumpArc.toY - jumpArc.fromY) * t + jumpArc.peak * 4 * t * (1 - t);
+            // Skip rock: lean onto the pushing foot at the apex, alternating
+            // each stone hop (foot flips in startJump), so she reads as hopping
+            // leg over leg. Zero at take-off and landing, zero for plain hops.
+            jumpTilt = (jumpArc.foot || 0) * LIFE.HOP_TILT * Math.sin(Math.PI * t);
             if (t >= 1) landJump(ts);
         } else if (lifeState === 'perch') {
             if (!perchEl || !document.contains(perchEl)) {
@@ -950,6 +1028,8 @@ const CathodeGuide = (() => {
         } else if (lifeState === 'jump' && jumpArc && jumpArc.perch) {
             jumpArc.perch = null; // retarget mid-air: land on the floor instead
             jumpArc.toY = 0;
+            jumpArc.foot = 0;     // straighten out - the crossing is interrupted
+            hopDir = 0;
         }
         // Tumble/dizzy/rest are pure physics against the viewport - scrolling
         // the page beneath her doesn't disturb them.
