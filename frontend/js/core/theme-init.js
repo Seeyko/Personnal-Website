@@ -65,10 +65,17 @@ const ThemeInit = (() => {
             document.body.classList.add('loaded');
             isInitialized = true;
 
+            // Content is on screen now — dismiss the boot loader as a single,
+            // coordinated reveal (loader fades out while #main-content fades in).
+            // This is the moment that kills the old double-loader flash.
+            window.ThemeManager?.hideLoading?.();
+
             config.onReady?.();
             console.log(`%c[${name.toUpperCase()}] Ready`, 'color: #33ff00;');
         } catch (err) {
             console.error(`%c[${name.toUpperCase()}] Failed:`, 'color: #ff3333;', err);
+            // Don't leave the visitor staring at the spinner if rendering blew up.
+            window.ThemeManager?.hideLoading?.();
             throw err;
         }
     }

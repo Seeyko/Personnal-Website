@@ -14,12 +14,22 @@ const ThemeManager = (() => {
     const STORAGE_KEY = 'portfolio_theme';
     const SCROLL_KEY = 'portfolio_scroll';
     let currentThemeId = null;
+    let loadingHidden = false;
+    let loadingFallback = null;
 
     const getFromURL = () => new URLSearchParams(window.location.search).get('theme');
     const getSaved = () => { try { return localStorage.getItem(STORAGE_KEY) || DEFAULT_THEME; } catch { return DEFAULT_THEME; } };
     const save = id => { try { localStorage.setItem(STORAGE_KEY, id); } catch {} };
 
+    // Single source of truth for dismissing the boot loading screen. Idempotent:
+    // it fires once, from whichever comes first — the theme reporting it has
+    // finished rendering (ThemeInit.init), the error path, or the safety
+    // fallback. Hiding it any earlier reveals the page while its in-content
+    // spinners are still up, which reads as a second loader (the old bug).
     function hideLoading() {
+        if (loadingFallback) { clearTimeout(loadingFallback); loadingFallback = null; }
+        if (loadingHidden) return;
+        loadingHidden = true;
         const el = document.getElementById('loading-screen');
         if (el) { el.classList.add('hidden'); setTimeout(() => el.remove(), 500); }
         document.body.classList.remove('loading');
@@ -34,7 +44,10 @@ const ThemeManager = (() => {
 
     function updateFavicon(themeId) {
         const favicon = document.getElementById('favicon');
-        if (favicon) favicon.href = `/assets/brand/favicon-${themeId}.svg`;
+        const href = `/assets/brand/favicon-${themeId}.svg`;
+        // Only touch the href when it actually changes — reassigning the same
+        // value still makes the browser re-request the icon.
+        if (favicon && favicon.getAttribute('href') !== href) favicon.href = href;
     }
 
     async function loadJS(theme) {
@@ -58,13 +71,18 @@ const ThemeManager = (() => {
             console.log(`%c[THEME] Loaded: ${theme.name}`, 'color: #33ff00;');
         } catch (e) {
             console.error('Failed to load theme:', e);
+            // The theme JS never ran, so ThemeInit will never signal readiness —
+            // dismiss the loader here so a failed theme doesn't hang on the spinner.
+            hideLoading();
         }
 
         const url = new URL(window.location);
         url.searchParams.set('theme', themeId);
         window.history.replaceState({}, '', url);
         save(themeId);
-        hideLoading();
+        // NB: on the happy path the loader is dismissed by ThemeInit.init() once
+        // content is actually on screen — not here, where only the theme *file*
+        // has loaded. See hideLoading().
     }
 
     function switchTheme(id) {
@@ -155,13 +173,16 @@ const ThemeManager = (() => {
 
     function init() {
         restoreScroll();
-        const timeout = setTimeout(() => { console.warn('[THEME] Timeout'); hideLoading(); }, 3000);
+        // Safety net only: if the theme never reports readiness (broken JS, a
+        // theme that doesn't use ThemeInit), dismiss the loader anyway. Cleared
+        // by hideLoading() the moment the real ready signal arrives.
+        loadingFallback = setTimeout(() => { console.warn('[THEME] Loading fallback'); hideLoading(); }, 6000);
         const themeId = THEMES[getFromURL() || getSaved()] ? (getFromURL() || getSaved()) : DEFAULT_THEME;
-        apply(themeId).then(() => clearTimeout(timeout));
+        apply(themeId);
         createSwitcher();
     }
 
-    return { init, switchTheme, getCurrentThemeId: () => currentThemeId || getSaved() };
+    return { init, switchTheme, hideLoading, getCurrentThemeId: () => currentThemeId || getSaved() };
 })();
 
 document.readyState === 'loading'
