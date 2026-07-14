@@ -36,8 +36,11 @@ body[data-theme="fps"] {
   text-transform: none;
 }
 body[data-theme="fps"], body[data-theme="fps"] * { -webkit-font-smoothing: antialiased; }
-/* Native cursor off — the crosshair takes over. */
-body[data-theme="fps"], body[data-theme="fps"] * { cursor: none !important; }
+/* Native cursor off — the crosshair takes over. Gated on .fps-hud (set by
+   initFpsEffects) so it only applies where the crosshair is actually injected.
+   The blog page never runs initFpsEffects, so it keeps its native cursor
+   instead of being left with no pointer at all. */
+body[data-theme="fps"].fps-hud, body[data-theme="fps"].fps-hud * { cursor: none !important; }
 body[data-theme="fps"] ::selection { background: var(--accent); color: #06121f; }
 
 /* Hide chrome from other themes / base decorations we replace. */
@@ -69,8 +72,10 @@ body[data-theme="fps"] .hero-annotation { display: none !important; }
    the cathode guide/crosshair/hit-fx/boot ribbon, which must stay topmost. */
 body[data-theme="fps"] #main-content { position: relative; z-index: 46; }
 /* Room for the fixed rail (left) and telemetry (bottom). The telemetry bar is
-   opaque, so content must clear it fully or the two overlap at the fold. */
-body[data-theme="fps"] main#main-content { padding-left: 64px; padding-bottom: 56px; }
+   opaque, so content must clear it fully or the two overlap at the fold. Gated
+   on .fps-hud: only the homepage injects that chrome, so the blog (which never
+   runs initFpsEffects) stays centered instead of reserving space for nothing. */
+body[data-theme="fps"].fps-hud main#main-content { padding-left: 64px; padding-bottom: 56px; }
 
 /* ───────── density: pull sections tight like the CS menu mockup ─────────
    The shared layout gives every section 4rem of vertical padding + a full
@@ -330,7 +335,7 @@ body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); }
 /* Give the content room for the side column on wide screens. */
 @media (min-width: 1200px) {
   #fps-side { display: flex; }
-  body[data-theme="fps"] main#main-content { padding-right: 320px; }
+  body[data-theme="fps"].fps-hud main#main-content { padding-right: 320px; }
 }
 
 /* ───────── bottom telemetry ───────── */
@@ -414,7 +419,7 @@ body[data-theme="fps"] .language-switcher-toggle:focus-visible {
 @media (max-width: 899px) {
   /* 112px clears the bottom rail (top edge ≈102px above the viewport bottom)
      with breathing room — 96px let the last line tuck under the rail. */
-  body[data-theme="fps"] main#main-content { padding-left: 0; padding-right: 0; padding-bottom: 112px; }
+  body[data-theme="fps"].fps-hud main#main-content { padding-left: 0; padding-right: 0; padding-bottom: 112px; }
   /* Fixed ribbon (22px) + glass header (top:22px) overlap scrolling content on
      mobile: push the first section down so the injected NEWS panel-header clears
      the chrome instead of being tucked under it at scroll-top. */
@@ -554,7 +559,10 @@ body[data-theme="fps"] #cathode-guide .cg-line::after { display: none; }
 }
 #fps-ribbon b { color: var(--accent-2); font-weight: 700; }
 #fps-ribbon .fps-ribbon-sep { color: var(--muted); }
-body[data-theme="fps"] .header { top: 22px; }
+/* Nudge the header under the (JS-injected) ribbon — only where the ribbon
+   exists. On the blog the ribbon isn't injected, so the header stays at top:0
+   instead of leaving a 22px gap above it. */
+body[data-theme="fps"].fps-hud .header { top: 22px; }
 
 /* Anchor jumps / scrollIntoView must clear the fixed ribbon + glass header so a
    section's panel-header never tucks under the chrome. */
@@ -937,4 +945,173 @@ body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); border-c
   #fps-scene .fps-layer { transform: none !important; transition: none !important; }
   #fps-fx .fps-hit, #fps-fx .fps-dmg { animation: none !important; }
   body[data-theme="fps"] .fps-buy, body[data-theme="fps"] .fps-tab { transition: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BLOG + ARTICLE (blog.html) — the fps theme shipped with NO blog CSS,
+   so article body copy (near-white --fg) rendered on the bright --field
+   with no panel behind it (unreadable) and the listing header sat washed
+   out. blog.html loads a lean script set (no Carousel), so ThemeInit
+   throws before initFpsEffects and NONE of the HUD chrome is injected here
+   — the blog is a CSS-only surface, styled to read as a tactical "intel"
+   dossier: dark glass plates over the same cool concrete field.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Listing header — sits directly on the bright field → dark ink ── */
+body[data-theme="fps"] .blog-page-title {
+  font-family: var(--disp); text-transform: uppercase; letter-spacing: .04em; color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255,255,255,.55), 0 0 18px rgba(255,255,255,.4);
+}
+body[data-theme="fps"] .blog-page-subtitle {
+  font-family: var(--mono); font-size: .82rem; letter-spacing: .02em; color: var(--ink-dim);
+  opacity: 1; text-shadow: 0 1px 0 rgba(255,255,255,.4);
+}
+body[data-theme="fps"] .blog-list-loading .loading-text,
+body[data-theme="fps"] .blog-list-loading .loading-spinner-text {
+  font-family: var(--mono); color: var(--ink-dim); text-shadow: 0 1px 0 rgba(255,255,255,.4);
+}
+
+/* ── Listing cards → intel dossiers (reuse the .fps-buy glass tile) ── */
+body[data-theme="fps"] .blog-list .blog-card.fps-buy { display: flex; flex-direction: column; padding: .7rem .9rem .65rem; }
+body[data-theme="fps"] .blog-list .fps-buy .fps-buy-head { margin-bottom: .1rem; }
+body[data-theme="fps"] .fps-buy .blog-card-image {
+  margin: .5rem -.9rem .15rem; max-height: 168px; overflow: hidden;
+  border-top: 1px solid var(--glass-line-2); border-bottom: 1px solid var(--glass-line-2);
+}
+body[data-theme="fps"] .fps-buy .blog-card-image img {
+  width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.92) contrast(1.02);
+}
+body[data-theme="fps"] .fps-buy .blog-card-content { padding: 0; display: flex; flex-direction: column; }
+body[data-theme="fps"] .fps-buy .blog-card-title {
+  margin: .25rem 0 0; font-family: var(--disp); font-size: 1.32rem; line-height: 1.05;
+  letter-spacing: .03em; text-transform: uppercase; color: var(--accent-2);
+}
+body[data-theme="fps"] .fps-buy .blog-card-excerpt {
+  margin: .25rem 0 .5rem; font-size: .82rem; line-height: 1.5; color: var(--fg-dim);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+}
+body[data-theme="fps"] .fps-buy .blog-card-meta {
+  display: flex; align-items: center; gap: .55rem; margin-top: auto; padding-top: .45rem;
+  border-top: 1px solid var(--glass-line-2); font-family: var(--mono); font-size: .6rem;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+}
+body[data-theme="fps"] .fps-buy .blog-date { color: var(--accent-2); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] .fps-buy .blog-reading-time { color: var(--muted); }
+body[data-theme="fps"] .fps-buy .blog-reading-time::before { content: "· "; color: var(--glass-line); }
+
+/* ── "Load more" pagination → HUD button ── */
+body[data-theme="fps"] .pagination-btn {
+  font-family: var(--disp); text-transform: uppercase; letter-spacing: .08em; font-size: 1.02rem;
+  color: var(--fg); background: var(--glass-2); border: 1px solid var(--glass-line-2);
+  border-left: 2px solid var(--accent); border-radius: 0;
+  clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: none;
+}
+body[data-theme="fps"] .pagination-btn:hover:not(.disabled) {
+  background: rgba(30,44,60,.9); border-color: var(--glass-line); border-left-color: var(--accent-2); color: #fff;
+}
+
+/* ── Article view → a "mission briefing" glass dossier over the field ── */
+body[data-theme="fps"] .article-page {
+  margin: 92px auto 3rem; padding: 1.7rem 1.9rem 2.1rem;
+  background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
+  backdrop-filter: blur(10px) saturate(1.05); -webkit-backdrop-filter: blur(10px) saturate(1.05);
+  box-shadow: var(--hud-shadow), inset 0 1px 0 rgba(255,255,255,.08), inset 0 0 0 1px rgba(10,16,26,.4);
+}
+body[data-theme="fps"] .back-link {
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent-2); opacity: 1; transition: none;
+}
+body[data-theme="fps"] .back-link:hover { color: #fff; }
+body[data-theme="fps"] .article-meta {
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); opacity: 1;
+}
+body[data-theme="fps"] .article-date { color: var(--accent-2); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] .article-reading-time { color: var(--muted); }
+body[data-theme="fps"] .meta-separator { color: var(--glass-line); opacity: 1; }
+body[data-theme="fps"] .article-title {
+  font-family: var(--disp); text-transform: uppercase; letter-spacing: .02em; color: var(--fg);
+  font-size: clamp(2rem, 4.6vw, 3rem); line-height: .98; margin-top: .35rem;
+}
+body[data-theme="fps"] .article-cover { border: 1px solid var(--glass-line-2); border-radius: 2px; }
+
+/* Article body — near-white on the glass now reads; mono-accented structure. */
+body[data-theme="fps"] .article-content { color: var(--fg-dim); font-size: 1.02rem; line-height: 1.75; }
+body[data-theme="fps"] .article-content h1,
+body[data-theme="fps"] .article-content h2,
+body[data-theme="fps"] .article-content h3,
+body[data-theme="fps"] .article-content h4 {
+  font-family: var(--disp); text-transform: uppercase; letter-spacing: .02em; color: var(--fg);
+}
+body[data-theme="fps"] .article-content h2 {
+  color: var(--accent-2); border-bottom: 1px solid var(--glass-line-2); padding-bottom: .35rem;
+}
+body[data-theme="fps"] .article-content h2::before { content: "// "; font-family: var(--mono); color: var(--accent); }
+body[data-theme="fps"] .article-content h3 { color: var(--accent-2); }
+body[data-theme="fps"] .article-content strong { color: var(--fg); }
+body[data-theme="fps"] .article-content a {
+  color: var(--accent-2); text-decoration-color: rgba(124,188,255,.5);
+}
+body[data-theme="fps"] .article-content a:hover { color: #fff; text-decoration-color: #fff; }
+body[data-theme="fps"] .article-content ul li::marker,
+body[data-theme="fps"] .article-content ol li::marker { color: var(--accent); }
+body[data-theme="fps"] .article-content blockquote {
+  border-left: 2px solid var(--accent); border-radius: 0; background: var(--glass-2);
+  color: var(--fg-dim); font-style: italic;
+}
+body[data-theme="fps"] .article-content pre {
+  background: rgba(6,10,16,.72); border: 1px solid var(--glass-line-2); border-left: 2px solid var(--accent);
+  border-radius: 0; color: var(--fg); font-family: var(--mono);
+}
+body[data-theme="fps"] .article-content code {
+  background: var(--glass-2); border: 1px solid var(--glass-line-2); border-radius: 0;
+  color: var(--accent-2); font-family: var(--mono);
+}
+body[data-theme="fps"] .article-content pre code { background: none; border: 0; color: var(--fg); }
+body[data-theme="fps"] .article-content hr { border-top: 1px solid var(--glass-line-2); background: none; }
+body[data-theme="fps"] .article-content img { border: 1px solid var(--glass-line-2); border-radius: 2px; }
+body[data-theme="fps"] .article-footer { border-top: 1px solid var(--glass-line-2); }
+
+/* ── Empty / not-found / private states ── */
+/* not-found + no-articles land in #blog-list, directly on the field → dark ink. */
+body[data-theme="fps"] .no-articles,
+body[data-theme="fps"] .not-found p {
+  font-family: var(--mono); color: var(--ink-dim); text-shadow: 0 1px 0 rgba(255,255,255,.4);
+}
+body[data-theme="fps"] .not-found h2 {
+  font-family: var(--disp); text-transform: uppercase; letter-spacing: .03em; color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+/* password + access-denied prompts render inside the glass .article-page, so
+   their text already reads; just theme the interactive bits. */
+body[data-theme="fps"] .password-prompt h3,
+body[data-theme="fps"] .access-denied-prompt h3 {
+  font-family: var(--disp); text-transform: uppercase; letter-spacing: .03em; color: var(--fg);
+}
+body[data-theme="fps"] .password-input {
+  font-family: var(--mono); color: var(--fg); background: var(--glass-2);
+  border: 1px solid var(--glass-line-2); border-left: 2px solid var(--accent); border-radius: 0;
+}
+body[data-theme="fps"] .password-input:focus { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+body[data-theme="fps"] .password-submit,
+body[data-theme="fps"] .access-denied-back {
+  font-family: var(--disp); text-transform: uppercase; letter-spacing: .06em;
+  color: #06121f; background: var(--accent); border: 0; border-radius: 0;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+body[data-theme="fps"] .password-submit:hover,
+body[data-theme="fps"] .access-denied-back:hover { background: var(--accent-2); }
+body[data-theme="fps"] .password-error { font-family: var(--mono); color: var(--red); }
+
+/* ── Blog footer sits on the field: cool ink, no dimming ── */
+body[data-theme="fps"] .blog-footer { opacity: 1; }
+body[data-theme="fps"] .blog-footer .footer-copyright {
+  color: var(--ink-dim); font-family: var(--mono); letter-spacing: .08em;
+  text-shadow: 0 1px 0 rgba(255,255,255,.45);
+}
+
+/* ── Blog responsive: tighten the article dossier on small screens ── */
+@media (max-width: 768px) {
+  body[data-theme="fps"] .article-page { margin-top: 84px; padding: 1.2rem 1.15rem 1.6rem; }
 }

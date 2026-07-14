@@ -194,6 +194,13 @@ const fpsThemeConfig = {
 
 /* ───────────────────────── Chrome injection ───────────────────────── */
 function initFpsEffects() {
+    // Flags that the HUD chrome (background scene, left rail, side panel,
+    // telemetry bar, crosshair, ribbon) is present. CSS gates the native-cursor
+    // hide and the #main-content padding that reserves space for that chrome on
+    // this class — so pages that never reach here (the blog, which throws in
+    // ThemeInit before initEffects because Carousel isn't loaded there) keep
+    // their native cursor and stay centered instead of clearing absent chrome.
+    document.body.classList.add('fps-hud');
     injectScene();
     injectHud();
     decorateTabs();
