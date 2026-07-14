@@ -65,10 +65,15 @@ const BlipCursor = (() => {
     const TOUCH_SNOOZE_MS = 9000;    // touch mode: doze sooner (he's a guest, not a pointer)
     const TOUCH_AWAY_MS = 22000;     // touch mode: fade out entirely after this
 
-    // Suiveur à ressort sous-amorti : Blip traîne derrière la souris, dépasse
-    // légèrement la cible et se pose avec un petit rebond (ζ ≈ 0.62).
-    const SPRING_K = 190;          // raideur (s^-2)
-    const SPRING_C = 17;           // friction (s^-1)
+    // Suiveur à ressort en amortissement quasi critique : Blip traîne derrière
+    // la souris pendant le mouvement puis se pose SANS dépassement ni rebond
+    // (ζ ≈ 1.05). L'ancien réglage sous-amorti (ζ ≈ 0.62) dépassait la cible et
+    // faisait faire un « retour arrière » à la pointe — impossible de viser. La
+    // raideur est montée en compensation pour conserver le même retard de suivi
+    // en mouvement (retard ≈ (C/K)·vitesse, inchangé) : seule la pose change,
+    // elle arrive maintenant tout droit sur la cible.
+    const SPRING_K = 520;          // raideur (s^-2)
+    const SPRING_C = 48;           // friction (s^-1) — ζ = C/(2√K) ≈ 1.05
     const MAX_DT = 1 / 30;         // clamp du pas de temps (retour d'onglet, freeze)
     const SETTLE_DIST = 0.15;      // px — seuil de pose
     const SETTLE_VEL = 4;          // px/s
@@ -199,7 +204,8 @@ const BlipCursor = (() => {
     }
 
     // Il s'incline dans le sens du déplacement et s'étire le long de sa
-    // trajectoire (volume conservé) ; le tremblé de pose vient du ressort.
+    // trajectoire (volume conservé), puis revient au repos net dès qu'il se
+    // pose (plus de tremblé : le ressort est en amortissement quasi critique).
     function applyBodyLanguage() {
         if (!motionEl) return;
         const speed = Math.hypot(velX, velY);
