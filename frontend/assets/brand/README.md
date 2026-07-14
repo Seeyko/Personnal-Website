@@ -7,7 +7,7 @@ Référence complète : [`/BRANDING.md`](../../../BRANDING.md). Règles rapides 
 Silhouette **curseur de souris** (pointe haut-gauche, bord gauche vertical, diagonale) sur corps bloc terminal. Grille 24×24, pixel-art complet : rampe 4 tons, lumière sur la diagonale, dithering, scanlines CRT, contour encre `#12120f` constant.
 
 - `blip.svg` — version universelle (corps phosphore, smirk, blush, pattes).
-- `blip-{terminal,blueprint,retro90s,default}.svg` — reskin par thème (swap de palette) + costume : lunettes noires / casque or sur la pente / casquette rouge à l'envers + visière / teal nature.
+- `blip-{terminal,blueprint,retro90s,default,fps}.svg` — reskin par thème (swap de palette) + costume : lunettes noires / casque or sur la pente / casquette rouge à l'envers + visière / teal nature / casque balistique acier sur la pente + oreillette et micro à LED rouge.
 - `blip-skate.svg` — pose héro (deck ambre, roues rouges) : bannières, og:image, easter egg Konami.
 - `blip-error.svg` — pose 404/erreur (palette rouge, bras de T-Rex, bouche ouverte + langue).
 - **Rituel blink (contractuel)** : visage éteint 1 frame toutes les ~1.06 s (`steps(1)`) → Blip redevient un simple curseur, puis rouvre les yeux. Respecter `prefers-reduced-motion`.
