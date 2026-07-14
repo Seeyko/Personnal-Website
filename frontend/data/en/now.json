@@ -5,7 +5,7 @@
   "paragraph": [
     { "text": "For a few months now I've been running a Platform Architect mission at CBA alongside the Lead Front-End role. I set the architecture and standards around agentic AI, and I'm building the internal platform that will carry it all. A solution built on " },
     { "link": { "text": "MnM", "url": "https://github.com/AlphaLuppi/mnm" } },
-    { "text": " : composing agentic workflows, sharing plugins and skills, everything to equip the product and tech teams. I'm not doing this solo: with " },
+    { "text": ": composing agentic workflows, sharing plugins and skills, everything to equip the product and tech teams. I'm not doing this solo: with " },
     { "link": { "text": "Gabriel Desbouis", "url": "https://fr.linkedin.com/in/gabriel-desbouis" } },
     { "text": ", an AI engineer, we've trained around a hundred people on LLMs: him on the theory, me on the hands-on side and day-to-day support. And it's still going. Gabriel also builds custom tools on top of the platform, from simple agents to more advanced agentic ones. I'm also wrapping up the RideMyPark rebuild: the old WordPress site rebuilt from scratch in React + Go, coded end to end with AI. A rewrite I'd been putting off for four years, done in a month. No freelance availability right now, my hands are already full." }
   ]

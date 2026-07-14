@@ -108,7 +108,11 @@ body[data-theme="fps"] #main-nav { display: none; }
 body[data-theme="fps"] .nav { gap: 2px; }
 /* Header controls: even spacing + vertical centring so the badge and the two
    HUD chips sit on one clean baseline instead of crowding the corner. */
-body[data-theme="fps"] #header-controls { display: flex; align-items: center; gap: .5rem; }
+body[data-theme="fps"] #header-controls { display: flex; align-items: center; gap: .5rem; padding-right: 1.2rem; }
+/* The shared switcher CSS adds uneven margin-lefts (1.5rem / .75rem) that
+   stack with the flex gap — zero them so the gap alone spaces the chips. */
+body[data-theme="fps"] #header-controls .theme-switcher,
+body[data-theme="fps"] #header-controls .language-switcher { margin-left: 0; }
 body[data-theme="fps"] .theme-switcher-toggle,
 body[data-theme="fps"] .language-switcher-toggle { display: inline-flex; align-items: center; height: 30px; }
 body[data-theme="fps"] .fps-tab {
@@ -155,8 +159,11 @@ body[data-theme="fps"] .section-title {
 }
 /* Numbered sections, like the CS menu tabs (hidden by default in base.css).
    The hardcoded HTML numbers don't follow document order (ABOUT is 04 but sits
-   before HISTORY 03), so a CSS counter renumbers them in reading order. */
+   before HISTORY 03), so a CSS counter renumbers them in reading order.
+   align-items:baseline — base centers the .78rem number against the tall
+   display title, floating it 2.8px above the title's baseline. */
 body[data-theme="fps"] #main-content { counter-reset: fps-section; }
+body[data-theme="fps"] .section-label { align-items: baseline; }
 body[data-theme="fps"] .section-number {
   display: inline-block; font-size: 0; color: var(--accent); font-family: var(--mono);
   letter-spacing: .08em; font-weight: 700;
@@ -333,8 +340,10 @@ body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); }
   padding: .4rem 1.2rem; font-family: var(--mono); font-size: .66rem; letter-spacing: .05em; color: var(--fg-dim);
   background: #06090d; border-top: 1px solid var(--glass-line-2); pointer-events: none;
 }
-#fps-telemetry .fps-m { display: flex; gap: .35rem; align-items: baseline; }
-#fps-telemetry .fps-m i { color: var(--muted); text-transform: uppercase; font-style: normal; }
+/* gap:0 + label margin — the flex gap also split value from its bare "ms"
+   unit text node ("0.4 ms" vs the glued "0%"), reading inconsistently. */
+#fps-telemetry .fps-m { display: flex; gap: 0; align-items: baseline; }
+#fps-telemetry .fps-m i { color: var(--muted); text-transform: uppercase; font-style: normal; margin-right: .35rem; }
 #fps-telemetry .fps-m b { color: #fff; font-variant-numeric: tabular-nums; }
 #fps-telemetry .fps-good { color: var(--money) !important; }
 #fps-telemetry .fps-map b { color: var(--accent-2); }
@@ -403,17 +412,24 @@ body[data-theme="fps"] .language-switcher-toggle:focus-visible {
 
 /* ───────── responsive: rail → bottom bar, no side column ───────── */
 @media (max-width: 899px) {
-  body[data-theme="fps"] main#main-content { padding-left: 0; padding-right: 0; padding-bottom: 96px; }
+  /* 112px clears the bottom rail (top edge ≈102px above the viewport bottom)
+     with breathing room — 96px let the last line tuck under the rail. */
+  body[data-theme="fps"] main#main-content { padding-left: 0; padding-right: 0; padding-bottom: 112px; }
   /* Fixed ribbon (22px) + glass header (top:22px) overlap scrolling content on
      mobile: push the first section down so the injected NEWS panel-header clears
      the chrome instead of being tucked under it at scroll-top. */
   body[data-theme="fps"] .hero { padding-top: 92px; }
+  /* bottom: 29px hugs the telemetry bar exactly (measured 29.1px tall) — at
+     44px a 15px strip of scrolling page content stayed readable between the
+     two fixed bars. */
   #fps-rail {
-    left: .5rem; right: .5rem; top: auto; bottom: 44px; transform: none;
+    left: .5rem; right: .5rem; top: auto; bottom: 29px; transform: none;
     flex-direction: row; justify-content: center; gap: 4px;
   }
   #fps-rail .fps-rail-btn { width: 40px; height: 40px; }
-  #fps-rail .fps-rail-active::before { left: 8px; right: 8px; top: auto; bottom: -4px; width: auto; height: 3px; }
+  /* Full selector: the shorter one lost to the desktop rule's specificity,
+     leaving a 3x3px speck instead of an underline. */
+  #fps-rail .fps-rail-btn.fps-rail-active::before { left: 8px; right: 8px; top: auto; bottom: -4px; width: auto; height: 3px; }
   #fps-side { display: none !important; }
   body[data-theme="fps"] #work-grid { grid-template-columns: 1fr; }
   /* Mobile keeps the bright map, but the panels/tiles go near-opaque (below) so
@@ -465,11 +481,13 @@ body[data-theme="fps"] .theme-switcher-toggle:hover,
 body[data-theme="fps"] .language-switcher-toggle:hover { color: #fff; border-color: var(--accent); }
 body[data-theme="fps"] .theme-switcher-menu,
 body[data-theme="fps"] .language-switcher-menu {
-  background: var(--glass); border: 1px solid var(--glass-line); border-radius: 0;
+  /* near-opaque: the menus float over high-contrast panel text, which still
+     ghosted through at .80 (and even .94 without backdrop blur) */
+  background: rgba(13,19,29,.97); border: 1px solid var(--glass-line); border-radius: 0;
   backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
 }
 body[data-theme="fps"] .theme-option,
-body[data-theme="fps"] .language-option { color: var(--fg-dim); border-radius: 0; font-family: var(--mono); }
+body[data-theme="fps"] .language-option { color: var(--fg-dim); border-radius: 0; font-family: var(--mono); white-space: nowrap; }
 body[data-theme="fps"] .theme-option:hover,
 body[data-theme="fps"] .language-option:hover { background: rgba(84,163,255,.14); color: #fff; }
 body[data-theme="fps"] .theme-option.active,
@@ -576,9 +594,11 @@ body[data-theme="fps"] .fps-clock { color: var(--accent-2); font-variant-numeric
 body[data-theme="fps"] .fps-buy-budget { color: var(--fg-dim); }
 body[data-theme="fps"] .fps-buy-budget b { color: var(--gold); font-variant-numeric: tabular-nums; }
 
-/* WORK buy header sits directly on top of the grid, capping it like a panel. */
+/* WORK buy header sits directly on top of the grid, capping it like a panel.
+   border-bottom:0 — the first tile row's own top border supplies the divider
+   (both were drawing 1px lines, doubling the hairline at the junction). */
 body[data-theme="fps"] #fps-buy-h {
-  border: 1px solid var(--glass-line); border-bottom: 1px solid var(--glass-line-2);
+  border: 1px solid var(--glass-line); border-bottom: 0;
   backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
 }
 
@@ -595,15 +615,18 @@ body[data-theme="fps"] .fps-eyebrow {
 
 /* ───────── top-right player badge ───────── */
 #fps-badge {
-  display: flex; align-items: center; gap: .5rem; padding: .28rem .5rem; margin-right: .5rem;
+  /* 30px tall to match the theme/language chips exactly (it was 41px and its
+     border touched the boot ribbon above) */
+  display: flex; align-items: center; gap: .5rem; height: 30px; box-sizing: border-box;
+  padding: 0 .5rem; margin-right: 0;
   background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 8px 18px -10px rgba(28,18,3,.5);
 }
 #fps-badge .fps-badge-av {
-  width: 30px; height: 30px; display: grid; place-items: center; flex: 0 0 auto;
+  width: 22px; height: 22px; display: grid; place-items: center; flex: 0 0 auto;
   background: linear-gradient(135deg, #1c2a3a, #0e1620); border: 1px solid var(--glass-line);
-  color: var(--accent-2); font-family: var(--disp); font-size: .95rem; letter-spacing: .02em;
+  color: var(--accent-2); font-family: var(--disp); font-size: .78rem; letter-spacing: .02em;
 }
 #fps-badge .fps-badge-who { line-height: 1.1; }
 #fps-badge .fps-badge-who b { font-family: var(--disp); font-size: .9rem; letter-spacing: .03em; color: var(--fg); }
@@ -645,6 +668,9 @@ body[data-theme="fps"] .hero-content { width: 100%; padding: 0 1.3rem 1.35rem; o
 body[data-theme="fps"] .fps-news-h { margin: 0 -1.3rem .85rem; padding: .5rem 1.3rem; }
 body[data-theme="fps"] .fps-eyebrow { font-family: var(--mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 .4rem; }
 body[data-theme="fps"] .hero-title { margin: 0 0 .5rem; line-height: .92; }
+/* Balance multi-line wraps — the FR title stranded "TOM." alone on line 2
+   in the ~1150-1350px and ~455-558px bands. No-op when it fits one line. */
+body[data-theme="fps"] .hero-title .title-line { text-wrap: balance; }
 body[data-theme="fps"] .hero-content .hero-quote { margin: 0 0 1.1rem; }
 body[data-theme="fps"] .hero-quote-paragraph { margin: 0; max-width: 54ch; font-size: .94rem; line-height: 1.55; color: var(--fg-dim); }
 body[data-theme="fps"] .hero-signature { margin: .55rem 0 0; font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: none; color: var(--muted); }
@@ -665,12 +691,20 @@ body[data-theme="fps"] .fps-buy-price { font-family: var(--mono); font-size: .74
 body[data-theme="fps"] .fps-buy h3 { margin: .15rem 0 0; font-family: var(--disp); font-size: 1.25rem; letter-spacing: .03em; text-transform: uppercase; color: var(--accent-2); }
 body[data-theme="fps"] .fps-buy p { margin: .15rem 0 .4rem; font-size: .78rem; color: var(--fg-dim); line-height: 1.4; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
 body[data-theme="fps"] .fps-buy-foot { margin-top: auto; padding-top: .4rem; border-top: 1px solid var(--glass-line-2); display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+/* Anchor the tag row to the tile bottom: with descriptions of different line
+   counts, tags floated at different heights across a row (~18px off), leaving
+   an uneven dead band above the pinned footers. */
+body[data-theme="fps"] .fps-buy .project-info { display: flex; flex-direction: column; flex: 1 0 auto; min-height: 0; }
+body[data-theme="fps"] .fps-buy .project-info .tags { margin-top: auto; }
 body[data-theme="fps"] .fps-buy-cta { color: var(--accent-2); }
 body[data-theme="fps"] .fps-buy:hover .fps-buy-cta { color: #fff; }
 
 /* ── Right column: PROFILE + CONTACTS (tighter, title-bar convention) ── */
 body[data-theme="fps"] #fps-side { gap: 10px; }
-body[data-theme="fps"] #fps-side .fps-panel { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px; box-shadow: var(--hud-shadow); overflow: hidden; }
+/* padding/margin/width reset: the panels are <section>s, so base.css's generic
+   section rule (padding 2rem + max-width + margin auto) leaked in — it pushed
+   the title bars ~32px inside the panel and misaligned the two panels' edges. */
+body[data-theme="fps"] #fps-side .fps-panel { padding: 0; margin: 0; max-width: none; width: 100%; background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px; box-shadow: var(--hud-shadow); overflow: hidden; }
 body[data-theme="fps"] #fps-side .fps-panel-h { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .5rem .8rem; background: var(--glass-2); border-bottom: 1px solid var(--glass-line-2); font-family: var(--mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
 body[data-theme="fps"] #fps-side .fps-panel-h > span:first-child { color: var(--fg-dim); }
 body[data-theme="fps"] #fps-side .fps-rankcard .fps-panel-h > span:last-child { color: var(--accent-2); }
@@ -720,7 +754,9 @@ body[data-theme="fps"] .email-link {
   display: inline-flex; align-items: center; margin: 0;
   color: var(--money); font-family: var(--mono); transition: none;
 }
-body[data-theme="fps"] .email-link .email-text { font-size: .9rem; letter-spacing: .02em; }
+/* 1.2rem: the email is the primary contact action but read smaller/weaker
+   than the secondary GITHUB/LINKEDIN buttons below it. */
+body[data-theme="fps"] .email-link .email-text { font-size: 1.2rem; letter-spacing: .02em; }
 body[data-theme="fps"] .email-link:hover { transform: none; color: var(--accent-2); }
 body[data-theme="fps"] .response-time {
   display: flex; justify-content: flex-start; align-items: center; gap: .4rem;
@@ -747,9 +783,13 @@ body[data-theme="fps"] .about-main,
 body[data-theme="fps"] .about-detail {
   color: var(--fg-dim); font-size: .92rem; line-height: 1.6; margin: .15rem 0 .7rem;
 }
-body[data-theme="fps"] .about-detail { margin-bottom: .3rem; }
+/* .7rem (not .3rem): the smaller margin collapsed with .about-specs' .35rem
+   to a 5.6px gap — half the rhythm of every other block gap in the card. */
+body[data-theme="fps"] .about-detail { margin-bottom: .7rem; }
+/* display:block — hidden by default in base.css; the mono HUD labels
+   ("/* Who am I? *​/") fit the tactical look and pace the card. */
 body[data-theme="fps"] .code-comment {
-  color: var(--muted); font-family: var(--mono); font-size: .7rem;
+  display: block; color: var(--muted); font-family: var(--mono); font-size: .7rem;
   letter-spacing: .06em; margin: .1rem 0 .25rem;
 }
 body[data-theme="fps"] .about-specs {
@@ -762,7 +802,9 @@ body[data-theme="fps"] .about-specs .spec-row {
 }
 body[data-theme="fps"] .about-specs .spec-row:last-child { border-bottom: 0; }
 body[data-theme="fps"] .about-specs .spec-key {
-  flex: 0 0 auto; color: var(--muted); text-transform: uppercase; letter-spacing: .1em;
+  /* fixed column so the values share one left edge (they started at a ragged
+     x spread of ~40px); 7rem clears the longest key ("EXPERIENCE:" ≈ 89px) */
+  flex: 0 0 7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em;
 }
 body[data-theme="fps"] .about-specs .spec-val { color: var(--fg-dim); font-variant-numeric: tabular-nums; }
 body[data-theme="fps"] .craft-stack { margin-top: .85rem; }
@@ -781,8 +823,9 @@ body[data-theme="fps"] .craft-description {
   font-size: .82rem; line-height: 1.55; opacity: 1;
 }
 
-/* NOW — paragraph scale matches the ABOUT body. */
-body[data-theme="fps"] .now-paragraph { color: var(--fg-dim); font-size: .92rem; line-height: 1.6; margin: 0; }
+/* NOW — paragraph scale matches the ABOUT body; 75ch caps the measure
+   (the full-width panel let lines run ~130 characters at 1440px). */
+body[data-theme="fps"] .now-paragraph { color: var(--fg-dim); font-size: .92rem; line-height: 1.6; margin: 0; max-width: 75ch; }
 
 /* HISTORY — retint the git graph to the fps palette. Without these the
    timeline kept its default neon green/red/teal (terminal palette), the one
@@ -795,7 +838,7 @@ body[data-theme="fps"] {
   --git-hash-color: #f4b73a;
   --git-bg: rgba(13, 19, 29, .8);
   --git-bg-solid: rgba(16, 24, 34, .97);
-  --git-overlay-bg: rgba(10, 16, 26, .55);
+  --git-overlay-bg: rgba(12, 18, 28, .96);
   --git-border: rgba(150, 190, 228, .16);
   --git-text: #eef4fa;
   --git-text-secondary: #b3c2d0;
@@ -813,10 +856,28 @@ body[data-theme="fps"] .mobile-commit-education { --branch-color: var(--git-educ
 
 /* The timeline section is full-bleed (base strips its side padding for the
    graph), which left the glass viewport 2rem wider than every other panel.
-   Pull it back onto the shared panel grid. */
-@media (min-width: 769px) {
+   Pull it back onto the shared panel grid. (Desktop graph shows >1024 only.) */
+@media (min-width: 1025px) {
   body[data-theme="fps"] .git-timeline-viewport { width: auto; margin: 0 2rem; }
 }
+/* 769-1024 shows the vertical mobile list instead — align it to the same
+   grid as the other panels (it sat 24px off the shared left edge). */
+@media (min-width: 769px) and (max-width: 1024px) {
+  body[data-theme="fps"] .git-timeline-mobile { padding: 0 2rem; }
+}
+/* Commit-detail overlay: align to the panel grid, keep it inside the section
+   (it spilled ~116px past the panel onto the CONTACT heading), and remaining
+   loud terminal-palette leftovers → fps palette. */
+body[data-theme="fps"] .git-timeline-overlay.fixed-corner { left: 2rem; }
+body[data-theme="fps"] .git-timeline-overlay .overlay-content { max-height: min(370px, 52vh); overflow-y: auto; }
+body[data-theme="fps"] .overlay-hash:empty { display: none; }
+body[data-theme="fps"] .git-now-marker span {
+  background: var(--red);
+  box-shadow: 0 2px 10px rgba(255, 70, 85, .4);
+}
+body[data-theme="fps"] .git-commit-work:hover { box-shadow: 0 4px 16px rgba(47, 128, 230, .25); }
+body[data-theme="fps"] .git-commit-project:hover { box-shadow: 0 4px 16px rgba(244, 183, 58, .25); }
+body[data-theme="fps"] .git-commit-education:hover { box-shadow: 0 4px 16px rgba(124, 188, 255, .25); }
 
 /* HISTORY — scroll hint on the timeline plate. */
 body[data-theme="fps"] .git-timeline-scroll-hint {
@@ -836,6 +897,9 @@ body[data-theme="fps"] .footer-sep {
   text-shadow: 0 1px 0 rgba(255,255,255,.45);
 }
 body[data-theme="fps"] .footer-sep { opacity: .5; }
+/* base.css hides .footer-scale but leaves its preceding separator — the info
+   row ended with an orphaned trailing "|". */
+body[data-theme="fps"] .footer-version + .footer-sep { display: none; }
 body[data-theme="fps"] .cathode-guide-toggle {
   color: var(--ink-dim); font-family: var(--mono); font-size: .64rem; letter-spacing: .08em;
   background: transparent; border: 1px solid rgba(26,37,48,.28); border-radius: 2px;
@@ -844,13 +908,28 @@ body[data-theme="fps"] .cathode-guide-toggle {
 body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); border-color: var(--accent); }
 
 /* ── Mobile refits (kept after the polish pass so they win the cascade) ── */
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   /* Stack the two hero CTAs full-width: side by side they wrapped, and the
-     ghost's margin-left left the second line staggered off the first. */
+     ghost's margin-left left the second line staggered off (and colliding
+     with) the first. 640px, not 560: the FR labels overflow up to ~625px. */
   body[data-theme="fps"] .hero-cta { display: flex; width: 100%; justify-content: center; }
   body[data-theme="fps"] #fps-cta-ghost { margin-left: 0; margin-top: .55rem; }
+  /* The ribbon's hint span clipped mid-word below ~600px — keep the title. */
+  #fps-ribbon .fps-ribbon-sep, #fps-ribbon .fps-ribbon-sep + span { display: none; }
+}
+@media (max-width: 560px) {
   /* The NEWS bar can't fit label + full timestamp on one narrow line. */
   body[data-theme="fps"] .fps-clock { display: none; }
+}
+/* ── Header edge alignment on mobile/tablet ── */
+@media (max-width: 768px) {
+  /* base.css gives the header its own 16px padding here — the fps desktop
+     gutters would double-indent the brand and controls. */
+  body[data-theme="fps"] .header-brand { padding-left: 0; }
+  body[data-theme="fps"] #header-controls { padding-right: 0; }
+  /* The shared menu compensates for header padding with right:-0.5rem; under
+     fps the toggle already sits inside, so the menu jutted 8px past its chip. */
+  body[data-theme="fps"] .language-switcher-menu { right: 0; }
 }
 
 /* ───────── reduced motion ───────── */

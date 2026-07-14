@@ -27,6 +27,27 @@ Fix the sloppy positioning/margin/padding issues in the FPS theme reported by To
 - [x] Browser re-verification: fps (3 viewports, all sections, no console errors,
       no horizontal overflow) + terminal/blueprint/retro90s/default regression pass
 
+## Pass 2 — per-section subagent audit (8 agents, ~30 findings)
+- [x] Header: badge resized to 30px chip height, even control spacing, right gutter,
+      near-opaque dropdown menus, no double-indent ≤768, lang menu overhang, nowrap options
+- [x] Ribbon: hint span hidden ≤640 (clipped mid-word on mobile)
+- [x] Hero: CTA stack breakpoint 560→640 (FR labels collided 561-625px), title text-wrap balance
+- [x] NOW: section numbers baseline-aligned, paragraph capped 75ch, EN " : " typo fixed
+- [x] WORK: tag rows anchored to tile bottom (were ~18px misaligned per row),
+      no doubled hairline at buy-bar/grid junction
+- [x] ABOUT: spec keys fixed 7rem column (values were ragged ±40px), paragraph rhythm evened,
+      /* code comments */ un-hidden
+- [x] CONTACT/footer: email promoted to 1.2rem, orphaned trailing "|" hidden,
+      mobile padding-bottom 112px (rail clipped the cathode toggle)
+- [x] HUD: base.css section styles reset on #fps-side panels (title bars now cap edge-to-edge,
+      panels aligned), mobile rail active underline (specificity fix), rail hugs telemetry (29px),
+      telemetry units glued to values
+- [x] Timeline: overlay opaque + on-grid + max-height (spilled 116px onto CONTACT), overlay
+      type-border regex fix (shared JS), per-lane two-pass label sweep (shared JS — "Lead
+      Front-End" was buried), unconditional right-edge clamp (graph overflowed 20px at 1200),
+      NOW badge + hover glows retinted, tablet mobile-list on grid, empty hash slot collapsed
+- [x] Re-verified fps at 1440/1200/900/620/390 + terminal/blueprint/default regression pass
+
 ## Notes/Discoveries
 - The timeline JS (git-timeline.js) stamps hardcoded colors as inline
   `--branch-color` on commit markers; themes must override per-type classes
