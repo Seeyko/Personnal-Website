@@ -25,7 +25,7 @@ Moniteur CRT sur pattes dont l'écran-visage suit le thème : `cathode.svg` (ter
 ## Autres assets
 
 - `heartbit.svg` — sceau « Built with heart » : cœur pixel rouge, bit-curseur vert clignotant à la place du pixel manquant. Footer, fin d'article, stickers. (Contraste rouge/vert validé en niveaux de gris : lum 0.24 vs 0.72.)
-- `favicon-{theme}.svg` — tête de Blip sur fond du thème ; à swapper par `theme-manager.js` au changement de thème.
+- `favicon-{theme}.svg` — tête de Blip aux couleurs du thème, fond transparent, viewBox recadré pile sur le sprite ; à swapper par `theme-manager.js` au changement de thème.
 - `avatar-512.png` — LE MÊME avatar partout (GitHub, LinkedIn, email).
 - `og-image.png` — 1200×630 (tagline + Blip en skate) pour `og:image` / `twitter:image`.
 
