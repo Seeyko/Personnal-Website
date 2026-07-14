@@ -495,7 +495,13 @@ body[data-theme="fps"] #cathode-guide .cg-line::after { display: none; }
 @media (min-width: 900px) {
   /* Keep her clearly in front of the content plates (she was reading as stuck
      behind the NOW/WORK cards) but under the crosshair + fixed telemetry bar. */
-  body[data-theme="fps"] #cathode-guide { z-index: 47; bottom: 64px; }
+  body[data-theme="fps"] #cathode-guide { z-index: 47; }
+  /* The 64px floor lift is only for the static dock (reduced motion / before
+     the life engine mounts). Once cg-alive takes over, the engine already
+     clears the telemetry bar itself (probeFloor() reads #fps-telemetry's
+     height) - overriding bottom here too would double-apply the lift and
+     make every stand/walk/jump render 64px higher than on every other theme. */
+  body[data-theme="fps"] #cathode-guide:not(.cg-alive) { bottom: 64px; }
 }
 
 /* ───────── boot-strip ribbon (top hint bar) ─────────
