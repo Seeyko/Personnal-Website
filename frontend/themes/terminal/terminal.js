@@ -455,160 +455,117 @@ const DIRT_BALL_COLORS = {
 };
 
 // ─── Terminal Sound Design (synthesized with Web Audio, no assets) ───
-let terminalAudioCtx = null;
+// The shared SFX bus (js/core/effects/sfx.js) owns the AudioContext, the
+// mute toggle (window.sound) and the global interaction wiring; this theme
+// just registers its pack: how each semantic event sounds under terminal.
 let endermanStareNodes = null;
-let sfxEnabled = true;
-try { sfxEnabled = localStorage.getItem('terminal-sfx') !== 'off'; } catch (e) { /* private mode */ }
-
-// Browsers only allow audio after a user gesture; every click/keypress
-// doubles as an unlock so sounds work as soon as possible.
-function ensureAudioCtx() {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (!Ctx) return null;
-    if (!terminalAudioCtx) terminalAudioCtx = new Ctx();
-    if (terminalAudioCtx.state === 'suspended') terminalAudioCtx.resume();
-    return terminalAudioCtx;
-}
-
-// Console command to mute/unmute all site sounds (persisted)
-window.sound = function(on) {
-    sfxEnabled = on === undefined ? !sfxEnabled : !!on;
-    try { localStorage.setItem('terminal-sfx', sfxEnabled ? 'on' : 'off'); } catch (e) { /* private mode */ }
-    console.log(`%c[AUDIO] UI sounds ${sfxEnabled ? 'enabled' : 'disabled'}`, 'color: #33ff00;');
-};
 
 // Soft mechanical keyboard hit: muted low "thock" body + felt noise,
 // slightly detuned per press so repeated clicks feel organic.
-function sfxKeyInto(ctx, dest, t, up) {
+function sfxKey(a, up) {
     const jitter = 0.92 + Math.random() * 0.16;
     const vol = up ? 0.05 : 0.11;
-
-    const osc = ctx.createOscillator();
-    const og = ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime((up ? 220 : 155) * jitter, t);
-    osc.frequency.exponentialRampToValueAtTime((up ? 115 : 72) * jitter, t + 0.05);
-    og.gain.setValueAtTime(0, t);
-    og.gain.linearRampToValueAtTime(vol, t + 0.006);
-    og.gain.exponentialRampToValueAtTime(0.001, t + (up ? 0.06 : 0.09));
-    osc.connect(og);
-    og.connect(dest);
-    osc.start(t);
-    osc.stop(t + 0.12);
-
-    const dur = up ? 0.03 : 0.045;
-    const len = Math.ceil(ctx.sampleRate * dur);
-    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    const lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = (up ? 2200 : 1500) * jitter;
-    const ng = ctx.createGain();
-    ng.gain.setValueAtTime(0, t);
-    ng.gain.linearRampToValueAtTime(vol * 0.8, t + 0.004);
-    ng.gain.exponentialRampToValueAtTime(0.001, t + dur);
-    src.connect(lp);
-    lp.connect(ng);
-    ng.connect(dest);
-    src.start(t);
-    src.stop(t + dur + 0.02);
+    a.tone(a.t, up ? 0.06 : 0.09, vol, 'triangle', (up ? 220 : 155) * jitter, (up ? 115 : 72) * jitter);
+    a.noise(a.t, up ? 0.03 : 0.045, vol * 0.8, (up ? 2200 : 1500) * jitter, (up ? 2200 : 1500) * jitter, 0.8);
 }
 
-// Gentle blip for card reveals; consecutive reveals climb a pentatonic step
-function sfxBlipInto(ctx, dest, t, step) {
-    const ratios = [1, 1.125, 1.25, 1.5, 1.6667];
-    const f = 392 * ratios[step % ratios.length];
-    const osc = ctx.createOscillator();
-    const g = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(f, t);
-    osc.frequency.exponentialRampToValueAtTime(f * 1.35, t + 0.07);
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.055, t + 0.015);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
-    osc.connect(g);
-    g.connect(dest);
-    osc.start(t);
-    osc.stop(t + 0.18);
+// Deep warbly "CRT creature" voice tone, shared by Cathode's little cues.
+function sfxCrtVoice(a, at, dur, vol, f0, f1) {
+    a.tone(at, dur, vol, 'triangle', f0, f1);
+    a.tone(at, dur, vol * 0.35, 'triangle', f0 * 2.02, f1 * 2.02);
 }
 
-const sfxLast = { down: 0, up: 0, blip: 0 };
-
-function playKeySound(kind) {
-    if (!sfxEnabled) return;
-    const ctx = terminalAudioCtx;
-    if (!ctx || ctx.state !== 'running') return;
-    const now = performance.now();
-    if (now - sfxLast[kind] < 35) return;
-    sfxLast[kind] = now;
-    sfxKeyInto(ctx, ctx.destination, ctx.currentTime, kind === 'up');
-}
-
-function playCardBlip(step) {
-    if (!sfxEnabled) return;
-    const ctx = terminalAudioCtx;
-    if (!ctx || ctx.state !== 'running') return;
-    const now = performance.now();
-    if (now - sfxLast.blip < 90) return;
-    sfxLast.blip = now;
-    sfxBlipInto(ctx, ctx.destination, ctx.currentTime, step);
-}
-
-// Soft blip when project/blog cards scroll into view, cascading up in
-// pitch when several reveal in a row. Watches future cards too (they
-// render after the JSON data loads).
-function initCardRevealSounds() {
-    if (!('IntersectionObserver' in window) || !('MutationObserver' in window)) return;
-    let cascade = 0;
-    let lastReveal = 0;
-    const io = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            io.unobserve(entry.target);
-            const now = performance.now();
-            cascade = now - lastReveal < 900 ? cascade + 1 : 0;
-            lastReveal = now;
-            playCardBlip(cascade);
-        });
-    }, { threshold: 0.25 });
-    const seen = new WeakSet();
-    const scan = () => document.querySelectorAll('.project-card, .blog-card').forEach(el => {
-        if (!seen.has(el)) {
-            seen.add(el);
-            io.observe(el);
-        }
-    });
-    scan();
-    new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
-}
-
-// Keyboard thock on clicks and keystrokes, site-wide
 function initTerminalSfx() {
-    document.addEventListener('pointerdown', (e) => {
-        ensureAudioCtx();
-        if (e.pointerType !== 'touch') playKeySound('down');
-    });
-    document.addEventListener('pointerup', (e) => {
-        if (e.pointerType !== 'touch') playKeySound('up');
-    });
-    // Touch taps: sound on click only, so scroll flicks stay silent
-    document.addEventListener('click', (e) => {
-        ensureAudioCtx();
-        if (e.pointerType === 'touch') {
-            playKeySound('down');
-            setTimeout(() => playKeySound('up'), 70);
+    if (!window.SFX) return;
+    SFX.register('terminal', {
+        // ── Site-wide interactions: the mechanical keyboard ──
+        'ui:down': (a) => sfxKey(a, false),
+        'ui:up': (a) => sfxKey(a, true),
+        'key:down': (a) => sfxKey(a, false),
+        'key:up': (a) => sfxKey(a, true),
+
+        // Gentle blip for card reveals; consecutive reveals climb a pentatonic step
+        'card:reveal': (a) => {
+            const ratios = [1, 1.125, 1.25, 1.5, 1.6667];
+            const f = 392 * ratios[(a.opts.step || 0) % ratios.length];
+            a.tone(a.t, 0.14, 0.055, 'sine', f, f * 1.35);
+        },
+
+        // ── Blip (the cursor mascot): tiny chirpy status beeps ──
+        'blip:joy': (a) => {
+            [523, 659, 784].forEach((f, i) => a.tone(a.t + i * 0.07, 0.09, 0.05, 'square', f, f));
+        },
+        'blip:listen': (a) => sfxCrtVoice(a, a.t, 0.22, 0.045, 240, 300),
+        'blip:wave': (a) => {
+            a.tone(a.t, 0.08, 0.05, 'sine', 620, 880);
+            a.tone(a.t + 0.12, 0.08, 0.05, 'sine', 880, 620);
+        },
+        'blip:wake': (a) => a.tone(a.t, 0.12, 0.055, 'sine', 300, 720),
+        'blip:snooze': (a) => a.tone(a.t, 0.35, 0.035, 'sine', 480, 190),
+        'blip:twirl': (a) => {
+            [392, 494, 587, 784].forEach((f, i) => a.tone(a.t + i * 0.06, 0.08, 0.045, 'square', f, f));
+        },
+
+        // ── Cathode (the guide mascot): CRT hums, servo hops, teletype ──
+        'cathode:boot': (a) => {
+            a.tone(a.t, 0.7, 0.06, 'sawtooth', 45, 110);          // tube warms up
+            a.tone(a.t + 0.55, 0.12, 0.06, 'sine', 900, 1500);    // degauss ping
+            a.noise(a.t, 0.3, 0.04, 300, 1400, 1);
+        },
+        'cathode:enter': (a) => {
+            a.tone(a.t, 0.14, 0.06, 'sine', 220, 620);
+            a.noise(a.t, 0.1, 0.035, 900, 2200, 1.4);
+        },
+        'cathode:speak': (a) => {
+            // Teletype chatter, one soft tick per few characters typed.
+            const ticks = Math.min(9, Math.max(3, Math.round((a.opts.chars || 24) / 8)));
+            for (let i = 0; i < ticks; i++) {
+                const jit = 0.9 + Math.random() * 0.2;
+                a.noise(a.t + i * 0.075, 0.025, 0.028, 2600 * jit, 2600 * jit, 3);
+            }
+        },
+        'cathode:jump': (a) => a.tone(a.t, a.opts.stone ? 0.1 : 0.16, 0.05, 'sine', 250, a.opts.stone ? 620 : 540),
+        'cathode:land': (a) => {
+            a.tone(a.t, 0.09, 0.08, 'sine', 150, 55);
+            if (a.opts.perch) a.noise(a.t, 0.04, 0.04, 1800, 1800, 2);
+        },
+        'cathode:spin': (a) => {
+            [392, 523, 659, 523].forEach((f, i) => a.tone(a.t + i * 0.09, 0.07, 0.04, 'square', f, f));
+        },
+        'cathode:squish': (a) => a.tone(a.t, 0.16, 0.06, 'sine', 320, 110),
+        'cathode:bump': (a) => {
+            a.tone(a.t, 0.08, 0.09, 'sine', 130, 50);
+            a.noise(a.t, 0.05, 0.05, 500, 250, 1);
+        },
+        'cathode:dizzy': (a) => {
+            a.tone(a.t, 0.5, 0.04, 'triangle', 500, 350);
+            a.tone(a.t + 0.05, 0.5, 0.04, 'triangle', 520, 330); // detuned wobble
+        },
+        'cathode:crack': (a) => {
+            a.noise(a.t, 0.18, 0.14, 3800, 700, 0.8);             // glass burst
+            a.tone(a.t + 0.05, 0.4, 0.06, 'sawtooth', 200, 55);   // dying buzz
+        },
+        'cathode:repair': (a) => {
+            for (let i = 0; i < 5; i++) a.noise(a.t + i * 0.13, 0.03, 0.05, 2200, 2200, 4); // ratchet
+        },
+        'cathode:fixed': (a) => {
+            [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => a.tone(a.t + i * 0.1, 0.12, 0.05, 'square', f, f));
+        },
+        'cathode:meet': (a) => {
+            // A friendly two-voice hello; the hug variant is warmer/lower.
+            const base = a.opts.scene === 'hug' ? 330 : 440;
+            a.tone(a.t, 0.1, 0.045, 'sine', base, base * 1.25);
+            a.tone(a.t + 0.14, 0.12, 0.045, 'sine', base * 1.5, base * 1.5);
+        },
+        'cathode:off': (a) => {
+            a.tone(a.t, 0.22, 0.07, 'sine', 800, 40);             // CRT collapse
+            a.tone(a.t + 0.2, 0.07, 0.05, 'sine', 60, 45);
+        },
+        'cathode:on': (a) => {
+            a.tone(a.t, 0.25, 0.06, 'sine', 60, 700);
+            a.tone(a.t + 0.22, 0.1, 0.05, 'sine', 1200, 1500);
         }
     });
-    document.addEventListener('keydown', (e) => {
-        if (e.repeat) return;
-        ensureAudioCtx();
-        playKeySound('down');
-    });
-    document.addEventListener('keyup', () => playKeySound('up'));
-    initCardRevealSounds();
 }
 
 // Schedule the full soundtrack relative to t0 (the moment the enderman
@@ -700,8 +657,8 @@ function scheduleEndermanSounds(ctx, dest, t0) {
 }
 
 function playEndermanSoundtrack() {
-    const ctx = terminalAudioCtx;
-    if (!sfxEnabled || !ctx || ctx.state !== 'running') return; // silent until a user gesture
+    if (!window.SFX || !SFX.isRunning()) return; // silent until a user gesture
+    const ctx = SFX.context;
     const master = ctx.createGain();
     master.gain.value = 0.55;
     master.connect(ctx.destination);
@@ -710,8 +667,8 @@ function playEndermanSoundtrack() {
 
 // Low tension drone that swells while you stare at the hidden eyes
 function startEndermanStareSound() {
-    const ctx = terminalAudioCtx;
-    if (!sfxEnabled || !ctx || ctx.state !== 'running' || endermanStareNodes) return;
+    if (!window.SFX || !SFX.isRunning() || endermanStareNodes) return;
+    const ctx = SFX.context;
     const osc = ctx.createOscillator();
     const g = ctx.createGain();
     osc.type = 'sawtooth';
@@ -727,7 +684,7 @@ function startEndermanStareSound() {
 
 function stopEndermanStareSound() {
     if (!endermanStareNodes) return;
-    const ctx = terminalAudioCtx;
+    const ctx = SFX.context;
     const { osc, g } = endermanStareNodes;
     endermanStareNodes = null;
     g.gain.cancelScheduledValues(ctx.currentTime);

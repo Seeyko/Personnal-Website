@@ -467,6 +467,7 @@ const retroThemeConfig = {
 
 // ─── Theme-Specific Effects ───
 function initRetroEffects() {
+    initRetroSfx();
     setupMarquee();
     new CursorTrail();
     new SparkleEffect();
@@ -565,6 +566,7 @@ function initTechTagColors() {
 // ─── Konami Code Handler ───
 function handleKonami() {
     console.log('%c CHEAT CODE ACTIVATED!', 'color: #FFFF00; font-size: 24px; background: #000080; padding: 10px;');
+    if (window.SFX) SFX.play('konami');
 
     const alertBox = document.createElement('div');
     alertBox.style.cssText = `
@@ -659,6 +661,7 @@ function initColorSquares() {
         });
         square.addEventListener('click', (e) => {
             e.preventDefault();
+            if (window.SFX) SFX.play('retro:square-pop');
             for (let j = 0; j < 6; j++) {
                 const burst = document.createElement('div');
                 burst.style.cssText = `position: fixed; left: ${e.clientX}px; top: ${e.clientY}px; width: 10px; height: 10px; background: ${getComputedStyle(square).backgroundColor}; pointer-events: none; z-index: 10000;`;
@@ -791,6 +794,165 @@ function initSectionTitleEffects() {
     document.querySelectorAll('.section-title').forEach(title => {
         title.addEventListener('mouseenter', () => title.classList.add('fire-text'));
         title.addEventListener('mouseleave', () => title.classList.remove('fire-text'));
+    });
+}
+
+// ─── Retro 90s Sound Design (synthesized with Web Audio, no assets) ───
+// The shared SFX bus (js/core/effects/sfx.js) owns the AudioContext, the
+// mute toggle (window.sound) and the global interaction wiring; this theme
+// just registers its pack. Palette: pure chiptune — square/triangle waves,
+// arcade coin blips, platformer jump swoops, cartoon spring boings, and a
+// tiny (quiet!) dial-up handshake when Cathode's TV first powers on.
+
+// NES-style square blip with a hair of per-hit detune so repeats feel alive.
+function sfxChipBlip(a, at, dur, vol, f0, f1) {
+    const jitter = 0.97 + Math.random() * 0.06;
+    a.tone(at, dur, vol, 'square', f0 * jitter, (f1 || f0) * jitter);
+}
+
+// Fixed-gap chip arpeggio (square unless told otherwise).
+function sfxChipArp(a, at, freqs, gap, dur, vol, type) {
+    freqs.forEach((f, i) => a.tone(at + i * gap, dur, vol, type || 'square', f, f));
+}
+
+function initRetroSfx() {
+    if (!window.SFX) return;
+    SFX.register('retro90s', {
+        // ── Site-wide interactions: the arcade cabinet ──
+        // (key:down / key:up stay silent — typing over Comic Sans is enough)
+        'ui:down': (a) => sfxChipBlip(a, a.t, 0.045, 0.06, 880, 660),
+        'ui:up': (a) => sfxChipBlip(a, a.t, 0.035, 0.035, 1100, 1320),
+        'ui:hover': (a) => a.tone(a.t, 0.05, 0.03, 'square', 1568, 2093), // coin tick
+
+        // 1-up style two-note jingle; cascading reveals climb the ladder
+        'card:reveal': (a) => {
+            const scale = [523.25, 587.33, 659.25, 783.99, 880, 1046.5];
+            const f = scale[(a.opts.step || 0) % scale.length];
+            a.tone(a.t, 0.06, 0.05, 'square', f, f);
+            a.tone(a.t + 0.07, 0.09, 0.05, 'square', f * 1.5, f * 1.5);
+        },
+
+        // ── Blip (the cursor mascot): bouncy little chip chirps ──
+        // (blip:click / blip:blink stay silent — too frequent to score)
+        'blip:joy': (a) => sfxChipArp(a, a.t, [523.25, 659.25, 783.99], 0.06, 0.08, 0.055),
+        'blip:listen': (a) => {
+            a.tone(a.t, 0.12, 0.04, 'triangle', 440, 587);
+            a.tone(a.t + 0.16, 0.14, 0.04, 'triangle', 587, 784); // rising "hm?"
+        },
+        'blip:wave': (a) => {
+            a.tone(a.t, 0.07, 0.05, 'square', 784, 988);          // "hi
+            a.tone(a.t + 0.11, 0.07, 0.05, 'square', 988, 784);   //  hi!"
+        },
+        'blip:wake': (a) => {
+            a.tone(a.t, 0.12, 0.05, 'square', 262, 784);          // stretch
+            a.tone(a.t + 0.14, 0.06, 0.04, 'square', 1046.5, 1046.5);
+        },
+        'blip:snooze': (a) => {
+            [659.25, 523.25, 392].forEach((f, i) => a.tone(a.t + i * 0.14, 0.16, 0.035, 'square', f, f * 0.94));
+        },
+        'blip:twirl': (a) => sfxChipArp(a, a.t, [392, 523.25, 659.25, 783.99, 1046.5], 0.045, 0.06, 0.045),
+
+        // ── Cathode (the CRT-TV guide): platformer physics + TV noises ──
+        'cathode:boot': (a) => {
+            a.tone(a.t, 0.1, 0.08, 'triangle', 120, 50);          // power thunk
+            a.tone(a.t + 0.12, 0.09, 0.035, 'square', 1200, 1200); // dial-up
+            a.tone(a.t + 0.24, 0.09, 0.035, 'square', 2100, 2100); // handshake
+            a.noise(a.t + 0.34, 0.22, 0.03, 1000, 2600, 2);       // static burst
+            a.tone(a.t + 0.6, 0.12, 0.06, 'square', 523.25, 1046.5); // signal!
+        },
+        'cathode:enter': (a) => {
+            a.tone(a.t, 0.09, 0.06, 'square', 330, 880);
+            a.noise(a.t, 0.05, 0.03, 1500, 3000, 1.5);
+        },
+        'cathode:speak': (a) => {
+            // Chip "voice": one random-pitch beep per few characters typed.
+            const ticks = Math.min(8, Math.max(3, Math.round((a.opts.chars || 24) / 8)));
+            for (let i = 0; i < ticks; i++) {
+                const f = 700 + Math.random() * 250;
+                a.tone(a.t + i * 0.07, 0.035, 0.03, 'square', f, f);
+            }
+        },
+        'cathode:jump': (a) => {
+            // Classic platformer swoop; stepping-stone hops are shorter/higher.
+            const stone = a.opts.stone;
+            a.tone(a.t, stone ? 0.09 : 0.14, 0.06, 'square', stone ? 300 : 200, stone ? 800 : 700);
+        },
+        'cathode:land': (a) => {
+            a.tone(a.t, 0.08, 0.07, 'square', 150, 55);           // 8-bit thud
+            a.noise(a.t, 0.04, 0.035, 400, 200, 1);
+            if (a.opts.perch) a.tone(a.t + 0.08, 0.05, 0.04, 'square', 1046.5, 1318.5);
+        },
+        'cathode:spin': (a) => sfxChipArp(a, a.t, [523.25, 659.25, 783.99, 659.25], 0.07, 0.07, 0.045),
+        'cathode:squish': (a) => {
+            a.tone(a.t, 0.22, 0.07, 'triangle', 300, 90);         // spring boing
+            a.tone(a.t + 0.03, 0.19, 0.035, 'triangle', 320, 100); // wobble
+        },
+        'cathode:bump': (a) => {
+            a.tone(a.t, 0.07, 0.07, 'square', 140, 60);
+            a.noise(a.t, 0.04, 0.04, 600, 300, 1);
+        },
+        'cathode:dizzy': (a) => {
+            a.tone(a.t, 0.45, 0.03, 'triangle', 660, 440);        // detuned wobble
+            a.tone(a.t + 0.04, 0.45, 0.03, 'triangle', 680, 430);
+            a.tone(a.t + 0.1, 0.08, 0.03, 'square', 1318.5, 1318.5); // circling
+            a.tone(a.t + 0.28, 0.08, 0.03, 'square', 1568, 1568);    // stars
+        },
+        'cathode:crack': (a) => {
+            a.noise(a.t, 0.15, 0.12, 3500, 800, 0.8);             // glass crash
+            [392, 311.13, 233.08].forEach((f, i) =>               // game over :(
+                a.tone(a.t + 0.06 + i * 0.14, 0.16, 0.07, 'square', f, f * 0.94));
+        },
+        'cathode:repair': (a) => {
+            for (let i = 0; i < 5; i++) {                         // ratchet clicks
+                a.noise(a.t + i * 0.12, 0.03, 0.05, 2400, 2400, 4);
+                a.tone(a.t + i * 0.12, 0.04, 0.03, 'square', 500 + i * 90, 500 + i * 90);
+            }
+        },
+        'cathode:fixed': (a) => {
+            // Power-up fanfare!
+            [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => a.tone(a.t + i * 0.09, 0.1, 0.06, 'square', f, f));
+            a.tone(a.t + 0.36, 0.3, 0.06, 'square', 1568, 1568);
+            a.tone(a.t + 0.36, 0.3, 0.03, 'triangle', 783.99, 783.99);
+        },
+        'cathode:meet': (a) => {
+            const scene = a.opts.scene;
+            if (scene === 'dance') {
+                // Two-bar chip groove: triangle bass bounce under a square lead.
+                [130.81, 130.81, 174.61, 196].forEach((f, i) => a.tone(a.t + i * 0.22, 0.14, 0.05, 'triangle', f, f));
+                [523.25, 659.25, 587.33, 783.99].forEach((f, i) => a.tone(a.t + 0.05 + i * 0.22, 0.1, 0.045, 'square', f, f));
+            } else if (scene === 'hug') {
+                a.tone(a.t, 0.25, 0.045, 'triangle', 330, 415);   // warm swell
+                a.tone(a.t + 0.05, 0.25, 0.045, 'triangle', 415, 523.25);
+            } else if (scene === 'talk') {
+                a.tone(a.t, 0.07, 0.04, 'square', 880, 830);      // Blip chirps,
+                a.tone(a.t + 0.14, 0.09, 0.04, 'square', 494, 523.25); // Cathode answers
+                a.tone(a.t + 0.3, 0.07, 0.04, 'square', 932, 880);
+            } else {
+                // 'check' — a curious two-note hello
+                a.tone(a.t, 0.08, 0.05, 'square', 587.33, 587.33);
+                a.tone(a.t + 0.11, 0.11, 0.05, 'square', 880, 880);
+            }
+        },
+        'cathode:off': (a) => {
+            a.tone(a.t, 0.16, 0.07, 'square', 900, 45);           // CRT collapse
+            a.tone(a.t + 0.15, 0.05, 0.05, 'sine', 50, 40);
+        },
+        'cathode:on': (a) => {
+            a.tone(a.t, 0.18, 0.06, 'square', 60, 660);
+            a.tone(a.t + 0.17, 0.08, 0.05, 'square', 1046.5, 1318.5);
+        },
+
+        // ── Easter eggs ──
+        'konami': (a) => {
+            // Cheat-code jingle: quick ascending run into a held high note.
+            [523.25, 587.33, 659.25, 783.99, 880, 1046.5].forEach((f, i) => a.tone(a.t + i * 0.07, 0.08, 0.05, 'square', f, f));
+            a.tone(a.t + 0.44, 0.3, 0.06, 'square', 1318.5, 1318.5);
+            a.tone(a.t + 0.44, 0.3, 0.035, 'triangle', 659.25, 659.25);
+        },
+        'retro:square-pop': (a) => {
+            a.tone(a.t, 0.05, 0.06, 'square', 987.77, 1318.5);    // bubble pop
+            a.noise(a.t, 0.04, 0.035, 2000, 3500, 1.5);
+        }
     });
 }
 
