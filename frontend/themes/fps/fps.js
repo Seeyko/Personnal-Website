@@ -372,7 +372,7 @@ function startMenuClocks() {
     const tick = () => {
         if (clock) {
             const d = new Date();
-            clock.textContent = `${d.getFullYear()}-${two(d.getMonth() + 1)} · ${two(d.getHours())}:${two(d.getMinutes())}:${two(d.getSeconds())}`;
+            clock.textContent = `${d.getFullYear()}-${two(d.getMonth() + 1)}-${two(d.getDate())} · ${two(d.getHours())}:${two(d.getMinutes())}:${two(d.getSeconds())}`;
         }
         if (buytime && !RM_FPS) {
             remain = remain > 0 ? remain - 1 : 107;

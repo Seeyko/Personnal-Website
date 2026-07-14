@@ -93,7 +93,8 @@ body[data-theme="fps"] .hero-content .hero-cta { margin-top: 0; }
 
 /* ───────── header → glass topbar + numbered tabs ───────── */
 body[data-theme="fps"] .header {
-  background: var(--glass); backdrop-filter: blur(10px) saturate(1.05); -webkit-backdrop-filter: blur(10px) saturate(1.05);
+  /* near-opaque: scrolled body copy was ghosting through the .80 glass */
+  background: rgba(13,19,29,.94); backdrop-filter: blur(10px) saturate(1.05); -webkit-backdrop-filter: blur(10px) saturate(1.05);
   border-bottom: 1px solid var(--glass-line);
   box-shadow: 0 8px 22px -10px rgba(28,18,3,.45);
 }
@@ -126,7 +127,9 @@ body[data-theme="fps"] .fps-tab.fps-tab-active::before { opacity: .85; }
 
 /* ───────── left icon rail ───────── */
 #fps-rail {
-  position: fixed; z-index: 40; left: .7rem; top: 50%; transform: translateY(-50%);
+  /* above #main-content (z:46) so scrolling plates never cover the nav rail
+     (matters on mobile, where the rail becomes a bottom bar over the page) */
+  position: fixed; z-index: 48; left: .7rem; top: 50%; transform: translateY(-50%);
   display: flex; flex-direction: column; gap: 6px; padding: 8px 6px;
   background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -150,10 +153,21 @@ body[data-theme="fps"] .section-title {
   font-family: var(--disp); text-transform: uppercase; letter-spacing: .03em;
   color: var(--ink); text-shadow: 0 1px 0 rgba(255,255,255,.55), 0 0 18px rgba(255,255,255,.4);
 }
+/* Numbered sections, like the CS menu tabs (hidden by default in base.css).
+   The hardcoded HTML numbers don't follow document order (ABOUT is 04 but sits
+   before HISTORY 03), so a CSS counter renumbers them in reading order. */
+body[data-theme="fps"] #main-content { counter-reset: fps-section; }
 body[data-theme="fps"] .section-number {
-  color: var(--accent); font-family: var(--mono);
+  display: inline-block; font-size: 0; color: var(--accent); font-family: var(--mono);
+  letter-spacing: .08em; font-weight: 700;
   text-shadow: 0 1px 0 rgba(255,255,255,.6);
 }
+body[data-theme="fps"] .section-number::before {
+  counter-increment: fps-section;
+  content: counter(fps-section, decimal-leading-zero);
+  font-size: .78rem;
+}
+body[data-theme="fps"] .section-label { gap: .6rem; }
 body[data-theme="fps"] .section-header { border: 0; }
 
 /* ───────── glass panels for the real content cards ───────── */
@@ -270,7 +284,9 @@ body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); }
 
 /* ───────── right column: profile + friends ───────── */
 #fps-side {
-  position: fixed; z-index: 35; right: 1rem; top: 84px; width: 288px;
+  /* top aligns with the hero panel (hero padding-top: 92px) so the PROFILE and
+     NEWS title bars share one baseline instead of sitting 8px apart */
+  position: fixed; z-index: 35; right: 1rem; top: 92px; width: 288px;
   display: none; flex-direction: column; gap: 14px;
 }
 #fps-side .fps-panel { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
@@ -312,10 +328,10 @@ body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); }
 
 /* ───────── bottom telemetry ───────── */
 #fps-telemetry {
-  position: fixed; z-index: 38; left: 0; right: 0; bottom: 0; display: flex; gap: 1.4rem; flex-wrap: wrap;
+  /* above #main-content (z:46): scrolling plates used to slide OVER the bar */
+  position: fixed; z-index: 59; left: 0; right: 0; bottom: 0; display: flex; gap: 1.4rem; flex-wrap: wrap;
   padding: .4rem 1.2rem; font-family: var(--mono); font-size: .66rem; letter-spacing: .05em; color: var(--fg-dim);
-  background: rgba(6,9,13,.96); border-top: 1px solid var(--glass-line-2);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); pointer-events: none;
+  background: #06090d; border-top: 1px solid var(--glass-line-2); pointer-events: none;
 }
 #fps-telemetry .fps-m { display: flex; gap: .35rem; align-items: baseline; }
 #fps-telemetry .fps-m i { color: var(--muted); text-transform: uppercase; font-style: normal; }
@@ -392,9 +408,6 @@ body[data-theme="fps"] .language-switcher-toggle:focus-visible {
      mobile: push the first section down so the injected NEWS panel-header clears
      the chrome instead of being tucked under it at scroll-top. */
   body[data-theme="fps"] .hero { padding-top: 92px; }
-  /* Make the ribbon fully opaque on mobile — the desktop fade-to-.35 lower stop
-     let body copy read straight through it mid-scroll. */
-  #fps-ribbon { background: rgba(6,9,13,.96); }
   #fps-rail {
     left: .5rem; right: .5rem; top: auto; bottom: 44px; transform: none;
     flex-direction: row; justify-content: center; gap: 4px;
@@ -428,6 +441,9 @@ body[data-theme="fps"] .language-switcher-toggle:focus-visible {
   #fps-telemetry { gap: .9rem; font-size: .6rem; flex-wrap: nowrap; overflow-x: auto;
     justify-content: flex-start; -webkit-overflow-scrolling: touch; }
   #fps-telemetry .fps-m { flex: 0 0 auto; }
+  /* Base centers .social-links on mobile; keep the fps buy-buttons flush left
+     with the availability/email column above them. */
+  body[data-theme="fps"] .social-links { justify-content: flex-start; gap: 8px; }
 }
 @media (max-width: 560px) {
   body[data-theme="fps"] #work-grid { grid-template-columns: 1fr; }
@@ -515,7 +531,8 @@ body[data-theme="fps"] #cathode-guide .cg-line::after { display: none; }
   display: flex; align-items: center; gap: .8rem; height: 22px; padding: 0 1rem;
   font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
   color: var(--fg-dim); pointer-events: none; white-space: nowrap; overflow: hidden;
-  background: linear-gradient(180deg, rgba(6,9,13,.92), rgba(6,9,13,.35));
+  /* fully opaque: any translucency let scrolled body copy read through */
+  background: #06090d; border-bottom: 1px solid rgba(150,190,228,.14);
 }
 #fps-ribbon b { color: var(--accent-2); font-weight: 700; }
 #fps-ribbon .fps-ribbon-sep { color: var(--muted); }
@@ -622,7 +639,9 @@ body[data-theme="fps"] #cathode-guide .cg-bar b {
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── Hero / NEWS panel + CTA row ── */
-body[data-theme="fps"] .hero-content { padding: 0 1.3rem 1.35rem; overflow: hidden; }
+/* width:100% — the flex-centered hero panel used to shrink-to-fit (~600px),
+   leaving it floating off-grid; now its edges line up with the NOW/WORK panels. */
+body[data-theme="fps"] .hero-content { width: 100%; padding: 0 1.3rem 1.35rem; overflow: hidden; }
 body[data-theme="fps"] .fps-news-h { margin: 0 -1.3rem .85rem; padding: .5rem 1.3rem; }
 body[data-theme="fps"] .fps-eyebrow { font-family: var(--mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 .4rem; }
 body[data-theme="fps"] .hero-title { margin: 0 0 .5rem; line-height: .92; }
@@ -765,6 +784,40 @@ body[data-theme="fps"] .craft-description {
 /* NOW — paragraph scale matches the ABOUT body. */
 body[data-theme="fps"] .now-paragraph { color: var(--fg-dim); font-size: .92rem; line-height: 1.6; margin: 0; }
 
+/* HISTORY — retint the git graph to the fps palette. Without these the
+   timeline kept its default neon green/red/teal (terminal palette), the one
+   loud clash left on the page. Cool blues carry the graph; gold marks hashes. */
+body[data-theme="fps"] {
+  --git-work-color: #2f80e6;
+  --git-project-color: #f4b73a;
+  --git-education-color: #7cbcff;
+  --git-trunk-color: rgba(150, 190, 228, .35);
+  --git-hash-color: #f4b73a;
+  --git-bg: rgba(13, 19, 29, .8);
+  --git-bg-solid: rgba(16, 24, 34, .97);
+  --git-overlay-bg: rgba(10, 16, 26, .55);
+  --git-border: rgba(150, 190, 228, .16);
+  --git-text: #eef4fa;
+  --git-text-secondary: #b3c2d0;
+  --git-text-muted: #8496a4;
+}
+/* The timeline JS stamps its hardcoded palette as an inline --branch-color on
+   every commit marker (desktop pills + mobile cards), which beats the vars
+   above — remap it per type, !important to outrank the inline style. */
+body[data-theme="fps"] .git-commit-work,
+body[data-theme="fps"] .mobile-commit-work { --branch-color: var(--git-work-color) !important; }
+body[data-theme="fps"] .git-commit-project,
+body[data-theme="fps"] .mobile-commit-project { --branch-color: var(--git-project-color) !important; }
+body[data-theme="fps"] .git-commit-education,
+body[data-theme="fps"] .mobile-commit-education { --branch-color: var(--git-education-color) !important; }
+
+/* The timeline section is full-bleed (base strips its side padding for the
+   graph), which left the glass viewport 2rem wider than every other panel.
+   Pull it back onto the shared panel grid. */
+@media (min-width: 769px) {
+  body[data-theme="fps"] .git-timeline-viewport { width: auto; margin: 0 2rem; }
+}
+
 /* HISTORY — scroll hint on the timeline plate. */
 body[data-theme="fps"] .git-timeline-scroll-hint {
   font-family: var(--mono); font-size: .6rem; letter-spacing: .1em;
@@ -789,6 +842,16 @@ body[data-theme="fps"] .cathode-guide-toggle {
   padding: .22rem .55rem; transition: none; text-shadow: 0 1px 0 rgba(255,255,255,.45);
 }
 body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); border-color: var(--accent); }
+
+/* ── Mobile refits (kept after the polish pass so they win the cascade) ── */
+@media (max-width: 560px) {
+  /* Stack the two hero CTAs full-width: side by side they wrapped, and the
+     ghost's margin-left left the second line staggered off the first. */
+  body[data-theme="fps"] .hero-cta { display: flex; width: 100%; justify-content: center; }
+  body[data-theme="fps"] #fps-cta-ghost { margin-left: 0; margin-top: .55rem; }
+  /* The NEWS bar can't fit label + full timestamp on one narrow line. */
+  body[data-theme="fps"] .fps-clock { display: none; }
+}
 
 /* ───────── reduced motion ───────── */
 @media (prefers-reduced-motion: reduce) {
