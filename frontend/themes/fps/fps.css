@@ -614,6 +614,180 @@ body[data-theme="fps"] #cathode-guide .cg-bar b {
   font-family: var(--mono); font-size: 7.5px; letter-spacing: .18em; color: var(--accent-2);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN POLISH PASS — per-component refits (hero, WORK, right column,
+   content cards). Appended last so they refine the base rules above.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Hero / NEWS panel + CTA row ── */
+body[data-theme="fps"] .hero-content { padding: 0 1.3rem 1.35rem; overflow: hidden; }
+body[data-theme="fps"] .fps-news-h { margin: 0 -1.3rem .85rem; padding: .5rem 1.3rem; }
+body[data-theme="fps"] .fps-eyebrow { font-family: var(--mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 .4rem; }
+body[data-theme="fps"] .hero-title { margin: 0 0 .5rem; line-height: .92; }
+body[data-theme="fps"] .hero-content .hero-quote { margin: 0 0 1.1rem; }
+body[data-theme="fps"] .hero-quote-paragraph { margin: 0; max-width: 54ch; font-size: .94rem; line-height: 1.55; color: var(--fg-dim); }
+body[data-theme="fps"] .hero-signature { margin: .55rem 0 0; font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: none; color: var(--muted); }
+body[data-theme="fps"] .hero-cta { display: inline-flex; align-items: center; vertical-align: top; gap: .6rem; margin-top: 0; padding: .7rem 1.6rem; font-family: var(--disp); font-size: 1.05rem; line-height: 1; text-transform: uppercase; letter-spacing: .08em; border: 1px solid transparent; transition: none; }
+body[data-theme="fps"] .hero-cta .hero-cta-arrow { transition: none; }
+body[data-theme="fps"] #hero-cta { color: #06121f; background: var(--accent); clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%); }
+body[data-theme="fps"] #hero-cta:hover { background: var(--accent-2); }
+body[data-theme="fps"] #fps-cta-ghost { margin-left: .7rem; color: var(--fg); background: transparent; border: 1px solid var(--glass-line-2); border-left: 2px solid var(--accent); clip-path: none; }
+body[data-theme="fps"] #fps-cta-ghost:hover { background: rgba(30, 44, 60, .72); color: #fff; border-left-color: var(--accent-2); }
+
+/* ── WORK buy-menu tiles: inline weapon icon, footer pinned, 3-line clamp ── */
+body[data-theme="fps"] .fps-buy { padding: .65rem .8rem .6rem; gap: .2rem; transition: none; }
+body[data-theme="fps"] .fps-buy-head { display: flex; align-items: center; justify-content: flex-start; gap: .45rem; }
+body[data-theme="fps"] .fps-buy-num { font-family: var(--mono); font-size: .62rem; color: var(--muted); }
+body[data-theme="fps"] .fps-buy-icon { margin-left: auto; align-self: center; display: block; flex: 0 0 auto; width: 34px; height: 18px; margin-top: 0; margin-bottom: 0; color: var(--accent-2); opacity: .85; }
+body[data-theme="fps"] .fps-buy-icon svg { display: block; width: 100%; height: 100%; }
+body[data-theme="fps"] .fps-buy-price { font-family: var(--mono); font-size: .74rem; color: var(--money); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] .fps-buy h3 { margin: .15rem 0 0; font-family: var(--disp); font-size: 1.25rem; letter-spacing: .03em; text-transform: uppercase; color: var(--accent-2); }
+body[data-theme="fps"] .fps-buy p { margin: .15rem 0 .4rem; font-size: .78rem; color: var(--fg-dim); line-height: 1.4; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+body[data-theme="fps"] .fps-buy-foot { margin-top: auto; padding-top: .4rem; border-top: 1px solid var(--glass-line-2); display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+body[data-theme="fps"] .fps-buy-cta { color: var(--accent-2); }
+body[data-theme="fps"] .fps-buy:hover .fps-buy-cta { color: #fff; }
+
+/* ── Right column: PROFILE + CONTACTS (tighter, title-bar convention) ── */
+body[data-theme="fps"] #fps-side { gap: 10px; }
+body[data-theme="fps"] #fps-side .fps-panel { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px; box-shadow: var(--hud-shadow); overflow: hidden; }
+body[data-theme="fps"] #fps-side .fps-panel-h { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .5rem .8rem; background: var(--glass-2); border-bottom: 1px solid var(--glass-line-2); font-family: var(--mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] #fps-side .fps-panel-h > span:first-child { color: var(--fg-dim); }
+body[data-theme="fps"] #fps-side .fps-rankcard .fps-panel-h > span:last-child { color: var(--accent-2); }
+body[data-theme="fps"] #fps-side .fps-friends .fps-panel-h > span:last-child { color: var(--money); }
+body[data-theme="fps"] #fps-side .fps-panel-b { padding: .8rem .85rem; }
+body[data-theme="fps"] #fps-side .fps-rank-top { display: flex; align-items: center; gap: .65rem; }
+body[data-theme="fps"] #fps-side .fps-rank-top > div { min-width: 0; }
+body[data-theme="fps"] #fps-side .fps-medal { flex: 0 0 44px; width: 44px; height: 44px; display: grid; place-items: center; }
+body[data-theme="fps"] #fps-side .fps-medal svg { width: 100%; height: 100%; }
+body[data-theme="fps"] #fps-side .fps-rank-name { font-family: var(--disp); font-size: 1.28rem; line-height: 1.02; letter-spacing: .03em; text-transform: uppercase; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-theme="fps"] #fps-side .fps-rank-tier { margin-top: .12rem; font-family: var(--mono); font-size: .6rem; letter-spacing: .12em; color: var(--accent-2); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+body[data-theme="fps"] #fps-side .fps-xp { margin-top: .65rem; }
+body[data-theme="fps"] #fps-side .fps-xp-bar { position: relative; height: 6px; border-radius: 2px; overflow: hidden; background: rgba(0,0,0,.34); border: 1px solid var(--glass-line-2); }
+body[data-theme="fps"] #fps-side .fps-xp-bar > i { position: absolute; inset: 0 22% 0 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+body[data-theme="fps"] #fps-side .fps-xp-lbl { display: flex; justify-content: space-between; margin-top: .3rem; font-family: var(--mono); font-size: .56rem; letter-spacing: .08em; color: var(--muted); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] #fps-side .fps-stats { display: flex; gap: 6px; margin-top: .6rem; }
+body[data-theme="fps"] #fps-side .fps-stat { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .12rem; padding: .5rem .2rem .45rem; text-align: center; background: var(--glass-2); border: 1px solid var(--glass-line-2); border-radius: 2px; }
+body[data-theme="fps"] #fps-side .fps-stat b { font-family: var(--disp); font-size: 1.32rem; line-height: 1; letter-spacing: .01em; color: var(--fg); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] #fps-side .fps-stat small { font-family: var(--mono); font-size: .5rem; letter-spacing: .1em; line-height: 1; color: var(--muted); text-transform: uppercase; }
+body[data-theme="fps"] #fps-side .fps-friend { display: flex; align-items: center; gap: .6rem; padding: .46rem .8rem; padding-left: calc(.8rem - 2px); border-left: 2px solid transparent; border-bottom: 1px solid var(--glass-line-2); text-decoration: none; color: inherit; transition: none; }
+body[data-theme="fps"] #fps-side .fps-friend:last-child { border-bottom: 0; }
+body[data-theme="fps"] #fps-side .fps-friend:hover { background: rgba(47,128,230,.15); border-left-color: var(--accent); }
+body[data-theme="fps"] #fps-side .fps-friend-av { flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center; background: var(--glass-2); border: 1px solid var(--glass-line-2); border-radius: 2px; color: var(--accent-2); }
+body[data-theme="fps"] #fps-side .fps-friend-av svg { width: 16px; height: 16px; }
+body[data-theme="fps"] #fps-side .fps-friend-who { flex: 1 1 auto; min-width: 0; line-height: 1.12; }
+body[data-theme="fps"] #fps-side .fps-friend-who b { display: block; font-family: var(--disp); font-size: .95rem; letter-spacing: .02em; text-transform: uppercase; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-theme="fps"] #fps-side .fps-friend-who small { display: block; font-family: var(--mono); font-size: .56rem; letter-spacing: .05em; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-theme="fps"] #fps-side .fps-friend-st { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--money); box-shadow: 0 0 6px var(--money); }
+body[data-theme="fps"] #fps-side .fps-friend-st.idle { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+body[data-theme="fps"] #fps-side .fps-friend-st.off { background: var(--muted); box-shadow: none; }
+
+/* ── Content cards: NOW / ABOUT / CONTACT / timeline / footer ── */
+
+/* CONTACT — the invisible blueprint frame reserved dead height; drop it. */
+body[data-theme="fps"] .contact-blueprint-svg { display: none !important; }
+body[data-theme="fps"] .availability-badge {
+  display: flex; align-items: center; gap: .5rem;
+  margin: 0 0 .85rem; padding: 0;
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--money);
+}
+body[data-theme="fps"] .availability-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--money); box-shadow: 0 0 6px var(--money);
+}
+body[data-theme="fps"] .email-link {
+  display: inline-flex; align-items: center; margin: 0;
+  color: var(--money); font-family: var(--mono); transition: none;
+}
+body[data-theme="fps"] .email-link .email-text { font-size: .9rem; letter-spacing: .02em; }
+body[data-theme="fps"] .email-link:hover { transform: none; color: var(--accent-2); }
+body[data-theme="fps"] .response-time {
+  display: flex; justify-content: flex-start; align-items: center; gap: .4rem;
+  margin: .55rem 0 0; font-family: var(--mono); font-size: .68rem;
+  letter-spacing: .04em; color: var(--muted);
+}
+body[data-theme="fps"] .social-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: .9rem; }
+body[data-theme="fps"] .social-btn {
+  display: inline-flex; align-items: center; gap: .3rem; padding: .42rem .9rem;
+  background: var(--glass-2); border: 1px solid var(--glass-line-2);
+  border-left: 2px solid var(--accent); border-radius: 0; clip-path: none;
+  color: var(--fg); font-family: var(--disp); text-transform: uppercase;
+  letter-spacing: .05em; font-size: .98rem; text-decoration: none; transition: none;
+}
+body[data-theme="fps"] .social-btn:hover {
+  background: rgba(30,44,60,.85); border-color: var(--glass-line);
+  border-left-color: var(--accent-2); color: #fff; transform: none;
+}
+body[data-theme="fps"] .social-btn .link-bracket { display: none; }
+
+/* ABOUT — body copy rhythm. */
+body[data-theme="fps"] .about-text { margin: 0 0 .2rem; }
+body[data-theme="fps"] .about-main,
+body[data-theme="fps"] .about-detail {
+  color: var(--fg-dim); font-size: .92rem; line-height: 1.6; margin: .15rem 0 .7rem;
+}
+body[data-theme="fps"] .about-detail { margin-bottom: .3rem; }
+body[data-theme="fps"] .code-comment {
+  color: var(--muted); font-family: var(--mono); font-size: .7rem;
+  letter-spacing: .06em; margin: .1rem 0 .25rem;
+}
+body[data-theme="fps"] .about-specs {
+  display: flex; flex-direction: column; gap: 0; margin: .35rem 0 0; font-family: var(--mono);
+}
+body[data-theme="fps"] .about-specs .spec-row {
+  display: flex; gap: .5rem; align-items: baseline;
+  font-size: .72rem; line-height: 1.7; letter-spacing: .02em;
+  padding: .14rem 0; border-bottom: 1px solid var(--glass-line-2);
+}
+body[data-theme="fps"] .about-specs .spec-row:last-child { border-bottom: 0; }
+body[data-theme="fps"] .about-specs .spec-key {
+  flex: 0 0 auto; color: var(--muted); text-transform: uppercase; letter-spacing: .1em;
+}
+body[data-theme="fps"] .about-specs .spec-val { color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] .craft-stack { margin-top: .85rem; }
+body[data-theme="fps"] .craft-block {
+  background: var(--glass-2); border: 1px solid var(--glass-line-2);
+  border-left: 2px solid var(--accent); border-radius: 0;
+  padding: .7rem .85rem; gap: .3rem; opacity: 1;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+}
+body[data-theme="fps"] .craft-title {
+  margin: 0; color: var(--accent-2); font-family: var(--mono); font-weight: 700;
+  font-size: .66rem; letter-spacing: .2em; text-transform: uppercase;
+}
+body[data-theme="fps"] .craft-description {
+  margin: 0; color: var(--fg-dim); font-family: var(--body);
+  font-size: .82rem; line-height: 1.55; opacity: 1;
+}
+
+/* NOW — paragraph scale matches the ABOUT body. */
+body[data-theme="fps"] .now-paragraph { color: var(--fg-dim); font-size: .92rem; line-height: 1.6; margin: 0; }
+
+/* HISTORY — scroll hint on the timeline plate. */
+body[data-theme="fps"] .git-timeline-scroll-hint {
+  font-family: var(--mono); font-size: .6rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+}
+body[data-theme="fps"] .git-timeline-scroll-hint .scroll-hint-text { color: var(--muted); }
+body[data-theme="fps"] .git-timeline-scroll-hint .scroll-hint-arrow { color: var(--accent-2); }
+
+/* FOOTER — sits on the bright field: cool ink, tight mono. */
+body[data-theme="fps"] .footer-session,
+body[data-theme="fps"] .footer-version,
+body[data-theme="fps"] .footer-copyright,
+body[data-theme="fps"] .footer-sep {
+  color: var(--ink-dim); font-family: var(--mono);
+  font-size: .68rem; letter-spacing: .08em;
+  text-shadow: 0 1px 0 rgba(255,255,255,.45);
+}
+body[data-theme="fps"] .footer-sep { opacity: .5; }
+body[data-theme="fps"] .cathode-guide-toggle {
+  color: var(--ink-dim); font-family: var(--mono); font-size: .64rem; letter-spacing: .08em;
+  background: transparent; border: 1px solid rgba(26,37,48,.28); border-radius: 2px;
+  padding: .22rem .55rem; transition: none; text-shadow: 0 1px 0 rgba(255,255,255,.45);
+}
+body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); border-color: var(--accent); }
+
 /* ───────── reduced motion ───────── */
 @media (prefers-reduced-motion: reduce) {
   #fps-scene .fps-layer { transform: none !important; transition: none !important; }

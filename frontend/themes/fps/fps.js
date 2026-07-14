@@ -97,9 +97,9 @@ const fpsThemeConfig = {
             return `
                 <div class="fps-buy-head">
                     <span class="fps-buy-num">${n}</span>
+                    ${fpsWeaponIcon(n)}
                     <span class="fps-buy-price">$${fpsPrice(n)}</span>
                 </div>
-                ${fpsWeaponIcon(n)}
             `;
         },
         footerTemplate: (project, idx) => {
