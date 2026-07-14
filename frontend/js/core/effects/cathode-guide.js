@@ -156,6 +156,13 @@ const CathodeGuide = (() => {
         return limited.map((l, i) => (i === 0 ? prefix.first : prefix.next) + l);
     }
 
+    // Semantic sound cue: the active theme's pack decides what (if anything)
+    // each Cathode moment sounds like. Emitting is safe pre-gesture / muted —
+    // the bus no-ops.
+    function sfx(event, opts) {
+        if (window.SFX) window.SFX.play(event, opts);
+    }
+
     function fillBubble(barTitle, text) {
         if (!bodyEl || !barEl) return false;
         barEl.textContent = barTitle;
@@ -173,6 +180,7 @@ const CathodeGuide = (() => {
             delay += line.length * CHAR_MS + LINE_GAP_MS;
             bodyEl.appendChild(span);
         });
+        sfx('cathode:speak', { chars: lines.reduce((n, l) => n + l.length, 0) });
         return true;
     }
 
@@ -222,6 +230,7 @@ const CathodeGuide = (() => {
         void root.offsetWidth; // force reflow so the animation (re)starts clean
         root.classList.add(enterCls);
         setIdle(key);
+        sfx(key === 'hero' ? 'cathode:boot' : 'cathode:enter');
 
         const enterEnd = reduced ? 50 : (key === 'hero' ? 3100 : 1700);
         setTimer(() => { if (root) root.classList.remove(enterCls); }, enterEnd);
@@ -359,6 +368,7 @@ const CathodeGuide = (() => {
         if (!root) return;
         clearTimers();
         offState = true;
+        sfx('cathode:off');
         hideBubble();
         // Powered-down TVs don't sit on shelves they climbed onto: put her
         // back on the floor before the sag animation plays. Physics states
@@ -392,6 +402,7 @@ const CathodeGuide = (() => {
         clearTimers();
         offState = false;
         const key = currentSectionKey || 'hero';
+        sfx('cathode:on');
         root.classList.remove('cg-off', 'cg-exit');
         void root.offsetWidth;
         root.classList.add('cg-enter');
@@ -597,6 +608,7 @@ const CathodeGuide = (() => {
 
     function playSpin() {
         if (!root) return;
+        sfx('cathode:spin');
         root.classList.remove('cg-spinning');
         void root.offsetWidth;
         root.classList.add('cg-spinning');
@@ -639,6 +651,7 @@ const CathodeGuide = (() => {
             start: now, dur, peak, foot: steppingStone ? hopFoot : 0
         };
         if (Math.abs(toX - px) > 4) dir = toX >= px ? 1 : -1;
+        sfx('cathode:jump', { stone: steppingStone, dur, peak });
         setLifeState('jump');
     }
 
@@ -740,6 +753,7 @@ const CathodeGuide = (() => {
 
     function squishPerch(el) {
         if (!el) return;
+        sfx('cathode:squish');
         el.classList.add('cg-perch-squish');
         lifeSetTimeout(() => {
             el.classList.remove('cg-perch-squish');
@@ -788,6 +802,7 @@ const CathodeGuide = (() => {
         px = jumpArc.toX;
         py = jumpArc.toY;
         const perch = jumpArc.perch;
+        sfx('cathode:land', { perch: !!(perch && document.contains(perch)) });
         jumpArc = null;
         jumpTilt = 0;
         if (root) {
@@ -1402,6 +1417,7 @@ const CathodeGuide = (() => {
 
         if (bumpSpeed > GYRO.BUMP_SPEED && ts > bumpCooldownAt) {
             bumpCooldownAt = ts + 220;
+            sfx('cathode:bump', { speed: bumpSpeed });
             root.classList.add('cg-landing');
             lifeSetTimeout(() => { if (root) root.classList.remove('cg-landing'); }, 300);
             if (bumpAt) spawnFx(bumpAt.x, bumpAt.y, 'dust', 4, { spread: 14, up: true });
@@ -1438,6 +1454,7 @@ const CathodeGuide = (() => {
         rot = target - diff;
         setLifeState('dizzy');
         setFace('cg-face-dizzy');
+        sfx('cathode:dizzy');
         const c = spriteCenter();
         spawnFx(c.x, c.y - spriteSize() * 0.55, 'star', 3, { orbit: true, spread: 6, size: 7 });
         speakFrom(broken ? 'cathodeGuide.gyro.broken' : (edge === 'bottom' ? 'cathodeGuide.gyro.dizzy' : 'cathodeGuide.gyro.flipped'), 3800);
@@ -1463,6 +1480,7 @@ const CathodeGuide = (() => {
         broken = true;
         lastBreakAt = ts;
         nextSosAt = ts + 2500;
+        sfx('cathode:crack');
         if (root && !crackEl) {
             const sprite = root.querySelector('.cg-sprite');
             crackEl = document.createElement('div');
@@ -1494,6 +1512,7 @@ const CathodeGuide = (() => {
     function startRepair(ts, blipPos) {
         if (repairing || !broken) return;
         repairing = true;
+        sfx('cathode:repair');
         const token = ++sceneToken;
         setLifeState('meet');
         dir = blipPos.x >= px + spriteSize() / 2 ? 1 : -1;
@@ -1512,6 +1531,7 @@ const CathodeGuide = (() => {
         step(2000, () => {
             // Fixed! Screen flickers back on.
             broken = false;
+            sfx('cathode:fixed');
             if (root) {
                 root.classList.remove('cg-broken');
                 root.classList.add('cg-fixed-flash');
@@ -1568,6 +1588,7 @@ const CathodeGuide = (() => {
     function startMeet(ts, blipPos) {
         const scenes = ['check', 'hug', 'talk', 'dance'];
         const scene = scenes[Math.floor(Math.random() * scenes.length)];
+        sfx('cathode:meet', { scene });
         const token = ++sceneToken;
         const wasPerched = lifeState === 'perch';
         const anchorPerch = perchEl;

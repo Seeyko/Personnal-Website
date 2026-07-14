@@ -228,8 +228,21 @@ const BlipCursor = (() => {
         return calm() && !away && !root.classList.contains('bc-hover-link') && !root.classList.contains('bc-native');
     }
 
+    // One-shot class → semantic SFX event; the active theme's sound pack
+    // (if any) decides what each reaction actually sounds like.
+    const SFX_EVENTS = {
+        'bc-click': 'blip:click',
+        'bc-blink': 'blip:blink',
+        'bc-gag-1': 'blip:joy',
+        'bc-gag-2': 'blip:listen',
+        'bc-gag-3': 'blip:wave',
+        'bc-wake': 'blip:wake',
+        'bc-twirl': 'blip:twirl'
+    };
+
     function play(cls) {
         if (!root || prefersReduced() || !ONE_SHOT_DURATIONS[cls]) return;
+        if (window.SFX && SFX_EVENTS[cls]) window.SFX.play(SFX_EVENTS[cls]);
         root.classList.remove(cls);
         void root.offsetWidth; // force reflow so the animation restarts cleanly
         root.classList.add(cls);
@@ -299,6 +312,7 @@ const BlipCursor = (() => {
                 snoozing = true;
                 root.classList.remove('bc-hover-link', 'bc-native');
                 root.classList.add('bc-snooze');
+                if (window.SFX) window.SFX.play('blip:snooze');
             }
             // Touch mode only: after snoozing a while longer, tiptoe out
             // completely so he never squats a corner of a page being read.
