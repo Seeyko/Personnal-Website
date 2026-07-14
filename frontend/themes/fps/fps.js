@@ -11,7 +11,8 @@
  * left rail simply navigate to them.
  *
  * Everything is ultra-snappy: instant hovers, pixel-snap crosshair, no
- * smoothing. Sound is a tiny synthesized Web Audio module (mute persisted).
+ * smoothing. Sound is synthesized through the shared SFX bus (sound pack
+ * registered below; mute persisted site-wide by sfx.js).
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -20,55 +21,123 @@ console.log('%c[de_portfolio] FPS menu online', 'color:#54a3ff;font-weight:bold;
 const RM_FPS = !!(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches);
 
 /* ───────────────────────── Synthesized SFX ─────────────────────────
-   Same shape as the terminal theme's Web Audio infra: lazily-created
-   context unlocked on the first gesture, a mute flag persisted in
-   localStorage, and a handful of short cues (hit / hover / tab). */
-const FpsSound = (() => {
-    let ctx = null;
-    let on = true;
-    try { on = localStorage.getItem('fps-sfx') !== 'off'; } catch (e) { /* private mode */ }
-
-    function ensure() {
-        const C = window.AudioContext || window.webkitAudioContext;
-        if (C && !ctx) ctx = new C();
-        if (ctx && ctx.state === 'suspended') ctx.resume();
-        return ctx;
-    }
-    function tone(t, d, v, type, f0, f1) {
-        if (!ctx) return;
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.type = type;
-        o.frequency.setValueAtTime(f0, t);
-        if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(f1, 1), t + d);
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(v, t + 0.005);
-        g.gain.exponentialRampToValueAtTime(0.0008, t + d);
-        o.connect(g); g.connect(ctx.destination);
-        o.start(t); o.stop(t + d + 0.03);
-    }
-    const running = () => on && ctx && ctx.state === 'running';
-    return {
-        ensure,
-        isOn: () => on,
-        setOn(v) {
-            on = v === undefined ? !on : !!v;
-            try { localStorage.setItem('fps-sfx', on ? 'on' : 'off'); } catch (e) { /* ignore */ }
-            return on;
-        },
-        hit() { if (!running()) return; const t = ctx.currentTime; tone(t, 0.05, 0.12, 'square', 1700, 2200); tone(t + 0.006, 0.05, 0.08, 'square', 2500, 2600); },
-        hover() { if (!running()) return; tone(ctx.currentTime, 0.02, 0.04, 'square', 900, 900); },
-        tab() { if (!running()) return; const t = ctx.currentTime; tone(t, 0.04, 0.08, 'square', 560, 720); }
-    };
-})();
-
-// Console mute toggle (persisted), mirrors the terminal theme's window.sound.
-window.sound = function (v) {
-    const state = FpsSound.setOn(v);
-    const btn = document.getElementById('fps-mute');
-    if (btn) btn.classList.toggle('fps-muted', !state);
-    console.log(`%c[AUDIO] UI sounds ${state ? 'enabled' : 'disabled'}`, 'color:#8fce5b;');
-    return state;
+   All audio runs through the shared SFX bus (js/core/effects/sfx.js): it
+   owns the AudioContext, the persisted mute state and the window.sound()
+   console toggle. This theme registers its sound pack below — a military
+   radio / HUD palette (square-wave comms beeps, static crackle, kevlar
+   thumps) — and keeps FpsSound as a thin facade for the cues wired locally
+   to the crosshair and chrome (hit / hover / tab). */
+const FpsSound = {
+    ensure: () => window.SFX && SFX.ensure(),
+    isOn: () => !window.SFX || SFX.isOn(),
+    setOn: (v) => window.SFX ? SFX.setOn(v) : true,
+    hit: () => window.SFX && SFX.play('fps:hit'),
+    hover: () => window.SFX && SFX.play('fps:hover'),
+    tab: () => window.SFX && SFX.play('fps:tab')
 };
+
+// NOTE: no 'ui:down' / 'ui:hover' handlers here on purpose — the local
+// crosshair pointerdown (fps:hit) and bindSfx()'s per-element hover binding
+// (fps:hover, covers the non-<a>/<button> .fps-buy tiles) already fire them;
+// bus handlers would double every click and hover.
+if (window.SFX) SFX.register('fps', {
+    /* ── Theme cues (fired locally: crosshair shots, hovers, tab clicks) ── */
+    'fps:hit': (a) => {
+        a.tone(a.t, 0.05, 0.12, 'square', 1700, 2200);
+        a.tone(a.t + 0.006, 0.05, 0.08, 'square', 2500, 2600);
+    },
+    'fps:hover': (a) => a.tone(a.t, 0.02, 0.04, 'square', 900, 900),
+    'fps:tab': (a) => a.tone(a.t, 0.04, 0.08, 'square', 560, 720),
+
+    /* ── Buy-menu tile reveals: price tick climbing per cascade step ── */
+    'card:reveal': (a) => {
+        const f = 700 * Math.pow(1.12, Math.min(a.opts.step || 0, 6));
+        a.tone(a.t, 0.045, 0.06, 'square', f, f * 1.1);
+    },
+
+    /* ── Blip (cursor mascot): squad-radio micro-beeps ──
+       blip:click / blip:blink stay silent by design — too frequent for radio. */
+    'blip:joy': (a) => {
+        [880, 1175, 1568].forEach((f, i) => a.tone(a.t + i * 0.05, 0.05, 0.05, 'square', f, f));
+    },
+    'blip:listen': (a) => {
+        a.noise(a.t, 0.05, 0.035, 1800, 1800, 2);              // comms channel opens
+        a.tone(a.t + 0.04, 0.1, 0.04, 'square', 620, 620);
+    },
+    'blip:wave': (a) => {
+        a.tone(a.t, 0.05, 0.05, 'square', 980, 1240);
+        a.tone(a.t + 0.08, 0.05, 0.05, 'square', 1240, 980);
+    },
+    'blip:wake': (a) => a.tone(a.t, 0.08, 0.05, 'square', 520, 1200),
+    'blip:snooze': (a) => a.tone(a.t, 0.12, 0.04, 'square', 900, 420),
+    'blip:twirl': (a) => {
+        [660, 880, 1100, 1320].forEach((f, i) => a.tone(a.t + i * 0.045, 0.04, 0.045, 'square', f, f));
+    },
+
+    /* ── Cathode (guide mascot): radio checks, static, kevlar thumps ── */
+    'cathode:boot': (a) => {
+        a.noise(a.t, 0.12, 0.05, 900, 2600, 1.2);              // static burst
+        a.tone(a.t + 0.14, 0.07, 0.07, 'square', 940, 940);    // "radio check,
+        a.tone(a.t + 0.24, 0.09, 0.07, 'square', 1250, 1250);  //  copy?"
+    },
+    'cathode:enter': (a) => {
+        a.tone(a.t, 0.03, 0.06, 'square', 1500, 1700);         // PTT click
+        a.tone(a.t + 0.04, 0.06, 0.05, 'square', 760, 760);
+    },
+    'cathode:speak': (a) => {
+        // Radio-chatter static ticks, a few per burst of typed characters.
+        const ticks = Math.min(7, Math.max(2, Math.round((a.opts.chars || 20) / 9)));
+        for (let i = 0; i < ticks; i++) {
+            const jit = 0.85 + Math.random() * 0.3;
+            a.noise(a.t + i * 0.06, 0.02, 0.035, 2200 * jit, 2200 * jit, 3);
+        }
+    },
+    'cathode:jump': (a) => a.tone(a.t, a.opts.stone ? 0.05 : 0.08, 0.05, 'square', 600, a.opts.stone ? 1100 : 950),
+    'cathode:land': (a) => {
+        a.tone(a.t, 0.07, 0.09, 'triangle', 170, 65);          // kevlar thump
+        a.noise(a.t, 0.035, 0.05, 450, 220, 1);
+        if (a.opts.perch) a.noise(a.t + 0.04, 0.02, 0.04, 2100, 2100, 3); // gear click
+    },
+    'cathode:spin': (a) => {
+        [900, 1150, 1400, 1150].forEach((f, i) => a.tone(a.t + i * 0.04, 0.03, 0.045, 'square', f, f)); // radio dial
+    },
+    'cathode:squish': (a) => a.tone(a.t, 0.09, 0.06, 'square', 700, 260),
+    'cathode:bump': (a) => {
+        a.tone(a.t, 0.06, 0.08, 'triangle', 200, 80);
+        a.noise(a.t, 0.03, 0.04, 700, 350, 1);
+    },
+    'cathode:dizzy': (a) => {
+        a.tone(a.t, 0.35, 0.03, 'square', 660, 480);           // detuned wobble
+        a.tone(a.t + 0.04, 0.35, 0.03, 'square', 640, 500);
+    },
+    'cathode:crack': (a) => {
+        a.noise(a.t, 0.14, 0.14, 3600, 800, 0.9);              // glass burst
+        a.tone(a.t + 0.08, 0.08, 0.08, 'square', 1400, 1400);  // alarm blip x2
+        a.tone(a.t + 0.2, 0.08, 0.07, 'square', 1400, 1400);
+    },
+    'cathode:repair': (a) => {
+        for (let i = 0; i < 5; i++) a.noise(a.t + i * 0.1, 0.025, 0.05, 2400, 2400, 4); // defuse-kit ratchet
+    },
+    'cathode:fixed': (a) => {
+        a.tone(a.t, 0.09, 0.07, 'square', 880, 880);           // bomb defused —
+        a.tone(a.t + 0.14, 0.12, 0.07, 'square', 1175, 1175);  // two clean beeps
+    },
+    'cathode:meet': (a) => {
+        // Friendly radio ping; pitch shifts with the scene's mood.
+        const f = { hug: 760, talk: 900, dance: 1150 }[a.opts.scene] || 1000;
+        a.tone(a.t, 0.05, 0.05, 'square', f, f);
+        a.tone(a.t + 0.08, 0.07, 0.05, 'square', f * 1.25, f * 1.25);
+    },
+    'cathode:off': (a) => {
+        a.tone(a.t, 0.03, 0.08, 'square', 1200, 500);          // comms off click
+        a.noise(a.t + 0.03, 0.16, 0.04, 1200, 300, 0.8);       // static tail
+    },
+    'cathode:on': (a) => {
+        a.noise(a.t, 0.05, 0.035, 800, 2000, 1);
+        a.tone(a.t + 0.05, 0.06, 0.06, 'square', 700, 700);    // back online
+        a.tone(a.t + 0.13, 0.07, 0.06, 'square', 1050, 1050);
+    }
+});
 
 /* ───────────────────────── Buy-menu tiles ─────────────────────────
    Weapon-style icons + a fictional money-green price, cycled by slot. */
@@ -181,15 +250,18 @@ function injectHud() {
         if (!btn) return;
         FpsSound.ensure();
         if (btn.id === 'fps-mute') {
-            const state = FpsSound.setOn();
-            btn.classList.toggle('fps-muted', !state);
+            FpsSound.setOn(); // icon syncs via the SFX.onChange hook below
             FpsSound.tab();
             return;
         }
         const target = document.getElementById(btn.dataset.target);
         if (target) { target.scrollIntoView({ behavior: RM_FPS ? 'auto' : 'smooth', block: 'start' }); FpsSound.tab(); }
     });
-    if (!FpsSound.isOn()) document.getElementById('fps-mute').classList.add('fps-muted');
+    // Icon follows the shared bus state — button click OR window.sound() in console.
+    const muteBtn = document.getElementById('fps-mute');
+    const syncMute = (on) => muteBtn.classList.toggle('fps-muted', !on);
+    syncMute(FpsSound.isOn());
+    if (window.SFX) SFX.onChange(syncMute);
 }
 
 // Turn the real header nav links into CS-style numbered tabs and wire SFX.
