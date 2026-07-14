@@ -95,7 +95,17 @@ body[data-theme="fps"] .header {
 }
 body[data-theme="fps"] .brand-name { font-family: var(--disp); letter-spacing: .04em; color: var(--fg); text-transform: uppercase; }
 body[data-theme="fps"] .brand-name b, body[data-theme="fps"] .brand-prefix { color: var(--accent); }
+/* Dedup navigation: the left icon rail is the single nav (desktop + mobile,
+   and it carries the sound toggle), so drop the redundant top tab bar. The
+   header keeps the wordmark on the left and the HUD/lang chips + player badge
+   on the right. */
+body[data-theme="fps"] #main-nav { display: none; }
 body[data-theme="fps"] .nav { gap: 2px; }
+/* Header controls: even spacing + vertical centring so the badge and the two
+   HUD chips sit on one clean baseline instead of crowding the corner. */
+body[data-theme="fps"] #header-controls { display: flex; align-items: center; gap: .5rem; }
+body[data-theme="fps"] .theme-switcher-toggle,
+body[data-theme="fps"] .language-switcher-toggle { display: inline-flex; align-items: center; height: 30px; }
 body[data-theme="fps"] .fps-tab {
   position: relative; font-family: var(--disp); text-transform: uppercase; letter-spacing: .05em;
   font-size: 1.02rem; color: var(--fg-dim); padding: .35rem .85rem; transition: none; text-decoration: none;
@@ -482,7 +492,9 @@ body[data-theme="fps"] #cathode-guide .cg-line::after { display: none; }
    parallax scene) and lift it clear of the opaque telemetry bar, so real content
    wins where they overlap while the mascot stays visible in the empty corner. */
 @media (min-width: 900px) {
-  body[data-theme="fps"] #cathode-guide { z-index: 0; bottom: 64px; }
+  /* Keep her clearly in front of the content plates (she was reading as stuck
+     behind the NOW/WORK cards) but under the crosshair + fixed telemetry bar. */
+  body[data-theme="fps"] #cathode-guide { z-index: 47; bottom: 64px; }
 }
 
 /* ───────── boot-strip ribbon (top hint bar) ─────────
