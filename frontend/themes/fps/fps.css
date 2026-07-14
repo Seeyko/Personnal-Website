@@ -7,14 +7,15 @@
    ═══════════════════════════════════════════════════════════════ */
 
 body[data-theme="fps"] {
-  /* bright Dust II daylight — one warm, luminous, sunlit sand field */
-  --sand-1:#e3d0a1;
-  /* crisp cool-navy HUD glass — opaque enough to stay clean over the warm sand
-     (a translucent dark just muddies to brown), so it reads as a real HUD */
-  --glass:rgba(11,17,27,.88); --glass-2:rgba(16,24,36,.93);
-  --glass-line:rgba(150,190,228,.34); --glass-line-2:rgba(150,190,228,.15);
-  /* soft warm drop-shadow lifts every HUD plate off the sand */
-  --hud-shadow:0 16px 34px -14px rgba(28,18,3,.55), 0 3px 8px rgba(28,18,3,.20);
+  /* bright but COOL — a light 'concrete' field (Dust II's cool stonework)
+     so the navy HUD lives in ONE cool palette instead of clashing with warm
+     sand. Still bright; just harmonised. */
+  --field:#c9d2d9; --field-2:#bcc7cf;
+  /* crisp cool-navy HUD glass — opaque enough to stay clean over the field */
+  --glass:rgba(13,19,29,.90); --glass-2:rgba(18,26,38,.94);
+  --glass-line:rgba(150,190,228,.36); --glass-line-2:rgba(150,190,228,.16);
+  /* soft cool drop-shadow lifts every HUD plate off the field */
+  --hud-shadow:0 16px 34px -14px rgba(8,14,24,.5), 0 3px 8px rgba(8,14,24,.22);
   /* ink + text */
   --fg:#eef4fa; --fg-dim:#b3c2d0; --muted:#8496a4;
   /* dark ink for text that sits directly on the bright sand (no panel) */
@@ -30,7 +31,7 @@ body[data-theme="fps"] {
 
   font-family: var(--body);
   color: var(--fg);
-  background: #e3d0a1;
+  background: #c9d2d9;
   text-transform: none;
 }
 body[data-theme="fps"], body[data-theme="fps"] * { -webkit-font-smoothing: antialiased; }
@@ -50,22 +51,41 @@ body[data-theme="fps"] .hero-decoration,
 body[data-theme="fps"] .scroll-indicator,
 body[data-theme="fps"] .hero-annotation { display: none !important; }
 
-/* ───────── background — plain bright sand (Dust II daylight) ─────────
-   No scenery: a flat, sunlit sand fill for the dark HUD to float over. */
+/* ───────── background — plain bright concrete field (cool) ─────────
+   No scenery: a flat, bright cool fill for the dark HUD to float over. */
 #fps-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-  background: var(--sand-1); }
-/* Scrim only grounds the fixed chrome (top ribbon / bottom telemetry) with a
-   whisper of warmth — the field stays uniform. */
+  background: var(--field); }
+/* Scrim only grounds the fixed chrome (top ribbon / bottom telemetry) —
+   the field stays uniform. */
 #fps-scene .fps-scrim { position: absolute; inset: 0;
   background:
-    linear-gradient(180deg, rgba(255,250,238,.12) 0%, rgba(255,250,238,0) 20%),
-    linear-gradient(0deg, rgba(58,44,26,.28) 0%, rgba(58,44,26,0) 14%); }
+    linear-gradient(180deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 20%),
+    linear-gradient(0deg, rgba(14,22,34,.26) 0%, rgba(14,22,34,0) 14%); }
 
 /* Content rides above the scene. */
 body[data-theme="fps"] #main-content { position: relative; z-index: 1; }
 /* Room for the fixed rail (left) and telemetry (bottom). The telemetry bar is
    opaque, so content must clear it fully or the two overlap at the fold. */
 body[data-theme="fps"] main#main-content { padding-left: 64px; padding-bottom: 56px; }
+
+/* ───────── density: pull sections tight like the CS menu mockup ─────────
+   The shared layout gives every section 4rem of vertical padding + a full
+   100vh hero, which stranded the HUD plates in empty field. Under fps we
+   compress the rhythm so hero → buy-menu → log read as one tight menu. */
+body[data-theme="fps"] {
+  --section-padding-y: 1.4rem;
+  --section-padding-y-mobile: 1rem;
+}
+body[data-theme="fps"] .hero {
+  min-height: auto;
+  justify-content: flex-start;
+  padding-top: 92px;      /* clear the fixed ribbon + glass header */
+  padding-bottom: 1.2rem;
+}
+/* Hero panel: tighten the internal rhythm (the shared column leaves a big
+   gap where the hidden stats/proof blocks used to sit). */
+body[data-theme="fps"] .hero-content .hero-quote { margin-bottom: 1.1rem; }
+body[data-theme="fps"] .hero-content .hero-cta { margin-top: 0; }
 
 /* ───────── header → glass topbar + numbered tabs ───────── */
 body[data-theme="fps"] .header {
@@ -114,11 +134,11 @@ body[data-theme="fps"] .fps-tab.fps-tab-active::before { opacity: .85; }
 /* ───────── section headers (sit directly on the bright sand) ───────── */
 body[data-theme="fps"] .section-title {
   font-family: var(--disp); text-transform: uppercase; letter-spacing: .03em;
-  color: var(--ink); text-shadow: 0 1px 0 rgba(255,252,244,.5), 0 0 18px rgba(255,250,235,.5);
+  color: var(--ink); text-shadow: 0 1px 0 rgba(255,255,255,.55), 0 0 18px rgba(255,255,255,.4);
 }
 body[data-theme="fps"] .section-number {
   color: var(--accent); font-family: var(--mono);
-  text-shadow: 0 1px 0 rgba(255,252,244,.55);
+  text-shadow: 0 1px 0 rgba(255,255,255,.6);
 }
 body[data-theme="fps"] .section-header { border: 0; }
 
@@ -196,15 +216,15 @@ body[data-theme="fps"] .fps-buy-foot { display: flex; align-items: center; justi
 body[data-theme="fps"] .fps-buy-cta { color: var(--accent-2); }
 body[data-theme="fps"] .fps-buy:hover .fps-buy-cta { color: #fff; }
 body[data-theme="fps"] .section-footer .footer-info, body[data-theme="fps"] .coord-marker {
-  font-family: var(--mono); color: var(--ink-dim); text-shadow: 0 1px 0 rgba(255,252,244,.4);
+  font-family: var(--mono); color: var(--ink-dim); text-shadow: 0 1px 0 rgba(255,255,255,.45);
 }
-/* Site footer sits on the bare sand too — dark ink keeps it legible. */
+/* Site footer sits on the bare field too — dark ink keeps it legible. */
 body[data-theme="fps"] .footer-session,
 body[data-theme="fps"] .footer-version,
 body[data-theme="fps"] .footer-copyright,
 body[data-theme="fps"] .footer-sep,
 body[data-theme="fps"] .cathode-guide-toggle {
-  color: var(--ink-dim); font-family: var(--mono); text-shadow: 0 1px 0 rgba(255,252,244,.4);
+  color: var(--ink-dim); font-family: var(--mono); text-shadow: 0 1px 0 rgba(255,255,255,.45);
 }
 body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); }
 
@@ -348,8 +368,8 @@ body[data-theme="fps"] .language-switcher-toggle:focus-visible {
      top ribbon/header still read, and drop the blur (cheaper on mobile). */
   #fps-scene .fps-scrim {
     background:
-      linear-gradient(180deg, rgba(38,28,16,.34) 0%, rgba(38,28,16,0) 14%),
-      linear-gradient(0deg, rgba(48,36,20,.4) 0%, rgba(48,36,20,0) 16%);
+      linear-gradient(180deg, rgba(16,24,36,.32) 0%, rgba(16,24,36,0) 14%),
+      linear-gradient(0deg, rgba(16,24,36,.42) 0%, rgba(16,24,36,0) 16%);
   }
   /* GSAP/observer reveal safety net: never let a stuck reveal hide tiles. */
   body[data-theme="fps"] .fps-buy.fade-in-up { opacity: 1; }
