@@ -426,10 +426,14 @@ body[data-theme="fps"] .language-switcher-toggle:focus-visible {
   body[data-theme="fps"] .hero { padding-top: 92px; }
   /* bottom: 29px hugs the telemetry bar exactly (measured 29.1px tall) — at
      44px a 15px strip of scrolling page content stayed readable between the
-     two fixed bars. */
+     two fixed bars. Full-bleed + opaque: as a translucent glass strip over
+     scrolling tiles it read as an unreadable dark mush on phones. */
   #fps-rail {
-    left: .5rem; right: .5rem; top: auto; bottom: 29px; transform: none;
+    left: 0; right: 0; top: auto; bottom: 29px; transform: none;
     flex-direction: row; justify-content: center; gap: 4px;
+    background: #0b121c; backdrop-filter: none; -webkit-backdrop-filter: none;
+    border-left: 0; border-right: 0; border-bottom: 0; border-radius: 0;
+    box-shadow: 0 -8px 20px -8px rgba(8, 14, 24, .5);
   }
   #fps-rail .fps-rail-btn { width: 40px; height: 40px; }
   /* Full selector: the shorter one lost to the desktop rule's specificity,
