@@ -153,6 +153,32 @@ body[data-theme="fps"] .git-timeline-viewport {
   border-radius: 2px;
   box-shadow: var(--hud-shadow), inset 0 1px 0 rgba(255,255,255,.08), inset 0 0 0 1px rgba(10,16,26,.4);
 }
+/* NOW / ABOUT / CONTACT cards: the shared header had 0 padding (label jammed
+   against the panel border) while the body was inset 16px, so title and copy
+   never shared a left edge. Give the header a real title-bar (like the NEWS
+   bar) and align the body inset to it. */
+body[data-theme="fps"] .now-card > .card-header,
+body[data-theme="fps"] .about-card > .card-header,
+body[data-theme="fps"] .contact-card > .card-header {
+  display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  margin: 0; padding: .5rem 1rem;
+  background: var(--glass-2); border-bottom: 1px solid var(--glass-line-2);
+}
+body[data-theme="fps"] .now-card > .card-header .card-title,
+body[data-theme="fps"] .about-card > .card-header .card-title,
+body[data-theme="fps"] .contact-card > .card-header .card-title {
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--fg-dim);
+}
+body[data-theme="fps"] .now-card .now-date {
+  font-family: var(--mono); font-size: .62rem; letter-spacing: .06em; color: var(--accent-2);
+}
+body[data-theme="fps"] .now-card > .card-body,
+body[data-theme="fps"] .about-card > .card-body,
+body[data-theme="fps"] .contact-card > .card-body {
+  padding: 1rem 1rem 1.1rem;
+}
+
 body[data-theme="fps"] .hero-title {
   font-family: var(--disp); color: var(--fg); text-transform: uppercase; text-shadow: none;
   font-size: clamp(2.6rem, 6vw, 4.6rem); line-height: .92; font-weight: 700; margin-bottom: .4rem;
