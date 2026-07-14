@@ -1,6 +1,6 @@
 # Sound Design for All Themes
 
-**Status**: in_progress
+**Status**: completed
 **Branch**: `claude/sound-design-themes-f3xj6s`
 **Started**: 2026-07-14 10:00
 
@@ -38,12 +38,13 @@ Architecture:
 
 ## Progress
 - [x] Explore existing sound code (terminal + fps)
-- [ ] Core SFX bus
-- [ ] Instrument blip-cursor / cathode-guide
-- [ ] Terminal pack (reference implementation)
-- [ ] Default / Blueprint / Retro90s / FPS packs (subagents)
-- [ ] Browser test all themes
-- [ ] Commit + push
+- [x] Core SFX bus
+- [x] Instrument blip-cursor / cathode-guide
+- [x] Terminal pack (reference implementation)
+- [x] Default / Blueprint / Retro90s / FPS packs (subagents)
+- [x] Browser test all themes (Playwright: 5/5 load clean; every pack event
+      fired on every theme with zero handler errors; mute round-trip OK)
+- [x] Commit + push
 
 ## Notes/Discoveries
 - `window.sound()` was defined by terminal.js AND fps.js; now owned by sfx.js
