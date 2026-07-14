@@ -366,16 +366,17 @@ const GitTimeline = (() => {
         // dates, the later one is nudged right just enough to clear the prev.
         const MARKER_GAP = 8;
 
+        // Collect every marker PER LANE (two different branches can share a
+        // lane) and resolve label collisions after the loop with a two-pass
+        // sweep, so late markers can also push earlier ones left instead of
+        // burying them when the right edge clamp kicks in.
+        const laneMarkers = new Map();
+
         branches.forEach(branch => {
             // laneY is above the trunk (smaller Y value)
             const laneY = trunkY - (branch._lane + 1) * CONFIG.laneHeight;
             const color = CONFIG.colors[branch.type] || CONFIG.colors.work;
             const ongoing = isOngoing(branch);
-
-            // Tracks the right edge of the previously rendered marker on this
-            // branch — used to shift the next one rightwards when its natural
-            // date would put it under the previous label.
-            let prevMarkerRight = -Infinity;
 
             branch.commits.forEach((commit, idx) => {
                 let commitX = commitXFor(branch, commit, idx);
@@ -437,21 +438,32 @@ const GitTimeline = (() => {
 
                 container.appendChild(marker);
 
-                // After the marker is in the DOM we know its real width.
-                // If its natural left edge sits inside the previous sibling's
-                // bounding box, nudge it right just enough to clear (no
-                // vertical stacking — Tom prefers single-line lanes).
-                // The shift is capped at totalWidth - markerWidth so a
-                // marker never extends past the timeline's right edge,
-                // which would create a horizontal scrollbar.
-                const markerWidth = marker.offsetWidth;
-                const maxAllowedX = Math.max(0, totalWidth - markerWidth);
-                if (commitX < prevMarkerRight + MARKER_GAP) {
-                    commitX = Math.min(prevMarkerRight + MARKER_GAP, maxAllowedX);
-                    marker.style.left = `${commitX}px`;
-                }
-                prevMarkerRight = commitX + markerWidth;
+                // Register for the per-lane collision sweep below (width is
+                // only known once the marker is in the DOM).
+                if (!laneMarkers.has(branch._lane)) laneMarkers.set(branch._lane, []);
+                laneMarkers.get(branch._lane).push({ marker, x: commitX, w: marker.offsetWidth });
             });
+        });
+
+        // Two-pass label placement per lane (no vertical stacking — Tom
+        // prefers single-line lanes):
+        // 1. forward: nudge overlapping labels right just enough to clear;
+        // 2. clamp to the timeline's right edge (a label past it would create
+        //    a horizontal scrollbar) and sweep backward so a clamped label
+        //    pushes its predecessors LEFT instead of rendering on top of them.
+        laneMarkers.forEach(items => {
+            items.sort((a, b) => a.x - b.x);
+            for (let i = 1; i < items.length; i++) {
+                const minX = items[i - 1].x + items[i - 1].w + MARKER_GAP;
+                if (items[i].x < minX) items[i].x = minX;
+            }
+            const last = items[items.length - 1];
+            last.x = Math.max(0, Math.min(last.x, totalWidth - last.w));
+            for (let i = items.length - 2; i >= 0; i--) {
+                const maxX = items[i + 1].x - items[i].w - MARKER_GAP;
+                if (items[i].x > maxX) items[i].x = Math.max(0, maxX);
+            }
+            items.forEach(it => { it.marker.style.left = `${it.x}px`; });
         });
     }
 
@@ -541,8 +553,9 @@ const GitTimeline = (() => {
     function showOverlay(card) {
         if (!overlay) createOverlay();
 
-        // Populate content
-        overlay.querySelector('.overlay-hash').textContent = card.dataset.hash;
+        // Populate content ('' not "undefined" when the hash is unset, so the
+        // header's :empty slot can collapse)
+        overlay.querySelector('.overlay-hash').textContent = card.dataset.hash || '';
         overlay.querySelector('.overlay-date').textContent = card.dataset.dateRange;
         overlay.querySelector('.overlay-title').textContent = card.dataset.title;
         overlay.querySelector('.overlay-company').textContent = card.dataset.company;
@@ -553,8 +566,10 @@ const GitTimeline = (() => {
         overlay.querySelector('.overlay-tags').innerHTML =
             tags.map(t => `<span class="overlay-tag">${t}</span>`).join('');
 
-        // Get branch type for styling
-        const branchType = card.className.match(/git-commit-(\w+)/)?.[1] || 'work';
+        // Get branch type for styling. Explicit alternation: /git-commit-(\w+)/
+        // matched the base class "git-commit-marker" first, so the type-accent
+        // border rules (.git-overlay-work/project/education) never applied.
+        const branchType = card.className.match(/git-commit-(work|project|education)/)?.[1] || 'work';
 
         // Fixed position: top-right corner of viewport
         overlay.className = `git-timeline-overlay active git-overlay-${branchType} fixed-corner`;

@@ -77,7 +77,10 @@ const SFX = (() => {
             master.gain.value = 0.9;
             master.connect(ctx.destination);
         }
-        if (ctx.state === 'suspended') ctx.resume();
+        // != 'running' (not == 'suspended'): iOS Safari parks the context in a
+        // non-standard 'interrupted' state after calls/route changes/tab
+        // switches, and it stayed muted forever because we never resumed it.
+        if (ctx.state !== 'running') ctx.resume().catch(() => { /* needs gesture */ });
         return ctx;
     }
 
@@ -135,13 +138,26 @@ const SFX = (() => {
     const lastAt = {};
 
     function play(event, opts) {
-        if (!running() || !pack) return;
+        if (!enabled || !ctx || !pack) return;
         const fn = pack[event];
         if (!fn) return;
         const now = performance.now();
         const gap = THROTTLE[event] != null ? THROTTLE[event] : 50;
         if (lastAt[event] && now - lastAt[event] < gap) return;
         lastAt[event] = now;
+        // Mobile first-tap: resume() (kicked off by ensure() in the same
+        // gesture) is async, so the context is still 'suspended' here and the
+        // cue used to be dropped — every tap resumed, none ever sounded.
+        // Defer the cue to the resume continuation instead of eating it.
+        if (ctx.state !== 'running') {
+            ctx.resume().then(() => {
+                if (ctx.state !== 'running' || !enabled) return;
+                try {
+                    fn({ ctx, out: master, t: ctx.currentTime, tone, noise, opts: opts || {} });
+                } catch (e) { /* pack handler failed post-resume */ }
+            }).catch(() => { /* still locked: needs a user gesture */ });
+            return;
+        }
         try {
             fn({ ctx, out: master, t: ctx.currentTime, tone, noise, opts: opts || {} });
         } catch (e) {
@@ -180,6 +196,10 @@ const SFX = (() => {
             ensure();
             if (e.pointerType !== 'touch') play('ui:down');
         });
+        // Extra unlock chance on iOS: touchend is the canonical gesture Safari
+        // accepts for audio activation (some versions reject touchstart-time
+        // resumes), and it also revives an 'interrupted' context post-call.
+        document.addEventListener('touchend', () => ensure(), { passive: true });
         document.addEventListener('pointerup', (e) => {
             if (e.pointerType !== 'touch') play('ui:up');
         });
