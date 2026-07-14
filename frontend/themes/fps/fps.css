@@ -63,8 +63,11 @@ body[data-theme="fps"] .hero-annotation { display: none !important; }
     linear-gradient(180deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 20%),
     linear-gradient(0deg, rgba(14,22,34,.26) 0%, rgba(14,22,34,0) 14%); }
 
-/* Content rides above the scene. */
-body[data-theme="fps"] #main-content { position: relative; z-index: 1; }
+/* Content rides above the scene. Sits above the injected HUD chrome that's
+   fixed to <body> (rail/side-panel/telemetry) so the header's dropdowns
+   (theme/language switcher) never render underneath them — but stays below
+   the cathode guide/crosshair/hit-fx/boot ribbon, which must stay topmost. */
+body[data-theme="fps"] #main-content { position: relative; z-index: 46; }
 /* Room for the fixed rail (left) and telemetry (bottom). The telemetry bar is
    opaque, so content must clear it fully or the two overlap at the fold. */
 body[data-theme="fps"] main#main-content { padding-left: 64px; padding-bottom: 56px; }
@@ -585,14 +588,6 @@ body[data-theme="fps"] .fps-eyebrow {
 #fps-badge .fps-badge-shield { width: 22px; height: 22px; color: var(--gold); flex: 0 0 auto; }
 #fps-badge .fps-badge-shield svg { width: 100%; height: 100%; }
 @media (max-width: 1023px) { #fps-badge { display: none; } }
-
-/* Theme + language chips: fold the loud default palette emoji into a mono HUD
-   label so the top-right zone stays tactical (switcher still fully usable). */
-body[data-theme="fps"] .theme-switcher-toggle { position: relative; width: auto; min-width: 0; padding: .3rem .55rem; font-size: 0; line-height: 1; }
-body[data-theme="fps"] .theme-switcher-toggle::after {
-  content: "\25E7 HUD"; font-size: .62rem; font-family: var(--mono); letter-spacing: .12em; color: var(--fg-dim);
-}
-body[data-theme="fps"] .theme-switcher-toggle:hover::after { color: #fff; }
 
 /* ───────── Cathode: retint the green terminal CRT to fps blue-steel ─────────
    The guide sprite's phosphor screen + bubble use the kit's --cg-* vars (green
