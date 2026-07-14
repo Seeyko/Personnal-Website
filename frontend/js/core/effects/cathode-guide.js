@@ -537,12 +537,13 @@ const CathodeGuide = (() => {
     }
 
     // The floor line: the old docked insets (20px desktop / 12px mobile),
-    // raised above any fixed bottom bar a theme installs (retro90s status bar).
+    // raised above any fixed bottom bar a theme installs (retro90s status bar,
+    // fps telemetry bar).
     function probeFloor(now) {
         if (now - floorProbeAt < 1000 && floorProbeAt >= 0) return;
         floorProbeAt = now;
         let base = window.innerWidth < 900 ? 12 : 20;
-        const bar = document.querySelector('.retro-status-bar');
+        const bar = document.querySelector('.retro-status-bar, #fps-telemetry');
         if (bar && bar.offsetHeight) base = Math.max(base, bar.offsetHeight + 6);
         floorBase = base;
     }
