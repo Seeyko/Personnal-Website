@@ -11,8 +11,9 @@ body[data-theme="fps"] {
      so the navy HUD lives in ONE cool palette instead of clashing with warm
      sand. Still bright; just harmonised. */
   --field:#c9d2d9; --field-2:#bcc7cf;
-  /* crisp cool-navy HUD glass — opaque enough to stay clean over the field */
-  --glass:rgba(13,19,29,.90); --glass-2:rgba(18,26,38,.94);
+  /* cool-navy HUD glass — a touch translucent over the cool field so the
+     frosted-glass (backdrop-blur) reads, while text stays legible */
+  --glass:rgba(13,19,29,.80); --glass-2:rgba(18,26,38,.87);
   --glass-line:rgba(150,190,228,.36); --glass-line-2:rgba(150,190,228,.16);
   /* soft cool drop-shadow lifts every HUD plate off the field */
   --hud-shadow:0 16px 34px -14px rgba(8,14,24,.5), 0 3px 8px rgba(8,14,24,.22);
@@ -414,10 +415,10 @@ body[data-theme="fps"] .language-switcher-toggle:focus-visible {
   body[data-theme="fps"] .about-card,
   body[data-theme="fps"] .contact-card,
   body[data-theme="fps"] .git-timeline-viewport {
-    background: rgba(14,22,30,.94); backdrop-filter: none; -webkit-backdrop-filter: none;
+    background: rgba(16,24,34,.90); backdrop-filter: none; -webkit-backdrop-filter: none;
   }
   body[data-theme="fps"] .fps-buy {
-    background: rgba(14,22,30,.94); backdrop-filter: none; -webkit-backdrop-filter: none;
+    background: rgba(16,24,34,.90); backdrop-filter: none; -webkit-backdrop-filter: none;
   }
   /* Keep telemetry on a single line and scroll it internally so the page
      itself never gains horizontal overflow at narrow widths. */
