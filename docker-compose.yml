@@ -10,6 +10,7 @@ services:
         - API_URL=${API_URL:-https://api.tomandrieu.com}
         - FRONTEND_URL=${FRONTEND_URL:-https://tomandrieu.com}
         - ADMIN_SECRET_PATH=${ADMIN_SECRET_PATH:-_mx9k7}
+        - ENVIRONMENT=${ENVIRONMENT:-production}
     image: ${CI_REGISTRY_IMAGE}/frontend:${APP_VERSION:-latest}
     expose:
       - ${FRONTEND_PORT:-4200}

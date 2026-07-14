@@ -28,19 +28,26 @@ const CathodeGuide = (() => {
     const TOGGLE_BTN_ID = 'cathode-guide-toggle';
     const MOBILE_QUERY = '(max-width: 899px)';
     const REDUCED_QUERY = '(prefers-reduced-motion: reduce)';
-    const THEMES = ['terminal', 'default', 'blueprint', 'retro90s'];
+    const THEMES = ['terminal', 'default', 'blueprint', 'retro90s', 'fps'];
+
+    // FPS theme parallax: fps.js feeds Cathode a small pointer-driven offset so
+    // she drifts by depth like everything else on the tactical menu. Applied
+    // only while the fps theme is active (see applyLifeTransform) so the other
+    // themes' transforms are byte-for-byte unchanged.
+    let fpsParX = 0, fpsParY = 0;
+    function setParallax(x, y) { fpsParX = x; fpsParY = y; }
 
     // Sections the guide reacts to, in document order. `bar` is the little
     // tab label shown in the bubble's title bar, adapted to each theme's
     // fiction (unix tab / drawing number / 90s filename / plain word).
     const SECTION_DEFS = [
-        { key: 'hero', selector: '.hero', bar: { terminal: 'guide.sh', default: 'bonjour', blueprint: 'PLAN A-00', retro90s: 'welcome.htm' } },
-        { key: 'now', selector: '#now', bar: { terminal: 'now --live', default: 'en ce moment', blueprint: 'REV. COURANTE', retro90s: 'news.gif' } },
-        { key: 'work', selector: '#work', bar: { terminal: 'work.log', default: 'projets', blueprint: 'COUPE B-02', retro90s: 'cool-stuff.htm' } },
-        { key: 'writing', selector: '#writing', bar: { terminal: 'blog.md', default: 'notes', blueprint: 'CARTOUCHE C-03', retro90s: 'zine.txt' } },
-        { key: 'timeline', selector: '#timeline', bar: { terminal: 'git log', default: 'parcours', blueprint: 'PHASAGE D-04', retro90s: 'history.htm' } },
-        { key: 'about', selector: '#about', bar: { terminal: 'whoami', default: 'qui suis-je', blueprint: 'DÉTAIL E-05', retro90s: 'aboutme.htm' } },
-        { key: 'contact', selector: '#contact', bar: { terminal: 'ping', default: 'contact', blueprint: 'ANNEXE F-06', retro90s: 'guestbook.htm' } }
+        { key: 'hero', selector: '.hero', bar: { terminal: 'guide.sh', default: 'bonjour', blueprint: 'PLAN A-00', retro90s: 'welcome.htm', fps: 'MOTD' } },
+        { key: 'now', selector: '#now', bar: { terminal: 'now --live', default: 'en ce moment', blueprint: 'REV. COURANTE', retro90s: 'news.gif', fps: 'INTEL' } },
+        { key: 'work', selector: '#work', bar: { terminal: 'work.log', default: 'projets', blueprint: 'COUPE B-02', retro90s: 'cool-stuff.htm', fps: 'BUY MENU' } },
+        { key: 'writing', selector: '#writing', bar: { terminal: 'blog.md', default: 'notes', blueprint: 'CARTOUCHE C-03', retro90s: 'zine.txt', fps: 'COMMS' } },
+        { key: 'timeline', selector: '#timeline', bar: { terminal: 'git log', default: 'parcours', blueprint: 'PHASAGE D-04', retro90s: 'history.htm', fps: 'MATCH LOG' } },
+        { key: 'about', selector: '#about', bar: { terminal: 'whoami', default: 'qui suis-je', blueprint: 'DÉTAIL E-05', retro90s: 'aboutme.htm', fps: 'PROFILE' } },
+        { key: 'contact', selector: '#contact', bar: { terminal: 'ping', default: 'contact', blueprint: 'ANNEXE F-06', retro90s: 'guestbook.htm', fps: 'INVITE' } }
     ];
     const SECTION_MAP = SECTION_DEFS.reduce((m, s) => { m[s.key] = s; return m; }, {});
     const MOBILE_ALLOWED = ['hero', 'contact'];
@@ -51,7 +58,8 @@ const CathodeGuide = (() => {
         terminal: { first: '$ ', next: '> ' },
         default: { first: '', next: '' },
         blueprint: { first: '', next: '' },
-        retro90s: { first: '', next: '' }
+        retro90s: { first: '', next: '' },
+        fps: { first: '', next: '' }
     };
 
     // Bubble typewriter timing - matches the kit's own CSS timing contract
@@ -541,7 +549,12 @@ const CathodeGuide = (() => {
 
     function applyLifeTransform() {
         if (!root) return;
-        root.style.transform = 'translate3d(' + px.toFixed(1) + 'px,' + (-currentYGap()).toFixed(1) + 'px,0)';
+        // fps only: add the pointer-driven parallax drift on top of her floor
+        // position. Empty string for every other theme -> identical transform.
+        const par = (currentTheme() === 'fps' && (fpsParX || fpsParY))
+            ? ' translate(' + fpsParX.toFixed(1) + 'px,' + fpsParY.toFixed(1) + 'px)'
+            : '';
+        root.style.transform = 'translate3d(' + px.toFixed(1) + 'px,' + (-currentYGap()).toFixed(1) + 'px,0)' + par;
         root.style.setProperty('--cg-dir', dir < 0 ? '-1' : '1');
         // One rotation channel: tumble rotation (full), the skip rock while
         // hopping across stones, or the standing lean (small) otherwise.
@@ -1775,6 +1788,7 @@ const CathodeGuide = (() => {
     return {
         init,
         destroy,
+        setParallax,
         get isActive() { return isActive; }
     };
 })();

@@ -7,7 +7,8 @@ const ThemeManager = (() => {
         default: { id: 'default', name: 'Default', description: 'Clean & Minimal', css: '/themes/default/default.css', js: '/themes/default/default.js', icon: '✦' },
         terminal: { id: 'terminal', name: 'Terminal CLI', description: 'Cyber-Industrial Hacker Aesthetic', css: '/themes/terminal/terminal.css', js: '/themes/terminal/terminal.js', icon: '💻' },
         blueprint: { id: 'blueprint', name: 'Blueprint', description: 'Technical Drawing Aesthetic', css: '/themes/blueprint/blueprint.css', js: '/themes/blueprint/blueprint.js', icon: '📐' },
-        retro90s: { id: 'retro90s', name: 'Retro 90s', description: 'GeoCities Nostalgia Vibes', css: '/themes/retro90s/retro90s.css', js: '/themes/retro90s/retro90s.js', icon: '🌈' }
+        retro90s: { id: 'retro90s', name: 'Retro 90s', description: 'GeoCities Nostalgia Vibes', css: '/themes/retro90s/retro90s.css', js: '/themes/retro90s/retro90s.js', icon: '🌈' },
+        fps: { id: 'fps', name: 'FPS Arena', description: 'CS Panorama Tactical Menu', css: '/themes/fps/fps.css', js: '/themes/fps/fps.js', icon: '🎯' }
     };
 
     const DEFAULT_THEME = 'default';

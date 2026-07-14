@@ -372,6 +372,13 @@ a, button {
   transform: translateY(0);
 }
 
+/* No-JS safety net: if scripting is unavailable the reveal never fires, so the
+   content would stay invisible. Show it outright in that case. (When JS runs,
+   GSAP or the IntersectionObserver fallback drives the reveal as normal.) */
+@media (scripting: none) {
+  .fade-in-up { opacity: 1; transform: none; }
+}
+
 /* ─── Loading State ─── */
 body.loading * {
   animation-play-state: paused !important;
