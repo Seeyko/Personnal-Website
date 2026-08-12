@@ -426,10 +426,6 @@ body[data-theme="default"] .blog-card:hover {
   border-color: var(--border-medium);
 }
 
-body[data-theme="default"] .blog-card.no-image {
-  border-left: 4px solid var(--accent);
-}
-
 body[data-theme="default"] .blog-card.no-image .blog-card-content {
   padding: var(--spacing-lg);
 }
