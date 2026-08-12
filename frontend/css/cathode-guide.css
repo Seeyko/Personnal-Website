@@ -404,6 +404,15 @@ body.loading #cathode-guide {
 /* Rolling bodies rotate about their middle, and cast no believable shadow */
 #cathode-guide.cg-tumbling .cg-sprite { transform-origin: 50% 50%; }
 #cathode-guide.cg-tumbling .cg-shadow { opacity: 0; }
+/* The self-spin pivots on her middle too. Around the default foot-level
+   lean origin (50% 88%) a full turn swings most of the sprite below the
+   floor line, and the fixed root is hard-clipped at the viewport's bottom
+   edge — she visibly lost her top half mid-spin. About her center the
+   rotated bounds stay inside the floor gap at every size (worst case
+   ≈ .21 × sprite below her box, less than the 12–20px floor inset once
+   the mid-spin squash is counted in). Boundary frames are rotate(0)/
+   rotate(1turn), so the origin swap itself never causes a visual jump. */
+#cathode-guide.cg-spinning .cg-sprite { transform-origin: 50% 50%; }
 
 /* Stroll waddle: a quick two-step bounce on the kit's hop wrapper. Declared
    after the kit's own .cg-hop rules so it wins while cg-walking is set. */
