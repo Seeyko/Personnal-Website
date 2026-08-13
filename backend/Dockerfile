@@ -22,7 +22,7 @@ COPY --from=builder /app/server .
 
 # Cache bust — changing this value invalidates the articles layer below.
 # Bump on deploys that need fresh articles without changing backend source.
-ARG CACHE_BUST=2026-04-25-ssr
+ARG CACHE_BUST=2026-08-13-ca-ride
 RUN echo "Articles cache bust: ${CACHE_BUST}"
 
 # Copy articles from the repo (ensures fresh articles on every build)
