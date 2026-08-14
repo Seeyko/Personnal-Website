@@ -1,6 +1,6 @@
 ---
-title: "I shipped « Ça ride » from my phone"
-excerpt: "A migration in the car, a holiday I would have cancelled, then the maternity ward. How AI let me keep RideMyPark moving without choosing between the product and the people I live with."
+title: "When my worlds collide"
+excerpt: "The biggest rebuild of my career went out as my daughter was about to arrive."
 publishedAt: "2026-08-12"
 lang: en
 draft: false
@@ -10,36 +10,38 @@ passwordHash: "$2a$10$ETbH0aLpwd92h1XAxzRJjex87i/.iOQDYKPHAEU4LKkmZjJ153mX2"
 coverImage: "cover.png"
 ---
 
-On July 25, we packed the car and left for our holiday. My partner was 34 weeks pregnant, and RideMyPark was still running through my head. The migration from the old WordPress site to the new one had been ready for a while: the plan was written, the scripts were done, and all it really needed was a window when I could watch production closely. We moved our departure forward, so that window had effectively disappeared. I launched the migration anyway, just before we hit the road.
+On July 25 we packed the car. My partner was 34 weeks pregnant, and RideMyPark was in a state I had never managed to reach. The biggest rebuild and migration of my career, the one I had been dragging for five years, was ready to go out. Our daughter was due in the coming weeks. The two had no reason to line up, and yet it was the same month.
 
-## On the highway
+## Five years, then one month
 
-I wasn't the one watching the screens in the car. My partner was following the agents and the site's status from her phone: maintenance mode went up, came back down, and the new site went live. I asked her to open the mobile app and check that the spots still appeared and that nothing obvious was broken. For the most part, everything held up—except the reviews were missing. Under normal circumstances, that kind of irritating detail would have kept me at a computer for at least two hours while I investigated, patched, redeployed, and tested again.
+The migration from the old WordPress site to the new one had been ready for a while: the plan was written, the scripts were done, and all it really needed was a window to watch production. We moved our departure forward, so that window had basically disappeared, and I launched the migration anyway before we hit the road.
 
-Instead, I described the symptom to an agent. It fixed the issue, we tested again, and that was it. Nothing spectacular, but exactly the kind of small problem that would once have swallowed the start of the holiday—or made me hesitate to leave at all.
+I wasn't the one watching the screens in the car. My partner was, on her phone. She followed what the agents were saying and the state of the site: maintenance went up, it came down, the new site was live. I asked her to open the mobile app and check that the spots still showed and that nothing obvious was broken. For the most part it held, except the reviews were not coming back, the kind of annoying detail that would normally have stuck you to a computer for at least two hours to understand, patch, redeploy, and test again.
 
-## A week in the Pyrenees
+I described the symptom to an agent, it fixed it, we tested again, and it was fine. Before, that grain of sand would have eaten the start of the holiday, or talked me out of leaving at all.
 
-We were staying in a family house. There was a pool, there were people around, and I wasn't putting a laptop on the table to “just finish one thing.” I used my phone in the car, late at night when everyone was asleep, or in the quiet gaps between everything else. This wasn't a disguised workday. They were short windows: start a cloud session, review the result, put the phone away.
+Because in a normal world I would have cancelled. I was so close on this rebuild that production could not wait. Five years of never getting it finished, and then, with AI, it went through in a month. Once it is finally there, you do not put it off, even if everything on the other side is already speeding up.
 
-There is a real question here about whether that counts as switching off, and I want to write about it properly in another article rather than bury it in a footnote. What I can say is that, without AI, I probably would have cancelled this holiday. I was too close to finishing a redesign I had dragged behind me for five years without ever getting it over the line, and the release could not wait any longer. AI helped compress that redesign into a month, which meant I could still go—not disconnecting 100%, but perhaps 80%. That is infinitely better than staying home to finish the migration while everyone else is away.
+## A few days off, in the middle
 
-In one of those quiet gaps, I also let myself return to something I had postponed for years: sessions. Not a big public event, just a simple “let's meet at the spot” between riders, either right now or two weeks from now because people have jobs. The old WordPress setup never gave us solid ground for it. Now that the new site was live, I started by shaping the product with Claude Code—what are we actually trying to make, spontaneous or planned, who is it for, and where does V1 stop?—instead of asking AI to generate the whole feature in one shot. Within a day or two, we had settled on “Ça ride.” More importantly, I could work on it while the energy was there instead of waiting for some imaginary sprint after the holiday.
+We were in a family house in the Pyrenees, there was a pool, there were people around, and I was not putting a laptop on a table to “just finish one thing.” I took my phone out in the car, at night when everyone was asleep, in the leftover gaps of the day. Short windows: start an agent in the cloud, look at the result, put it away.
 
-## At the hospital, without turning it into a manifesto
+There is a real disconnect question here, and I will write about it in another article, because it deserves more than a parenthesis. What I can say here is that those days still happened. We had a holiday in the middle of all this. Not dropping everything 100%, more like unplugging around 80%, which is already much better than staying home to finish the migration while everyone else is away.
 
-Then nothing went to plan: contractions, the maternity ward, our daughter being born on August 2, and then the neonatal unit. Most of the time, we fed her, slept, and started over. I am not telling this story to frame “shipping from the hospital” as some kind of achievement. I worked when everyone else was asleep, in the same quiet windows when many people would doomscroll or put on a show. In those moments, I enjoy prototyping and moving RideMyPark forward. It is not morally better or worse; it is simply what I do.
+Before, work would have taken the whole week. This time it took the gaps, and the rest could stay a holiday.
 
-In the past, I would have felt guilty. I would have been anxious about choosing between my daughter and work—and however obvious the choice looks on paper, my brain does not always process it that neatly. Now I no longer have to make that choice in quite the same way. I can work for an hour across an entire day, split into ten tiny sessions, and the product moves as though I had spent a week at a computer, while I still care for my family, exercise, and stay present the rest of the time.
+## The other world
 
-Of course, it is less relaxing than dropping everything. But there are moments when fully dropping everything is not a luxury you have. AI gave me a middle ground that is far better for the people close to me than being the person who brings a laptop on holiday—or to the hospital—and never really joins them.
+Then nothing went as planned: contractions, the maternity ward, the birth on August 2, then the neonatal unit. Most of the time we feed, we sleep, we start over. I am not telling this to make it a performance. I do it when everyone is asleep, in the quiet moments, the same kind of windows where a lot of people doomscroll or put a show on. In those moments I enjoy prototyping and moving RideMyPark forward. That is just what I do.
 
-My colleagues tested the feature on staging. There was not a huge amount of feedback, so I released it to production with the feature enabled only for them at first, giving us a chance to see whether it held together before exposing it to everyone. I am still in the polish loop today—the timer for an upcoming session, for example, the kind of detail that changes how a product feels. I take their feedback from Discord, give it to Claude Code, iterate, and test again as I go.
+Before, I would have felt guilty. I would have been anxious about choosing between my daughter and work, and even if the choice looks obvious on paper, my brain does not always treat it that cleanly. Now I do not really have to choose in the same way. I can work an hour in a day, split into ten small pieces, and the product moves as if I had spent a week at a computer, while I take care of my family, exercise, and stay present the rest of the time.
 
-## What this changes for me
+It is less relaxing than dropping everything. But some moments you do not get the luxury of dropping everything, and AI let me find a middle ground that is much better for the people close to me than being the person who shows up with a computer and is not really there.
 
-Taken together, these steps are not a method anyone should copy. They are a series of moments when execution stopped requiring me to be tied to a desk.
+## After the fact
 
-The migration held while we were on the road, and the mobile bug was fixed without stealing the day. The holiday happened when I would otherwise have cancelled it, because a five-year redesign had finally been compressed into a month. The sessions feature took shape in the margins rather than inside an ideal schedule. And during the busiest period of all, I did not have to turn every spare hour into guilt: one fragmented hour across the day was enough to move the product forward without making it the center of everything.
+I finally got out a rebuild I could not finish, and my daughter was born right after. In the middle we still had some holiday days.
 
-In [Identity shift](https://tomandrieu.com/blog/identity-shift), I wrote that coding is no longer the hard part. I did not yet have this proof in my hands. Now I do: judgment can fit in a pocket, and execution no longer needs me to sacrifice the people around me in order to make progress.
+What made it tenable is that I no longer needed to be stuck at a desk for things to move. The migration held while we were on the road. The mobile bug got fixed without stealing the day. The holiday happened when I would have cancelled. And during the busiest stretch, I did not have to turn every spare hour into guilt.
+
+In [Identity shift](https://tomandrieu.com/blog/identity-shift), I wrote that coding is no longer the hard part. I did not have that proof in my hands yet. Now judgment fits in a pocket, and I can move RideMyPark forward without setting the rest of my life down next to it.
