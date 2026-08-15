@@ -1,6 +1,6 @@
 # Cathode copy: universe, no handmade, no coffee
 
-**Status**: in_progress
+**Status**: completed
 **Branch**: `cursor/cathode-copy-universe-5d4e`
 **Started**: 2026-08-15 10:08
 
@@ -15,8 +15,8 @@ Prefer funny / existential lines about the universe and the world. Do not mentio
 ## Progress
 - [x] Locate cathodeGuide strings
 - [x] Rewrite handmade + coffee lines (FR + EN)
-- [ ] Browser-check bubbles on a couple of themes
-- [ ] Commit / PR
+- [x] Browser-check bubbles on a couple of themes
+- [x] Commit / PR
 
 ## Notes/Discoveries
 - Handmade + coffee live in `cathodeGuide.hero` / `.about` and per-theme overrides.
