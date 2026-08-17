@@ -94,12 +94,12 @@
     "bestViewed": "Meilleur affichage avec Netscape Navigator 4.0 à 800x600"
   },
   "cathodeGuide": {
-    "hero": "Bienvenue. L'espace est infini. Cette page, un peu moins.",
+    "hero": "Bzz. Phosphore chaud. Huit bits suffisent.",
     "now": "Le radar est allumé : voici ce que je bricole en ce moment.",
     "work": "Mes projets. Ceux qui brillent et ceux qui m'ont fait ramer.",
     "writing": "Des notes de code et de vie, tapées entre deux deploys.",
     "timeline": "Mon parcours en commits. Scroll pour voir tout le diff.",
-    "about": "L'humain derrière l'écran. Un atome curieux de plus.",
+    "about": "L'humain derrière le tube. Peu de pixels. Trop d'idées.",
     "contact": "Une idée à construire ? Il répond plus vite qu'un ticket Jira.",
     "themes": {
       "terminal": {
@@ -108,16 +108,16 @@
         "work": "ls projets/ : certains brillent, d'autres ont segfault.",
         "writing": "cat notes.md : du code et de la vie, entre deux deploys.",
         "timeline": "git log --oneline : tout son parcours committé ici.",
-        "about": "whoami : un humain. 13.8e9 ans plus tard.",
+        "about": "whoami : un humain. je l'affiche.",
         "contact": "ping tom : réponse en moins de 24h, si si."
       },
       "default": {
-        "hero": "Bienvenue. L'espace est infini. Cette page, un peu moins.",
+        "hero": "Bzz. Phosphore chaud. Huit bits suffisent.",
         "now": "En ce moment, sur l'établi : regardez ce qui prend forme.",
         "work": "Ses projets. Ceux qui brillent, et ceux qui ont résisté.",
         "writing": "Des notes de code et de vie, écrites entre deux livraisons.",
         "timeline": "Son parcours, étape par étape. Prenez le temps de dérouler.",
-        "about": "L'humain derrière tout ça. Un atome curieux de plus.",
+        "about": "L'humain derrière le tube. Peu de pixels. Trop d'idées.",
         "contact": "Une idée en tête ? Écrivez-lui, il répond vite et bien."
       },
       "blueprint": {
@@ -126,7 +126,7 @@
         "work": "Coupe B-02 : ses ouvrages livrés, cotes vérifiées sur site.",
         "writing": "Cartouche notes : croquis de code et de vie, à main levée.",
         "timeline": "Phasage du chantier : chaque étape est cotée et datée.",
-        "about": "Détail E-05 : l'auteur. Un point dans l'univers, coté 1:1.",
+        "about": "Détail E-05 : l'humain. Signal présent. Tube : OK.",
         "contact": "Annexe contact : déposez votre projet, réponse sous 24h."
       },
       "retro90s": {
@@ -135,7 +135,7 @@
         "work": "Ses projets TROP COOL ! Clique partout, ça vaut le détour !!",
         "writing": "Son zine perso : du code, de la vie, 100% sans popup !",
         "timeline": "Toute son histoire ! Scroll, c'est mieux qu'un CD-ROM !",
-        "about": "La page About : un humain, une planète, et du HTML !!",
+        "about": "La page About : HUMAIN derrière le TUBE !!",
         "contact": "Signe le guestbook ou envoie un mail, il répond VITE !!"
       }
     },
