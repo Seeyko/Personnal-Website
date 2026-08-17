@@ -94,12 +94,12 @@
     "bestViewed": "Best viewed with Netscape Navigator 4.0 at 800x600 resolution"
   },
   "cathodeGuide": {
-    "hero": "Bzz. Warm phosphor. 8-bit's enough.",
+    "hero": "Welcome. An old screen. Still here.",
     "now": "Radar's on: here's what I'm tinkering with right now.",
     "work": "My projects. The ones that shine and the ones that fought back.",
     "writing": "Notes on code and life, typed between two deploys.",
     "timeline": "My path in commits. Scroll to see the full diff.",
-    "about": "The human behind the tube. Few pixels. Many ideas.",
+    "about": "The human behind the screen. He doesn't know. Fine.",
     "contact": "Got an idea to build? Faster reply than a Jira ticket.",
     "themes": {
       "terminal": {
@@ -108,16 +108,16 @@
         "work": "ls projects/ : some shine, some segfaulted first.",
         "writing": "cat notes.md : code and life, between two deploys.",
         "timeline": "git log --oneline : his whole path, committed here.",
-        "about": "whoami : a human. i just display.",
+        "about": "whoami : a human. doesn't know. fine.",
         "contact": "ping tom : replies in under 24h. really."
       },
       "default": {
-        "hero": "Bzz. Warm phosphor. 8-bit's enough.",
+        "hero": "Welcome. An old screen. Still here.",
         "now": "On the bench right now: watch it take shape.",
         "work": "His projects. The ones that shine, and the ones that resisted.",
         "writing": "Notes on code and life, written between two releases.",
         "timeline": "His path, step by step. Take your time scrolling.",
-        "about": "The human behind the tube. Few pixels. Many ideas.",
+        "about": "The human behind the screen. He doesn't know. Fine.",
         "contact": "Got an idea? Write to him — quick, thoughtful replies."
       },
       "blueprint": {
@@ -126,7 +126,7 @@
         "work": "Section B-02: delivered works, dimensions checked on site.",
         "writing": "Notes block: freehand sketches of code and life.",
         "timeline": "Project phasing: every step measured and dated.",
-        "about": "Detail E-05: the human. Signal present. Tube: OK.",
+        "about": "Detail E-05: the author of the plans. A human, that's it.",
         "contact": "Contact annex: drop your project, reply within 24h."
       },
       "retro90s": {
@@ -135,7 +135,7 @@
         "work": "His SUPER COOL projects! Click around, totally worth it!!",
         "writing": "His personal zine: code, life, 100% popup-free!",
         "timeline": "His whole story! Scroll it, beats any CD-ROM!",
-        "about": "The About page: a HUMAN behind the TUBE!!",
+        "about": "The About page: a human, promised, 100% real!!",
         "contact": "Sign the guestbook or send a mail, he replies FAST!!"
       }
     },

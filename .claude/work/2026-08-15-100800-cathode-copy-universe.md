@@ -1,6 +1,6 @@
 # Cathode copy: CRT voice, no handmade, no coffee
 
-**Status**: in_progress
+**Status**: completed
 **Branch**: `cursor/cathode-copy-universe-5d4e`
 **Started**: 2026-08-15 10:08
 
@@ -17,8 +17,8 @@ not a cosmology lecture. Do not mention Fable.
 - [x] Locate cathodeGuide strings
 - [x] Drop handmade + coffee
 - [x] Rewrite again in CRT / 8-bit voice (less space)
-- [ ] Re-check bubbles
-- [ ] Commit / update PR
+- [x] Re-check bubbles
+- [x] Commit / update PR
 
 ## Notes/Discoveries
 - Bubbles wrap to 3 lines × 24 chars — keep replacements ≤ ~70 characters.
