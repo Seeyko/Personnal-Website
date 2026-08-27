@@ -2,15 +2,15 @@
     {
         "id": "ride-my-park",
         "title": "Ride My Park",
-        "description": "Find nearby spots among 30K skateparks, street spots & pumptracks for BMX, Skateboard, Aggressive Inline, Freestyle Scooter on Ride My Park.",
+        "description": "The spot map. 30K skateparks, street spots, pumptracks. Rebuilt from scratch in 2026: React + Go, coded with AI.",
         "type": "WEB APPLICATION",
         "url": "https://ridemypark.com",
         "images": [
-            "/assets/ridemypark-mobile-store-wallpaper.jpg",
-            "/assets/ridemypark-landing-page.png",
-            "/assets/ridemypark-messaging.png"
+            "/assets/ridemypark-home.png",
+            "/assets/ridemypark-explore.png",
+            "/assets/ridemypark-spot.png"
         ],
-        "tags": ["Wordpress", "Voxel", "Flutter", "Maps", "Community"]
+        "tags": ["React", "Go", "AI", "Maps"]
     },
     {
         "id": "skoolbook",

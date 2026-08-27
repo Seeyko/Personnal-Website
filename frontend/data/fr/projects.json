@@ -2,15 +2,15 @@
     {
         "id": "ride-my-park",
         "title": "Ride My Park",
-        "description": "Trouvez des spots près de chez vous parmi 30K skateparks, street spots et pumptracks pour BMX, Skateboard, Roller, Trottinette Freestyle sur Ride My Park.",
+        "description": "La carte des spots. 30K skateparks, street spots, pumptracks. En 2026 je l'ai refaite de zéro : React + Go, codée avec l'IA.",
         "type": "APPLICATION WEB",
         "url": "https://ridemypark.com",
         "images": [
-            "/assets/ridemypark-mobile-store-wallpaper.jpg",
-            "/assets/ridemypark-landing-page.png",
-            "/assets/ridemypark-messaging.png"
+            "/assets/ridemypark-home.png",
+            "/assets/ridemypark-explore.png",
+            "/assets/ridemypark-spot.png"
         ],
-        "tags": ["Wordpress", "Voxel", "Flutter", "Cartes", "Communauté"]
+        "tags": ["React", "Go", "IA", "Cartes"]
     },
     {
         "id": "skoolbook",
