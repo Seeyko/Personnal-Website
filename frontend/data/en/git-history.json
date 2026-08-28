@@ -23,7 +23,11 @@
             "company": "IUT Montpellier-Sete",
             "location": "Montpellier, France",
             "description": "Two-year technical degree in Computer Science. Learned software development fundamentals, database design, and web technologies.",
-            "tags": ["Computer Science", "Development", "Databases"]
+            "tags": [
+              "Computer Science",
+              "Development",
+              "Databases"
+            ]
           }
         }
       ]
@@ -45,7 +49,12 @@
             "company": "Andrieu Tom",
             "location": "France",
             "description": "Building custom web solutions with WordPress and Angular/Node.js platforms. Dynamic websites, custom platforms, and full-stack applications.",
-            "tags": ["WordPress", "Angular", "Node.js", "Freelance"]
+            "tags": [
+              "WordPress",
+              "Angular",
+              "Node.js",
+              "Freelance"
+            ]
           }
         }
       ]
@@ -67,12 +76,17 @@
             "company": "Ride My Park",
             "location": "ridemypark.com",
             "description": "The largest database of skateparks, street spots, pumptracks, events and shops for extreme sports. 30K+ users reached.",
-            "tags": ["Flutter", "WordPress", "API REST", "UX/UI"]
+            "tags": [
+              "Flutter",
+              "WordPress",
+              "API REST",
+              "UX/UI"
+            ]
           }
         },
         {
           "hash": "rmp2026",
-          "date": "2026-06",
+          "date": "2026-07",
           "message": "Full rebuild in React + Go, coded with AI",
           "author": "Ride My Park",
           "details": {
@@ -81,7 +95,13 @@
             "company": "Ride My Park",
             "location": "ridemypark.com",
             "description": "Migrating the old WordPress site to a new React + Go stack, coded end to end with AI. A rewrite put off for four years, done in a month.",
-            "tags": ["React", "Go", "AI", "Rebuild"]
+            "tags": [
+              "React",
+              "Go",
+              "AI",
+              "Rebuild"
+            ],
+            "dateRange": "Jul 2026 → Aug 2026"
           }
         }
       ]
@@ -103,7 +123,12 @@
             "company": "ITESOFT",
             "location": "Aimargues, France",
             "description": "Full-stack development on micro-services application, leader in document digitization. Grew frontend team from 5 to 12 members. Led AngularJS to Angular migration.",
-            "tags": ["Angular", "Node.js", "Docker", "Microservices"]
+            "tags": [
+              "Angular",
+              "Node.js",
+              "Docker",
+              "Microservices"
+            ]
           }
         }
       ]
@@ -126,7 +151,12 @@
             "company": "Skoolbook",
             "location": "skoolbook.fr",
             "description": "School library management platform built to help teachers track book loans and encourage reading. Intuitive interface for teachers with student autonomy features.",
-            "tags": ["WordPress", "PHP", "UX/UI", "Education"]
+            "tags": [
+              "WordPress",
+              "PHP",
+              "UX/UI",
+              "Education"
+            ]
           }
         },
         {
@@ -140,7 +170,12 @@
             "company": "Teach Tools",
             "location": "teach-tools.com",
             "description": "AI-powered pedagogical assistant generating exercises and images for teachers. Next.js application with AI integration and CI/CD pipeline.",
-            "tags": ["Next.js", "AI/ML", "UX/UI", "CI/CD"]
+            "tags": [
+              "Next.js",
+              "AI/ML",
+              "UX/UI",
+              "CI/CD"
+            ]
           }
         }
       ]
@@ -163,7 +198,12 @@
             "company": "CBA Informatique Liberale",
             "location": "Avignon, France",
             "description": "Leading a team of 8 developers building web and mobile applications with Angular & Ionic. Architecting multiple applications and implementing CI/CD pipeline.",
-            "tags": ["Angular", "Ionic", "CI/CD", "Team Lead"]
+            "tags": [
+              "Angular",
+              "Ionic",
+              "CI/CD",
+              "Team Lead"
+            ]
           }
         },
         {
@@ -178,7 +218,12 @@
             "location": "Avignon, France",
             "dateRange": "Apr 2026 → Sept 2026",
             "description": "6-month mission (Apr. 2026 → Sept. 2026) alongside the Lead Front-End role. Designing the architecture and standards around agentic AI and building the internal platform (based on MnM): agentic workflows, plugin and skill sharing for product and tech teams. With Gabriel Desbouis (AI engineer), trained around a hundred people on LLMs: him on the theory, me on the hands-on side and day-to-day support.",
-            "tags": ["Agentic AI", "Platform Engineering", "LLM & Training", "Developer Experience"]
+            "tags": [
+              "Agentic AI",
+              "Platform Engineering",
+              "LLM & Training",
+              "Developer Experience"
+            ]
           }
         }
       ]
