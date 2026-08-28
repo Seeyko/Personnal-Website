@@ -1,85 +1,85 @@
 [
-    {
-        "id": "ride-my-park",
-        "title": "Ride My Park",
-        "description": "The spot map. 30K skateparks, street spots, pumptracks. Rebuilt from scratch in 2026: React + Go, coded with AI.",
-        "type": "WEB APPLICATION",
-        "url": "https://ridemypark.com",
-        "images": [
-            "/assets/ridemypark-home.png",
-            "/assets/ridemypark-explore.png",
-            "/assets/ridemypark-spot.png",
-            "/assets/ridemypark-about.png",
-            "/assets/ridemypark-messages.png",
-            "/assets/ridemypark-session-chat.png",
-            "/assets/ridemypark-moderation.png",
-            "/assets/ridemypark-add-spot.png",
-            "/assets/ridemypark-favorites.png",
-            "/assets/ridemypark-city.png",
-            "/assets/ridemypark-profile.png",
-            "/assets/ridemypark-search.png",
-            "/assets/ridemypark-events.png",
-            "/assets/ridemypark-shops.png",
-            "/assets/ridemypark-sessions.png"
-        ],
-        "tags": [
-            "React",
-            "Go",
-            "AI",
-            "Maps"
-        ]
-    },
-    {
-        "id": "skoolbook",
-        "title": "Skoolbook",
-        "description": "Skoolbook is a platform I designed with my partner, a school teacher, to optimize school library management. It offers an intuitive interface for teachers, simplifies book loan tracking, and encourages student autonomy.",
-        "type": "WEB APPLICATION",
-        "url": "https://skoolbook.fr",
-        "images": [
-            "/assets/skoolbook-landing-page.png",
-            "/assets/skoolbook-class-books.png",
-            "/assets/skoolbook-class-bookings.png"
-        ],
-        "video": "/assets/skoolbook-demo.mp4",
-        "tags": [
-            "Voxel",
-            "Wordpress",
-            "Education"
-        ]
-    },
-    {
-        "id": "teach-tools",
-        "title": "Teach Tools",
-        "description": "A digital teaching assistant with innovative tools to simplify teachers' daily work. Generate exercises and images using AI.",
-        "type": "AI TOOL",
-        "url": "https://teach-tools.com",
-        "images": [
-            "/assets/teach-tools-exercise-generation.png",
-            "/assets/teach-tools-image-generation.png",
-            "/assets/teach-tools-generation-limits.png"
-        ],
-        "video": "/assets/teach-tools-demo-generate-exercise.mp4",
-        "tags": [
-            "AI/ML",
-            "Next.js",
-            "Education"
-        ]
-    },
-    {
-        "id": "gyrodex",
-        "title": "GyroDex",
-        "description": "A pokedex for Animal Crossing. List and save which Animal Crossing creatures you've collected, with friends. Full vibe coding to have fun with AI.",
-        "type": "WEB APP",
-        "url": "https://v0-animal-crossing-gyroides.vercel.app",
-        "images": [
-            "/assets/girodex-gyroide-collection.png",
-            "/assets/girodex-fish-collection.png",
-            "/assets/girodex-friends-dashboard.png"
-        ],
-        "tags": [
-            "Next.js",
-            "Vercel",
-            "Gaming"
-        ]
-    }
+  {
+    "id": "ride-my-park",
+    "title": "Ride My Park",
+    "description": "The spot map. 30K skateparks, street spots, pumptracks. Rebuilt from scratch in 2026: React + Go, coded with AI.",
+    "type": "WEB APPLICATION",
+    "url": "https://ridemypark.com",
+    "images": [
+      "/assets/ridemypark-home.png",
+      "/assets/ridemypark-explore.png",
+      "/assets/ridemypark-spot.png",
+      "/assets/ridemypark-about.png",
+      "/assets/ridemypark-messages.png",
+      "/assets/ridemypark-session-chat.png",
+      "/assets/ridemypark-moderation.png",
+      "/assets/ridemypark-add-spot.png",
+      "/assets/ridemypark-favorites.png",
+      "/assets/ridemypark-city.png",
+      "/assets/ridemypark-profile.png",
+      "/assets/ridemypark-search.png",
+      "/assets/ridemypark-events.png",
+      "/assets/ridemypark-shops-2.png",
+      "/assets/ridemypark-sessions-2.png"
+    ],
+    "tags": [
+      "React",
+      "Go",
+      "AI",
+      "Maps"
+    ]
+  },
+  {
+    "id": "skoolbook",
+    "title": "Skoolbook",
+    "description": "Skoolbook is a platform I designed with my partner, a school teacher, to optimize school library management. It offers an intuitive interface for teachers, simplifies book loan tracking, and encourages student autonomy.",
+    "type": "WEB APPLICATION",
+    "url": "https://skoolbook.fr",
+    "images": [
+      "/assets/skoolbook-landing-page.png",
+      "/assets/skoolbook-class-books.png",
+      "/assets/skoolbook-class-bookings.png"
+    ],
+    "video": "/assets/skoolbook-demo.mp4",
+    "tags": [
+      "Voxel",
+      "Wordpress",
+      "Education"
+    ]
+  },
+  {
+    "id": "teach-tools",
+    "title": "Teach Tools",
+    "description": "A digital teaching assistant with innovative tools to simplify teachers' daily work. Generate exercises and images using AI.",
+    "type": "AI TOOL",
+    "url": "https://teach-tools.com",
+    "images": [
+      "/assets/teach-tools-exercise-generation.png",
+      "/assets/teach-tools-image-generation.png",
+      "/assets/teach-tools-generation-limits.png"
+    ],
+    "video": "/assets/teach-tools-demo-generate-exercise.mp4",
+    "tags": [
+      "AI/ML",
+      "Next.js",
+      "Education"
+    ]
+  },
+  {
+    "id": "gyrodex",
+    "title": "GyroDex",
+    "description": "A pokedex for Animal Crossing. List and save which Animal Crossing creatures you've collected, with friends. Full vibe coding to have fun with AI.",
+    "type": "WEB APP",
+    "url": "https://v0-animal-crossing-gyroides.vercel.app",
+    "images": [
+      "/assets/girodex-gyroide-collection.png",
+      "/assets/girodex-fish-collection.png",
+      "/assets/girodex-friends-dashboard.png"
+    ],
+    "tags": [
+      "Next.js",
+      "Vercel",
+      "Gaming"
+    ]
+  }
 ]

@@ -1,85 +1,85 @@
 [
-    {
-        "id": "ride-my-park",
-        "title": "Ride My Park",
-        "description": "La carte des spots. 30K skateparks, street spots, pumptracks. En 2026 je l'ai refaite de zéro : React + Go, codée avec l'IA.",
-        "type": "APPLICATION WEB",
-        "url": "https://ridemypark.com",
-        "images": [
-            "/assets/ridemypark-home.png",
-            "/assets/ridemypark-explore.png",
-            "/assets/ridemypark-spot.png",
-            "/assets/ridemypark-about.png",
-            "/assets/ridemypark-messages.png",
-            "/assets/ridemypark-session-chat.png",
-            "/assets/ridemypark-moderation.png",
-            "/assets/ridemypark-add-spot.png",
-            "/assets/ridemypark-favorites.png",
-            "/assets/ridemypark-city.png",
-            "/assets/ridemypark-profile.png",
-            "/assets/ridemypark-search.png",
-            "/assets/ridemypark-events.png",
-            "/assets/ridemypark-shops.png",
-            "/assets/ridemypark-sessions.png"
-        ],
-        "tags": [
-            "React",
-            "Go",
-            "IA",
-            "Cartes"
-        ]
-    },
-    {
-        "id": "skoolbook",
-        "title": "Skoolbook",
-        "description": "Skoolbook, c'est une appli que j'ai construite avec ma conjointe instit. L'idée : simplifier la gestion des bibliothèques de classe. Les profs peuvent suivre les emprunts facilement, et les élèves gèrent leurs livres en autonomie.",
-        "type": "APPLICATION WEB",
-        "url": "https://skoolbook.fr",
-        "images": [
-            "/assets/skoolbook-landing-page.png",
-            "/assets/skoolbook-class-books.png",
-            "/assets/skoolbook-class-bookings.png"
-        ],
-        "video": "/assets/skoolbook-demo.mp4",
-        "tags": [
-            "Voxel",
-            "Wordpress",
-            "Education"
-        ]
-    },
-    {
-        "id": "teach-tools",
-        "title": "Teach Tools",
-        "description": "Des outils pour les profs. Génère des exercices et des images grâce à l'IA. Simple et pratique pour le quotidien.",
-        "type": "OUTIL IA",
-        "url": "https://teach-tools.com",
-        "images": [
-            "/assets/teach-tools-exercise-generation.png",
-            "/assets/teach-tools-image-generation.png",
-            "/assets/teach-tools-generation-limits.png"
-        ],
-        "video": "/assets/teach-tools-demo-generate-exercise.mp4",
-        "tags": [
-            "IA/ML",
-            "Next.js",
-            "Education"
-        ]
-    },
-    {
-        "id": "gyrodex",
-        "title": "GyroDex",
-        "description": "Un pokédex pour Animal Crossing. Liste et permet de sauvegarder quelles créatures d'Animal Crossing vous avez collectées, avec des amis. Full vibe coding pour m'amuser avec l'IA.",
-        "type": "APP WEB",
-        "url": "https://v0-animal-crossing-gyroides.vercel.app",
-        "images": [
-            "/assets/girodex-gyroide-collection.png",
-            "/assets/girodex-fish-collection.png",
-            "/assets/girodex-friends-dashboard.png"
-        ],
-        "tags": [
-            "Next.js",
-            "Vercel",
-            "Gaming"
-        ]
-    }
+  {
+    "id": "ride-my-park",
+    "title": "Ride My Park",
+    "description": "La carte des spots. 30K skateparks, street spots, pumptracks. En 2026 je l'ai refaite de zéro : React + Go, codée avec l'IA.",
+    "type": "APPLICATION WEB",
+    "url": "https://ridemypark.com",
+    "images": [
+      "/assets/ridemypark-home.png",
+      "/assets/ridemypark-explore.png",
+      "/assets/ridemypark-spot.png",
+      "/assets/ridemypark-about.png",
+      "/assets/ridemypark-messages.png",
+      "/assets/ridemypark-session-chat.png",
+      "/assets/ridemypark-moderation.png",
+      "/assets/ridemypark-add-spot.png",
+      "/assets/ridemypark-favorites.png",
+      "/assets/ridemypark-city.png",
+      "/assets/ridemypark-profile.png",
+      "/assets/ridemypark-search.png",
+      "/assets/ridemypark-events.png",
+      "/assets/ridemypark-shops-2.png",
+      "/assets/ridemypark-sessions-2.png"
+    ],
+    "tags": [
+      "React",
+      "Go",
+      "IA",
+      "Cartes"
+    ]
+  },
+  {
+    "id": "skoolbook",
+    "title": "Skoolbook",
+    "description": "Skoolbook, c'est une appli que j'ai construite avec ma conjointe instit. L'idée : simplifier la gestion des bibliothèques de classe. Les profs peuvent suivre les emprunts facilement, et les élèves gèrent leurs livres en autonomie.",
+    "type": "APPLICATION WEB",
+    "url": "https://skoolbook.fr",
+    "images": [
+      "/assets/skoolbook-landing-page.png",
+      "/assets/skoolbook-class-books.png",
+      "/assets/skoolbook-class-bookings.png"
+    ],
+    "video": "/assets/skoolbook-demo.mp4",
+    "tags": [
+      "Voxel",
+      "Wordpress",
+      "Education"
+    ]
+  },
+  {
+    "id": "teach-tools",
+    "title": "Teach Tools",
+    "description": "Des outils pour les profs. Génère des exercices et des images grâce à l'IA. Simple et pratique pour le quotidien.",
+    "type": "OUTIL IA",
+    "url": "https://teach-tools.com",
+    "images": [
+      "/assets/teach-tools-exercise-generation.png",
+      "/assets/teach-tools-image-generation.png",
+      "/assets/teach-tools-generation-limits.png"
+    ],
+    "video": "/assets/teach-tools-demo-generate-exercise.mp4",
+    "tags": [
+      "IA/ML",
+      "Next.js",
+      "Education"
+    ]
+  },
+  {
+    "id": "gyrodex",
+    "title": "GyroDex",
+    "description": "Un pokédex pour Animal Crossing. Liste et permet de sauvegarder quelles créatures d'Animal Crossing vous avez collectées, avec des amis. Full vibe coding pour m'amuser avec l'IA.",
+    "type": "APP WEB",
+    "url": "https://v0-animal-crossing-gyroides.vercel.app",
+    "images": [
+      "/assets/girodex-gyroide-collection.png",
+      "/assets/girodex-fish-collection.png",
+      "/assets/girodex-friends-dashboard.png"
+    ],
+    "tags": [
+      "Next.js",
+      "Vercel",
+      "Gaming"
+    ]
+  }
 ]
