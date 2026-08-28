@@ -11,6 +11,7 @@
             "/assets/ridemypark-spot.png",
             "/assets/ridemypark-about.png",
             "/assets/ridemypark-messages.png",
+            "/assets/ridemypark-session-chat.png",
             "/assets/ridemypark-moderation.png",
             "/assets/ridemypark-add-spot.png",
             "/assets/ridemypark-favorites.png",
@@ -21,7 +22,12 @@
             "/assets/ridemypark-shops.png",
             "/assets/ridemypark-sessions.png"
         ],
-        "tags": ["React", "Go", "IA", "Cartes"]
+        "tags": [
+            "React",
+            "Go",
+            "IA",
+            "Cartes"
+        ]
     },
     {
         "id": "skoolbook",
@@ -35,7 +41,11 @@
             "/assets/skoolbook-class-bookings.png"
         ],
         "video": "/assets/skoolbook-demo.mp4",
-        "tags": ["Voxel", "Wordpress", "Education"]
+        "tags": [
+            "Voxel",
+            "Wordpress",
+            "Education"
+        ]
     },
     {
         "id": "teach-tools",
@@ -49,7 +59,11 @@
             "/assets/teach-tools-generation-limits.png"
         ],
         "video": "/assets/teach-tools-demo-generate-exercise.mp4",
-        "tags": ["IA/ML", "Next.js", "Education"]
+        "tags": [
+            "IA/ML",
+            "Next.js",
+            "Education"
+        ]
     },
     {
         "id": "gyrodex",
@@ -62,6 +76,10 @@
             "/assets/girodex-fish-collection.png",
             "/assets/girodex-friends-dashboard.png"
         ],
-        "tags": ["Next.js", "Vercel", "Gaming"]
+        "tags": [
+            "Next.js",
+            "Vercel",
+            "Gaming"
+        ]
     }
 ]
