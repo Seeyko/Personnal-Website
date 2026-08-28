@@ -8,7 +8,14 @@
         "images": [
             "/assets/ridemypark-home.png",
             "/assets/ridemypark-explore.png",
-            "/assets/ridemypark-spot.png"
+            "/assets/ridemypark-spot.png",
+            "/assets/ridemypark-about.png",
+            "/assets/ridemypark-city.png",
+            "/assets/ridemypark-profile.png",
+            "/assets/ridemypark-search.png",
+            "/assets/ridemypark-events.png",
+            "/assets/ridemypark-shops.png",
+            "/assets/ridemypark-sessions.png"
         ],
         "tags": ["React", "Go", "IA", "Cartes"]
     },
