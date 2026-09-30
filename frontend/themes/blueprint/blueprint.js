@@ -75,7 +75,9 @@ function initSVGAnimations() {
     const svgPaths = document.querySelectorAll('.frame-line, .dim-line');
 
     svgPaths.forEach(path => {
-        if (path.getTotalLength) {
+        // Mobile hides the hero SVG. Chrome throws for geometry inside a
+        // non-rendered SVG, which used to abort the entire theme boot.
+        if (path.getTotalLength && path.getClientRects().length) {
             const length = path.getTotalLength();
             path.style.strokeDasharray = length;
             path.style.strokeDashoffset = length;
