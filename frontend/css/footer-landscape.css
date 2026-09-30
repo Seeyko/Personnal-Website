@@ -1,11 +1,10 @@
-/* One shared alpha landscape, reskinned by the existing body[data-theme]. */
+/* Each theme loads its own illustration. CSS only lays out and blends layers. */
 body[data-theme] .footer.footer-landscape {
   --footer-ground: #f8f7f4;
   --footer-ink: #2c2825;
   --footer-muted: #5c5650;
   --footer-accent: #3d7a73;
   --footer-rule: rgba(44, 40, 37, .14);
-  --footer-filter: saturate(.82) contrast(.96);
   --footer-shift: 0px;
   padding: 0;
   border: 0;
@@ -80,12 +79,7 @@ body[data-theme] .footer-landscape .footer-line { display: none; }
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 43%);
   mask-image: linear-gradient(to bottom, transparent, #000 43%);
 }
-.footer-scenery-haze {
-  position: absolute;
-  inset: 8% 0 0;
-  background: radial-gradient(ellipse at 62% 72%, color-mix(in srgb, var(--footer-accent) 9%, transparent), transparent 66%);
-}
-.footer-scenery-paint { position: absolute; inset: 0; filter: var(--footer-filter); }
+.footer-scenery-paint { position: absolute; inset: 0; }
 .footer-scenery-image,
 .footer-scenery-foreground {
   position: absolute;
@@ -101,8 +95,6 @@ body[data-theme] .footer-landscape .footer-line { display: none; }
   -webkit-mask-image: linear-gradient(to bottom, transparent 66%, #000 84%);
   mask-image: linear-gradient(to bottom, transparent 66%, #000 84%);
 }
-.footer-scenery-texture { position: absolute; inset: 0; }
-.footer-palette-filters { position: absolute; overflow: hidden; pointer-events: none; }
 
 /* The footer already provides a contact link. Clear the garden of the fixed
    CTA while the scene is visible, especially over the right-hand cat. */
@@ -114,10 +106,6 @@ body[data-theme="terminal"] .footer.footer-landscape {
   --footer-muted: #74a46b;
   --footer-accent: var(--primary);
   --footer-rule: var(--border);
-  --footer-filter: url(#footer-phosphor);
-}
-body[data-theme="terminal"] .footer-scenery-texture {
-  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .25) 0 1px, transparent 1px 4px);
 }
 
 body[data-theme="blueprint"] .footer.footer-landscape {
@@ -126,12 +114,6 @@ body[data-theme="blueprint"] .footer.footer-landscape {
   --footer-muted: #a9c6df;
   --footer-accent: var(--accent-cyan);
   --footer-rule: var(--line-white-dim);
-  --footer-filter: url(#footer-cyanotype);
-}
-body[data-theme="blueprint"] .footer-scenery-texture {
-  opacity: .25;
-  background-image: linear-gradient(rgba(209, 237, 255, .3) 1px, transparent 1px), linear-gradient(90deg, rgba(209, 237, 255, .3) 1px, transparent 1px);
-  background-size: 20px 20px;
 }
 
 body[data-theme="retro90s"] .footer.footer-landscape {
@@ -140,13 +122,6 @@ body[data-theme="retro90s"] .footer.footer-landscape {
   --footer-muted: #36365d;
   --footer-accent: #9a009a;
   --footer-rule: #808080;
-  --footer-filter: url(#footer-retro) saturate(1.15);
-}
-body[data-theme="retro90s"] .footer-scenery-image,
-body[data-theme="retro90s"] .footer-scenery-foreground { image-rendering: pixelated; }
-body[data-theme="retro90s"] .footer-scenery-texture {
-  opacity: .14;
-  background: radial-gradient(#000080 .6px, transparent .9px) 0 0 / 3px 3px;
 }
 body[data-theme="retro90s"] .footer-landscape .footer-heading {
   border-top: 3px solid;
@@ -162,7 +137,6 @@ body[data-theme="fps"] .footer.footer-landscape {
   --footer-muted: var(--ink-dim);
   --footer-accent: #245481;
   --footer-rule: rgba(26, 37, 48, .2);
-  --footer-filter: saturate(.48) contrast(1.1) brightness(.94);
 }
 body[data-theme="fps"] .footer-landscape .footer-heading { border-top: 2px solid var(--footer-accent); }
 
@@ -181,5 +155,5 @@ body[data-theme="fps"] .footer-landscape .footer-heading { border-top: 2px solid
 }
 
 @media print {
-  .footer-scenery, .footer-palette-filters { display: none; }
+  .footer-scenery { display: none; }
 }

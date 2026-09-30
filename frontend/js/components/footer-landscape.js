@@ -1,9 +1,31 @@
 /* Subtle scroll depth: the distant landscape moves up to 10px while the
    foreground stays flush to the page edge. No animation loop while idle. */
-(() => {
+function initFooterLandscape() {
     const footer = document.getElementById('site-footer');
     const scenery = footer?.querySelector('.footer-scenery');
-    if (!scenery || !('IntersectionObserver' in window)) return;
+    if (!scenery) return;
+
+    const artworks = new Map([
+        ['default', 'mediterranean-garden.webp'],
+        ['terminal', 'mediterranean-garden-terminal.webp'],
+        ['blueprint', 'mediterranean-garden-blueprint.webp'],
+        ['retro90s', 'mediterranean-garden-retro90s.webp'],
+        ['fps', 'mediterranean-garden-fps.webp']
+    ]);
+    const images = scenery.querySelectorAll('[data-footer-artwork]');
+    function selectArtwork() {
+        const filename = artworks.get(document.body.dataset.theme) || artworks.get('default');
+        const source = `/assets/footer/${filename}`;
+        images.forEach(image => {
+            if (image.getAttribute('src') !== source) image.src = source;
+        });
+    }
+    // ThemeManager initializes first at DOMContentLoaded. Defer assigning src
+    // until then so a restored footer position never downloads the wrong theme.
+    selectArtwork();
+    new MutationObserver(selectArtwork).observe(document.body, {
+        attributes: true, attributeFilter: ['data-theme']
+    });
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let visible = false;
@@ -21,12 +43,14 @@
         if (visible && !reducedMotion.matches && frame === null) frame = requestAnimationFrame(update);
     }
 
-    const observer = new IntersectionObserver(([entry]) => {
-        visible = entry.isIntersecting;
-        document.body.classList.toggle('footer-scenery-visible', visible);
-        schedule();
-    });
-    observer.observe(scenery);
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+            document.body.classList.toggle('footer-scenery-visible', visible);
+            schedule();
+        });
+        observer.observe(scenery);
+    }
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule, { passive: true });
     reducedMotion.addEventListener('change', () => {
@@ -44,4 +68,8 @@
             window.scrollTo({ top: 0, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
         });
     });
-})();
+}
+
+document.readyState === 'loading'
+    ? document.addEventListener('DOMContentLoaded', initFooterLandscape)
+    : initFooterLandscape();

@@ -24,6 +24,8 @@ Integrate the supplied Mediterranean family illustration into the bottom of the 
 - [x] Prepare feature branch for PR
 
 ## Notes
+- Follow-up replaces the initial CSS/SVG color palettes with four independently
+  generated illustrations. See `2026-09-30-135500-footer-theme-artwork.md`.
 - A pre-existing Blueprint mobile boot error was reproduced against the original
   homepage: `getTotalLength()` threw on hidden SVG geometry. Skip non-rendered
   geometry to allow the theme to initialize normally.

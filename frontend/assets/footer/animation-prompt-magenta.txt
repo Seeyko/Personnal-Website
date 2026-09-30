@@ -1,0 +1,23 @@
+Create a seamless looping cinemagraph from this Mediterranean garden image
+for the footer of a personal website. Preserve the exact framing, painterly
+style, natural foreground colors, lighting, proportions and all subjects.
+Locked camera: no pan, tilt, zoom, reframing or shake.
+
+The flat pink/magenta sky is a chroma-key plate, NOT part of the environment.
+Keep it uniform and unchanged throughout every frame. No gradient, texture,
+noise, lighting change, shadows, blue sky restoration or magenta light spill.
+Keep the same key color in the gaps between leaves, behind and between clouds,
+around branches and above the coastal horizon. Do not introduce magenta into
+the house, garden, people, cats, clouds or ocean.
+
+Animate only small local details: a gentle breeze in leaves, flowers and grass;
+very slow cloud movement against the fixed magenta plate; tiny ocean ripples;
+the hanging chair swinging in a shallow arc. The family stays in place with
+subtle breathing and fabric movement, baby held securely. The two cats stay in
+place with occasional small ear or tail movements. No walking or new subjects.
+
+Use restrained, varied timing. Every animated detail returns smoothly to its
+starting state. First and last frames must match exactly, including the key
+color and edges, with no jump, reset or drift. No morphing, flicker, exposure
+changes, warped architecture, text, particles, cuts or transitions. A quiet,
+stable scene designed to loop unobtrusively beneath website content.

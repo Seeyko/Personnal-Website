@@ -604,45 +604,15 @@
       </div>
       <button id="cathode-guide-toggle" class="cathode-guide-toggle" type="button">[cathode --on]</button>
     </div>
-    <!-- A real alpha cutout: the page background shows through the sky and
-         between leaves. Both image layers share one cached, lazy-loaded asset. -->
+    <!-- The theme's own alpha illustration is selected before lazy loading.
+         Both depth layers share that one asset; the sky shows the page behind. -->
     <div class="footer-scenery" aria-hidden="true">
-      <div class="footer-scenery-haze"></div>
       <div class="footer-scenery-paint">
-        <img class="footer-scenery-image" src="/assets/footer/mediterranean-garden.webp" width="2048" height="748" alt="" loading="lazy" decoding="async" />
-        <img class="footer-scenery-foreground" src="/assets/footer/mediterranean-garden.webp" width="2048" height="748" alt="" loading="lazy" decoding="async" />
+        <img class="footer-scenery-image" data-footer-artwork width="2048" height="748" alt="" loading="lazy" decoding="async" />
+        <img class="footer-scenery-foreground" data-footer-artwork width="2048" height="748" alt="" loading="lazy" decoding="async" />
+        <noscript><img class="footer-scenery-image" src="/assets/footer/mediterranean-garden.webp" width="2048" height="748" alt="" loading="lazy" decoding="async" /></noscript>
       </div>
-      <div class="footer-scenery-texture"></div>
     </div>
-    <!-- Luminance-based palettes preserve source alpha, including leaf holes.
-         Inline filters stay local and work with the existing theme selector. -->
-    <svg class="footer-palette-filters" width="0" height="0" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="footer-phosphor" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
-          <feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 0 0 0 1 0" />
-          <feComponentTransfer>
-            <feFuncR type="table" tableValues="0 .015 .06 .2" />
-            <feFuncG type="table" tableValues=".025 .16 .5 1" />
-            <feFuncB type="table" tableValues=".01 .025 .04 .1" />
-          </feComponentTransfer>
-        </filter>
-        <filter id="footer-cyanotype" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
-          <feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 0 0 0 1 0" />
-          <feComponentTransfer>
-            <feFuncR type="table" tableValues="0 .06 .3 .87" />
-            <feFuncG type="table" tableValues=".14 .3 .6 .97" />
-            <feFuncB type="table" tableValues=".32 .55 .8 1" />
-          </feComponentTransfer>
-        </filter>
-        <filter id="footer-retro" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
-          <feComponentTransfer>
-            <feFuncR type="discrete" tableValues="0 .2 .4 .6 .8 1" />
-            <feFuncG type="discrete" tableValues="0 .2 .4 .6 .8 1" />
-            <feFuncB type="discrete" tableValues=".15 .3 .45 .6 .8 1" />
-          </feComponentTransfer>
-        </filter>
-      </defs>
-    </svg>
   </footer>
 </main>
 
