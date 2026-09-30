@@ -753,7 +753,7 @@ function initAwardsBadges() {
 
 // ─── Webring Navigation ───
 function initWebring() {
-    const footer = document.querySelector('.footer-content');
+    const footer = document.querySelector('.footer-content') || document.querySelector('.sf-bar');
     if (!footer) return;
 
     const webring = document.createElement('div');
