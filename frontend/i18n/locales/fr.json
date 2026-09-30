@@ -86,6 +86,8 @@
     "loadMore": "Charger plus"
   },
   "footer": {
+    "motto": "Fait main, à vitesse machine.",
+    "backTop": "En haut",
     "sessionId": "SESSION: TOM-2026-PORTFOLIO",
     "version": "VERSION: 3.0",
     "scale": "ÉCHELLE: 1:1",

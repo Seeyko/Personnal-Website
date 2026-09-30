@@ -1,0 +1,159 @@
+/* Each theme loads its own illustration. CSS only lays out and blends layers. */
+body[data-theme] .footer.footer-landscape {
+  --footer-ground: #f8f7f4;
+  --footer-ink: #2c2825;
+  --footer-muted: #5c5650;
+  --footer-accent: #3d7a73;
+  --footer-rule: rgba(44, 40, 37, .14);
+  --footer-shift: 0px;
+  padding: 0;
+  border: 0;
+  border-image: none;
+  background: var(--footer-ground);
+  color: var(--footer-ink);
+  text-align: left;
+  isolation: isolate;
+}
+
+body[data-theme] .footer-landscape .footer-content {
+  position: relative;
+  z-index: 2;
+  display: block;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3.5rem 3rem 0;
+  text-align: left;
+}
+
+.footer-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--footer-rule);
+}
+
+.footer-wordmark {
+  display: inline-flex;
+  gap: .2em;
+  color: var(--footer-ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-decoration: none;
+}
+
+.footer-wordmark span { color: var(--footer-accent); }
+.footer-motto { margin-top: .6rem; font-size: .85rem; color: var(--footer-muted); }
+.footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; padding-top: .35rem; }
+.footer-links a { color: var(--footer-ink); font-size: .8rem; text-decoration: none; text-underline-offset: .3em; }
+.footer-links a:hover { color: var(--footer-accent); text-decoration: underline; }
+.footer-links a span[aria-hidden] { color: var(--footer-accent); }
+.footer-back-top { margin-left: .75rem; }
+
+body[data-theme] .footer-landscape .footer-copyright {
+  color: var(--footer-muted);
+  font-size: .7rem;
+  margin-bottom: 1rem;
+  animation: none;
+}
+body[data-theme] .footer-landscape .footer-info-row { justify-content: flex-start; color: var(--footer-muted); }
+body[data-theme] .footer-landscape .footer-session::before,
+body[data-theme] .footer-landscape .footer-version::before,
+body[data-theme] .footer-landscape .footer-scale::before { content: none; }
+body[data-theme]:not([data-theme="blueprint"]) .footer-landscape .footer-version + .footer-sep { display: none; }
+body[data-theme] .footer-landscape .footer-line { display: none; }
+.footer-landscape .cathode-guide-toggle { color: var(--footer-muted); opacity: .85; }
+
+/* The scene owns its height, so lazy loading never shifts the footer. The
+   two soft masks overlap: trees/clouds dissolve into the page at the top;
+   the opaque garden stays anchored at the very bottom. */
+.footer-scenery {
+  position: relative;
+  z-index: 1;
+  height: clamp(300px, 36.5234375vw, 820px);
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 43%);
+  mask-image: linear-gradient(to bottom, transparent, #000 43%);
+}
+.footer-scenery-paint { position: absolute; inset: 0; }
+.footer-scenery-image,
+.footer-scenery-foreground {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 54% bottom;
+}
+.footer-scenery-image { transform: translateY(var(--footer-shift)); }
+.footer-scenery-foreground {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 66%, #000 84%);
+  mask-image: linear-gradient(to bottom, transparent 66%, #000 84%);
+}
+
+/* The footer already provides a contact link. Clear the garden of the fixed
+   CTA while the scene is visible, especially over the right-hand cat. */
+body[data-theme].footer-scenery-visible .floating-cta { visibility: hidden; pointer-events: none; }
+
+body[data-theme="terminal"] .footer.footer-landscape {
+  --footer-ground: var(--bg-terminal);
+  --footer-ink: var(--primary);
+  --footer-muted: #74a46b;
+  --footer-accent: var(--primary);
+  --footer-rule: var(--border);
+}
+
+body[data-theme="blueprint"] .footer.footer-landscape {
+  --footer-ground: var(--bg-blueprint);
+  --footer-ink: #e2f2ff;
+  --footer-muted: #a9c6df;
+  --footer-accent: var(--accent-cyan);
+  --footer-rule: var(--line-white-dim);
+}
+
+body[data-theme="retro90s"] .footer.footer-landscape {
+  --footer-ground: var(--bg-90s);
+  --footer-ink: #000080;
+  --footer-muted: #36365d;
+  --footer-accent: #9a009a;
+  --footer-rule: #808080;
+}
+body[data-theme="retro90s"] .footer-landscape .footer-heading {
+  border-top: 3px solid;
+  border-image: linear-gradient(90deg, #f33, #fc0, #0a0, #0cc, #33f, #f0f) 1;
+}
+body[data-theme="retro90s"] .footer-landscape .footer-info-row { color: var(--footer-ink); }
+body[data-theme="retro90s"] .footer-landscape .best-viewed { color: var(--footer-muted); }
+body[data-theme="retro90s"] .footer-landscape .retro-webring { margin: 0 0 1rem; }
+
+body[data-theme="fps"] .footer.footer-landscape {
+  --footer-ground: var(--field);
+  --footer-ink: var(--ink);
+  --footer-muted: var(--ink-dim);
+  --footer-accent: #245481;
+  --footer-rule: rgba(26, 37, 48, .2);
+}
+body[data-theme="fps"] .footer-landscape .footer-heading { border-top: 2px solid var(--footer-accent); }
+
+@media (max-width: 700px) {
+  body[data-theme] .footer-landscape .footer-content { padding: 2.5rem 1.25rem 0; }
+  .footer-heading { flex-direction: column; gap: 1.25rem; padding: 1.5rem 0; }
+  .footer-links { gap: 1.25rem; }
+  .footer-links a { display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; }
+  .footer-back-top { margin-left: 0; }
+  .footer-scenery { height: 300px; }
+  .footer-landscape .footer-info-row { gap: .5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-scenery-image { transform: none; }
+}
+
+@media print {
+  .footer-scenery { display: none; }
+}

@@ -1,0 +1,9 @@
+Create a seamless looping cinemagraph from the reference illustration for a personal website footer. Preserve its exact composition, aspect ratio, painterly texture, color palette, lighting, background, and every existing subject.
+
+Keep the camera completely locked: no zoom, pan, tilt, reframing, or camera shake. Animate only small, localized details with very low amplitude: leaves, flowers, and grass gently swaying in a light breeze; clouds moving almost imperceptibly; soft ocean ripples and tiny wavelets along the shoreline; the hanging chair making a slow, shallow pendulum swing.
+
+Keep the family in the same positions and poses, with only subtle breathing and a barely noticeable shift of clothing. The baby remains securely held. The two cats stay in place, with an occasional tiny ear twitch or gentle tail-tip movement. No walking, turning around, broad gestures, or changes to faces, bodies, or proportions.
+
+The overall scene should feel like a still illustration quietly coming alive. Use natural, slightly varied timing, without making everything sway in sync. Every motion must settle back into its starting state. Match the first and last frames so the video can loop continuously without a visible jump, reset, or progressive drift.
+
+Keep colors and exposure stable. Avoid flicker, morphing, warping, added objects, new characters, particles, text, cuts, and transitions. The animation should remain calm and unobtrusive behind website content.
