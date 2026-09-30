@@ -1,10 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════
    SITE FOOTER — "cd ~"
-   A compact block (brand, tagline, e-mail, links, legal bar), then the
-   painted home scene in front of everything. The scene's sky is keyed out,
-   so the page background shows straight through it: no veil, no gradient,
-   the painting simply sits on the page. js/components/site-footer.js
-   composites the video in WebGL.
+   Tagline + e-mail, then a card holding the links, and the painted home
+   scene in FRONT of it: the card sinks behind the tree, the house and the
+   sea, so the footer lives inside the painting (Bloom-style). The scene's
+   sky is keyed out, so the page and the card show straight through it.
+   js/components/site-footer.js composites the video in WebGL.
    ═══════════════════════════════════════════════════════════════ */
 
 .site-footer {
@@ -33,6 +33,15 @@
   --sf-scene-focus-x: 56%;
   --sf-scene-fade-tree: 10%;
   --sf-scene-fade-sky: 6%;
+  /* How deep the card sinks into the scene (× scene height). Past the
+     horizon (~62%) the painting is fully opaque, so the card's bottom edge
+     is always hidden behind the landscape. */
+  --sf-sink: 0.7;
+  --sf-card: #ffffff;
+  --sf-card-line: rgba(44, 40, 37, 0.1);
+  --sf-card-gap: clamp(0.5rem, 1.5vw, 1.25rem);  /* air between the legal bar and the canopy */
+
+  container-type: inline-size;
 
   position: relative;
   z-index: 10;
@@ -88,20 +97,54 @@
   padding: 0 var(--sf-gutter);
 }
 
-/* ─── 1. Main block: intro on the left, links on the right ─── */
-.sf-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: clamp(2.5rem, 6vw, 6rem);
-  align-items: start;
-  padding-bottom: clamp(2.5rem, 5vw, 4rem);
+/* ─── 1. Statement: tagline + e-mail ─── */
+.sf-statement {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.75rem, 3vw, 2.25rem);
+  text-align: center;
+  margin-bottom: clamp(3.5rem, 7vw, 5.5rem);
 }
 
-.sf-intro {
+/* ─── 2. Card: sinks into the scene ─── */
+.sf-card {
+  position: relative;
+  padding: clamp(1.75rem, 3.2vw, 2.75rem) clamp(1.5rem, 3.2vw, 2.75rem) 0;
+  /* the part of the card the painting covers */
+  padding-bottom: calc(100vw / var(--sf-scene-ar) * var(--sf-sink) + var(--sf-card-gap));
+  padding-bottom: calc(100cqw / var(--sf-scene-ar) * var(--sf-sink) + var(--sf-card-gap));
+  border-radius: 22px 22px 0 0;
+  background: var(--sf-card);
+  border: 1px solid var(--sf-card-line);
+  border-bottom: 0;
+  /* the shadow reads through the keyed sky as the card sinks into the scene */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 6px rgba(44, 40, 37, 0.04),
+    0 30px 80px -24px rgba(44, 40, 37, 0.22);
+}
+
+.sf-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3.5vw, 3.5rem);
+  align-items: start;
+}
+
+.sf-brand {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.5rem;
+  gap: 1rem;
+}
+
+.sf-role {
+  margin: 0;
+  max-width: 28ch;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--sf-ink-2);
 }
 
 .sf-wordmark {
@@ -148,10 +191,10 @@
 .sf-headline {
   margin: 0;
   font-family: var(--sf-display);
-  font-size: clamp(1.5rem, 0.95rem + 1.25vw, 2rem);
+  font-size: clamp(1.85rem, 0.9rem + 2.6vw, 3.25rem);
   font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -0.025em;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 
@@ -165,14 +208,6 @@
 
 .sf-headline-main {
   color: var(--sf-ink);
-}
-
-.sf-contact {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  max-width: 100%;
 }
 
 /* E-mail pill with a copy button. */
@@ -304,13 +339,6 @@
   transform: translateY(-3px);
 }
 
-.sf-cols {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1.5rem, 3vw, 3rem);
-  padding-top: 0.25rem;
-}
-
 .sf-col-title {
   display: flex;
   align-items: center;
@@ -393,6 +421,7 @@
 
 /* ─── 2. Legal bar ─── */
 .sf-bar {
+  margin-top: clamp(2rem, 4vw, 3rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -456,12 +485,14 @@
   transform: translateY(-3px);
 }
 
-/* ─── 3. Scene — in front of everything ─── */
+/* ─── 3. Scene — in front of everything, climbing over the card ─── */
 .sf-scene {
   position: relative;
   z-index: 2;
   width: 100%;
   aspect-ratio: var(--sf-scene-ar);
+  /* % margins resolve against the footer width: this is --sf-sink × scene height */
+  margin-top: calc(var(--sf-sink) * -100% / var(--sf-scene-ar));
   pointer-events: none;
 }
 
@@ -598,9 +629,12 @@ body[data-theme="blueprint"] .site-footer {
     --sf-scene-ar: 1.9;
   }
 
-  .sf-main {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 2.75rem;
+  .sf-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sf-brand {
+    grid-column: 1 / -1;
   }
 }
 
@@ -610,8 +644,15 @@ body[data-theme="blueprint"] .site-footer {
     padding-top: 3.5rem;
   }
 
-  .sf-contact {
-    width: 100%;
+  .sf-statement {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .sf-card {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    border-radius: 18px 18px 0 0;
   }
 
   .sf-pill {
@@ -630,7 +671,7 @@ body[data-theme="blueprint"] .site-footer {
     padding: 0 0.95rem;
   }
 
-  .sf-cols {
+  .sf-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 2.25rem 1.5rem;
   }

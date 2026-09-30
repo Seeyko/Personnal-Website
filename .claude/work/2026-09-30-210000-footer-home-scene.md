@@ -34,8 +34,10 @@ enverra une vidéo par thème pour les 4 autres.
   alpha en bas) recomposée en WebGL : même rendu partout, iOS compris. H.264 d'abord,
   VP9 pour les Chromium sans codecs propriétaires.
 - Retours de Tom : pas de voile/dégradé derrière la vidéo (le ciel transparent doit montrer
-  exactement le fond de page), pas de carte en verre, vidéo au premier plan, aucun texte
-  sous la vidéo. Le haut de la frame coupe l'arbre : dissolution fine « feuillage » (10 %).
+  exactement le fond de page), vidéo au premier plan, aucun texte sous la vidéo, et surtout
+  « le footer vit dans la vidéo » (réf. Bloom) : la carte des liens s'enfonce derrière le
+  paysage (--sf-sink = 0.7 × hauteur de scène, sous l'horizon donc bord bas toujours caché).
+  Le haut de la frame coupe l'arbre : dissolution fine « feuillage » (10 %).
 - Autre thème = ajouter une entrée dans SCENES (site-footer.js) avec le même layout empilé.
 - Copy : pas de « fait main », pas de café, pas de tournures « IA slop » (cf. #85). Pas de promesse
   de dispo (now.json : pas de freelance en ce moment) → tagline de BRANDING.md + email.

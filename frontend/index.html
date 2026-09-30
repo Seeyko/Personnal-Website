@@ -586,34 +586,39 @@
     </svg>
 
     <div class="sf-inner">
-      <div class="sf-main" data-sf-group>
-        <div class="sf-intro">
-          <a href="#main-content" class="sf-wordmark" aria-label="Tom Andrieu" data-sf-reveal style="--sf-i:0">
-            <span class="sf-blip" aria-hidden="true"></span>
-            <span class="sf-wordmark-text">TOM ANDRIEU<span class="sf-cursor" aria-hidden="true"></span></span>
+      <div class="sf-statement" data-sf-group>
+        <h2 class="sf-headline" data-sf-reveal style="--sf-i:0">
+          <span class="sf-headline-lead" data-i18n="footer.headlineLead">Je construis des produits avec l'IA.</span>
+          <span class="sf-headline-main" data-i18n="footer.headlineMain">J'aide les équipes à faire pareil.</span>
+        </h2>
+        <div class="sf-pill" data-sf-reveal style="--sf-i:1">
+          <a class="sf-pill-mail" href="mailto:contact@tomandrieu.com">
+            <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-mail"/></svg>
+            <span class="sf-pill-address">contact@tomandrieu.com</span>
           </a>
-          <h2 class="sf-headline" data-sf-reveal style="--sf-i:1">
-            <span class="sf-headline-lead" data-i18n="footer.headlineLead">Je construis des produits avec l'IA.</span>
-            <span class="sf-headline-main" data-i18n="footer.headlineMain">J'aide les équipes à faire pareil.</span>
-          </h2>
-          <div class="sf-contact" data-sf-reveal style="--sf-i:2">
-            <div class="sf-pill">
-              <a class="sf-pill-mail" href="mailto:contact@tomandrieu.com">
-                <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-mail"/></svg>
-                <span class="sf-pill-address">contact@tomandrieu.com</span>
-              </a>
-              <button class="sf-pill-copy" type="button" data-copy="contact@tomandrieu.com">
-                <span class="sf-pill-copy-face sf-pill-copy-idle">
-                  <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-copy"/></svg>
-                  <span data-i18n="footer.copy">Copier</span>
-                </span>
-                <span class="sf-pill-copy-face sf-pill-copy-done" aria-hidden="true">
-                  <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-check"/></svg>
-                  <span data-i18n="footer.copied">Copié</span>
-                </span>
-              </button>
-              <span class="sf-sr-only" role="status" aria-live="polite" id="sf-copy-status"></span>
-            </div>
+          <button class="sf-pill-copy" type="button" data-copy="contact@tomandrieu.com">
+            <span class="sf-pill-copy-face sf-pill-copy-idle">
+              <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-copy"/></svg>
+              <span data-i18n="footer.copy">Copier</span>
+            </span>
+            <span class="sf-pill-copy-face sf-pill-copy-done" aria-hidden="true">
+              <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-check"/></svg>
+              <span data-i18n="footer.copied">Copié</span>
+            </span>
+          </button>
+          <span class="sf-sr-only" role="status" aria-live="polite" id="sf-copy-status"></span>
+        </div>
+      </div>
+
+      <!-- The card sinks into the scene: its lower part sits behind the painting. -->
+      <div class="sf-card" data-sf-group>
+        <div class="sf-grid">
+          <div class="sf-brand" data-sf-reveal style="--sf-i:0">
+            <a href="#main-content" class="sf-wordmark" aria-label="Tom Andrieu">
+              <span class="sf-blip" aria-hidden="true"></span>
+              <span class="sf-wordmark-text">TOM ANDRIEU<span class="sf-cursor" aria-hidden="true"></span></span>
+            </a>
+            <p class="sf-role" data-content="meta.title">Product Builder · Transformation IA</p>
             <div class="sf-socials">
               <a class="sf-social" href="https://github.com/Seeyko" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
                 <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-github"/></svg>
@@ -621,12 +626,13 @@
               <a class="sf-social" href="https://www.linkedin.com/in/andrieu-tom" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                 <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-linkedin"/></svg>
               </a>
+              <a class="sf-social" href="mailto:contact@tomandrieu.com" aria-label="E-mail">
+                <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-mail"/></svg>
+              </a>
             </div>
           </div>
-        </div>
 
-        <div class="sf-cols">
-          <nav class="sf-col" aria-labelledby="sf-col-explore" data-sf-reveal style="--sf-i:2">
+          <nav class="sf-col" aria-labelledby="sf-col-explore" data-sf-reveal style="--sf-i:1">
             <h3 class="sf-col-title" id="sf-col-explore" data-i18n="footer.colExplore">Explorer</h3>
             <ul class="sf-links">
               <li><a class="sf-link" href="#now" data-i18n="nav.now">Now</a></li>
@@ -637,7 +643,7 @@
             </ul>
           </nav>
 
-          <nav class="sf-col" aria-labelledby="sf-col-elsewhere" data-sf-reveal style="--sf-i:3">
+          <nav class="sf-col" aria-labelledby="sf-col-elsewhere" data-sf-reveal style="--sf-i:2">
             <h3 class="sf-col-title" id="sf-col-elsewhere" data-i18n="footer.colElsewhere">Ailleurs</h3>
             <ul class="sf-links">
               <li><a class="sf-link" href="/blog" data-i18n="nav.blog">Blog</a></li>
@@ -646,27 +652,27 @@
             </ul>
           </nav>
 
-          <div class="sf-col sf-clock-col" data-sf-reveal style="--sf-i:4">
+          <div class="sf-col sf-clock-col" data-sf-reveal style="--sf-i:3">
             <h3 class="sf-col-title" data-i18n="footer.colClock">Heure locale</h3>
             <p class="sf-clock"><time class="sf-clock-time" id="sf-clock-time">--<span class="sf-clock-colon">:</span>--</time></p>
             <p class="sf-clock-meta" id="sf-clock-meta">France</p>
           </div>
         </div>
-      </div>
 
-      <div class="sf-bar" data-sf-group>
-        <p class="sf-legal" data-sf-reveal style="--sf-i:0">
-          <svg class="sf-heartbit" viewBox="0 0 70 60" aria-hidden="true" focusable="false" shape-rendering="crispEdges"><path fill="#ff3333" d="M10 0h20v10H10zM40 0h20v10H40zM0 10h50v10H0zM60 10h10v10H60zM0 20h70v10H0zM10 30h50v10H10zM20 40h30v10H20zM30 50h10v10H30z"/><rect class="sf-heartbit-bit" x="50" y="10" width="10" height="10" fill="#33ff00"/></svg>
-          <span>© <span class="sf-year">2026</span> Tom Andrieu.</span>
-          <span data-i18n="footer.rights">Tous droits réservés.</span>
-        </p>
-        <div class="sf-bar-end" data-sf-reveal style="--sf-i:1">
-          <span class="best-viewed" data-i18n="footer.bestViewed">Best viewed with Netscape Navigator 4.0 at 800x600 resolution</span>
-          <button id="cathode-guide-toggle" class="cathode-guide-toggle" type="button">[cathode --on]</button>
-          <a class="sf-top" href="#main-content">
-            <span data-i18n="footer.backToTop">Haut de page</span>
-            <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-up"/></svg>
-          </a>
+        <div class="sf-bar">
+          <p class="sf-legal" data-sf-reveal style="--sf-i:4">
+            <svg class="sf-heartbit" viewBox="0 0 70 60" aria-hidden="true" focusable="false" shape-rendering="crispEdges"><path fill="#ff3333" d="M10 0h20v10H10zM40 0h20v10H40zM0 10h50v10H0zM60 10h10v10H60zM0 20h70v10H0zM10 30h50v10H10zM20 40h30v10H20zM30 50h10v10H30z"/><rect class="sf-heartbit-bit" x="50" y="10" width="10" height="10" fill="#33ff00"/></svg>
+            <span>© <span class="sf-year">2026</span> Tom Andrieu.</span>
+            <span data-i18n="footer.rights">Tous droits réservés.</span>
+          </p>
+          <div class="sf-bar-end" data-sf-reveal style="--sf-i:5">
+            <span class="best-viewed" data-i18n="footer.bestViewed">Best viewed with Netscape Navigator 4.0 at 800x600 resolution</span>
+            <button id="cathode-guide-toggle" class="cathode-guide-toggle" type="button">[cathode --on]</button>
+            <a class="sf-top" href="#main-content">
+              <span data-i18n="footer.backToTop">Haut de page</span>
+              <svg class="sf-icon" aria-hidden="true"><use href="#sf-i-up"/></svg>
+            </a>
+          </div>
         </div>
       </div>
     </div>
