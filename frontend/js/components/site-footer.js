@@ -148,7 +148,7 @@
     // alpha block below it (w × alphaH) covering the colour rows [0, alphaH); rows
     // under it are opaque. `aspect` is the painting's real aspect (the blocks are
     // resampled to it). `style` picks the entrance in the shader, `revealMs` its
-    // length. Themes without an entry (fps) use the default painting.
+    // length. A theme without an entry would use the default painting.
     const SCENES = {
         default: {
             aspect: 2230 / 930, style: 0, revealMs: 1800,
@@ -169,6 +169,11 @@
             aspect: 2230 / 930, style: 3, revealMs: 2400,
             hd: { name: 'home-scene-retro90s-1792', poster: 'home-scene-retro90s-poster-1792.webp', colorH: 752, alphaH: 480, totalH: 1232 },
             sd: { name: 'home-scene-retro90s-1280', poster: 'home-scene-retro90s-poster-960.webp', colorH: 544, alphaH: 352, totalH: 896 }
+        },
+        fps: {
+            aspect: 2230 / 930, style: 4, revealMs: 1800,
+            hd: { name: 'home-scene-fps-1792', poster: 'home-scene-fps-poster-1792.webp', colorH: 752, alphaH: 480, totalH: 1232 },
+            sd: { name: 'home-scene-fps-1280', poster: 'home-scene-fps-poster-960.webp', colorH: 544, alphaH: 352, totalH: 896 }
         }
     };
 
@@ -213,7 +218,7 @@ uniform float u_reveal;     // 0..1 watercolour wash
 uniform float u_rise;       // 0..1 scroll parallax (1 = settled)
 uniform vec2  u_tilt;       // pointer parallax, -1..1
 uniform vec2  u_fade;       // top dissolve depth, fraction of canvas height (x: tree side, y: sky side)
-uniform float u_style;      // entrance: 0 watercolour, 1 phosphor print, 2 plotter sweep, 3 interlaced GIF
+uniform float u_style;      // entrance: 0 watercolour, 1 phosphor print, 2 plotter sweep, 3 interlaced GIF, 4 radar ping
 
 float hash(vec2 p) {
     p = fract(p * vec2(123.34, 456.21));
@@ -278,8 +283,10 @@ void main() {
     vec3 glow = vec3(0.0);                                     // light the entrance adds (premultiplied)
     float glowA = 0.0;
 
+    bool retro = u_style > 2.5 && u_style < 3.5;
+
     // retro90s: the GIF arrives in interlaced passes, blocky first, then sharp.
-    if (u_style > 2.5) {
+    if (retro) {
         float p = u_reveal * 4.0;
         float k = floor(p) + step(uv.y, fract(p));             // passes this row has received
         if (k < 0.5) reveal = 0.0;
@@ -320,6 +327,16 @@ void main() {
         float beam = exp(-abs(uv.x - front) * u_res.x / (5.0 * unit)) * (1.0 - step(0.999, u_reveal));
         glow = vec3(0.0, 1.0, 1.0) * beam * 0.85;
         glowA = beam * 0.85;
+    } else if (u_style > 3.5) {
+        // Radar ping: the map is revealed by a ring growing from the family,
+        // a HUD-blue pulse on its front edge.
+        float ar = u_res.x / u_res.y;
+        float d = length((uv - vec2(0.55, 0.78)) * vec2(ar, 1.0)) / ar;
+        float front = u_reveal * 0.95;
+        reveal = smoothstep(front + 0.006, front - 0.006, d);
+        float ring = exp(-abs(d - front) * u_res.x / (7.0 * unit)) * (1.0 - step(0.999, u_reveal));
+        glow = vec3(0.49, 0.74, 1.0) * ring * 0.9;
+        glowA = ring * 0.9;
     }
 
     // The frame's top edge cuts through the canopy: dissolve it over a thin band
@@ -327,7 +344,7 @@ void main() {
     // foliage rather than a cut. Below it, only the keyed sky is see-through.
     float depth = mix(u_fade.x, u_fade.y, smoothstep(0.3, 0.7, uv.x));
     float e;
-    if (u_style > 2.5) {
+    if (retro) {
         e = step(bayer4(px / (6.0 * unit)), clamp(uv.y / depth, 0.0, 1.0));   // chunky, art-sized dither
     } else {
         float leaf = fbm(vec2(s.x * 95.0, s.y * 42.0));

@@ -951,7 +951,48 @@ body[data-theme="retro90s"] .sf-card .retro-webring {
   margin: clamp(2rem, 4vw, 2.75rem) auto 0;
 }
 
-/* ── fps: no painting of its own yet, the default one on the concrete field ── */
+/* ── fps: dark HUD glass over the de_dust painting ── */
+/* The map runs edge to edge under the HUD: the footer takes back the room
+   #main-content keeps for the rail (left) and the side column (right,
+   >=1200px), and ends right on top of the bottom bars (main keeps 56px, the
+   telemetry is 31px). The card stays in the content column. */
+body[data-theme="fps"].fps-hud .site-footer {
+  margin: 0 0 -25px -64px;
+}
+
+body[data-theme="fps"].fps-hud .sf-inner {
+  max-width: none;
+  width: auto;
+  margin: 0 0 0 64px;
+}
+
+@media (min-width: 1200px) {
+  body[data-theme="fps"].fps-hud .site-footer {
+    margin-right: -320px;
+  }
+
+  /* The side column is a HUD panel: it stays over the map, not under it
+     (#main-content sits at z 46, the column at 35). */
+  body[data-theme="fps"] #fps-side {
+    z-index: 47;
+  }
+
+  body[data-theme="fps"].fps-hud .sf-inner {
+    margin-right: 320px;
+  }
+}
+
+@media (max-width: 899px) {
+  /* main keeps 112px; the rail + telemetry stack is 86px tall */
+  body[data-theme="fps"].fps-hud .site-footer {
+    margin: 0 0 -26px;
+  }
+
+  body[data-theme="fps"].fps-hud .sf-inner {
+    margin: 0;
+  }
+}
+
 body[data-theme="fps"] .sf-card {
   --sf-ink: #eef4fa;
   --sf-ink-2: #b3c2d0;
