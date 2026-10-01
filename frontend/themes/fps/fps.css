@@ -1,47 +1,74 @@
 /* ═══════════════════════════════════════════════════════════════
-   FPS ARENA — "de_portfolio" · CS Panorama tactical main menu.
-   Daylight parallax scene + dark frosted-glass panels over it.
-   Ultra-snappy: instant hovers, pixel-snap crosshair, no smoothing.
-   Everything is scoped under body[data-theme="fps"] so the other four
-   themes are untouched.
+   FPS ARENA — "de_portfolio" · Dust II at noon, through the CS2 HUD.
+   A sunlit de_dust2 backdrop (sky, Long A walls, double doors, crates)
+   fixed behind the page; the real content floats over it as dark CS2
+   menu glass. T-side gold leads, CT blue answers, money green and kill
+   red pop. Ultra-snappy: instant hovers, pixel-snap crosshair.
+   Everything is scoped under body[data-theme="fps"] (or the #fps-* ids
+   fps.js injects) so the other themes are untouched.
    ═══════════════════════════════════════════════════════════════ */
 
+/* CS2-ish faces, self-hosted (see /assets/fonts): Barlow Condensed for the
+   HUD/menu type, Big Shoulders Stencil for the paint on the walls. */
+@font-face { font-family: 'Barlow Condensed'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(/assets/fonts/HTxwL3I-JCGChYJ8VI-L6OO_au7B4-Lwz3jWuZEC.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Barlow Condensed'; font-style: normal; font-weight: 500; font-display: swap;
+  src: url(/assets/fonts/HTxwL3I-JCGChYJ8VI-L6OO_au7B4-Lwz3bWuQ.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Barlow Condensed'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url(/assets/fonts/HTxwL3I-JCGChYJ8VI-L6OO_au7B4873z3jWuZEC.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Barlow Condensed'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url(/assets/fonts/HTxwL3I-JCGChYJ8VI-L6OO_au7B4873z3bWuQ.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Barlow Condensed'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url(/assets/fonts/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3jWuZEC.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Barlow Condensed'; font-style: normal; font-weight: 700; font-display: swap;
+  src: url(/assets/fonts/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuQ.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Big Shoulders Stencil Display'; font-style: normal; font-weight: 800; font-display: swap;
+  src: url(/assets/fonts/6aeZ4LS6U6pR_bp5b_t2ugOhHWFcxSGP9ttD96KCb8xPytKb-oPRU-vkuLm_u0__IXbmFuc.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Big Shoulders Stencil Display'; font-style: normal; font-weight: 800; font-display: swap;
+  src: url(/assets/fonts/6aeZ4LS6U6pR_bp5b_t2ugOhHWFcxSGP9ttD96KCb8xPytKb-oPRU-vkuLm_u0__L3bm.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
 body[data-theme="fps"] {
-  /* bright but COOL — a light 'concrete' field (Dust II's cool stonework)
-     so the navy HUD lives in ONE cool palette instead of clashing with warm
-     sand. Still bright; just harmonised. */
-  --field:#c9d2d9; --field-2:#bcc7cf;
-  /* cool-navy HUD glass — a touch translucent over the cool field so the
-     frosted-glass (backdrop-blur) reads, while text stays legible */
-  --glass:rgba(13,19,29,.80); --glass-2:rgba(18,26,38,.87);
-  --glass-line:rgba(150,190,228,.36); --glass-line-2:rgba(150,190,228,.16);
-  /* soft cool drop-shadow lifts every HUD plate off the field */
-  --hud-shadow:0 16px 34px -14px rgba(8,14,24,.5), 0 3px 8px rgba(8,14,24,.22);
-  /* ink + text */
-  --fg:#eef4fa; --fg-dim:#b3c2d0; --muted:#8496a4;
-  /* dark ink for text that sits directly on the bright sand (no panel) */
-  --ink:#1a2530; --ink-dim:#3a4a57;
-  /* accents — warm sand + cool blue is the complementary pair; green/gold pop */
-  --accent:#2f80e6; --accent-2:#7cbcff; --money:#8fd25c; --gold:#f4b73a;
-  --red:#ff4655;
-  /* crosshair: light core + dark outline so it pops on sand AND on glass */
-  --xhair:#eafcff;
-  --disp:'Arial Narrow','Roboto Condensed',Impact,'Haettenschweiler',sans-serif;
+  /* de_dust2 at noon */
+  --sky-1:#4d7fb6; --sky-2:#8fb6d6; --haze:#efdcb5; --sand:#d9b67c; --sand-2:#c49a5f;
+  /* CS2 menu glass: warm-neutral black, hairline borders */
+  --glass:rgba(17,16,14,.84); --glass-2:rgba(32,30,26,.9); --glass-3:rgba(46,42,36,.92);
+  --glass-line:rgba(255,232,190,.17); --glass-line-2:rgba(255,232,190,.08);
+  --hud-shadow:0 18px 36px -16px rgba(40,24,6,.6), 0 3px 10px rgba(40,24,6,.25);
+  /* text on glass */
+  --fg:#f4efe5; --fg-dim:#c8bfae; --muted:#91887a;
+  /* text painted straight on the sandstone */
+  --ink:#2a1c0e; --ink-dim:#5b4128; --rust:#a3381f;
+  /* teams + economy */
+  --accent:#e8a33d; --accent-2:#ffc965;   /* T side */
+  --ct:#5d8fd0; --ct-2:#a6c8f0;           /* CT side */
+  --money:#a3d660; --gold:#ffc965; --red:#e8473c;
+  --go:#4f9a2a; --go-2:#62b335;           /* the green ACCEPT/PLAY button */
+  --xhair:#5dff5d;
+  --disp:'Barlow Condensed','Arial Narrow','Roboto Condensed',sans-serif;
+  --stencil:'Big Shoulders Stencil Display','Barlow Condensed',Impact,sans-serif;
   --body:'DM Sans',ui-sans-serif,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   --mono:'Roboto Mono','JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
 
   font-family: var(--body);
   color: var(--fg);
-  background: #c9d2d9;
+  /* the blog never gets #fps-scene: same sky → sand read in CSS alone */
+  background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 38%, var(--haze) 66%, var(--sand) 100%) fixed;
   text-transform: none;
 }
 body[data-theme="fps"], body[data-theme="fps"] * { -webkit-font-smoothing: antialiased; }
 /* Native cursor off — the crosshair takes over. Gated on .fps-hud (set by
-   initFpsEffects) so it only applies where the crosshair is actually injected.
-   The blog page never runs initFpsEffects, so it keeps its native cursor
-   instead of being left with no pointer at all. */
+   initFpsEffects) so it only applies where the crosshair is injected; the
+   blog never runs it and keeps its native cursor. */
 body[data-theme="fps"].fps-hud, body[data-theme="fps"].fps-hud * { cursor: none !important; }
-body[data-theme="fps"] ::selection { background: var(--accent); color: #06121f; }
+body[data-theme="fps"] ::selection { background: var(--accent); color: #1a1006; }
 
 /* Hide chrome from other themes / base decorations we replace. */
 body[data-theme="fps"] .theme-overlay,
@@ -53,34 +80,53 @@ body[data-theme="fps"] .section-divider,
 body[data-theme="fps"] .section-prompt,
 body[data-theme="fps"] .hero-decoration,
 body[data-theme="fps"] .scroll-indicator,
-body[data-theme="fps"] .hero-annotation { display: none !important; }
+body[data-theme="fps"] .hero-annotation,
+body[data-theme="fps"] .retro-badge,
+body[data-theme="fps"] .section-footer { display: none !important; }
 
-/* ───────── background — plain bright concrete field (cool) ─────────
-   No scenery: a flat, bright cool fill for the dark HUD to float over. */
+/* ───────── backdrop: de_dust2 at noon ─────────
+   Sky gradient + sun on #fps-scene itself; the three SVG planes (far town,
+   Long A walls, sand + crates) drift with the pointer (fps.js). */
 #fps-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
-  background: var(--field); }
-/* Scrim only grounds the fixed chrome (top ribbon / bottom telemetry) —
-   the field stays uniform. */
+  background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 36%, var(--haze) 60%, #e6cfa0 66%, var(--sand) 100%); }
+#fps-scene .fps-layer { position: absolute; inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px);
+  transition: opacity .7s ease; will-change: transform; }
+#fps-scene .fps-l-far { opacity: .75; }
+#fps-scene .fps-sun { position: absolute; right: -12vw; top: -22vh; width: 70vw; height: 70vh;
+  background: radial-gradient(closest-side, rgba(255,247,220,.85), rgba(255,236,190,.35) 45%, rgba(255,236,190,0) 100%); }
+/* Drifting dust motes in the noon light (two offset tiles of tiny specks). */
+#fps-scene .fps-dust { position: absolute; inset: -50%; opacity: .55;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,246,220,.9), transparent),
+    radial-gradient(1px 1px at 70% 60%, rgba(255,246,220,.8), transparent),
+    radial-gradient(1.5px 1.5px at 40% 80%, rgba(255,240,205,.7), transparent),
+    radial-gradient(1px 1px at 85% 15%, rgba(255,246,220,.8), transparent);
+  background-size: 260px 260px, 180px 180px, 340px 340px, 220px 220px;
+  animation: fps-dust 60s linear infinite; }
+@keyframes fps-dust { to { transform: translate(260px, -180px); } }
+/* Heat haze + vignette: warms the edges and grounds the fixed HUD bars. */
 #fps-scene .fps-scrim { position: absolute; inset: 0;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 20%),
-    linear-gradient(0deg, rgba(14,22,34,.26) 0%, rgba(14,22,34,0) 14%); }
+    linear-gradient(180deg, rgba(20,14,6,.38) 0%, rgba(20,14,6,0) 12%),
+    linear-gradient(0deg, rgba(30,20,8,.4) 0%, rgba(30,20,8,0) 16%),
+    radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(60,36,10,.28) 100%); }
+/* Footer handoff: the painting's sky is transparent → the scene turns to
+   plain open sky so no wall floats in it. */
+#fps-scene::before { content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease;
+  background: linear-gradient(180deg, #3f74b0 0%, #6c9dcb 45%, #b3d0e8 100%); }
+body.fps-at-footer #fps-scene::before { opacity: 1; }
+body.fps-at-footer #fps-scene .fps-layer { opacity: 0; }
 
-/* Content rides above the scene. Sits above the injected HUD chrome that's
-   fixed to <body> (rail/side-panel/telemetry) so the header's dropdowns
-   (theme/language switcher) never render underneath them — but stays below
-   the cathode guide/crosshair/hit-fx/boot ribbon, which must stay topmost. */
+/* Content rides above the scene and above the injected HUD chrome that's
+   fixed to <body> under it (side column at 35), so the header dropdowns
+   (theme/language switcher, inside main) and the footer painting always draw
+   over that chrome. The rail, HUD bar, crosshair and ribbon stay on top. */
 body[data-theme="fps"] #main-content { position: relative; z-index: 46; }
-/* Room for the fixed rail (left) and telemetry (bottom). The telemetry bar is
-   opaque, so content must clear it fully or the two overlap at the fold. Gated
-   on .fps-hud: only the homepage injects that chrome, so the blog (which never
-   runs initFpsEffects) stays centered instead of reserving space for nothing. */
+/* Room for the fixed rail (left) and the HUD bar (bottom). Gated on .fps-hud:
+   the blog never injects that chrome and stays centered. */
 body[data-theme="fps"].fps-hud main#main-content { padding-left: 64px; padding-bottom: 56px; }
 
-/* ───────── density: pull sections tight like the CS menu mockup ─────────
-   The shared layout gives every section 4rem of vertical padding + a full
-   100vh hero, which stranded the HUD plates in empty field. Under fps we
-   compress the rhythm so hero → buy-menu → log read as one tight menu. */
+/* ───────── density: tight CS-menu rhythm ───────── */
 body[data-theme="fps"] {
   --section-padding-y: 1.4rem;
   --section-padding-y-mobile: 1rem;
@@ -88,309 +134,488 @@ body[data-theme="fps"] {
 body[data-theme="fps"] .hero {
   min-height: auto;
   justify-content: flex-start;
-  padding-top: 92px;      /* clear the fixed ribbon + glass header */
+  padding-top: 96px;      /* clear the fixed ribbon + header */
   padding-bottom: 1.2rem;
 }
-/* Hero panel: tighten the internal rhythm (the shared column leaves a big
-   gap where the hidden stats/proof blocks used to sit). */
-body[data-theme="fps"] .hero-content .hero-quote { margin-bottom: 1.1rem; }
 body[data-theme="fps"] .hero-content .hero-cta { margin-top: 0; }
 
-/* ───────── header → glass topbar + numbered tabs ───────── */
+/* ───────── header → CS2 top bar ───────── */
 body[data-theme="fps"] .header {
-  /* near-opaque: scrolled body copy was ghosting through the .80 glass */
-  background: rgba(13,19,29,.94); backdrop-filter: blur(10px) saturate(1.05); -webkit-backdrop-filter: blur(10px) saturate(1.05);
-  border-bottom: 1px solid var(--glass-line);
-  box-shadow: 0 8px 22px -10px rgba(28,18,3,.45);
+  background: linear-gradient(180deg, rgba(12,11,9,.97), rgba(20,18,15,.94));
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(232,163,61,.35);
+  box-shadow: 0 10px 24px -12px rgba(30,18,4,.6);
+  min-height: 48px;
 }
-body[data-theme="fps"] .brand-name { font-family: var(--disp); letter-spacing: .04em; color: var(--fg); text-transform: uppercase; }
-body[data-theme="fps"] .brand-name b, body[data-theme="fps"] .brand-prefix { color: var(--accent); }
-/* Dedup navigation: the left icon rail is the single nav (desktop + mobile,
-   and it carries the sound toggle), so drop the redundant top tab bar. The
-   header keeps the wordmark on the left and the HUD/lang chips + player badge
-   on the right. */
+body[data-theme="fps"].fps-hud .header { top: 22px; }
+body[data-theme="fps"] .header-brand { padding-left: 1.2rem; }
+body[data-theme="fps"] .brand-name {
+  font-family: var(--disp); font-weight: 700; font-size: 1.35rem; letter-spacing: .06em;
+  color: var(--fg); text-transform: uppercase;
+}
+body[data-theme="fps"] .brand-name::after {
+  content: ""; display: inline-block; width: 7px; height: 7px; margin-left: .45rem; vertical-align: .18em;
+  background: var(--accent); transform: rotate(45deg);
+}
+body[data-theme="fps"] .brand-prefix { color: var(--accent); }
+/* The left rail is the single nav (desktop + mobile, it carries the sound
+   toggle), so the redundant top tab bar goes. */
 body[data-theme="fps"] #main-nav { display: none; }
-body[data-theme="fps"] .nav { gap: 2px; }
-/* Header controls: even spacing + vertical centring so the badge and the two
-   HUD chips sit on one clean baseline instead of crowding the corner. */
 body[data-theme="fps"] #header-controls { display: flex; align-items: center; gap: .5rem; padding-right: 1.2rem; }
-/* The shared switcher CSS adds uneven margin-lefts (1.5rem / .75rem) that
-   stack with the flex gap — zero them so the gap alone spaces the chips. */
+/* The shared switcher CSS adds uneven margin-lefts — the flex gap spaces the chips. */
 body[data-theme="fps"] #header-controls .theme-switcher,
 body[data-theme="fps"] #header-controls .language-switcher { margin-left: 0; }
-body[data-theme="fps"] .theme-switcher-toggle,
-body[data-theme="fps"] .language-switcher-toggle { display: inline-flex; align-items: center; height: 30px; }
 body[data-theme="fps"] .fps-tab {
-  position: relative; font-family: var(--disp); text-transform: uppercase; letter-spacing: .05em;
-  font-size: 1.02rem; color: var(--fg-dim); padding: .35rem .85rem; transition: none; text-decoration: none;
+  position: relative; font-family: var(--disp); font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+  font-size: 1.05rem; color: var(--fg-dim); padding: .35rem .85rem; transition: none; text-decoration: none;
 }
 body[data-theme="fps"] .fps-tab:hover { color: #fff; }
-body[data-theme="fps"] .fps-tab::before {
-  content: attr(data-section); font-family: var(--mono); font-size: .55rem; opacity: .7; margin-right: .35rem; vertical-align: top;
+body[data-theme="fps"] .fps-tab.fps-tab-active { color: var(--accent-2); }
+
+/* ── round scoreboard (top centre) ── */
+#fps-score {
+  position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+  display: flex; align-items: stretch; height: 40px; pointer-events: none;
+  font-family: var(--disp); font-weight: 700;
 }
-body[data-theme="fps"] .fps-tab.fps-tab-active {
-  color: #06121f; background: var(--accent);
-  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+#fps-score .fps-sc-pips { display: flex; align-items: center; gap: 3px; padding: 0 .5rem; }
+#fps-score .fps-sc-pips i { width: 9px; height: 18px; background: currentColor; opacity: .9;
+  clip-path: polygon(50% 0, 100% 22%, 100% 100%, 0 100%, 0 22%); }
+#fps-score .fps-sc-ct { color: var(--ct-2); }
+#fps-score .fps-sc-t { color: var(--accent-2); }
+#fps-score .fps-sc-n {
+  display: grid; place-items: center; min-width: 46px; font-size: 1.55rem; line-height: 1; color: #fff;
+  font-variant-numeric: tabular-nums;
 }
-body[data-theme="fps"] .fps-tab.fps-tab-active::before { opacity: .85; }
+#fps-score .fps-sc-n.fps-sc-ct { background: linear-gradient(180deg, #3d6aa6, #27466f); }
+#fps-score .fps-sc-n.fps-sc-t { background: linear-gradient(180deg, #c98a2c, #8c5c17); }
+#fps-score .fps-sc-clock {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 92px;
+  background: rgba(8,7,6,.92); border-left: 1px solid var(--glass-line); border-right: 1px solid var(--glass-line);
+}
+#fps-score .fps-sc-clock b { font-size: 1.35rem; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+#fps-score .fps-sc-clock small { font-family: var(--mono); font-weight: 500; font-size: .5rem; letter-spacing: .14em; color: var(--muted); margin-top: 2px; }
+#fps-score.fps-sc-bomb .fps-sc-clock b { color: var(--red); animation: fps-blink 1s steps(2) infinite; }
+#fps-score.fps-sc-bomb .fps-sc-clock small { color: var(--red); }
+@keyframes fps-blink { 50% { opacity: .35; } }
+@media (max-width: 1023px) { #fps-score { display: none; } }
 
 /* ───────── left icon rail ───────── */
 #fps-rail {
-  /* above #main-content (z:46) so scrolling plates never cover the nav rail
-     (matters on mobile, where the rail becomes a bottom bar over the page) */
+  /* above #main-content (z:46) so scrolling plates never cover the nav rail */
   position: fixed; z-index: 48; left: .7rem; top: 50%; transform: translateY(-50%);
-  display: flex; flex-direction: column; gap: 6px; padding: 8px 6px;
-  background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
+  display: flex; flex-direction: column; gap: 4px; padding: 6px;
+  background: var(--glass); border: 1px solid var(--glass-line);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--hud-shadow);
 }
+#fps-rail::before { content: ""; position: absolute; left: -1px; right: -1px; top: -1px; height: 2px; background: var(--accent); }
 #fps-rail .fps-rail-btn {
-  width: 44px; height: 44px; display: grid; place-items: center; background: transparent; border: 0;
+  width: 42px; height: 42px; display: grid; place-items: center; background: transparent; border: 0;
   color: var(--fg-dim); position: relative; transition: none;
 }
 #fps-rail .fps-rail-btn svg { width: 20px; height: 20px; }
-#fps-rail .fps-rail-btn:hover { color: #fff; background: rgba(84,163,255,.16); }
-#fps-rail .fps-rail-btn.fps-rail-active { color: var(--accent); }
+#fps-rail .fps-rail-btn:hover { color: #fff; background: rgba(232,163,61,.16); }
+#fps-rail .fps-rail-btn.fps-rail-active { color: var(--accent-2); background: rgba(232,163,61,.1); }
 #fps-rail .fps-rail-btn.fps-rail-active::before { content: ""; position: absolute; left: -6px; top: 8px; bottom: 8px; width: 3px; background: var(--accent); }
-#fps-rail .fps-warn { color: #c76b6b; }
-#fps-rail .fps-rail-gap { height: 6px; }
+/* Callout tooltip on hover: where that button takes you on the map. */
+#fps-rail .fps-rail-btn[data-callout]::after {
+  content: attr(data-callout); position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+  padding: .3rem .6rem; white-space: nowrap; pointer-events: none; opacity: 0;
+  font-family: var(--disp); font-weight: 700; font-size: .9rem; letter-spacing: .08em; color: var(--fg);
+  background: rgba(14,13,11,.95); border: 1px solid var(--glass-line); border-left: 2px solid var(--accent);
+}
+#fps-rail .fps-rail-btn:hover::after { opacity: 1; }
+#fps-rail .fps-warn { color: #e07a6a; }
+#fps-rail .fps-rail-gap { height: 1px; margin: 4px 6px; background: var(--glass-line); }
 #fps-rail .fps-mute.fps-muted .fps-sndwave { display: none; }
 #fps-rail .fps-mute.fps-muted { color: var(--red); }
 
-/* ───────── section headers (sit directly on the bright sand) ───────── */
-body[data-theme="fps"] .section-title {
-  font-family: var(--disp); text-transform: uppercase; letter-spacing: .03em;
-  color: var(--ink); text-shadow: 0 1px 0 rgba(255,255,255,.55), 0 0 18px rgba(255,255,255,.4);
-}
-/* Numbered sections, like the CS menu tabs (hidden by default in base.css).
-   The hardcoded HTML numbers don't follow document order (ABOUT is 04 but sits
-   before HISTORY 03), so a CSS counter renumbers them in reading order.
-   align-items:baseline — base centers the .78rem number against the tall
-   display title, floating it 2.8px above the title's baseline. */
+/* ───────── section headers: HUD tab + paint on the wall ─────────
+   The title rides on a dark tab (reads over sky, sandstone or shade alike);
+   the callout next to it is stencil paint on a plaster patch, the way Dust II
+   paints its directions ("LONG A →"). */
 body[data-theme="fps"] #main-content { counter-reset: fps-section; }
-body[data-theme="fps"] .section-label { align-items: baseline; }
+body[data-theme="fps"] .section-header { border: 0; margin-bottom: .6rem; }
+body[data-theme="fps"] .section-label { display: flex; align-items: stretch; flex-wrap: wrap; gap: 0; }
+body[data-theme="fps"] .section-title {
+  display: flex; align-items: center; margin: 0; padding: .3rem 1.6rem .3rem .75rem;
+  font-family: var(--disp); font-weight: 700; font-size: clamp(1.7rem, 2.6vw, 2.1rem); line-height: 1;
+  text-transform: uppercase; letter-spacing: .06em; color: var(--fg); text-shadow: none;
+  background: rgba(14,13,11,.9); clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+/* Numbered in reading order (the HTML numbers don't follow document order). */
 body[data-theme="fps"] .section-number {
-  display: inline-block; font-size: 0; color: var(--accent); font-family: var(--mono);
-  letter-spacing: .08em; font-weight: 700;
-  text-shadow: 0 1px 0 rgba(255,255,255,.6);
+  display: grid; place-items: center; min-width: 40px; font-size: 0;
+  background: var(--accent); color: #1a1006; font-family: var(--disp); font-weight: 700;
 }
 body[data-theme="fps"] .section-number::before {
   counter-increment: fps-section;
   content: counter(fps-section, decimal-leading-zero);
-  font-size: .78rem;
+  font-size: 1.15rem; letter-spacing: .02em;
 }
-body[data-theme="fps"] .section-label { gap: .6rem; }
-body[data-theme="fps"] .section-header { border: 0; }
+/* The painted callout, injected by fps.js. */
+body[data-theme="fps"] .fps-callout {
+  display: inline-flex; align-items: center; gap: .45rem; align-self: center; margin-left: .5rem; padding: .35rem .8rem .3rem .7rem;
+  font-family: var(--stencil); font-weight: 800; font-size: 1.1rem; line-height: 1; letter-spacing: .1em; color: var(--rust);
+  background: #e8d3a4;
+  clip-path: polygon(2% 8%, 30% 0, 62% 6%, 98% 2%, 100% 46%, 97% 94%, 64% 100%, 28% 93%, 1% 100%, 0 52%);
+  box-shadow: inset 0 0 12px rgba(150,100,40,.25);
+}
+body[data-theme="fps"] .fps-callout svg { width: 26px; height: 13px; }
 
-/* ───────── glass panels for the real content cards ───────── */
+/* ───────── CS2 glass panels for the real content cards ───────── */
 body[data-theme="fps"] .hero-content,
 body[data-theme="fps"] .now-card,
 body[data-theme="fps"] .about-card,
 body[data-theme="fps"] .contact-card,
 body[data-theme="fps"] .git-timeline-viewport {
-  background: var(--glass); border: 1px solid var(--glass-line);
-  backdrop-filter: blur(10px) saturate(1.05); -webkit-backdrop-filter: blur(10px) saturate(1.05);
-  border-radius: 2px;
-  box-shadow: var(--hud-shadow), inset 0 1px 0 rgba(255,255,255,.08), inset 0 0 0 1px rgba(10,16,26,.4);
+  position: relative; background: var(--glass); border: 1px solid var(--glass-line); border-radius: 0;
+  backdrop-filter: blur(12px) saturate(1.1); -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  box-shadow: var(--hud-shadow), inset 0 1px 0 rgba(255,240,210,.07);
 }
-/* NOW / ABOUT / CONTACT cards: the shared header had 0 padding (label jammed
-   against the panel border) while the body was inset 16px, so title and copy
-   never shared a left edge. Give the header a real title-bar (like the NEWS
-   bar) and align the body inset to it. */
+/* Gold notch on the top-left corner of every plate. */
+body[data-theme="fps"] .hero-content::before,
+body[data-theme="fps"] .now-card::before,
+body[data-theme="fps"] .about-card::before,
+body[data-theme="fps"] .contact-card::before,
+body[data-theme="fps"] .git-timeline-viewport::before {
+  content: ""; position: absolute; left: -1px; top: -1px; width: 64px; height: 2px; background: var(--accent); z-index: 2;
+}
+/* Card title bars (NOW / ABOUT / CONTACT). */
 body[data-theme="fps"] .now-card > .card-header,
 body[data-theme="fps"] .about-card > .card-header,
 body[data-theme="fps"] .contact-card > .card-header {
   display: flex; align-items: center; justify-content: space-between; gap: .6rem;
-  margin: 0; padding: .5rem 1rem;
+  margin: 0; padding: .55rem 1rem;
   background: var(--glass-2); border-bottom: 1px solid var(--glass-line-2);
 }
 body[data-theme="fps"] .now-card > .card-header .card-title,
 body[data-theme="fps"] .about-card > .card-header .card-title,
 body[data-theme="fps"] .contact-card > .card-header .card-title {
-  font-family: var(--mono); font-size: .64rem; letter-spacing: .16em;
+  font-family: var(--disp); font-weight: 600; font-size: .86rem; letter-spacing: .16em;
   text-transform: uppercase; color: var(--fg-dim);
 }
 body[data-theme="fps"] .now-card .now-date {
-  font-family: var(--mono); font-size: .62rem; letter-spacing: .06em; color: var(--accent-2);
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .06em; color: var(--accent-2);
 }
 body[data-theme="fps"] .now-card > .card-body,
 body[data-theme="fps"] .about-card > .card-body,
-body[data-theme="fps"] .contact-card > .card-body {
-  padding: 1rem 1rem 1.1rem;
-}
-
-body[data-theme="fps"] .hero-title {
-  font-family: var(--disp); color: var(--fg); text-transform: uppercase; text-shadow: none;
-  font-size: clamp(2.6rem, 6vw, 4.6rem); line-height: .92; font-weight: 700; margin-bottom: .4rem;
-}
-body[data-theme="fps"] .hero-title .title-line { display: block; font-size: inherit; line-height: inherit; }
-body[data-theme="fps"] .hero-quote-paragraph, body[data-theme="fps"] .now-paragraph,
-body[data-theme="fps"] .about-main, body[data-theme="fps"] .about-detail { color: var(--fg-dim); }
+body[data-theme="fps"] .contact-card > .card-body { padding: 1rem 1.1rem 1.15rem; }
 body[data-theme="fps"] .highlight, body[data-theme="fps"] .card-title { color: var(--accent-2); }
-body[data-theme="fps"] .code-comment { color: var(--muted); font-family: var(--mono); }
-body[data-theme="fps"] .proof-number { font-family: var(--disp); color: #fff; }
-body[data-theme="fps"] .proof-label { font-family: var(--mono); color: var(--muted); }
-body[data-theme="fps"] .hero-cta {
-  font-family: var(--disp); text-transform: uppercase; letter-spacing: .08em; color: #06121f; background: var(--accent);
-  border: 0; transition: none; clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
+body[data-theme="fps"] .now-paragraph a, body[data-theme="fps"] .about-card a:not(.social-btn):not(.email-link) {
+  color: var(--accent-2); text-decoration-color: rgba(255,201,101,.45);
 }
-body[data-theme="fps"] .hero-cta:hover { background: var(--accent-2); }
-/* Two-button hero CTA row: filled primary + ghost secondary (mockup fidelity). */
-body[data-theme="fps"] .hero-cta { display: inline-flex; align-items: center; }
-body[data-theme="fps"] .fps-cta-ghost {
-  margin-left: .6rem; color: var(--fg); background: transparent;
-  border: 1px solid var(--glass-line-2); border-left: 2px solid var(--accent);
-}
-body[data-theme="fps"] .fps-cta-ghost:hover { background: rgba(30,44,60,.72); color: #fff; border-left-color: var(--accent-2); }
-body[data-theme="fps"] .email-link, body[data-theme="fps"] .social-btn { color: var(--money); font-family: var(--mono); }
-body[data-theme="fps"] .availability-dot, body[data-theme="fps"] .availability-badge { color: var(--money); }
-body[data-theme="fps"] .about-specs, body[data-theme="fps"] .craft-block { color: var(--fg-dim); font-family: var(--mono); }
 
-/* ───────── WORK = buy menu ───────── */
+/* ───────── hero = the CS2 main-menu news plate ───────── */
+body[data-theme="fps"] .hero-content { width: 100%; padding: 0 1.4rem 1.4rem; overflow: hidden; }
+body[data-theme="fps"] .fps-news-h { margin: 0 -1.4rem 1rem; padding: .55rem 1.4rem; }
+body[data-theme="fps"] .fps-eyebrow {
+  font-family: var(--disp); font-weight: 600; font-size: .92rem; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--accent-2); margin: 0 0 .35rem;
+}
+body[data-theme="fps"] .hero-title {
+  font-family: var(--disp); font-weight: 700; color: var(--fg); text-transform: uppercase; text-shadow: 0 2px 0 rgba(0,0,0,.35);
+  font-size: clamp(2.9rem, 6.4vw, 5.2rem); line-height: .9; letter-spacing: .01em; margin: 0 0 .6rem;
+}
+body[data-theme="fps"] .hero-title .title-line { display: block; font-size: inherit; line-height: inherit; text-wrap: balance; }
+body[data-theme="fps"] .hero-title .highlight { color: var(--accent); }
+body[data-theme="fps"] .hero-content .hero-quote { margin: 0 0 1.2rem; }
+body[data-theme="fps"] .hero-quote-paragraph { margin: 0; max-width: 58ch; font-size: .96rem; line-height: 1.6; color: var(--fg-dim); }
+body[data-theme="fps"] .hero-signature { margin: .55rem 0 0; font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: none; color: var(--muted); }
+/* The proof stats live in the PROFILE card (read at init before this hide). */
+body[data-theme="fps"] .hero-content .social-proof { display: none; }
+
+/* Primary CTA = the green ACCEPT button of a found match; ghost = menu button. */
+body[data-theme="fps"] .hero-cta {
+  display: inline-flex; align-items: center; vertical-align: top; gap: .6rem; margin-top: 0; padding: .78rem 1.7rem;
+  font-family: var(--disp); font-weight: 700; font-size: 1.2rem; line-height: 1; text-transform: uppercase; letter-spacing: .1em;
+  border: 1px solid transparent; border-radius: 0; transition: none; text-decoration: none;
+}
+body[data-theme="fps"] .hero-cta .hero-cta-arrow { transition: none; }
+body[data-theme="fps"] #hero-cta {
+  color: #fff; background: linear-gradient(180deg, var(--go-2), var(--go));
+  border-color: rgba(190,255,150,.35); box-shadow: 0 0 0 1px rgba(0,0,0,.35), 0 10px 24px -10px rgba(79,154,42,.75);
+  text-shadow: 0 1px 0 rgba(0,0,0,.3);
+}
+body[data-theme="fps"] #hero-cta:hover { background: linear-gradient(180deg, #74c844, #56a52d); }
+body[data-theme="fps"] #fps-cta-ghost {
+  margin-left: .7rem; color: var(--fg); background: rgba(255,240,210,.06);
+  border: 1px solid var(--glass-line); border-left: 2px solid var(--accent);
+}
+body[data-theme="fps"] #fps-cta-ghost:hover { background: rgba(232,163,61,.16); color: #fff; border-left-color: var(--accent-2); }
+
+/* ───────── NEWS / BUY-MENU panel-header bars ───────── */
+body[data-theme="fps"] .fps-menu-h {
+  display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  padding: .55rem .95rem; font-family: var(--disp); font-weight: 600; font-size: .86rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--fg-dim);
+  background: var(--glass-2); border-bottom: 1px solid var(--glass-line-2);
+}
+body[data-theme="fps"] .fps-menu-h .fps-h-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: .55rem; vertical-align: .1em;
+  background: var(--money); box-shadow: 0 0 8px var(--money);
+}
+body[data-theme="fps"] .fps-clock { font-family: var(--mono); font-weight: 500; font-size: .66rem; letter-spacing: .08em; color: var(--accent-2); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] .fps-buy-budget { color: var(--fg-dim); }
+body[data-theme="fps"] .fps-buy-budget b { color: var(--money); font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+/* WORK buy header caps the grid like a panel title bar. */
+body[data-theme="fps"] #fps-buy-h {
+  position: relative; background: rgba(14,13,11,.9); border: 1px solid var(--glass-line); border-bottom: 0;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+body[data-theme="fps"] #fps-buy-h::before { content: ""; position: absolute; left: -1px; top: -1px; width: 64px; height: 2px; background: var(--accent); }
+
+/* ───────── WORK = the buy menu ───────── */
 body[data-theme="fps"] #work-grid {
-  display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px;
+  display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1px;
+  background: var(--glass-line-2); border: 1px solid var(--glass-line); border-top: 0;
 }
 body[data-theme="fps"] .fps-buy {
-  position: relative; display: flex; flex-direction: column; gap: .15rem; padding: .8rem .85rem .7rem;
-  background: var(--glass-2); border: 1px solid var(--glass-line-2); border-left: 2px solid transparent;
-  box-shadow: 0 10px 22px -16px rgba(28,18,3,.55), inset 0 1px 0 rgba(255,255,255,.05);
+  position: relative; display: flex; flex-direction: column; gap: .2rem; padding: .7rem .9rem .65rem;
+  background: rgba(22,21,18,.9); border: 0; border-radius: 0;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   transition: none; text-decoration: none; color: var(--fg); overflow: hidden;
 }
-body[data-theme="fps"] .fps-buy:hover {
-  border-color: var(--accent); border-left-color: var(--accent); background: rgba(28,42,60,.95);
-  box-shadow: 0 14px 26px -14px rgba(28,18,3,.6), 0 0 0 1px rgba(47,128,230,.4), inset 0 1px 0 rgba(255,255,255,.06);
+body[data-theme="fps"] .fps-buy::before { display: none; } /* base no-image badge */
+body[data-theme="fps"] .fps-buy::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border: 1px solid transparent;
 }
-/* Buy tiles are compact: hide the project media/carousel. */
+body[data-theme="fps"] .fps-buy:hover { background: rgba(58,44,22,.92); }
+body[data-theme="fps"] .fps-buy:hover::after { border-color: var(--accent); box-shadow: inset 0 0 24px rgba(232,163,61,.18); }
+/* Buy tiles are compact: no project media/carousel. */
 body[data-theme="fps"] .fps-buy .project-media-container { display: none !important; }
-body[data-theme="fps"] .fps-buy-head { display: flex; align-items: center; justify-content: space-between; }
-body[data-theme="fps"] .fps-buy-num { font-family: var(--mono); font-size: .62rem; color: var(--muted); }
-body[data-theme="fps"] .fps-buy-price { font-family: var(--mono); font-size: .74rem; color: var(--money); font-variant-numeric: tabular-nums; }
-body[data-theme="fps"] .fps-buy-icon { align-self: flex-end; width: 44px; height: 22px; color: var(--accent-2); opacity: .85; margin: .1rem 0; }
-body[data-theme="fps"] .fps-buy-icon svg { width: 100%; height: 100%; }
-body[data-theme="fps"] .fps-buy .project-info { padding: 0; }
-body[data-theme="fps"] .fps-buy h3 { margin: .2rem 0 0; font-family: var(--disp); font-size: 1.28rem; letter-spacing: .03em; text-transform: uppercase; color: var(--fg); }
-body[data-theme="fps"] .fps-buy p { margin: .15rem 0 .4rem; font-size: .78rem; color: var(--fg-dim); line-height: 1.4; }
-body[data-theme="fps"] .fps-buy .tags { display: flex; gap: .3rem; flex-wrap: wrap; }
+body[data-theme="fps"] .fps-buy-head { display: flex; align-items: center; gap: .5rem; }
+body[data-theme="fps"] .fps-buy-num {
+  display: grid; place-items: center; width: 20px; height: 20px; flex: 0 0 auto;
+  font-family: var(--disp); font-weight: 700; font-size: .85rem; color: var(--fg);
+  background: rgba(255,240,210,.08); border: 1px solid var(--glass-line);
+}
+body[data-theme="fps"] .fps-buy:hover .fps-buy-num { background: var(--accent); color: #1a1006; border-color: var(--accent); }
+body[data-theme="fps"] .fps-buy-gun { font-family: var(--disp); font-weight: 600; font-size: .8rem; letter-spacing: .14em; color: var(--muted); }
+body[data-theme="fps"] .fps-buy-price { margin-left: auto; font-family: var(--disp); font-weight: 700; font-size: 1.05rem; letter-spacing: .04em; color: var(--money); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] .fps-buy-icon {
+  display: flex; align-items: center; justify-content: center; height: 54px; margin: .2rem 0 .1rem;
+  color: #d9d2c4; filter: drop-shadow(0 2px 0 rgba(0,0,0,.45));
+}
+body[data-theme="fps"] .fps-buy-icon svg { width: auto; height: 100%; max-width: 70%; }
+body[data-theme="fps"] .fps-buy:hover .fps-buy-icon { color: #fff; }
+body[data-theme="fps"] .fps-buy .project-info { padding: 0; display: flex; flex-direction: column; flex: 1 0 auto; min-height: 0; }
+body[data-theme="fps"] .fps-buy h3 {
+  margin: .1rem 0 0; font-family: var(--disp); font-weight: 700; font-size: 1.45rem; line-height: 1.05;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--fg);
+}
+body[data-theme="fps"] .fps-buy:hover h3 { color: var(--accent-2); }
+body[data-theme="fps"] .fps-buy p {
+  margin: .2rem 0 .5rem; font-size: .8rem; color: var(--fg-dim); line-height: 1.45;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
+}
+body[data-theme="fps"] .fps-buy .tags { display: flex; gap: .3rem; flex-wrap: wrap; margin-top: auto; }
 body[data-theme="fps"] .fps-buy .tags .tag {
-  font-family: var(--mono); font-size: .58rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
-  border: 1px solid var(--glass-line-2); padding: 0 .3rem; background: transparent;
+  font-family: var(--disp); font-weight: 600; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-dim);
+  border: 0; padding: .05rem .4rem; background: rgba(255,240,210,.07); border-radius: 0;
 }
-body[data-theme="fps"] .fps-buy:hover .tags .tag { color: var(--fg-dim); }
 body[data-theme="fps"] .fps-buy .project-link { display: none; }
-body[data-theme="fps"] .fps-buy-foot { display: flex; align-items: center; justify-content: space-between; margin-top: .35rem;
-  font-family: var(--mono); font-size: .58rem; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+body[data-theme="fps"] .fps-buy-foot {
+  display: flex; align-items: center; justify-content: space-between; margin-top: .55rem; padding-top: .45rem;
+  border-top: 1px solid var(--glass-line-2);
+  font-family: var(--disp); font-weight: 600; font-size: .78rem; letter-spacing: .14em; color: var(--muted); text-transform: uppercase;
+}
 body[data-theme="fps"] .fps-buy-cta { color: var(--accent-2); }
-body[data-theme="fps"] .fps-buy:hover .fps-buy-cta { color: #fff; }
-body[data-theme="fps"] .section-footer .footer-info, body[data-theme="fps"] .coord-marker {
-  font-family: var(--mono); color: var(--ink-dim); text-shadow: 0 1px 0 rgba(255,255,255,.45);
-}
-/* Site footer sits on the bare field too — dark ink keeps it legible. */
-body[data-theme="fps"] .footer-session,
-body[data-theme="fps"] .footer-version,
-body[data-theme="fps"] .footer-copyright,
-body[data-theme="fps"] .footer-sep,
-body[data-theme="fps"] .cathode-guide-toggle {
-  color: var(--ink-dim); font-family: var(--mono); text-shadow: 0 1px 0 rgba(255,255,255,.45);
-}
-body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); }
+body[data-theme="fps"] .fps-buy:hover .fps-buy-cta { color: #1a1006; background: var(--accent); padding: 0 .45rem; margin-right: -.45rem; }
 
-/* ───────── right column: profile + friends ───────── */
+/* ───────── right column: radar + profile + friends ───────── */
 #fps-side {
-  /* top aligns with the hero panel (hero padding-top: 92px) so the PROFILE and
-     NEWS title bars share one baseline instead of sitting 8px apart */
-  position: fixed; z-index: 35; right: 1rem; top: 92px; width: 288px;
-  display: none; flex-direction: column; gap: 14px;
+  /* Fixed to <body> UNDER #main-content (46): the header dropdowns and the
+     footer painting live in main and must draw over this column. Top aligns
+     with the hero plate. */
+  position: fixed; z-index: 35; right: 1rem; top: 96px; width: 288px;
+  display: none; flex-direction: column; gap: 10px;
+  transition: transform .45s cubic-bezier(.6,0,.3,1), opacity .35s ease;
 }
-#fps-side .fps-panel { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: var(--hud-shadow); }
-#fps-side .fps-panel-h { display: flex; align-items: center; justify-content: space-between; padding: .5rem .8rem;
-  border-bottom: 1px solid var(--glass-line-2); font-family: var(--mono); font-size: .62rem; letter-spacing: .18em;
-  text-transform: uppercase; color: var(--fg-dim); }
-#fps-side .fps-panel-b { padding: .9rem 1rem; }
-#fps-side .fps-rank-top { display: flex; align-items: center; gap: .7rem; }
-#fps-side .fps-medal { width: 50px; height: 50px; display: grid; place-items: center; }
-#fps-side .fps-rank-name { font-family: var(--disp); font-size: 1.25rem; letter-spacing: .03em; text-transform: uppercase; color: #fff; }
-#fps-side .fps-rank-tier { font-family: var(--mono); font-size: .62rem; letter-spacing: .12em; color: var(--accent-2); text-transform: uppercase;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
-#fps-side .fps-xp { margin-top: .7rem; }
-#fps-side .fps-xp-bar { height: 7px; background: rgba(0,0,0,.35); border: 1px solid var(--glass-line-2); position: relative; overflow: hidden; }
-#fps-side .fps-xp-bar > i { position: absolute; inset: 0 22% 0 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
-#fps-side .fps-xp-lbl { display: flex; justify-content: space-between; font-family: var(--mono); font-size: .56rem; color: var(--muted); margin-top: .25rem; letter-spacing: .08em; }
-#fps-side .fps-stats { display: flex; gap: .5rem; margin-top: .8rem; }
-#fps-side .fps-stat { flex: 1; text-align: center; background: var(--glass-2); border: 1px solid var(--glass-line-2); padding: .4rem .2rem; }
-#fps-side .fps-stat b { display: block; font-family: var(--disp); font-size: 1.3rem; color: #fff; font-variant-numeric: tabular-nums; }
-#fps-side .fps-stat small { font-family: var(--mono); font-size: .5rem; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
-#fps-side .fps-friend { display: flex; align-items: center; gap: .6rem; padding: .5rem .8rem; transition: none;
-  border-bottom: 1px solid var(--glass-line-2); text-decoration: none; color: inherit; }
-#fps-side .fps-friend:last-child { border-bottom: 0; }
-#fps-side .fps-friend:hover { background: rgba(84,163,255,.12); }
-#fps-side .fps-friend-av { width: 30px; height: 30px; display: grid; place-items: center; background: var(--glass-2); border: 1px solid var(--glass-line-2); color: var(--accent-2); }
-#fps-side .fps-friend-av svg { width: 16px; height: 16px; }
-#fps-side .fps-friend-who { flex: 1; line-height: 1.15; }
-#fps-side .fps-friend-who b { font-family: var(--disp); font-size: .98rem; letter-spacing: .02em; text-transform: uppercase; }
-#fps-side .fps-friend-who small { display: block; font-family: var(--mono); font-size: .58rem; color: var(--muted); letter-spacing: .05em; }
-#fps-side .fps-friend-st { width: 8px; height: 8px; border-radius: 50%; background: var(--money); box-shadow: 0 0 6px var(--money); }
-#fps-side .fps-friend-st.idle { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+/* Slides off when the footer painting arrives (it would float in its sky). */
+body.fps-at-footer #fps-side { transform: translateX(calc(100% + 2rem)); opacity: 0; }
+body[data-theme="fps"] #fps-side .fps-panel {
+  position: relative; padding: 0; margin: 0; max-width: none; width: 100%; overflow: hidden;
+  background: var(--glass); border: 1px solid var(--glass-line); border-radius: 0;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: var(--hud-shadow);
+}
+body[data-theme="fps"] #fps-side .fps-panel::before { content: ""; position: absolute; left: 0; top: 0; width: 48px; height: 2px; background: var(--accent); }
+body[data-theme="fps"] #fps-side .fps-panel-h {
+  display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .45rem .8rem;
+  background: var(--glass-2); border-bottom: 1px solid var(--glass-line-2);
+  font-family: var(--disp); font-weight: 600; font-size: .8rem; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim);
+}
+body[data-theme="fps"] #fps-side .fps-panel-h > span:last-child { color: var(--accent-2); }
+body[data-theme="fps"] #fps-side .fps-friends .fps-panel-h > span:last-child { color: var(--money); }
+body[data-theme="fps"] #fps-side .fps-panel-b { padding: .75rem .85rem; }
 
-/* Give the content room for the side column on wide screens. */
+/* radar */
+#fps-side .fps-radar-b {
+  height: 176px; padding: 6px;
+  background:
+    linear-gradient(rgba(255,240,210,.04) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(90deg, rgba(255,240,210,.04) 1px, transparent 1px) 0 0 / 22px 22px,
+    radial-gradient(circle at 50% 50%, rgba(40,36,30,.9), rgba(12,11,9,.95));
+}
+#fps-side .fps-radar-b svg { width: 100%; height: 100%; display: block; }
+#fps-side .fps-rd-floor rect { fill: rgba(222,200,150,.3); stroke: rgba(240,222,180,.5); stroke-width: 1; }
+#fps-side .fps-rd-site { font-family: var(--disp); font-weight: 700; font-size: 24px; fill: rgba(232,71,60,.85); }
+#fps-side .fps-rd-spawn { font-family: var(--disp); font-weight: 700; font-size: 10px; letter-spacing: .06em; fill: rgba(240,230,210,.5); }
+#fps-side .fps-rd-mate { fill: var(--accent); stroke: #1a1006; stroke-width: 1; opacity: .8; }
+#fps-side #fps-rd-me { transition: transform .25s linear; }
+#fps-side .fps-rd-cone { fill: rgba(255,240,200,.16); }
+#fps-side .fps-rd-arrow { fill: #fff; stroke: #1a1006; stroke-width: 1; }
+#fps-side .fps-rd-ping { fill: none; stroke: var(--accent-2); stroke-width: 1.2; opacity: 0; animation: fps-ping 2s ease-out infinite; }
+@keyframes fps-ping { 0% { opacity: .9; r: 4; } 100% { opacity: 0; r: 16; } }
+
+/* profile */
+body[data-theme="fps"] #fps-side .fps-rank-top { display: flex; align-items: center; gap: .65rem; }
+body[data-theme="fps"] #fps-side .fps-rank-top > div { min-width: 0; }
+body[data-theme="fps"] #fps-side .fps-medal { flex: 0 0 42px; width: 42px; height: 42px; display: grid; place-items: center; }
+body[data-theme="fps"] #fps-side .fps-medal svg { width: 100%; height: 100%; }
+body[data-theme="fps"] #fps-side .fps-rank-name { font-family: var(--disp); font-weight: 700; font-size: 1.4rem; line-height: 1; letter-spacing: .04em; text-transform: uppercase; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-theme="fps"] #fps-side .fps-rank-tier { margin-top: .2rem; font-family: var(--disp); font-weight: 600; font-size: .8rem; letter-spacing: .14em; color: var(--accent-2); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-theme="fps"] #fps-side .fps-xp { margin-top: .6rem; }
+body[data-theme="fps"] #fps-side .fps-xp-bar { position: relative; height: 5px; overflow: hidden; background: rgba(0,0,0,.4); }
+body[data-theme="fps"] #fps-side .fps-xp-bar > i { position: absolute; inset: 0 22% 0 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 0 8px rgba(255,201,101,.5); }
+body[data-theme="fps"] #fps-side .fps-xp-lbl { display: flex; justify-content: space-between; margin-top: .3rem; font-family: var(--disp); font-weight: 600; font-size: .72rem; letter-spacing: .1em; color: var(--muted); }
+body[data-theme="fps"] #fps-side .fps-stats { display: flex; gap: 6px; margin-top: .6rem; }
+body[data-theme="fps"] #fps-side .fps-stat { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .15rem; padding: .45rem .2rem .4rem; text-align: center; background: rgba(255,240,210,.05); border: 1px solid var(--glass-line-2); }
+body[data-theme="fps"] #fps-side .fps-stat b { font-family: var(--disp); font-weight: 700; font-size: 1.45rem; line-height: 1; color: var(--fg); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] #fps-side .fps-stat small { font-family: var(--disp); font-weight: 600; font-size: .62rem; letter-spacing: .08em; line-height: 1.1; color: var(--muted); text-transform: uppercase; }
+
+/* friends */
+body[data-theme="fps"] #fps-side .fps-friend { display: flex; align-items: center; gap: .6rem; padding: .42rem .8rem; padding-left: calc(.8rem - 2px); border-left: 2px solid transparent; border-bottom: 1px solid var(--glass-line-2); text-decoration: none; color: inherit; transition: none; }
+body[data-theme="fps"] #fps-side .fps-friend:last-child { border-bottom: 0; }
+body[data-theme="fps"] #fps-side .fps-friend:hover { background: rgba(232,163,61,.12); border-left-color: var(--accent); }
+body[data-theme="fps"] #fps-side .fps-friend-av { flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center; background: linear-gradient(135deg, #3a342a, #1c1914); border: 1px solid var(--glass-line); color: var(--fg); }
+body[data-theme="fps"] #fps-side .fps-friend-av svg { width: 16px; height: 16px; }
+body[data-theme="fps"] #fps-side .fps-friend-who { flex: 1 1 auto; min-width: 0; line-height: 1.1; }
+body[data-theme="fps"] #fps-side .fps-friend-who b { display: block; font-family: var(--disp); font-weight: 700; font-size: 1rem; letter-spacing: .04em; text-transform: uppercase; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-theme="fps"] #fps-side .fps-friend-who small { display: block; font-family: var(--body); font-size: .68rem; color: #7fb3e8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-theme="fps"] #fps-side .fps-fr-ingame .fps-friend-who small { color: var(--money); }
+body[data-theme="fps"] #fps-side .fps-fr-idle .fps-friend-who small { color: var(--muted); }
+body[data-theme="fps"] #fps-side .fps-friend-st { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: #7fb3e8; box-shadow: 0 0 6px #7fb3e8; }
+body[data-theme="fps"] #fps-side .fps-friend-st.ingame { background: var(--money); box-shadow: 0 0 6px var(--money); }
+body[data-theme="fps"] #fps-side .fps-friend-st.idle { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
+
+/* Wide screens get the column; short ones drop the friends list first. */
 @media (min-width: 1200px) {
   #fps-side { display: flex; }
   body[data-theme="fps"].fps-hud main#main-content { padding-right: 320px; }
 }
-
-/* ───────── bottom telemetry ───────── */
-#fps-telemetry {
-  /* above #main-content (z:46): scrolling plates used to slide OVER the bar */
-  position: fixed; z-index: 59; left: 0; right: 0; bottom: 0; display: flex; gap: 1.4rem; flex-wrap: wrap;
-  padding: .4rem 1.2rem; font-family: var(--mono); font-size: .66rem; letter-spacing: .05em; color: var(--fg-dim);
-  background: #06090d; border-top: 1px solid var(--glass-line-2); pointer-events: none;
+@media (min-width: 1200px) and (max-height: 760px) {
+  #fps-side .fps-friends { display: none; }
 }
-/* gap:0 + label margin — the flex gap also split value from its bare "ms"
-   unit text node ("0.4 ms" vs the glued "0%"), reading inconsistently. */
+@media (min-width: 1200px) and (max-height: 600px) {
+  #fps-side .fps-rankcard { display: none; }
+}
+
+/* ───────── kill feed (top right of the play area) ───────── */
+#fps-killfeed {
+  position: fixed; z-index: 40; top: 80px; right: calc(320px + 2rem);
+  display: flex; flex-direction: column; align-items: flex-end; gap: 3px; pointer-events: none;
+}
+#fps-killfeed .fps-kf-row {
+  display: flex; align-items: center; gap: .45rem; height: 24px; box-sizing: border-box; padding: 0 .55rem;
+  background: rgba(10,9,8,.84); border: 2px solid rgba(232,71,60,.85);
+  font-family: var(--disp); font-weight: 700; font-size: .86rem; letter-spacing: .03em; white-space: nowrap;
+  animation: fps-kf-in .18s ease-out;
+}
+#fps-killfeed .fps-kf-t { color: var(--accent-2); }
+#fps-killfeed .fps-kf-ct { color: var(--ct-2); }
+#fps-killfeed .fps-kf-gun { display: inline-flex; width: 46px; height: 16px; color: #f2ede4; }
+#fps-killfeed .fps-kf-gun svg { width: 100%; height: 100%; }
+#fps-killfeed .fps-kf-hs { width: 15px; height: 15px; color: #f2ede4; }
+#fps-killfeed .fps-kf-out { opacity: 0; transform: translateX(12px); transition: opacity .35s, transform .35s; }
+@keyframes fps-kf-in { from { opacity: 0; transform: translateX(16px); } }
+body.fps-at-footer #fps-killfeed { opacity: 0; }
+@media (max-width: 1199px) { #fps-killfeed { display: none; } }
+/* The feed sits over the NEWS bar's right end at scroll-top: the clock goes. */
+@media (min-width: 1200px) { body[data-theme="fps"] .fps-clock { visibility: hidden; } }
+
+/* ───────── bottom HUD bar (health · net_graph · money/ammo) ───────── */
+#fps-telemetry {
+  /* above #main-content (z:46): scrolling plates never slide over the bar */
+  position: fixed; z-index: 59; left: 0; right: 0; bottom: 0; height: 44px; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0 1.2rem; pointer-events: none;
+  background: linear-gradient(180deg, rgba(14,12,9,.9), rgba(6,5,4,.97));
+  border-top: 1px solid rgba(232,163,61,.3);
+}
+#fps-telemetry .fps-hud-l, #fps-telemetry .fps-hud-r { display: flex; align-items: center; gap: 1.1rem; }
+#fps-telemetry .fps-vital { display: flex; align-items: center; gap: .4rem; color: #f2ede4; }
+#fps-telemetry .fps-vital svg { width: 16px; height: 16px; }
+#fps-telemetry .fps-vital b { font-family: var(--disp); font-weight: 700; font-size: 1.55rem; line-height: 1; font-variant-numeric: tabular-nums; min-width: 2.2ch; }
+#fps-telemetry .fps-vbar { position: relative; display: block; width: 54px; height: 4px; background: rgba(255,255,255,.12); }
+#fps-telemetry .fps-vbar > i { position: absolute; inset: 0; background: #f2ede4; }
+#fps-telemetry .fps-armor svg { color: var(--ct-2); }
+#fps-telemetry .fps-hud-c {
+  display: flex; align-items: baseline; gap: 1.1rem; font-family: var(--mono); font-size: .62rem; letter-spacing: .05em; color: var(--fg-dim);
+}
+/* gap:0 + label margin — the flex gap also split value from its bare unit text */
 #fps-telemetry .fps-m { display: flex; gap: 0; align-items: baseline; }
 #fps-telemetry .fps-m i { color: var(--muted); text-transform: uppercase; font-style: normal; margin-right: .35rem; }
 #fps-telemetry .fps-m b { color: #fff; font-variant-numeric: tabular-nums; }
 #fps-telemetry .fps-good { color: var(--money) !important; }
 #fps-telemetry .fps-map b { color: var(--accent-2); }
+#fps-telemetry .fps-cash { font-family: var(--disp); font-weight: 700; font-size: 1.3rem; color: var(--money); letter-spacing: .03em; }
+#fps-telemetry .fps-ammo-box { position: relative; display: flex; align-items: baseline; gap: .3rem; color: #f2ede4; font-family: var(--disp); font-weight: 700; }
+#fps-telemetry .fps-ammo-box b { font-size: 1.7rem; line-height: 1; min-width: 2ch; text-align: right; font-variant-numeric: tabular-nums; }
+#fps-telemetry .fps-ammo-box b.fps-low { color: var(--red); }
+#fps-telemetry .fps-ammo-box small { font-size: 1rem; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
+#fps-telemetry .fps-ammo-box em { display: none; font-style: normal; font-size: .8rem; letter-spacing: .14em; color: var(--accent-2); }
+#fps-telemetry .fps-ammo-box.fps-reloading b, #fps-telemetry .fps-ammo-box.fps-reloading small { display: none; }
+#fps-telemetry .fps-ammo-box.fps-reloading em { display: inline; animation: fps-blink .5s steps(2) infinite; }
+#fps-telemetry .fps-hud-gun { display: inline-flex; width: 70px; height: 24px; color: #f2ede4; opacity: .9; }
+#fps-telemetry .fps-hud-gun svg { width: 100%; height: 100%; }
 
 /* ───────── crosshair + hit FX ─────────
-   Four gapped arms + center dot (CS default crosshair). Light core with a dark
-   outline so it reads on bright sand AND over the dark glass panels. The outer
-   node carries only the JS-driven translate; the inner .fps-x-core owns scale so
-   the fire-bloom and hover-lock never fight the pointer follow. */
+   Four gapped arms + centre dot, classic green. Dark outline so it reads on
+   sandstone AND over the glass. The outer node carries only the JS-driven
+   translate; .fps-x-core owns scale (fire bloom / hover lock). */
 #fps-xhair { position: fixed; z-index: 60; left: 0; top: 0; width: 0; height: 0; pointer-events: none; opacity: 0; }
 #fps-xhair.on { opacity: 1; }
 #fps-xhair .fps-x-core { position: absolute; left: 0; top: 0; transform: translate(-50%,-50%);
   transition: transform .13s cubic-bezier(.2,.85,.3,1); }
 #fps-xhair .fps-x-arm { position: absolute; background: var(--xhair);
-  box-shadow: 0 0 0 1px rgba(6,12,20,.9), 0 0 4px rgba(0,0,0,.45); }
+  box-shadow: 0 0 0 1px rgba(0,0,0,.85); }
 #fps-xhair .fps-x-t, #fps-xhair .fps-x-b { width: 2px; height: 7px; left: -1px; }
 #fps-xhair .fps-x-l, #fps-xhair .fps-x-r { height: 2px; width: 7px; top: -1px; }
 #fps-xhair .fps-x-t { bottom: 4px; } #fps-xhair .fps-x-b { top: 4px; }
 #fps-xhair .fps-x-l { right: 4px; } #fps-xhair .fps-x-r { left: 4px; }
 #fps-xhair .fps-x-dot { position: absolute; width: 2px; height: 2px; left: -1px; top: -1px;
-  background: var(--xhair); box-shadow: 0 0 0 1px rgba(6,12,20,.9); }
+  background: var(--xhair); box-shadow: 0 0 0 1px rgba(0,0,0,.85); }
 /* corner brackets — hidden until a target is under the crosshair */
 #fps-xhair .fps-x-brk { position: absolute; width: 6px; height: 6px; opacity: 0;
-  border: 2px solid var(--accent-2); filter: drop-shadow(0 0 2px rgba(0,0,0,.5)); transition: opacity .07s; }
+  border: 2px solid var(--accent-2); filter: drop-shadow(0 0 2px rgba(0,0,0,.6)); transition: opacity .07s; }
 #fps-xhair .fps-x-tl { left: -13px; top: -13px; border-right: 0; border-bottom: 0; }
 #fps-xhair .fps-x-tr { right: -13px; top: -13px; border-left: 0; border-bottom: 0; }
 #fps-xhair .fps-x-bl { left: -13px; bottom: -13px; border-right: 0; border-top: 0; }
 #fps-xhair .fps-x-br { right: -13px; bottom: -13px; border-left: 0; border-top: 0; }
-/* target lock: arms snap to accent, brackets bloom in, whole reticle grows a hair */
-#fps-xhair.fps-lock .fps-x-arm, #fps-xhair.fps-lock .fps-x-dot { background: var(--accent-2); }
+/* target lock: arms go red (enemy under the crosshair), brackets bloom in */
+#fps-xhair.fps-lock .fps-x-arm, #fps-xhair.fps-lock .fps-x-dot { background: #ff5a4a; }
 #fps-xhair.fps-lock .fps-x-brk { opacity: 1; }
 #fps-xhair.fps-lock .fps-x-core { transform: translate(-50%,-50%) scale(1.14); }
-/* fire kick: the reticle blooms out then snaps back on every shot (pointerdown) */
 #fps-xhair.fps-fire .fps-x-core { animation: fps-x-fire .17s ease-out; }
 @keyframes fps-x-fire {
   0%   { transform: translate(-50%,-50%) scale(2); }
   100% { transform: translate(-50%,-50%) scale(1); }
 }
 
+#fps-fx { position: fixed; inset: 0; z-index: 61; pointer-events: none; }
+#fps-fx .fps-hit { position: fixed; width: 30px; height: 30px; color: #fff; transform: translate(-50%,-50%);
+  filter: drop-shadow(0 0 1px #000); animation: fps-hitpop .18s steps(3) forwards; }
+#fps-fx .fps-hit svg { width: 100%; height: 100%; }
+@keyframes fps-hitpop { 0% { opacity: 1; transform: translate(-50%,-50%) scale(.7); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(1.2); } }
+#fps-fx .fps-dmg { position: fixed; font-family: var(--disp); font-weight: 700; font-size: 1.5rem; color: #fff; text-shadow: 0 1px 3px #000;
+  transform: translate(-50%,-50%); animation: fps-dmg .52s steps(6) forwards; }
+#fps-fx .fps-dmg-gold { color: var(--gold); }
+@keyframes fps-dmg { 0% { opacity: 1; transform: translate(-50%,-50%); } 100% { opacity: 0; transform: translate(-50%,-190%); } }
+
 /* ───────── keyboard focus ─────────
-   The crosshair replaces the mouse pointer, so keyboard users get no cursor —
-   give every interactive control a clear focus ring instead. */
+   The crosshair replaces the pointer, so keyboard users get a clear ring. */
 body[data-theme="fps"] a:focus-visible,
 body[data-theme="fps"] button:focus-visible,
 body[data-theme="fps"] [tabindex="0"]:focus-visible,
@@ -405,717 +630,368 @@ body[data-theme="fps"] .language-switcher-toggle:focus-visible {
   outline-offset: 2px;
 }
 
-#fps-fx { position: fixed; inset: 0; z-index: 61; pointer-events: none; }
-#fps-fx .fps-hit { position: fixed; width: 30px; height: 30px; color: #fff; transform: translate(-50%,-50%);
-  animation: fps-hitpop .18s steps(3) forwards; }
-#fps-fx .fps-hit svg { width: 100%; height: 100%; }
-@keyframes fps-hitpop { 0% { opacity: 1; transform: translate(-50%,-50%) scale(.7); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(1.2); } }
-#fps-fx .fps-dmg { position: fixed; font-family: var(--disp); font-size: 1.4rem; color: #fff; text-shadow: 0 1px 3px #000;
-  transform: translate(-50%,-50%); animation: fps-dmg .52s steps(6) forwards; }
-#fps-fx .fps-dmg-gold { color: var(--gold); }
-@keyframes fps-dmg { 0% { opacity: 1; transform: translate(-50%,-50%); } 100% { opacity: 0; transform: translate(-50%,-190%); } }
-
-/* ───────── responsive: rail → bottom bar, no side column ───────── */
-@media (max-width: 899px) {
-  /* 112px clears the bottom rail (top edge ≈102px above the viewport bottom)
-     with breathing room — 96px let the last line tuck under the rail. */
-  body[data-theme="fps"].fps-hud main#main-content { padding-left: 0; padding-right: 0; padding-bottom: 112px; }
-  /* Fixed ribbon (22px) + glass header (top:22px) overlap scrolling content on
-     mobile: push the first section down so the injected NEWS panel-header clears
-     the chrome instead of being tucked under it at scroll-top. */
-  body[data-theme="fps"] .hero { padding-top: 92px; }
-  /* bottom: 29px hugs the telemetry bar exactly (measured 29.1px tall) — at
-     44px a 15px strip of scrolling page content stayed readable between the
-     two fixed bars. Full-bleed + opaque: as a translucent glass strip over
-     scrolling tiles it read as an unreadable dark mush on phones. */
-  #fps-rail {
-    left: 0; right: 0; top: auto; bottom: 29px; transform: none;
-    flex-direction: row; justify-content: center; gap: 4px;
-    background: #0b121c; backdrop-filter: none; -webkit-backdrop-filter: none;
-    border-left: 0; border-right: 0; border-bottom: 0; border-radius: 0;
-    box-shadow: 0 -8px 20px -8px rgba(8, 14, 24, .5);
-  }
-  #fps-rail .fps-rail-btn { width: 40px; height: 40px; }
-  /* Full selector: the shorter one lost to the desktop rule's specificity,
-     leaving a 3x3px speck instead of an underline. */
-  #fps-rail .fps-rail-btn.fps-rail-active::before { left: 8px; right: 8px; top: auto; bottom: -4px; width: auto; height: 3px; }
-  #fps-side { display: none !important; }
-  body[data-theme="fps"] #work-grid { grid-template-columns: 1fr; }
-  /* Mobile keeps the bright map, but the panels/tiles go near-opaque (below) so
-     the daylight can't wash out body copy. Keep only a soft warm scrim so the
-     top ribbon/header still read, and drop the blur (cheaper on mobile). */
-  #fps-scene .fps-scrim {
-    background:
-      linear-gradient(180deg, rgba(16,24,36,.32) 0%, rgba(16,24,36,0) 14%),
-      linear-gradient(0deg, rgba(16,24,36,.42) 0%, rgba(16,24,36,0) 16%);
-  }
-  /* GSAP/observer reveal safety net: never let a stuck reveal hide tiles. */
-  body[data-theme="fps"] .fps-buy.fade-in-up { opacity: 1; }
-  body[data-theme="fps"] .hero-content,
-  body[data-theme="fps"] .now-card,
-  body[data-theme="fps"] .about-card,
-  body[data-theme="fps"] .contact-card,
-  body[data-theme="fps"] .git-timeline-viewport {
-    background: rgba(16,24,34,.90); backdrop-filter: none; -webkit-backdrop-filter: none;
-  }
-  body[data-theme="fps"] .fps-buy {
-    background: rgba(16,24,34,.90); backdrop-filter: none; -webkit-backdrop-filter: none;
-  }
-  /* Keep telemetry on a single line and scroll it internally so the page
-     itself never gains horizontal overflow at narrow widths. */
-  #fps-telemetry { gap: .9rem; font-size: .6rem; flex-wrap: nowrap; overflow-x: auto;
-    justify-content: flex-start; -webkit-overflow-scrolling: touch; }
-  #fps-telemetry .fps-m { flex: 0 0 auto; }
-  /* Base centers .social-links on mobile; keep the fps buy-buttons flush left
-     with the availability/email column above them. */
-  body[data-theme="fps"] .social-links { justify-content: flex-start; gap: 8px; }
-}
-@media (max-width: 560px) {
-  body[data-theme="fps"] #work-grid { grid-template-columns: 1fr; }
-}
-
-/* ───────── generic site chrome → folded into the HUD ─────────
-   The palette theme-switcher, the language dropdown and the mobile hamburger
-   are injected by shared JS and otherwise render as loud default chrome over
-   the tactical menu. Reskin the two switchers as glass HUD chips (kept usable
-   so the visitor can still leave fps) and drop the hamburger — the left/bottom
-   rail is the fps navigation on every width. */
-body[data-theme="fps"] .theme-switcher-toggle,
-body[data-theme="fps"] .language-switcher-toggle {
-  color: var(--fg-dim); font-family: var(--mono); letter-spacing: .08em;
-  background: var(--glass); border: 1px solid var(--glass-line); border-radius: 0;
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: none;
-}
-body[data-theme="fps"] .theme-switcher-toggle:hover,
-body[data-theme="fps"] .language-switcher-toggle:hover { color: #fff; border-color: var(--accent); }
-body[data-theme="fps"] .theme-switcher-menu,
-body[data-theme="fps"] .language-switcher-menu {
-  /* near-opaque: the menus float over high-contrast panel text, which still
-     ghosted through at .80 (and even .94 without backdrop blur) */
-  background: rgba(13,19,29,.97); border: 1px solid var(--glass-line); border-radius: 0;
-  backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
-}
-body[data-theme="fps"] .theme-option,
-body[data-theme="fps"] .language-option { color: var(--fg-dim); border-radius: 0; font-family: var(--mono); white-space: nowrap; }
-body[data-theme="fps"] .theme-option:hover,
-body[data-theme="fps"] .language-option:hover { background: rgba(84,163,255,.14); color: #fff; }
-body[data-theme="fps"] .theme-option.active,
-body[data-theme="fps"] .language-option.active { background: rgba(84,163,255,.18); color: var(--accent-2); }
-body[data-theme="fps"] .theme-name, body[data-theme="fps"] .lang-name { letter-spacing: .04em; }
-body[data-theme="fps"] .lang-arrow, body[data-theme="fps"] .lang-flag { color: var(--fg-dim); }
-body[data-theme="fps"] .hamburger-menu { display: none !important; }
-
-/* ───────── contact: social links as buy-menu buttons ─────────
-   The shared renderer emits raw "[GITHUB][LINKEDIN]" bracket text. Drop the
-   brackets and reskin the anchors as slanted HUD buttons like the buy tiles. */
-body[data-theme="fps"] .social-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: .9rem; }
-body[data-theme="fps"] .social-btn {
-  display: inline-flex; align-items: center; gap: .3rem; padding: .4rem .85rem;
-  background: var(--glass-2); border: 1px solid var(--glass-line-2); border-left: 2px solid var(--accent);
-  color: var(--fg); font-family: var(--disp); text-transform: uppercase; letter-spacing: .05em;
-  font-size: .98rem; text-decoration: none; transition: none;
-  clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
-}
-body[data-theme="fps"] .social-btn:hover { background: rgba(30,44,60,.72); border-left-color: var(--accent-2); color: #fff; }
-body[data-theme="fps"] .social-btn .link-bracket { display: none; }
-
-/* The lazy 3D heart canvas renders as an empty translucent panel here and has
-   no place in the tactical menu (no 3D). Hide the whole section under fps. */
-body[data-theme="fps"] #heart-experiment { display: none !important; }
-
-/* ───────── Cathode speech bubble ─────────
-   fps inherits the kit's monospace typewriter reveal, whose ch-based width
-   clamp cropped the (proportionally-rendered) fps copy mid-word. Lift the
-   clamp and fade lines in instead — same treatment the other non-terminal
-   themes already get — so the bubble text never clips. */
-body[data-theme="fps"] #cathode-guide .cg-bubble { max-width: 244px; }
-body[data-theme="fps"] #cathode-guide .cg-bubble.cg-show .cg-line {
-  animation: cg-life-fadeline .38s ease var(--cg-delay, 0ms) both;
-  max-width: none; overflow: visible; white-space: normal;
-}
-body[data-theme="fps"] #cathode-guide .cg-line::after { display: none; }
-/* On desktop the mascot's ultra-high z-index let it occlude buy-tile titles and
-   the ABOUT header. Drop the fps guide under the content layer (still above the
-   parallax scene) and lift it clear of the opaque telemetry bar, so real content
-   wins where they overlap while the mascot stays visible in the empty corner. */
-@media (min-width: 900px) {
-  /* Keep her clearly in front of the content plates (she was reading as stuck
-     behind the NOW/WORK cards) but under the crosshair + fixed telemetry bar. */
-  body[data-theme="fps"] #cathode-guide { z-index: 47; }
-  /* The 64px floor lift is only for the static dock (reduced motion / before
-     the life engine mounts). Once cg-alive takes over, the engine already
-     clears the telemetry bar itself (probeFloor() reads #fps-telemetry's
-     height) - overriding bottom here too would double-apply the lift and
-     make every stand/walk/jump render 64px higher than on every other theme. */
-  body[data-theme="fps"] #cathode-guide:not(.cg-alive) { bottom: 64px; }
-}
-
-/* ───────── boot-strip ribbon (top hint bar) ─────────
-   Thin uppercase mono strip across the very top, like the mockup. The fixed
-   header is nudged down under it so the two never overlap. */
+/* ───────── boot-strip ribbon = console line ───────── */
 #fps-ribbon {
   position: fixed; z-index: 101; top: 0; left: 0; right: 0;
   display: flex; align-items: center; gap: .8rem; height: 22px; padding: 0 1rem;
-  font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--fg-dim); pointer-events: none; white-space: nowrap; overflow: hidden;
+  font-family: var(--mono); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); pointer-events: none; white-space: nowrap; overflow: hidden;
   /* fully opaque: any translucency let scrolled body copy read through */
-  background: #06090d; border-bottom: 1px solid rgba(150,190,228,.14);
+  background: #070605;
 }
 #fps-ribbon b { color: var(--accent-2); font-weight: 700; }
-#fps-ribbon .fps-ribbon-sep { color: var(--muted); }
-/* Nudge the header under the (JS-injected) ribbon — only where the ribbon
-   exists. On the blog the ribbon isn't injected, so the header stays at top:0
-   instead of leaving a 22px gap above it. */
-body[data-theme="fps"].fps-hud .header { top: 22px; }
+#fps-ribbon .fps-ribbon-sep { color: #4a4238; }
 
-/* Anchor jumps / scrollIntoView must clear the fixed ribbon + glass header so a
-   section's panel-header never tucks under the chrome. */
+/* Anchor jumps must clear the fixed ribbon + header. */
 body[data-theme="fps"] #now,
 body[data-theme="fps"] #work,
 body[data-theme="fps"] #timeline,
 body[data-theme="fps"] #about,
-body[data-theme="fps"] #contact { scroll-margin-top: 76px; }
-
-/* Small left gutter so the wordmark isn't flush to the viewport frame. */
-body[data-theme="fps"] .header-brand { padding-left: 1.2rem; }
-
-/* First tab reads PLAY (CS main-menu convention) to match the rail's play glyph
-   for #now; label-only override, href stays #now. */
-body[data-theme="fps"] .fps-tab[href="#now"] .nav-text { font-size: 0; }
-body[data-theme="fps"] .fps-tab[href="#now"] .nav-text::after {
-  content: "PLAY"; font-size: 1.02rem;
-}
-
-/* These three proof stats are surfaced in the injected PROFILE rank card
-   (buildSidePanel reads them at init, before this hide), so drop the duplicate
-   copy inside the hero panel. */
-body[data-theme="fps"] .hero-content .social-proof { display: none; }
-
-/* ───────── NEWS / BUY-MENU panel-header bars ───────── */
-body[data-theme="fps"] .fps-menu-h {
-  display: flex; align-items: center; justify-content: space-between; gap: .6rem;
-  padding: .5rem .9rem; font-family: var(--mono); font-size: .64rem; letter-spacing: .16em;
-  text-transform: uppercase; color: var(--fg-dim);
-  background: var(--glass-2); border-bottom: 1px solid var(--glass-line-2);
-}
-body[data-theme="fps"] .fps-menu-h .fps-h-dot {
-  display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: .5rem;
-  background: var(--money); box-shadow: 0 0 6px var(--money); vertical-align: middle;
-}
-body[data-theme="fps"] .fps-clock { color: var(--accent-2); font-variant-numeric: tabular-nums; }
-body[data-theme="fps"] .fps-buy-budget { color: var(--fg-dim); }
-body[data-theme="fps"] .fps-buy-budget b { color: var(--gold); font-variant-numeric: tabular-nums; }
-
-/* WORK buy header sits directly on top of the grid, capping it like a panel.
-   border-bottom:0 — the first tile row's own top border supplies the divider
-   (both were drawing 1px lines, doubling the hairline at the junction). */
-body[data-theme="fps"] #fps-buy-h {
-  border: 1px solid var(--glass-line); border-bottom: 0;
-  backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
-}
-
-/* Hero panel: give the glass card real inset padding (it had none — reading as a
-   bare card) and full-bleed the NEWS header + add the eyebrow. */
-body[data-theme="fps"] .hero-content { padding: 0 1.3rem 1.4rem; overflow: hidden; }
-body[data-theme="fps"] .fps-news-h {
-  margin: 0 -1.3rem 1rem; padding-left: 1.3rem; padding-right: 1.3rem;
-}
-body[data-theme="fps"] .fps-eyebrow {
-  font-family: var(--mono); font-size: .7rem; letter-spacing: .22em; text-transform: uppercase;
-  color: var(--accent-2); margin: 0 0 .3rem;
-}
+body[data-theme="fps"] #contact { scroll-margin-top: 80px; }
 
 /* ───────── top-right player badge ───────── */
 #fps-badge {
-  /* 30px tall to match the theme/language chips exactly (it was 41px and its
-     border touched the boot ribbon above) */
-  display: flex; align-items: center; gap: .5rem; height: 30px; box-sizing: border-box;
-  padding: 0 .5rem; margin-right: 0;
-  background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 8px 18px -10px rgba(28,18,3,.5);
+  display: flex; align-items: center; gap: .5rem; height: 32px; box-sizing: border-box; padding: 0 .65rem 0 .3rem;
+  background: rgba(255,240,210,.05); border: 1px solid var(--glass-line);
 }
 #fps-badge .fps-badge-av {
-  width: 22px; height: 22px; display: grid; place-items: center; flex: 0 0 auto;
-  background: linear-gradient(135deg, #1c2a3a, #0e1620); border: 1px solid var(--glass-line);
-  color: var(--accent-2); font-family: var(--disp); font-size: .78rem; letter-spacing: .02em;
+  width: 24px; height: 24px; display: grid; place-items: center; flex: 0 0 auto;
+  background: linear-gradient(135deg, #e8a33d, #8c5c17); color: #1a1006;
+  font-family: var(--disp); font-weight: 700; font-size: .85rem;
 }
-#fps-badge .fps-badge-who { line-height: 1.1; }
-#fps-badge .fps-badge-who b { font-family: var(--disp); font-size: .9rem; letter-spacing: .03em; color: var(--fg); }
-#fps-badge .fps-badge-who small { display: block; font-family: var(--mono); font-size: .55rem; color: var(--money); letter-spacing: .06em; }
-#fps-badge .fps-badge-shield { width: 22px; height: 22px; color: var(--gold); flex: 0 0 auto; }
-#fps-badge .fps-badge-shield svg { width: 100%; height: 100%; }
+#fps-badge .fps-badge-who { line-height: 1.05; }
+#fps-badge .fps-badge-who b { font-family: var(--disp); font-weight: 700; font-size: .95rem; letter-spacing: .04em; color: var(--fg); }
+#fps-badge .fps-badge-who small { display: block; font-family: var(--disp); font-weight: 600; font-size: .66rem; letter-spacing: .08em; color: var(--money); }
 @media (max-width: 1023px) { #fps-badge { display: none; } }
 
-/* ───────── Cathode: retint the green terminal CRT to fps blue-steel ─────────
-   The guide sprite's phosphor screen + bubble use the kit's --cg-* vars (green
-   by default). Retint them under fps like blueprint/default do for their own
-   palettes; the cream chrome shell stays (kit constant). */
-body[data-theme="fps"] #cathode-guide {
-  --cg-ink: #8fd0ff;
-  --cg-ink-dim: rgba(84, 163, 255, .16);
-  --cg-paper: rgba(10, 18, 28, .96);
+/* ───────── shared switchers → HUD chips ───────── */
+body[data-theme="fps"] .theme-switcher-toggle,
+body[data-theme="fps"] .language-switcher-toggle {
+  display: inline-flex; align-items: center; height: 32px;
+  color: var(--fg-dim); font-family: var(--disp); font-weight: 700; letter-spacing: .1em;
+  background: rgba(255,240,210,.05); border: 1px solid var(--glass-line); border-radius: 0; transition: none;
 }
-body[data-theme="fps"] #cathode-guide .cg-bubble {
-  border: 1px solid rgba(84, 163, 255, .6);
-  box-shadow: 3px 3px 0 rgba(0,0,0,.5), 0 0 14px rgba(84,163,255,.14);
+body[data-theme="fps"] .theme-switcher-toggle:hover,
+body[data-theme="fps"] .language-switcher-toggle:hover { color: #fff; border-color: var(--accent); background: rgba(232,163,61,.14); }
+body[data-theme="fps"] .theme-switcher-menu,
+body[data-theme="fps"] .language-switcher-menu {
+  background: rgba(16,15,13,.98); border: 1px solid var(--glass-line); border-top: 2px solid var(--accent); border-radius: 0;
+  box-shadow: 0 18px 40px -12px rgba(0,0,0,.7);
 }
-body[data-theme="fps"] #cathode-guide .cg-bubble::after,
-body[data-theme="fps"] #cathode-guide .cg-bubble::before { border-color: rgba(84,163,255,.6); }
-body[data-theme="fps"] #cathode-guide .cg-bar { border-bottom: 1px solid rgba(84,163,255,.4); }
-body[data-theme="fps"] #cathode-guide .cg-bar i { display: none; }
-body[data-theme="fps"] #cathode-guide .cg-bar b {
-  font-family: var(--mono); font-size: 7.5px; letter-spacing: .18em; color: var(--accent-2);
+body[data-theme="fps"] .theme-option,
+body[data-theme="fps"] .language-option { color: var(--fg-dim); border-radius: 0; font-family: var(--disp); font-weight: 600; letter-spacing: .06em; white-space: nowrap; }
+body[data-theme="fps"] .theme-option:hover,
+body[data-theme="fps"] .language-option:hover { background: rgba(232,163,61,.14); color: #fff; }
+body[data-theme="fps"] .theme-option.active,
+body[data-theme="fps"] .language-option.active { background: rgba(232,163,61,.2); color: var(--accent-2); }
+body[data-theme="fps"] .theme-name, body[data-theme="fps"] .lang-name { letter-spacing: .06em; }
+body[data-theme="fps"] .lang-arrow, body[data-theme="fps"] .lang-flag { color: var(--fg-dim); }
+body[data-theme="fps"] .hamburger-menu { display: none !important; }
+
+/* ───────── ABOUT ───────── */
+body[data-theme="fps"] .about-text { margin: 0 0 .2rem; }
+body[data-theme="fps"] .about-main,
+body[data-theme="fps"] .about-detail { color: var(--fg-dim); font-size: .94rem; line-height: 1.6; margin: .15rem 0 .7rem; }
+body[data-theme="fps"] .code-comment {
+  display: block; color: var(--accent); font-family: var(--disp); font-weight: 600; font-size: .8rem;
+  letter-spacing: .16em; text-transform: uppercase; margin: .2rem 0 .25rem;
 }
+body[data-theme="fps"] .about-specs { display: flex; flex-direction: column; gap: 0; margin: .35rem 0 0; color: var(--fg-dim); }
+body[data-theme="fps"] .about-specs .spec-row {
+  display: flex; gap: .5rem; align-items: baseline; font-family: var(--disp); font-size: .95rem; line-height: 1.6;
+  padding: .12rem 0; border-bottom: 1px solid var(--glass-line-2);
+}
+body[data-theme="fps"] .about-specs .spec-row:last-child { border-bottom: 0; }
+/* fixed key column so the values share one left edge */
+body[data-theme="fps"] .about-specs .spec-key { flex: 0 0 7.5rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; }
+body[data-theme="fps"] .about-specs .spec-val { color: var(--fg); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+body[data-theme="fps"] .craft-stack { margin-top: .85rem; }
+body[data-theme="fps"] .craft-block {
+  background: rgba(255,240,210,.05); border: 1px solid var(--glass-line-2);
+  border-left: 2px solid var(--accent); border-radius: 0; padding: .7rem .85rem; gap: .3rem; opacity: 1;
+}
+body[data-theme="fps"] .craft-title { margin: 0; color: var(--accent-2); font-family: var(--disp); font-weight: 700; font-size: .92rem; letter-spacing: .16em; text-transform: uppercase; }
+body[data-theme="fps"] .craft-description { margin: 0; color: var(--fg-dim); font-family: var(--body); font-size: .84rem; line-height: 1.55; opacity: 1; }
 
-/* ═══════════════════════════════════════════════════════════════
-   DESIGN POLISH PASS — per-component refits (hero, WORK, right column,
-   content cards). Appended last so they refine the base rules above.
-   ═══════════════════════════════════════════════════════════════ */
+/* ───────── NOW ───────── */
+body[data-theme="fps"] .now-paragraph { color: var(--fg-dim); font-size: .94rem; line-height: 1.65; margin: 0; max-width: 78ch; }
 
-/* ── Hero / NEWS panel + CTA row ── */
-/* width:100% — the flex-centered hero panel used to shrink-to-fit (~600px),
-   leaving it floating off-grid; now its edges line up with the NOW/WORK panels. */
-body[data-theme="fps"] .hero-content { width: 100%; padding: 0 1.3rem 1.35rem; overflow: hidden; }
-body[data-theme="fps"] .fps-news-h { margin: 0 -1.3rem .85rem; padding: .5rem 1.3rem; }
-body[data-theme="fps"] .fps-eyebrow { font-family: var(--mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 .4rem; }
-body[data-theme="fps"] .hero-title { margin: 0 0 .5rem; line-height: .92; }
-/* Balance multi-line wraps — the FR title stranded "TOM." alone on line 2
-   in the ~1150-1350px and ~455-558px bands. No-op when it fits one line. */
-body[data-theme="fps"] .hero-title .title-line { text-wrap: balance; }
-body[data-theme="fps"] .hero-content .hero-quote { margin: 0 0 1.1rem; }
-body[data-theme="fps"] .hero-quote-paragraph { margin: 0; max-width: 54ch; font-size: .94rem; line-height: 1.55; color: var(--fg-dim); }
-body[data-theme="fps"] .hero-signature { margin: .55rem 0 0; font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: none; color: var(--muted); }
-body[data-theme="fps"] .hero-cta { display: inline-flex; align-items: center; vertical-align: top; gap: .6rem; margin-top: 0; padding: .7rem 1.6rem; font-family: var(--disp); font-size: 1.05rem; line-height: 1; text-transform: uppercase; letter-spacing: .08em; border: 1px solid transparent; transition: none; }
-body[data-theme="fps"] .hero-cta .hero-cta-arrow { transition: none; }
-body[data-theme="fps"] #hero-cta { color: #06121f; background: var(--accent); clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%); }
-body[data-theme="fps"] #hero-cta:hover { background: var(--accent-2); }
-body[data-theme="fps"] #fps-cta-ghost { margin-left: .7rem; color: var(--fg); background: transparent; border: 1px solid var(--glass-line-2); border-left: 2px solid var(--accent); clip-path: none; }
-body[data-theme="fps"] #fps-cta-ghost:hover { background: rgba(30, 44, 60, .72); color: #fff; border-left-color: var(--accent-2); }
-
-/* ── WORK buy-menu tiles: inline weapon icon, footer pinned, 3-line clamp ── */
-body[data-theme="fps"] .fps-buy { padding: .65rem .8rem .6rem; gap: .2rem; transition: none; }
-body[data-theme="fps"] .fps-buy-head { display: flex; align-items: center; justify-content: flex-start; gap: .45rem; }
-body[data-theme="fps"] .fps-buy-num { font-family: var(--mono); font-size: .62rem; color: var(--muted); }
-body[data-theme="fps"] .fps-buy-icon { margin-left: auto; align-self: center; display: block; flex: 0 0 auto; width: 34px; height: 18px; margin-top: 0; margin-bottom: 0; color: var(--accent-2); opacity: .85; }
-body[data-theme="fps"] .fps-buy-icon svg { display: block; width: 100%; height: 100%; }
-body[data-theme="fps"] .fps-buy-price { font-family: var(--mono); font-size: .74rem; color: var(--money); font-variant-numeric: tabular-nums; }
-body[data-theme="fps"] .fps-buy h3 { margin: .15rem 0 0; font-family: var(--disp); font-size: 1.25rem; letter-spacing: .03em; text-transform: uppercase; color: var(--accent-2); }
-body[data-theme="fps"] .fps-buy p { margin: .15rem 0 .4rem; font-size: .78rem; color: var(--fg-dim); line-height: 1.4; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
-body[data-theme="fps"] .fps-buy-foot { margin-top: auto; padding-top: .4rem; border-top: 1px solid var(--glass-line-2); display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-/* Anchor the tag row to the tile bottom: with descriptions of different line
-   counts, tags floated at different heights across a row (~18px off), leaving
-   an uneven dead band above the pinned footers. */
-body[data-theme="fps"] .fps-buy .project-info { display: flex; flex-direction: column; flex: 1 0 auto; min-height: 0; }
-body[data-theme="fps"] .fps-buy .project-info .tags { margin-top: auto; }
-body[data-theme="fps"] .fps-buy-cta { color: var(--accent-2); }
-body[data-theme="fps"] .fps-buy:hover .fps-buy-cta { color: #fff; }
-
-/* ── Right column: PROFILE + CONTACTS (tighter, title-bar convention) ── */
-body[data-theme="fps"] #fps-side { gap: 10px; }
-/* padding/margin/width reset: the panels are <section>s, so base.css's generic
-   section rule (padding 2rem + max-width + margin auto) leaked in — it pushed
-   the title bars ~32px inside the panel and misaligned the two panels' edges. */
-body[data-theme="fps"] #fps-side .fps-panel { padding: 0; margin: 0; max-width: none; width: 100%; background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px; box-shadow: var(--hud-shadow); overflow: hidden; }
-body[data-theme="fps"] #fps-side .fps-panel-h { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .5rem .8rem; background: var(--glass-2); border-bottom: 1px solid var(--glass-line-2); font-family: var(--mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
-body[data-theme="fps"] #fps-side .fps-panel-h > span:first-child { color: var(--fg-dim); }
-body[data-theme="fps"] #fps-side .fps-rankcard .fps-panel-h > span:last-child { color: var(--accent-2); }
-body[data-theme="fps"] #fps-side .fps-friends .fps-panel-h > span:last-child { color: var(--money); }
-body[data-theme="fps"] #fps-side .fps-panel-b { padding: .8rem .85rem; }
-body[data-theme="fps"] #fps-side .fps-rank-top { display: flex; align-items: center; gap: .65rem; }
-body[data-theme="fps"] #fps-side .fps-rank-top > div { min-width: 0; }
-body[data-theme="fps"] #fps-side .fps-medal { flex: 0 0 44px; width: 44px; height: 44px; display: grid; place-items: center; }
-body[data-theme="fps"] #fps-side .fps-medal svg { width: 100%; height: 100%; }
-body[data-theme="fps"] #fps-side .fps-rank-name { font-family: var(--disp); font-size: 1.28rem; line-height: 1.02; letter-spacing: .03em; text-transform: uppercase; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-body[data-theme="fps"] #fps-side .fps-rank-tier { margin-top: .12rem; font-family: var(--mono); font-size: .6rem; letter-spacing: .12em; color: var(--accent-2); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-body[data-theme="fps"] #fps-side .fps-xp { margin-top: .65rem; }
-body[data-theme="fps"] #fps-side .fps-xp-bar { position: relative; height: 6px; border-radius: 2px; overflow: hidden; background: rgba(0,0,0,.34); border: 1px solid var(--glass-line-2); }
-body[data-theme="fps"] #fps-side .fps-xp-bar > i { position: absolute; inset: 0 22% 0 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
-body[data-theme="fps"] #fps-side .fps-xp-lbl { display: flex; justify-content: space-between; margin-top: .3rem; font-family: var(--mono); font-size: .56rem; letter-spacing: .08em; color: var(--muted); font-variant-numeric: tabular-nums; }
-body[data-theme="fps"] #fps-side .fps-stats { display: flex; gap: 6px; margin-top: .6rem; }
-body[data-theme="fps"] #fps-side .fps-stat { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .12rem; padding: .5rem .2rem .45rem; text-align: center; background: var(--glass-2); border: 1px solid var(--glass-line-2); border-radius: 2px; }
-body[data-theme="fps"] #fps-side .fps-stat b { font-family: var(--disp); font-size: 1.32rem; line-height: 1; letter-spacing: .01em; color: var(--fg); font-variant-numeric: tabular-nums; }
-body[data-theme="fps"] #fps-side .fps-stat small { font-family: var(--mono); font-size: .5rem; letter-spacing: .1em; line-height: 1; color: var(--muted); text-transform: uppercase; }
-body[data-theme="fps"] #fps-side .fps-friend { display: flex; align-items: center; gap: .6rem; padding: .46rem .8rem; padding-left: calc(.8rem - 2px); border-left: 2px solid transparent; border-bottom: 1px solid var(--glass-line-2); text-decoration: none; color: inherit; transition: none; }
-body[data-theme="fps"] #fps-side .fps-friend:last-child { border-bottom: 0; }
-body[data-theme="fps"] #fps-side .fps-friend:hover { background: rgba(47,128,230,.15); border-left-color: var(--accent); }
-body[data-theme="fps"] #fps-side .fps-friend-av { flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center; background: var(--glass-2); border: 1px solid var(--glass-line-2); border-radius: 2px; color: var(--accent-2); }
-body[data-theme="fps"] #fps-side .fps-friend-av svg { width: 16px; height: 16px; }
-body[data-theme="fps"] #fps-side .fps-friend-who { flex: 1 1 auto; min-width: 0; line-height: 1.12; }
-body[data-theme="fps"] #fps-side .fps-friend-who b { display: block; font-family: var(--disp); font-size: .95rem; letter-spacing: .02em; text-transform: uppercase; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-body[data-theme="fps"] #fps-side .fps-friend-who small { display: block; font-family: var(--mono); font-size: .56rem; letter-spacing: .05em; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-body[data-theme="fps"] #fps-side .fps-friend-st { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--money); box-shadow: 0 0 6px var(--money); }
-body[data-theme="fps"] #fps-side .fps-friend-st.idle { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
-body[data-theme="fps"] #fps-side .fps-friend-st.off { background: var(--muted); box-shadow: none; }
-
-/* ── Content cards: NOW / ABOUT / CONTACT / timeline / footer ── */
-
-/* CONTACT — the invisible blueprint frame reserved dead height; drop it. */
+/* ───────── CONTACT ───────── */
 body[data-theme="fps"] .contact-blueprint-svg { display: none !important; }
 body[data-theme="fps"] .availability-badge {
-  display: flex; align-items: center; gap: .5rem;
-  margin: 0 0 .85rem; padding: 0;
-  font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
-  text-transform: uppercase; color: var(--money);
+  display: flex; align-items: center; gap: .5rem; margin: 0 0 .85rem; padding: 0;
+  font-family: var(--disp); font-weight: 700; font-size: .9rem; letter-spacing: .14em; text-transform: uppercase; color: var(--money);
 }
-body[data-theme="fps"] .availability-dot {
-  width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto;
-  background: var(--money); box-shadow: 0 0 6px var(--money);
-}
-body[data-theme="fps"] .email-link {
-  display: inline-flex; align-items: center; margin: 0;
-  color: var(--money); font-family: var(--mono); transition: none;
-}
-/* 1.2rem: the email is the primary contact action but read smaller/weaker
-   than the secondary GITHUB/LINKEDIN buttons below it. */
-body[data-theme="fps"] .email-link .email-text { font-size: 1.2rem; letter-spacing: .02em; }
-body[data-theme="fps"] .email-link:hover { transform: none; color: var(--accent-2); }
+body[data-theme="fps"] .availability-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; background: var(--money); box-shadow: 0 0 8px var(--money); }
+body[data-theme="fps"] .email-link { display: inline-flex; align-items: center; margin: 0; color: var(--accent-2); font-family: var(--disp); font-weight: 700; transition: none; }
+body[data-theme="fps"] .email-link .email-text { font-size: 1.6rem; letter-spacing: .03em; }
+body[data-theme="fps"] .email-link:hover { transform: none; color: #fff; }
 body[data-theme="fps"] .response-time {
-  display: flex; justify-content: flex-start; align-items: center; gap: .4rem;
-  margin: .55rem 0 0; font-family: var(--mono); font-size: .68rem;
-  letter-spacing: .04em; color: var(--muted);
+  display: flex; justify-content: flex-start; align-items: center; gap: .4rem; margin: .55rem 0 0;
+  font-family: var(--mono); font-size: .68rem; letter-spacing: .04em; color: var(--muted);
 }
 body[data-theme="fps"] .social-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: .9rem; }
 body[data-theme="fps"] .social-btn {
-  display: inline-flex; align-items: center; gap: .3rem; padding: .42rem .9rem;
-  background: var(--glass-2); border: 1px solid var(--glass-line-2);
-  border-left: 2px solid var(--accent); border-radius: 0; clip-path: none;
-  color: var(--fg); font-family: var(--disp); text-transform: uppercase;
-  letter-spacing: .05em; font-size: .98rem; text-decoration: none; transition: none;
+  display: inline-flex; align-items: center; gap: .3rem; padding: .45rem 1rem;
+  background: rgba(255,240,210,.06); border: 1px solid var(--glass-line); border-left: 2px solid var(--accent);
+  border-radius: 0; clip-path: none; color: var(--fg); font-family: var(--disp); font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; font-size: 1.02rem; text-decoration: none; transition: none;
 }
-body[data-theme="fps"] .social-btn:hover {
-  background: rgba(30,44,60,.85); border-color: var(--glass-line);
-  border-left-color: var(--accent-2); color: #fff; transform: none;
-}
+body[data-theme="fps"] .social-btn:hover { background: rgba(232,163,61,.16); border-left-color: var(--accent-2); color: #fff; transform: none; }
 body[data-theme="fps"] .social-btn .link-bracket { display: none; }
 
-/* ABOUT — body copy rhythm. */
-body[data-theme="fps"] .about-text { margin: 0 0 .2rem; }
-body[data-theme="fps"] .about-main,
-body[data-theme="fps"] .about-detail {
-  color: var(--fg-dim); font-size: .92rem; line-height: 1.6; margin: .15rem 0 .7rem;
-}
-/* .7rem (not .3rem): the smaller margin collapsed with .about-specs' .35rem
-   to a 5.6px gap — half the rhythm of every other block gap in the card. */
-body[data-theme="fps"] .about-detail { margin-bottom: .7rem; }
-/* display:block — hidden by default in base.css; the mono HUD labels
-   ("/* Who am I? *​/") fit the tactical look and pace the card. */
-body[data-theme="fps"] .code-comment {
-  display: block; color: var(--muted); font-family: var(--mono); font-size: .7rem;
-  letter-spacing: .06em; margin: .1rem 0 .25rem;
-}
-body[data-theme="fps"] .about-specs {
-  display: flex; flex-direction: column; gap: 0; margin: .35rem 0 0; font-family: var(--mono);
-}
-body[data-theme="fps"] .about-specs .spec-row {
-  display: flex; gap: .5rem; align-items: baseline;
-  font-size: .72rem; line-height: 1.7; letter-spacing: .02em;
-  padding: .14rem 0; border-bottom: 1px solid var(--glass-line-2);
-}
-body[data-theme="fps"] .about-specs .spec-row:last-child { border-bottom: 0; }
-body[data-theme="fps"] .about-specs .spec-key {
-  /* fixed column so the values share one left edge (they started at a ragged
-     x spread of ~40px); 7rem clears the longest key ("EXPERIENCE:" ≈ 89px) */
-  flex: 0 0 7rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em;
-}
-body[data-theme="fps"] .about-specs .spec-val { color: var(--fg-dim); font-variant-numeric: tabular-nums; }
-body[data-theme="fps"] .craft-stack { margin-top: .85rem; }
-body[data-theme="fps"] .craft-block {
-  background: var(--glass-2); border: 1px solid var(--glass-line-2);
-  border-left: 2px solid var(--accent); border-radius: 0;
-  padding: .7rem .85rem; gap: .3rem; opacity: 1;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
-}
-body[data-theme="fps"] .craft-title {
-  margin: 0; color: var(--accent-2); font-family: var(--mono); font-weight: 700;
-  font-size: .66rem; letter-spacing: .2em; text-transform: uppercase;
-}
-body[data-theme="fps"] .craft-description {
-  margin: 0; color: var(--fg-dim); font-family: var(--body);
-  font-size: .82rem; line-height: 1.55; opacity: 1;
-}
+/* No 3D heart in the tactical menu. */
+body[data-theme="fps"] #heart-experiment { display: none !important; }
 
-/* NOW — paragraph scale matches the ABOUT body; 75ch caps the measure
-   (the full-width panel let lines run ~130 characters at 1440px). */
-body[data-theme="fps"] .now-paragraph { color: var(--fg-dim); font-size: .92rem; line-height: 1.6; margin: 0; max-width: 75ch; }
-
-/* HISTORY — retint the git graph to the fps palette. Without these the
-   timeline kept its default neon green/red/teal (terminal palette), the one
-   loud clash left on the page. Cool blues carry the graph; gold marks hashes. */
+/* ───────── HISTORY: git graph in team colours ───────── */
 body[data-theme="fps"] {
-  --git-work-color: #2f80e6;
-  --git-project-color: #f4b73a;
-  --git-education-color: #7cbcff;
-  --git-trunk-color: rgba(150, 190, 228, .35);
-  --git-hash-color: #f4b73a;
-  --git-bg: rgba(13, 19, 29, .8);
-  --git-bg-solid: rgba(16, 24, 34, .97);
-  --git-overlay-bg: rgba(12, 18, 28, .96);
-  --git-border: rgba(150, 190, 228, .16);
-  --git-text: #eef4fa;
-  --git-text-secondary: #b3c2d0;
-  --git-text-muted: #8496a4;
+  --git-work-color: #e8a33d;
+  --git-project-color: #a3d660;
+  --git-education-color: #6f9fd8;
+  --git-trunk-color: rgba(255, 232, 190, .3);
+  --git-hash-color: #ffc965;
+  --git-bg: rgba(17, 16, 14, .84);
+  --git-bg-solid: rgba(24, 22, 19, .97);
+  --git-overlay-bg: rgba(16, 15, 13, .97);
+  --git-border: rgba(255, 232, 190, .12);
+  --git-text: #f4efe5;
+  --git-text-secondary: #c8bfae;
+  --git-text-muted: #91887a;
 }
-/* The timeline JS stamps its hardcoded palette as an inline --branch-color on
-   every commit marker (desktop pills + mobile cards), which beats the vars
-   above — remap it per type, !important to outrank the inline style. */
+/* The timeline JS stamps an inline --branch-color per commit marker, which
+   beats the vars above — remap per type, !important to outrank the inline style. */
 body[data-theme="fps"] .git-commit-work,
 body[data-theme="fps"] .mobile-commit-work { --branch-color: var(--git-work-color) !important; }
 body[data-theme="fps"] .git-commit-project,
 body[data-theme="fps"] .mobile-commit-project { --branch-color: var(--git-project-color) !important; }
 body[data-theme="fps"] .git-commit-education,
 body[data-theme="fps"] .mobile-commit-education { --branch-color: var(--git-education-color) !important; }
-
-/* The timeline section is full-bleed (base strips its side padding for the
-   graph), which left the glass viewport 2rem wider than every other panel.
-   Pull it back onto the shared panel grid. (Desktop graph shows >1024 only.) */
+/* Full-bleed section → pull the plate back onto the shared panel grid. */
 @media (min-width: 1025px) {
   body[data-theme="fps"] .git-timeline-viewport { width: auto; margin: 0 2rem; }
 }
-/* 769-1024 shows the vertical mobile list instead — align it to the same
-   grid as the other panels (it sat 24px off the shared left edge). */
 @media (min-width: 769px) and (max-width: 1024px) {
   body[data-theme="fps"] .git-timeline-mobile { padding: 0 2rem; }
 }
-/* Commit-detail overlay: align to the panel grid, keep it inside the section
-   (it spilled ~116px past the panel onto the CONTACT heading), and remaining
-   loud terminal-palette leftovers → fps palette. */
 body[data-theme="fps"] .git-timeline-overlay.fixed-corner { left: 2rem; }
 body[data-theme="fps"] .git-timeline-overlay .overlay-content { max-height: min(370px, 52vh); overflow-y: auto; }
 body[data-theme="fps"] .overlay-hash:empty { display: none; }
-body[data-theme="fps"] .git-now-marker span {
-  background: var(--red);
-  box-shadow: 0 2px 10px rgba(255, 70, 85, .4);
-}
-body[data-theme="fps"] .git-commit-work:hover { box-shadow: 0 4px 16px rgba(47, 128, 230, .25); }
-body[data-theme="fps"] .git-commit-project:hover { box-shadow: 0 4px 16px rgba(244, 183, 58, .25); }
-body[data-theme="fps"] .git-commit-education:hover { box-shadow: 0 4px 16px rgba(124, 188, 255, .25); }
-
-/* HISTORY — scroll hint on the timeline plate. */
-body[data-theme="fps"] .git-timeline-scroll-hint {
-  font-family: var(--mono); font-size: .6rem; letter-spacing: .1em;
-  text-transform: uppercase; color: var(--muted);
-}
+body[data-theme="fps"] .git-now-marker span { background: var(--red); box-shadow: 0 2px 10px rgba(232, 71, 60, .4); }
+body[data-theme="fps"] .git-commit-work:hover { box-shadow: 0 4px 16px rgba(232, 163, 61, .3); }
+body[data-theme="fps"] .git-commit-project:hover { box-shadow: 0 4px 16px rgba(163, 214, 96, .3); }
+body[data-theme="fps"] .git-commit-education:hover { box-shadow: 0 4px 16px rgba(111, 159, 216, .3); }
+body[data-theme="fps"] .git-timeline-scroll-hint { font-family: var(--disp); font-weight: 600; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 body[data-theme="fps"] .git-timeline-scroll-hint .scroll-hint-text { color: var(--muted); }
 body[data-theme="fps"] .git-timeline-scroll-hint .scroll-hint-arrow { color: var(--accent-2); }
 
-/* FOOTER — sits on the bright field: cool ink, tight mono. */
+/* ───────── FOOTER (card styling lives in css/site-footer.css) ───────── */
 body[data-theme="fps"] .footer-session,
 body[data-theme="fps"] .footer-version,
 body[data-theme="fps"] .footer-copyright,
-body[data-theme="fps"] .footer-sep {
-  color: var(--ink-dim); font-family: var(--mono);
-  font-size: .68rem; letter-spacing: .08em;
-  text-shadow: 0 1px 0 rgba(255,255,255,.45);
-}
+body[data-theme="fps"] .footer-sep { color: var(--fg-dim); font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; }
 body[data-theme="fps"] .footer-sep { opacity: .5; }
-/* base.css hides .footer-scale but leaves its preceding separator — the info
-   row ended with an orphaned trailing "|". */
 body[data-theme="fps"] .footer-version + .footer-sep { display: none; }
 body[data-theme="fps"] .cathode-guide-toggle {
-  color: var(--ink-dim); font-family: var(--mono); font-size: .64rem; letter-spacing: .08em;
-  background: transparent; border: 1px solid rgba(26,37,48,.28); border-radius: 2px;
-  padding: .22rem .55rem; transition: none; text-shadow: 0 1px 0 rgba(255,255,255,.45);
+  color: var(--fg-dim); font-family: var(--mono); font-size: .64rem; letter-spacing: .08em;
+  background: transparent; border: 1px solid var(--glass-line); border-radius: 0;
+  padding: .22rem .55rem; transition: none;
 }
-body[data-theme="fps"] .cathode-guide-toggle:hover { color: var(--ink); border-color: var(--accent); }
+body[data-theme="fps"] .cathode-guide-toggle:hover { color: #fff; border-color: var(--accent); }
 
-/* ── Mobile refits (kept after the polish pass so they win the cascade) ── */
-@media (max-width: 640px) {
-  /* Stack the two hero CTAs full-width: side by side they wrapped, and the
-     ghost's margin-left left the second line staggered off (and colliding
-     with) the first. 640px, not 560: the FR labels overflow up to ~625px. */
-  body[data-theme="fps"] .hero-cta { display: flex; width: 100%; justify-content: center; }
-  body[data-theme="fps"] #fps-cta-ghost { margin-left: 0; margin-top: .55rem; }
-  /* The ribbon's hint span clipped mid-word below ~600px — keep the title. */
-  #fps-ribbon .fps-ribbon-sep, #fps-ribbon .fps-ribbon-sep + span { display: none; }
+/* ───────── Cathode (guide mascot) in fps colours ─────────
+   The kit's typewriter clamp cropped the proportional fps copy mid-word:
+   lift it and fade lines in instead. */
+body[data-theme="fps"] #cathode-guide {
+  --cg-ink: #ffd48a;
+  --cg-ink-dim: rgba(232, 163, 61, .18);
+  --cg-paper: rgba(16, 14, 11, .96);
 }
-@media (max-width: 560px) {
-  /* The NEWS bar can't fit label + full timestamp on one narrow line. */
-  body[data-theme="fps"] .fps-clock { display: none; }
+body[data-theme="fps"] #cathode-guide .cg-bubble { max-width: 244px; border: 1px solid rgba(232,163,61,.65); box-shadow: 3px 3px 0 rgba(0,0,0,.5), 0 0 14px rgba(232,163,61,.15); }
+body[data-theme="fps"] #cathode-guide .cg-bubble.cg-show .cg-line {
+  animation: cg-life-fadeline .38s ease var(--cg-delay, 0ms) both;
+  max-width: none; overflow: visible; white-space: normal;
 }
-/* ── Header edge alignment on mobile/tablet ── */
+body[data-theme="fps"] #cathode-guide .cg-line::after { display: none; }
+body[data-theme="fps"] #cathode-guide .cg-bubble::after,
+body[data-theme="fps"] #cathode-guide .cg-bubble::before { border-color: rgba(232,163,61,.65); }
+body[data-theme="fps"] #cathode-guide .cg-bar { border-bottom: 1px solid rgba(232,163,61,.4); }
+body[data-theme="fps"] #cathode-guide .cg-bar i { display: none; }
+body[data-theme="fps"] #cathode-guide .cg-bar b { font-family: var(--disp); font-weight: 700; font-size: 9px; letter-spacing: .18em; color: var(--accent-2); }
+@media (min-width: 900px) {
+  /* In front of the content plates, under the crosshair + fixed HUD bar. */
+  body[data-theme="fps"] #cathode-guide { z-index: 47; }
+  /* Floor lift only for the static dock (reduced motion / before the life
+     engine mounts); once alive, probeFloor() reads #fps-telemetry's height. */
+  body[data-theme="fps"] #cathode-guide:not(.cg-alive) { bottom: 64px; }
+}
+
+/* ───────── responsive: rail → bottom bar, no side column ───────── */
+@media (max-width: 899px) {
+  /* 112px clears the bottom rail + HUD bar with breathing room. */
+  body[data-theme="fps"].fps-hud main#main-content { padding-left: 0; padding-right: 0; padding-bottom: 112px; }
+  body[data-theme="fps"] .hero { padding-top: 92px; }
+  /* Rail full-bleed + opaque, hugging the 29px HUD bar. */
+  #fps-rail {
+    left: 0; right: 0; top: auto; bottom: 29px; transform: none;
+    flex-direction: row; justify-content: center; gap: 4px; padding: 4px 6px;
+    background: #110f0c; backdrop-filter: none; -webkit-backdrop-filter: none;
+    border-left: 0; border-right: 0; border-bottom: 0;
+    box-shadow: 0 -8px 20px -8px rgba(30,18,4,.5);
+  }
+  #fps-rail::before { display: none; }
+  #fps-rail .fps-rail-btn { width: 40px; height: 40px; }
+  #fps-rail .fps-rail-btn[data-callout]::after { display: none; }
+  #fps-rail .fps-rail-gap { width: 1px; height: auto; margin: 6px 4px; }
+  #fps-rail .fps-rail-btn.fps-rail-active::before { left: 8px; right: 8px; top: auto; bottom: -4px; width: auto; height: 3px; }
+  body[data-theme="fps"] .section-title { font-size: 1.6rem; }
+  #fps-side { display: none !important; }
+  /* Mobile HUD bar: the net_graph line only, scrolled internally. */
+  #fps-telemetry { height: 29px; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 1rem; }
+  #fps-telemetry .fps-hud-l, #fps-telemetry .fps-hud-r { display: none; }
+  #fps-telemetry .fps-hud-c { gap: .9rem; font-size: .6rem; }
+  #fps-telemetry .fps-m { flex: 0 0 auto; }
+  body[data-theme="fps"] #work-grid { grid-template-columns: 1fr; }
+  /* Panels go near-opaque and drop the blur (cheaper, never washed out). */
+  body[data-theme="fps"] .fps-buy.fade-in-up { opacity: 1; }
+  body[data-theme="fps"] .hero-content,
+  body[data-theme="fps"] .now-card,
+  body[data-theme="fps"] .about-card,
+  body[data-theme="fps"] .contact-card,
+  body[data-theme="fps"] .git-timeline-viewport,
+  body[data-theme="fps"] .fps-buy { background: rgba(20,18,15,.93); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  body[data-theme="fps"] .social-links { justify-content: flex-start; gap: 8px; }
+  #fps-scene .fps-dust { display: none; }
+}
 @media (max-width: 768px) {
-  /* base.css gives the header its own 16px padding here — the fps desktop
-     gutters would double-indent the brand and controls. */
   body[data-theme="fps"] .header-brand { padding-left: 0; }
   body[data-theme="fps"] #header-controls { padding-right: 0; }
-  /* The shared menu compensates for header padding with right:-0.5rem; under
-     fps the toggle already sits inside, so the menu jutted 8px past its chip. */
   body[data-theme="fps"] .language-switcher-menu { right: 0; }
+}
+@media (max-width: 640px) {
+  /* Stack the two hero CTAs full-width (FR labels overflow up to ~625px). */
+  body[data-theme="fps"] .hero-cta { display: flex; width: 100%; justify-content: center; }
+  body[data-theme="fps"] #fps-cta-ghost { margin-left: 0; margin-top: .55rem; }
+  #fps-ribbon .fps-ribbon-sep, #fps-ribbon .fps-ribbon-sep + span { display: none; }
+  body[data-theme="fps"] .fps-callout { font-size: .9rem; }
+}
+@media (max-width: 560px) {
+  body[data-theme="fps"] .fps-clock { display: none; }
 }
 
 /* ───────── reduced motion ───────── */
 @media (prefers-reduced-motion: reduce) {
   #fps-scene .fps-layer { transform: none !important; transition: none !important; }
+  #fps-scene .fps-dust { animation: none; }
   #fps-fx .fps-hit, #fps-fx .fps-dmg { animation: none !important; }
+  #fps-side, #fps-side #fps-rd-me { transition: none; }
+  #fps-side .fps-rd-ping, #fps-score.fps-sc-bomb .fps-sc-clock b { animation: none; }
   body[data-theme="fps"] .fps-buy, body[data-theme="fps"] .fps-tab { transition: none !important; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   BLOG + ARTICLE (blog.html) — the fps theme shipped with NO blog CSS,
-   so article body copy (near-white --fg) rendered on the bright --field
-   with no panel behind it (unreadable) and the listing header sat washed
-   out. blog.html loads a lean script set (no Carousel), so ThemeInit
-   throws before initFpsEffects and NONE of the HUD chrome is injected here
-   — the blog is a CSS-only surface, styled to read as a tactical "intel"
-   dossier: dark glass plates over the same cool concrete field.
+   BLOG + ARTICLE (blog.html). blog.html loads a lean script set, so
+   ThemeInit throws before initFpsEffects and NONE of the HUD chrome is
+   injected — a CSS-only surface: glass "intel" dossiers over the sky.
    ═══════════════════════════════════════════════════════════════ */
-
-/* ── Listing header — sits directly on the bright field → dark ink ── */
 body[data-theme="fps"] .blog-page-title {
-  font-family: var(--disp); text-transform: uppercase; letter-spacing: .04em; color: var(--ink);
-  text-shadow: 0 1px 0 rgba(255,255,255,.55), 0 0 18px rgba(255,255,255,.4);
+  font-family: var(--stencil); font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255,244,220,.55), 0 0 22px rgba(255,240,210,.5);
 }
 body[data-theme="fps"] .blog-page-subtitle {
-  font-family: var(--mono); font-size: .82rem; letter-spacing: .02em; color: var(--ink-dim);
-  opacity: 1; text-shadow: 0 1px 0 rgba(255,255,255,.4);
+  font-family: var(--disp); font-weight: 600; font-size: 1rem; letter-spacing: .06em; color: var(--ink-dim);
+  opacity: 1; text-shadow: 0 1px 0 rgba(255,244,220,.4);
 }
 body[data-theme="fps"] .blog-list-loading .loading-text,
-body[data-theme="fps"] .blog-list-loading .loading-spinner-text {
-  font-family: var(--mono); color: var(--ink-dim); text-shadow: 0 1px 0 rgba(255,255,255,.4);
-}
-
-/* ── Listing cards → intel dossiers (reuse the .fps-buy glass tile) ── */
-body[data-theme="fps"] .blog-list .blog-card.fps-buy { display: flex; flex-direction: column; padding: .7rem .9rem .65rem; }
+body[data-theme="fps"] .blog-list-loading .loading-spinner-text { font-family: var(--mono); color: var(--ink-dim); }
+body[data-theme="fps"] .blog-list .blog-card.fps-buy { display: flex; flex-direction: column; padding: .75rem .95rem .7rem; border: 1px solid var(--glass-line); }
 body[data-theme="fps"] .blog-list .fps-buy .fps-buy-head { margin-bottom: .1rem; }
 body[data-theme="fps"] .fps-buy .blog-card-image {
-  margin: .5rem -.9rem .15rem; max-height: 168px; overflow: hidden;
+  margin: .5rem -.95rem .15rem; max-height: 168px; overflow: hidden;
   border-top: 1px solid var(--glass-line-2); border-bottom: 1px solid var(--glass-line-2);
 }
-body[data-theme="fps"] .fps-buy .blog-card-image img {
-  width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.92) contrast(1.02);
-}
+body[data-theme="fps"] .fps-buy .blog-card-image img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.92) contrast(1.02); }
 body[data-theme="fps"] .fps-buy .blog-card-content { padding: 0; display: flex; flex-direction: column; }
 body[data-theme="fps"] .fps-buy .blog-card-title {
-  margin: .25rem 0 0; font-family: var(--disp); font-size: 1.32rem; line-height: 1.05;
-  letter-spacing: .03em; text-transform: uppercase; color: var(--accent-2);
+  margin: .25rem 0 0; font-family: var(--disp); font-weight: 700; font-size: 1.5rem; line-height: 1.05;
+  letter-spacing: .03em; text-transform: uppercase; color: var(--fg);
 }
+body[data-theme="fps"] .fps-buy:hover .blog-card-title { color: var(--accent-2); }
 body[data-theme="fps"] .fps-buy .blog-card-excerpt {
-  margin: .25rem 0 .5rem; font-size: .82rem; line-height: 1.5; color: var(--fg-dim);
+  margin: .25rem 0 .5rem; font-size: .84rem; line-height: 1.5; color: var(--fg-dim);
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
 }
 body[data-theme="fps"] .fps-buy .blog-card-meta {
   display: flex; align-items: center; gap: .55rem; margin-top: auto; padding-top: .45rem;
-  border-top: 1px solid var(--glass-line-2); font-family: var(--mono); font-size: .6rem;
-  letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+  border-top: 1px solid var(--glass-line-2); font-family: var(--disp); font-weight: 600; font-size: .76rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
 }
 body[data-theme="fps"] .fps-buy .blog-date { color: var(--accent-2); font-variant-numeric: tabular-nums; }
 body[data-theme="fps"] .fps-buy .blog-reading-time { color: var(--muted); }
 body[data-theme="fps"] .fps-buy .blog-reading-time::before { content: "· "; color: var(--glass-line); }
-
-/* ── "Load more" pagination → HUD button ── */
 body[data-theme="fps"] .pagination-btn {
-  font-family: var(--disp); text-transform: uppercase; letter-spacing: .08em; font-size: 1.02rem;
-  color: var(--fg); background: var(--glass-2); border: 1px solid var(--glass-line-2);
-  border-left: 2px solid var(--accent); border-radius: 0;
-  clip-path: polygon(9px 0, 100% 0, calc(100% - 9px) 100%, 0 100%);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: none;
+  font-family: var(--disp); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: 1.05rem;
+  color: var(--fg); background: var(--glass-2); border: 1px solid var(--glass-line);
+  border-left: 2px solid var(--accent); border-radius: 0; transition: none;
 }
-body[data-theme="fps"] .pagination-btn:hover:not(.disabled) {
-  background: rgba(30,44,60,.9); border-color: var(--glass-line); border-left-color: var(--accent-2); color: #fff;
-}
-
-/* ── Article view → a "mission briefing" glass dossier over the field ── */
+body[data-theme="fps"] .pagination-btn:hover:not(.disabled) { background: rgba(58,44,22,.95); border-left-color: var(--accent-2); color: #fff; }
 body[data-theme="fps"] .article-page {
-  margin: 92px auto 3rem; padding: 1.7rem 1.9rem 2.1rem;
-  background: var(--glass); border: 1px solid var(--glass-line); border-radius: 2px;
-  backdrop-filter: blur(10px) saturate(1.05); -webkit-backdrop-filter: blur(10px) saturate(1.05);
-  box-shadow: var(--hud-shadow), inset 0 1px 0 rgba(255,255,255,.08), inset 0 0 0 1px rgba(10,16,26,.4);
+  position: relative; margin: 92px auto 3rem; padding: 1.7rem 1.9rem 2.1rem;
+  background: var(--glass); border: 1px solid var(--glass-line); border-radius: 0;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: var(--hud-shadow);
 }
-body[data-theme="fps"] .back-link {
-  font-family: var(--mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--accent-2); opacity: 1; transition: none;
-}
+body[data-theme="fps"] .article-page::before { content: ""; position: absolute; left: -1px; top: -1px; width: 64px; height: 2px; background: var(--accent); }
+body[data-theme="fps"] .back-link { font-family: var(--disp); font-weight: 700; font-size: .84rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent-2); opacity: 1; transition: none; }
 body[data-theme="fps"] .back-link:hover { color: #fff; }
-body[data-theme="fps"] .article-meta {
-  font-family: var(--mono); font-size: .64rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--muted); opacity: 1;
-}
+body[data-theme="fps"] .article-meta { font-family: var(--disp); font-weight: 600; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); opacity: 1; }
 body[data-theme="fps"] .article-date { color: var(--accent-2); font-variant-numeric: tabular-nums; }
 body[data-theme="fps"] .article-reading-time { color: var(--muted); }
 body[data-theme="fps"] .meta-separator { color: var(--glass-line); opacity: 1; }
 body[data-theme="fps"] .article-title {
-  font-family: var(--disp); text-transform: uppercase; letter-spacing: .02em; color: var(--fg);
-  font-size: clamp(2rem, 4.6vw, 3rem); line-height: .98; margin-top: .35rem;
+  font-family: var(--disp); font-weight: 700; text-transform: uppercase; letter-spacing: .02em; color: var(--fg);
+  font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: .95; margin-top: .35rem;
 }
-body[data-theme="fps"] .article-cover { border: 1px solid var(--glass-line-2); border-radius: 2px; }
-
-/* Article body — near-white on the glass now reads; mono-accented structure. */
+body[data-theme="fps"] .article-cover { border: 1px solid var(--glass-line-2); border-radius: 0; }
 body[data-theme="fps"] .article-content { color: var(--fg-dim); font-size: 1.02rem; line-height: 1.75; }
 body[data-theme="fps"] .article-content h1,
 body[data-theme="fps"] .article-content h2,
 body[data-theme="fps"] .article-content h3,
-body[data-theme="fps"] .article-content h4 {
-  font-family: var(--disp); text-transform: uppercase; letter-spacing: .02em; color: var(--fg);
-}
-body[data-theme="fps"] .article-content h2 {
-  color: var(--accent-2); border-bottom: 1px solid var(--glass-line-2); padding-bottom: .35rem;
-}
-body[data-theme="fps"] .article-content h2::before { content: "// "; font-family: var(--mono); color: var(--accent); }
+body[data-theme="fps"] .article-content h4 { font-family: var(--disp); font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--fg); }
+body[data-theme="fps"] .article-content h2 { color: var(--accent-2); border-bottom: 1px solid var(--glass-line-2); padding-bottom: .35rem; }
+body[data-theme="fps"] .article-content h2::before { content: "// "; color: var(--accent); }
 body[data-theme="fps"] .article-content h3 { color: var(--accent-2); }
 body[data-theme="fps"] .article-content strong { color: var(--fg); }
-body[data-theme="fps"] .article-content a {
-  color: var(--accent-2); text-decoration-color: rgba(124,188,255,.5);
-}
+body[data-theme="fps"] .article-content a { color: var(--accent-2); text-decoration-color: rgba(255,201,101,.5); }
 body[data-theme="fps"] .article-content a:hover { color: #fff; text-decoration-color: #fff; }
 body[data-theme="fps"] .article-content ul li::marker,
 body[data-theme="fps"] .article-content ol li::marker { color: var(--accent); }
-body[data-theme="fps"] .article-content blockquote {
-  border-left: 2px solid var(--accent); border-radius: 0; background: var(--glass-2);
-  color: var(--fg-dim); font-style: italic;
-}
-body[data-theme="fps"] .article-content pre {
-  background: rgba(6,10,16,.72); border: 1px solid var(--glass-line-2); border-left: 2px solid var(--accent);
-  border-radius: 0; color: var(--fg); font-family: var(--mono);
-}
-body[data-theme="fps"] .article-content code {
-  background: var(--glass-2); border: 1px solid var(--glass-line-2); border-radius: 0;
-  color: var(--accent-2); font-family: var(--mono);
-}
+body[data-theme="fps"] .article-content blockquote { border-left: 2px solid var(--accent); border-radius: 0; background: rgba(255,240,210,.05); color: var(--fg-dim); font-style: italic; }
+body[data-theme="fps"] .article-content pre { background: rgba(6,5,4,.75); border: 1px solid var(--glass-line-2); border-left: 2px solid var(--accent); border-radius: 0; color: var(--fg); font-family: var(--mono); }
+body[data-theme="fps"] .article-content code { background: rgba(255,240,210,.07); border: 1px solid var(--glass-line-2); border-radius: 0; color: var(--accent-2); font-family: var(--mono); }
 body[data-theme="fps"] .article-content pre code { background: none; border: 0; color: var(--fg); }
 body[data-theme="fps"] .article-content hr { border-top: 1px solid var(--glass-line-2); background: none; }
-body[data-theme="fps"] .article-content img { border: 1px solid var(--glass-line-2); border-radius: 2px; }
+body[data-theme="fps"] .article-content img { border: 1px solid var(--glass-line-2); border-radius: 0; }
 body[data-theme="fps"] .article-footer { border-top: 1px solid var(--glass-line-2); }
-
-/* ── Empty / not-found / private states ── */
-/* not-found + no-articles land in #blog-list, directly on the field → dark ink. */
+/* not-found + no-articles land straight on the sky → dark ink. */
 body[data-theme="fps"] .no-articles,
-body[data-theme="fps"] .not-found p {
-  font-family: var(--mono); color: var(--ink-dim); text-shadow: 0 1px 0 rgba(255,255,255,.4);
-}
-body[data-theme="fps"] .not-found h2 {
-  font-family: var(--disp); text-transform: uppercase; letter-spacing: .03em; color: var(--ink);
-  text-shadow: 0 1px 0 rgba(255,255,255,.5);
-}
-/* password + access-denied prompts render inside the glass .article-page, so
-   their text already reads; just theme the interactive bits. */
+body[data-theme="fps"] .not-found p { font-family: var(--mono); color: var(--ink-dim); }
+body[data-theme="fps"] .not-found h2 { font-family: var(--stencil); font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--ink); }
 body[data-theme="fps"] .password-prompt h3,
-body[data-theme="fps"] .access-denied-prompt h3 {
-  font-family: var(--disp); text-transform: uppercase; letter-spacing: .03em; color: var(--fg);
-}
+body[data-theme="fps"] .access-denied-prompt h3 { font-family: var(--disp); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--fg); }
 body[data-theme="fps"] .password-input {
-  font-family: var(--mono); color: var(--fg); background: var(--glass-2);
-  border: 1px solid var(--glass-line-2); border-left: 2px solid var(--accent); border-radius: 0;
+  font-family: var(--mono); color: var(--fg); background: rgba(255,240,210,.06);
+  border: 1px solid var(--glass-line); border-left: 2px solid var(--accent); border-radius: 0;
 }
 body[data-theme="fps"] .password-input:focus { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 body[data-theme="fps"] .password-submit,
 body[data-theme="fps"] .access-denied-back {
-  font-family: var(--disp); text-transform: uppercase; letter-spacing: .06em;
-  color: #06121f; background: var(--accent); border: 0; border-radius: 0;
-  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  font-family: var(--disp); font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+  color: #fff; background: linear-gradient(180deg, var(--go-2), var(--go)); border: 0; border-radius: 0;
 }
 body[data-theme="fps"] .password-submit:hover,
-body[data-theme="fps"] .access-denied-back:hover { background: var(--accent-2); }
+body[data-theme="fps"] .access-denied-back:hover { background: linear-gradient(180deg, #74c844, #56a52d); }
 body[data-theme="fps"] .password-error { font-family: var(--mono); color: var(--red); }
-
-/* ── Blog footer sits on the field: cool ink, no dimming ── */
 body[data-theme="fps"] .blog-footer { opacity: 1; }
-body[data-theme="fps"] .blog-footer .footer-copyright {
-  color: var(--ink-dim); font-family: var(--mono); letter-spacing: .08em;
-  text-shadow: 0 1px 0 rgba(255,255,255,.45);
-}
-
-/* ── Blog responsive: tighten the article dossier on small screens ── */
+body[data-theme="fps"] .blog-footer .footer-copyright { color: var(--ink-dim); font-family: var(--mono); letter-spacing: .08em; }
 @media (max-width: 768px) {
   body[data-theme="fps"] .article-page { margin-top: 84px; padding: 1.2rem 1.15rem 1.6rem; }
 }
