@@ -351,7 +351,6 @@ void main() {
 
     function createScene(scene) {
         const canvas = scene.querySelector('.sf-scene-canvas');
-        const toggle = scene.querySelector('.sf-scene-toggle');
         const root = scene.closest('.site-footer') || document.body;
         if (!canvas) return;
 
@@ -378,10 +377,10 @@ void main() {
             tiltTarget: [0, 0],
             crop: [0, 0, 1, 1],
             fade: [0.1, 0.06],
-            paused: false,
+            videoRequested: false,
+            awaitingGesture: false,
             dirty: true
         };
-        try { state.paused = localStorage.getItem('sf_scene_paused') === '1'; } catch {}
 
         let program, loc, texture;
         function setupGL() {
@@ -460,18 +459,21 @@ void main() {
             requestFrame();
         }
 
-        function loadPoster(key) {
-            const img = new Image();
-            img.decoding = 'async';
-            img.onload = () => {
-                if (state.usingVideo || gl.isContextLost()) return;
+        // The still is the page's own <img> poster (srcset picks its size), so it is
+        // downloaded once and serves both the no-WebGL fallback and the first frame.
+        function loadPoster() {
+            const img = scene.querySelector('.sf-scene-poster');
+            if (!img) return;
+            const upload = () => {
+                if (state.usingVideo || gl.isContextLost() || !img.naturalWidth) return;
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
                 gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
                 goLive();
             };
-            img.src = ASSET_DIR + config[key].poster;
+            if (img.complete && img.naturalWidth) upload();
+            else img.addEventListener('load', upload, { once: true });
         }
 
         function loadVideo(key) {
@@ -479,6 +481,7 @@ void main() {
             const video = document.createElement('video');
             video.muted = true;
             video.defaultMuted = true;
+            video.autoplay = true;
             video.loop = true;
             video.playsInline = true;
             video.setAttribute('muted', '');
@@ -494,7 +497,6 @@ void main() {
                 state.video = null;
                 state.usingVideo = false;
                 if (key === 'hd') loadVideo('sd');
-                else updateToggle();
             }, { once: true });
             video.addEventListener('loadeddata', () => {
                 if (state.video !== video) return;
@@ -517,36 +519,30 @@ void main() {
             syncPlayback();
         }
 
+        // Autoplay while on screen; stopped off screen and in background tabs.
+        const GESTURES = ['pointerdown', 'keydown', 'touchend'];
+        function retryOnGesture() {
+            state.awaitingGesture = false;
+            GESTURES.forEach(ev => window.removeEventListener(ev, retryOnGesture, true));
+            syncPlayback();
+        }
+
         function syncPlayback() {
             const video = state.video;
             if (!video) return;
-            const shouldPlay = state.visible && !state.paused && !document.hidden;
+            const shouldPlay = state.visible && !document.hidden;
             if (shouldPlay && video.paused) {
-                video.play().then(updateToggle).catch(() => {
-                    // Autoplay refused (low-power mode…): the still stays, the button offers play.
-                    state.paused = true;
-                    updateToggle();
+                video.play().catch(() => {
+                    // Autoplay refused (iOS low-power mode…): the first frame stays on
+                    // screen and the loop starts on the visitor's first tap or key.
+                    if (state.awaitingGesture) return;
+                    state.awaitingGesture = true;
+                    GESTURES.forEach(ev => window.addEventListener(ev, retryOnGesture, { capture: true, passive: true }));
                 });
             } else if (!shouldPlay && !video.paused) {
                 video.pause();
             }
-            updateToggle();
         }
-
-        function updateToggle() {
-            if (!toggle) return;
-            toggle.hidden = !state.video;
-            toggle.setAttribute('aria-pressed', String(state.paused));
-            toggle.setAttribute('aria-label', state.paused
-                ? t('footer.play', toggle.dataset.labelPlay)
-                : t('footer.pause', toggle.dataset.labelPause));
-        }
-
-        toggle?.addEventListener('click', () => {
-            state.paused = !state.paused;
-            try { localStorage.setItem('sf_scene_paused', state.paused ? '1' : '0'); } catch {}
-            syncPlayback();
-        });
 
         // Reveal completes once most of the scene is on screen (some themes keep
         // fixed chrome over the page bottom, so it can't rely on the very end).
@@ -645,15 +641,24 @@ void main() {
             gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
 
+        // Lazy: the video only starts downloading when the scene is about to show
+        // (never with reduced motion or Save-Data, where the still is enough).
+        const conn = navigator.connection || {};
+        const wantsVideo = !still && !conn.saveData;
+
         const io = new IntersectionObserver(([entry]) => {
             state.visible = entry.isIntersecting;
+            if (state.visible && wantsVideo && !state.videoRequested) {
+                state.videoRequested = true;
+                loadVideo(pickSource());
+            }
             syncPlayback();
             if (state.visible) {
                 state.lastTime = 0;
                 state.dirty = true;
                 requestFrame();
             }
-        }, { rootMargin: '120px 0px' });
+        }, { rootMargin: '200px 0px' });
 
         canvas.addEventListener('webglcontextlost', e => {
             e.preventDefault();
@@ -669,7 +674,7 @@ void main() {
                 state.frameDirty = true;
                 goLive();
             } else {
-                loadPoster(state.source === config.sd ? 'sd' : 'hd');
+                loadPoster();
             }
         });
 
@@ -680,17 +685,14 @@ void main() {
             return;
         }
         resize();
-        const key = pickSource();
-        loadPoster(key);
+        loadPoster();
         if (!still) {
-            loadVideo(key);
             window.addEventListener('scroll', requestFrame, { passive: true });
             window.addEventListener('pointermove', onPointer, { passive: true });
         }
         io.observe(scene);
         new ResizeObserver(() => { resize(); requestFrame(); }).observe(scene);
         document.addEventListener('visibilitychange', syncPlayback);
-        updateToggle();
     }
 
     // ─── Boot ───
@@ -706,26 +708,48 @@ void main() {
         initReveal(root);
         initCtaHandoff(root);
 
-        // The scene (video + WebGL) only wakes up when the footer is getting close.
+        // Nothing of the scene downloads up front. The still and WebGL wake up when
+        // the footer is getting close; the video itself waits until the scene is
+        // about to show (see createScene).
         const scene = root.querySelector('.sf-scene');
+        if (!scene) return;
 
-        // The <img> fallback is lazy: point it at this theme's painting before it loads.
-        const poster = scene?.querySelector('.sf-scene-poster');
-        const config = sceneFor(document.body.dataset.theme || 'default');
-        if (poster && config !== SCENES.default) {
-            poster.srcset = `${ASSET_DIR}${config.sd.poster} 960w, ${ASSET_DIR}${config.hd.poster} 1792w`;
-            poster.src = ASSET_DIR + config.hd.poster;
+        function wake() {
+            // The theme's own painting, picked now that the theme is known.
+            const config = sceneFor(document.body.dataset.theme || 'default');
+            const poster = scene.querySelector('.sf-scene-poster');
+            if (poster && !poster.getAttribute('src')) {
+                poster.srcset = `${ASSET_DIR}${config.sd.poster} 960w, ${ASSET_DIR}${config.hd.poster} 1792w`;
+                poster.src = ASSET_DIR + config.hd.poster;
+            }
+            const art = scene.querySelector('.sf-scene-art');
+            if (art) art.setAttribute('aria-label', t('footer.sceneLabel', art.getAttribute('aria-label')));
+            createScene(scene);
         }
-        if (scene && 'IntersectionObserver' in window) {
-            const wake = new IntersectionObserver(entries => {
-                if (!entries.some(e => e.isIntersecting)) return;
-                wake.disconnect();
-                // Translations are in by now (they load with the theme), unlike at boot.
-                const art = scene.querySelector('.sf-scene-art');
-                if (art) art.setAttribute('aria-label', t('footer.sceneLabel', art.getAttribute('aria-label')));
-                createScene(scene);
-            }, { rootMargin: '900px 0px' });
-            wake.observe(scene);
+
+        if (!('IntersectionObserver' in window)) { wake(); return; }
+        const near = new IntersectionObserver(entries => {
+            if (!entries.some(e => e.isIntersecting)) return;
+            near.disconnect();
+            wake();
+        }, { rootMargin: '800px 0px' });
+
+        // Only start watching once the theme has rendered: before that the page is
+        // still short (projects, timeline… load async) and the footer looks close.
+        let armed = false;
+        const arm = () => {
+            if (armed) return;
+            armed = true;
+            classWatch.disconnect();
+            near.observe(scene);
+        };
+        const classWatch = new MutationObserver(() => {
+            if (document.body.classList.contains('loaded')) arm();
+        });
+        if (document.body.classList.contains('loaded')) arm();
+        else {
+            classWatch.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+            setTimeout(arm, 8000);   // a theme that never reports ready
         }
     }
 

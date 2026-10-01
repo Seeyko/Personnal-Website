@@ -537,48 +537,6 @@
   opacity: 0;
 }
 
-.sf-scene-toggle {
-  position: absolute;
-  right: clamp(0.75rem, 2vw, 1.5rem);
-  bottom: clamp(0.75rem, 2vw, 1.5rem);
-  z-index: 3;
-  display: grid;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  padding: 0;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  background: rgba(248, 247, 244, 0.72);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  backdrop-filter: blur(10px) saturate(160%);
-  color: var(--sf-ink);
-  font-size: 0.95rem;
-  opacity: 0.72;
-  pointer-events: auto;
-  cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.sf-scene-toggle[hidden] {
-  display: none;
-}
-
-.sf-scene-toggle:hover,
-.sf-scene-toggle:focus-visible {
-  opacity: 1;
-  transform: scale(1.06);
-}
-
-.sf-scene-toggle .sf-icon-play,
-.sf-scene-toggle[aria-pressed="true"] .sf-icon-pause {
-  display: none;
-}
-
-.sf-scene-toggle[aria-pressed="true"] .sf-icon-play {
-  display: inline-block;
-}
-
 /* ─── Themes ───
    Each theme has its own painting of the same scene (SCENES in
    site-footer.js) and dresses the card in its own idiom: a phosphor

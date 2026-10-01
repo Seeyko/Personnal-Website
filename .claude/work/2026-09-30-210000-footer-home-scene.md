@@ -43,6 +43,11 @@ enverra une vidéo par thème pour les 4 autres.
   paysage (--sf-sink = 0.7 × hauteur de scène, sous l'horizon donc bord bas toujours caché).
   Le haut de la frame coupe l'arbre : dissolution fine « feuillage » (10 %).
 - Autre thème = ajouter une entrée dans SCENES (site-footer.js) avec le même layout empilé.
+- Pas de bouton play/pause (demande de Tom) : autoplay muet, pause hors écran et onglet caché,
+  relance au premier geste si l'autoplay est refusé (iOS économie d'énergie).
+- Chargement : rien au chargement de la page. Le réveil (poster du thème + WebGL) n'est armé
+  qu'après body.loaded (avant, la page est courte et le footer paraît proche), à 800 px ;
+  la vidéo seulement à 200 px de la scène. Pas de vidéo en reduced-motion ni en Save-Data.
 - Réglages de détourage par vidéo (scratchpad key.py, variables d'env) :
   retro KEYISH=150 + horizon 570 (fleurs roses jusqu'à m≈127), terminal crop bas 42 px
   (bord dentelé magenta) + horizon 600, blueprint horizon 590 ; puis passe « despeck » qui

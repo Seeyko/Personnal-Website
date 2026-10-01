@@ -581,8 +581,6 @@
       <symbol id="sf-i-linkedin" viewBox="0 0 24 24"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zm1.78 13.02H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></symbol>
       <symbol id="sf-i-up" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 19V5m-6.5 6.5L12 5l6.5 6.5"/></symbol>
       <symbol id="sf-i-ext" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 17 17 7M8 7h9v9"/></symbol>
-      <symbol id="sf-i-pause" viewBox="0 0 24 24"><path fill="currentColor" d="M7 5h3.5v14H7zm6.5 0H17v14h-3.5z"/></symbol>
-      <symbol id="sf-i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13l10.5-6.5z"/></symbol>
     </svg>
 
     <div class="sf-inner">
@@ -685,16 +683,10 @@
 
     <div class="sf-scene" id="sf-scene">
       <div class="sf-scene-art" role="img" aria-label="Illustration animée : une maison au bord de la mer, une famille et deux chats dans le jardin.">
-        <img class="sf-scene-poster" alt="" loading="lazy" decoding="async"
-             src="/assets/footer/home-scene-poster-1792.webp"
-             srcset="/assets/footer/home-scene-poster-960.webp 960w, /assets/footer/home-scene-poster-1792.webp 1792w"
-             sizes="100vw" width="1792" height="748" />
+        <!-- src/srcset set by site-footer.js when the footer gets close (theme's own painting) -->
+        <img class="sf-scene-poster" alt="" decoding="async" sizes="100vw" width="1792" height="748" />
         <canvas class="sf-scene-canvas"></canvas>
       </div>
-      <button class="sf-scene-toggle" type="button" hidden aria-pressed="false" data-label-pause="Mettre l'animation en pause" data-label-play="Relancer l'animation" aria-label="Mettre l'animation en pause">
-        <svg class="sf-icon sf-icon-pause" aria-hidden="true"><use href="#sf-i-pause"/></svg>
-        <svg class="sf-icon sf-icon-play" aria-hidden="true"><use href="#sf-i-play"/></svg>
-      </button>
     </div>
   </footer>
 </main>
