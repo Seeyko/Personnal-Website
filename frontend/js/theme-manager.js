@@ -12,6 +12,9 @@ const ThemeManager = (() => {
     };
 
     const DEFAULT_THEME = 'default';
+    // nginx serves .js as immutable for a year: bump this whenever a theme's JS
+    // changes, or visitors keep the old file (index.html versions this script too).
+    const ASSET_VERSION = '2026-10-01';
     const STORAGE_KEY = 'portfolio_theme';
     const SCROLL_KEY = 'portfolio_scroll';
     let currentThemeId = null;
@@ -55,7 +58,7 @@ const ThemeManager = (() => {
         document.getElementById('theme-js')?.remove();
         const script = document.createElement('script');
         script.id = 'theme-js';
-        script.src = theme.js + (window.location.hostname === 'localhost' ? `?v=${Date.now()}` : '');
+        script.src = theme.js + (window.location.hostname === 'localhost' ? `?v=${Date.now()}` : `?v=${ASSET_VERSION}`);
         return new Promise((res, rej) => { script.onload = res; script.onerror = rej; document.body.appendChild(script); });
     }
 

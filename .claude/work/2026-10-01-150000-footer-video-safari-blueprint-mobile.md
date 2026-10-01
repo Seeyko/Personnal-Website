@@ -11,6 +11,7 @@
 ## Files Being Modified
 - frontend/js/components/site-footer.js
 - frontend/themes/blueprint/blueprint.js
+- frontend/index.html, frontend/js/theme-manager.js (cache-busting, PR suivante)
 
 ## Progress
 - [x] Vidéo : la texture ne dépend plus de requestVideoFrameCallback (temps de la vidéo
@@ -18,6 +19,9 @@
       de la scène ; la boucle tourne aussi avec « Réduire les animations » (entrée et parallaxe
       restent coupées)
 - [x] Blueprint : initSVGAnimations saute les lignes SVG non rendues (hero masqué en mobile)
+- [x] Cache : nginx sert les .js en « immutable » 1 an → ?v=2026-10-01 sur site-footer.js et
+      theme-manager.js (index.html) et sur le JS du thème (ASSET_VERSION dans theme-manager.js),
+      sinon les correctifs n'atteignent pas les navigateurs qui ont déjà l'ancien fichier
 
 ## Notes/Discoveries
 - Prod testée via un miroir local + Google Chrome (H.264) : le code joue dans Chrome. En
