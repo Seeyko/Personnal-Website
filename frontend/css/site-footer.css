@@ -37,6 +37,9 @@
      horizon (~62%) the painting is fully opaque, so the card's bottom edge
      is always hidden behind the landscape. */
   --sf-sink: 0.7;
+  /* How far the scene climbs over the card's content (× scene height): its
+     top rows are sky, so the legal bar can sit in it. */
+  --sf-lift: 0;
   --sf-card: #ffffff;
   --sf-card-line: rgba(44, 40, 37, 0.1);
   --sf-card-radius: 22px 22px 0 0;
@@ -119,8 +122,8 @@
   position: relative;
   padding: clamp(1.75rem, 3.2vw, 2.75rem) var(--sf-card-px) 0;
   /* the part of the card the painting covers */
-  padding-bottom: calc(100vw / var(--sf-scene-ar) * var(--sf-sink) + var(--sf-card-gap));
-  padding-bottom: calc(100cqw / var(--sf-scene-ar) * var(--sf-sink) + var(--sf-card-gap));
+  padding-bottom: calc(100vw / var(--sf-scene-ar) * (var(--sf-sink) - var(--sf-lift)) + var(--sf-card-gap));
+  padding-bottom: calc(100cqw / var(--sf-scene-ar) * (var(--sf-sink) - var(--sf-lift)) + var(--sf-card-gap));
   border-radius: var(--sf-card-radius);
   background: var(--sf-card);
   border: 1px solid var(--sf-card-line);
@@ -541,6 +544,12 @@
    Each theme has its own painting of the same scene (SCENES in
    site-footer.js) and dresses the card in its own idiom: a phosphor
    terminal, a drawing sheet with its title block, a Windows 95 window. */
+
+/* ── default: the canopy and the clouds start low in the frame, so the
+   scene climbs up to just under the legal bar ── */
+body[data-theme="default"] .site-footer {
+  --sf-lift: 0.16;
+}
 
 /* ── terminal: phosphor on CRT black ── */
 body[data-theme="terminal"] .site-footer {
