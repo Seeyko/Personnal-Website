@@ -156,9 +156,9 @@
             sd: { name: 'home-scene-1280', poster: 'home-scene-poster-960.webp', colorH: 544, alphaH: 352, totalH: 896 }
         },
         terminal: {
-            aspect: 2230 / 888, style: 1, revealMs: 2000,
-            hd: { name: 'home-scene-terminal-1792', poster: 'home-scene-terminal-poster-1792.webp', colorH: 720, alphaH: 512, totalH: 1232 },
-            sd: { name: 'home-scene-terminal-1280', poster: 'home-scene-terminal-poster-960.webp', colorH: 512, alphaH: 352, totalH: 864 }
+            aspect: 2230 / 930, style: 1, revealMs: 2000,
+            hd: { name: 'home-scene-terminal-1792', poster: 'home-scene-terminal-poster-1792.webp', colorH: 752, alphaH: 480, totalH: 1232 },
+            sd: { name: 'home-scene-terminal-1280', poster: 'home-scene-terminal-poster-960.webp', colorH: 544, alphaH: 352, totalH: 896 }
         },
         blueprint: {
             aspect: 2230 / 930, style: 2, revealMs: 2200,

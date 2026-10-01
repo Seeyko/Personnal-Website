@@ -49,8 +49,8 @@ enverra une vidéo par thème pour les 4 autres.
   qu'après body.loaded (avant, la page est courte et le footer paraît proche), à 800 px ;
   la vidéo seulement à 200 px de la scène. Pas de vidéo en reduced-motion ni en Save-Data.
 - Réglages de détourage par vidéo (scratchpad key.py, variables d'env) :
-  retro KEYISH=150 + horizon 570 (fleurs roses jusqu'à m≈127), terminal crop bas 42 px
-  (bord dentelé magenta) + horizon 600, blueprint horizon 590 ; puis passe « despeck » qui
+  retro KEYISH=150 + horizon 570 (fleurs roses jusqu'à m≈127), terminal (v2 « Matrix »,
+  1er oct.) horizon 560 sans crop, blueprint horizon 590 ; puis passe « despeck » qui
   efface les points violets collés au ciel (ciel sombre compressé entre les feuilles).
 - Bug pré-existant repéré (pas corrigé ici) : themes/blueprint/blueprint.js initSVGAnimations
   appelle getTotalLength sur le SVG du hero masqué en mobile → ThemeInit échoue en mobile.
