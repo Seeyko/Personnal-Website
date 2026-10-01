@@ -152,8 +152,8 @@
     const SCENES = {
         default: {
             aspect: 2230 / 930, style: 0, revealMs: 1800,
-            hd: { name: 'home-scene-1792', poster: 'home-scene-poster-1792.webp', colorH: 752, alphaH: 480, totalH: 1232 },
-            sd: { name: 'home-scene-1280', poster: 'home-scene-poster-960.webp', colorH: 544, alphaH: 352, totalH: 896 }
+            hd: { name: 'home-scene-1792', poster: 'home-scene-poster-1792.webp', colorH: 752, alphaH: 544, totalH: 1296 },
+            sd: { name: 'home-scene-1280', poster: 'home-scene-poster-960.webp', colorH: 544, alphaH: 400, totalH: 944 }
         },
         terminal: {
             aspect: 2230 / 930, style: 1, revealMs: 2000,
