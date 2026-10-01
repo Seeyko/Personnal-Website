@@ -1,14 +1,14 @@
 # Footer « home scene » (vidéo détourée + footer refondu)
 
-**Status**: completed (en review)
+**Status**: completed (mergé, PR #96)
 **Branch**: `claude/busy-thompson-xp6kyx`
 **Started**: 2026-09-30 21:00
 
 ## Task
 Détourer le fond magenta de la vidéo perso de Tom (maison du Sud, famille, chats, mer)
 et construire un nouveau footer inspiré des références (ROOTED / Zuno / Glaux / Bloom).
-Consigne de Tom en cours de route : seul le thème **default** compte pour l'instant, il
-enverra une vidéo par thème pour les 4 autres.
+Consigne de Tom en cours de route : d'abord le thème **default**, puis une vidéo par thème
+pour les 4 autres (toutes intégrées).
 
 ## Files Being Modified
 - frontend/index.html (markup footer + liens CSS/JS)
@@ -23,7 +23,7 @@ enverra une vidéo par thème pour les 4 autres.
 - [x] Keying magenta (matting par projection sur couleur locale + garbage matte horizon)
 - [x] Encodages : H.264 + VP9 « empilés », posters WebP, WebM VP9 alpha livré à Tom
 - [x] Markup + CSS + i18n (layout compact, vidéo au premier plan, aucun texte dessous)
-- [x] Renderer WebGL (alpha empilé, lavis d'entrée, parallaxe, pause, reduced-motion)
+- [x] Renderer WebGL (alpha empilé, entrée par thème, parallaxe, autoplay sans bouton, reduced-motion)
 - [x] Tests navigateur (default desktop/tablette/mobile, EN, reduced-motion, sans WebGL,
       autres thèmes lisibles) + vidéo de démo envoyée à Tom
 - [x] Vidéos terminal / blueprint / retro90s de Tom détourées et intégrées, carte habillée par
