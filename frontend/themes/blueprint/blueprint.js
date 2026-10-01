@@ -75,11 +75,12 @@ function initSVGAnimations() {
     const svgPaths = document.querySelectorAll('.frame-line, .dim-line');
 
     svgPaths.forEach(path => {
-        if (path.getTotalLength) {
-            const length = path.getTotalLength();
-            path.style.strokeDasharray = length;
-            path.style.strokeDashoffset = length;
-        }
+        // The hero SVG is hidden on mobile, and getTotalLength() throws on a
+        // non-rendered element, which used to abort the whole theme init.
+        if (!path.getTotalLength || !path.getClientRects().length) return;
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = length;
+        path.style.strokeDashoffset = length;
     });
 }
 
