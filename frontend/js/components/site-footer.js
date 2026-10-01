@@ -144,16 +144,37 @@
     // Home scene — WebGL compositor
     // ═══════════════════════════════════════════════════════════════
 
-    // Stacked layout: colour block (w × colorH) on top, alpha block below it
-    // (w × alphaH) covering the colour rows [0, alphaH); rows under it are opaque.
-    // `aspect` is the painting's real aspect (the blocks are resampled to it).
+    // One painting per theme. Stacked layout: colour block (w × colorH) on top,
+    // alpha block below it (w × alphaH) covering the colour rows [0, alphaH); rows
+    // under it are opaque. `aspect` is the painting's real aspect (the blocks are
+    // resampled to it). `style` picks the entrance in the shader, `revealMs` its
+    // length. Themes without an entry (fps) use the default painting.
     const SCENES = {
         default: {
-            aspect: 2230 / 930,
+            aspect: 2230 / 930, style: 0, revealMs: 1800,
             hd: { name: 'home-scene-1792', poster: 'home-scene-poster-1792.webp', colorH: 752, alphaH: 480, totalH: 1232 },
             sd: { name: 'home-scene-1280', poster: 'home-scene-poster-960.webp', colorH: 544, alphaH: 352, totalH: 896 }
+        },
+        terminal: {
+            aspect: 2230 / 888, style: 1, revealMs: 2000,
+            hd: { name: 'home-scene-terminal-1792', poster: 'home-scene-terminal-poster-1792.webp', colorH: 720, alphaH: 512, totalH: 1232 },
+            sd: { name: 'home-scene-terminal-1280', poster: 'home-scene-terminal-poster-960.webp', colorH: 512, alphaH: 352, totalH: 864 }
+        },
+        blueprint: {
+            aspect: 2230 / 930, style: 2, revealMs: 2200,
+            hd: { name: 'home-scene-blueprint-1792', poster: 'home-scene-blueprint-poster-1792.webp', colorH: 752, alphaH: 480, totalH: 1232 },
+            sd: { name: 'home-scene-blueprint-1280', poster: 'home-scene-blueprint-poster-960.webp', colorH: 544, alphaH: 352, totalH: 896 }
+        },
+        retro90s: {
+            aspect: 2230 / 930, style: 3, revealMs: 2400,
+            hd: { name: 'home-scene-retro90s-1792', poster: 'home-scene-retro90s-poster-1792.webp', colorH: 752, alphaH: 480, totalH: 1232 },
+            sd: { name: 'home-scene-retro90s-1280', poster: 'home-scene-retro90s-poster-960.webp', colorH: 544, alphaH: 352, totalH: 896 }
         }
     };
+
+    function sceneFor(theme) {
+        return SCENES[theme] || SCENES.default;
+    }
     const ASSET_DIR = '/assets/footer/';
 
     // H.264 first (Safari/iOS, hardware decode everywhere); VP9 for builds shipped
@@ -192,6 +213,7 @@ uniform float u_reveal;     // 0..1 watercolour wash
 uniform float u_rise;       // 0..1 scroll parallax (1 = settled)
 uniform vec2  u_tilt;       // pointer parallax, -1..1
 uniform vec2  u_fade;       // top dissolve depth, fraction of canvas height (x: tree side, y: sky side)
+uniform float u_style;      // entrance: 0 watercolour, 1 phosphor print, 2 plotter sweep, 3 interlaced GIF
 
 float hash(vec2 p) {
     p = fract(p * vec2(123.34, 456.21));
@@ -212,6 +234,17 @@ float fbm(vec2 p) {
     return v;
 }
 
+float bayer2(vec2 q) {
+    q = mod(q, 2.0);
+    return q.y < 0.5 ? (q.x < 0.5 ? 0.0 : 2.0) : (q.x < 0.5 ? 3.0 : 1.0);
+}
+
+// 4x4 ordered-dither threshold, 0..1.
+float bayer4(vec2 p) {
+    p = floor(p);
+    return (4.0 * bayer2(p) + bayer2(floor(p / 2.0)) + 0.5) / 16.0;
+}
+
 // Near things sit low in a landscape: depth grows from the horizon to the grass.
 float depthAt(float v) { return smoothstep(0.5, 1.0, v); }
 
@@ -229,33 +262,79 @@ vec4 sampleScene(vec2 s) {
     return texture2D(u_tex, s);
 }
 
-void main() {
-    vec2 uv = v_uv;
+vec2 sceneUV(vec2 uv) {
     vec2 s = u_crop.xy + uv * u_crop.zw;
     float d = depthAt(s.y);
     s.x += u_tilt.x * d * 0.011;
     s.y += u_tilt.y * d * 0.006 - (1.0 - u_rise) * d * 0.06;
+    return s;
+}
 
+void main() {
+    vec2 uv = v_uv;
+    vec2 px = uv * u_res;
+    float unit = u_res.x / 1440.0;                            // ~1 css px at desktop width
+    float reveal = 1.0;                                        // entrance mask
+    vec3 glow = vec3(0.0);                                     // light the entrance adds (premultiplied)
+    float glowA = 0.0;
+
+    // retro90s: the GIF arrives in interlaced passes, blocky first, then sharp.
+    if (u_style > 2.5) {
+        float p = u_reveal * 4.0;
+        float k = floor(p) + step(uv.y, fract(p));             // passes this row has received
+        if (k < 0.5) reveal = 0.0;
+        float blk = k < 1.5 ? 24.0 : k < 2.5 ? 12.0 : k < 3.5 ? 6.0 : 0.0;
+        if (blk > 0.0) {
+            blk *= unit;
+            uv = (floor(px / blk) + 0.5) * blk / u_res;
+        }
+    }
+
+    vec2 s = sceneUV(uv);
     vec4 c = sampleScene(s);
-    vec3 rgb = c.rgb + (hash(uv * u_res) - 0.5) * 0.02;       // a breath of paper grain
-
-    // Watercolour wash (entrance): it runs down the scene as it scrolls in, sky
-    // first, garden last, with a ragged edge where the pigment pools and darkens.
+    vec3 rgb = c.rgb;
     float n = fbm(vec2(s.x * 7.0, s.y * 4.0) + 3.1);
-    float front = s.y * 0.82 + n * 0.32;
-    float r = u_reveal * 1.2;
-    float wash = 1.0 - smoothstep(r - 0.1, r, front);
-    float pool = smoothstep(r - 0.1, r - 0.03, front) * wash;
-    rgb *= 1.0 - pool * 0.22;
+
+    if (u_style < 0.5) {
+        // Watercolour wash: runs down the scene, sky first, garden last, with a
+        // ragged edge where the pigment pools and darkens.
+        rgb += (hash(px) - 0.5) * 0.02;                        // a breath of paper grain
+        float front = s.y * 0.82 + n * 0.32;
+        float r = u_reveal * 1.2;
+        reveal = 1.0 - smoothstep(r - 0.1, r, front);
+        rgb *= 1.0 - smoothstep(r - 0.1, r - 0.03, front) * reveal * 0.22;
+    } else if (u_style < 1.5) {
+        // Phosphor print: the picture is written row by row, a bright beam on the
+        // line being drawn.
+        float rows = 150.0;
+        float row = floor(uv.y * rows) / rows;
+        float front = u_reveal * 1.04;
+        reveal = step(row, front - 1.0 / rows);
+        float beam = (1.0 - step(0.999, u_reveal)) * step(abs(row - front), 1.5 / rows);
+        rgb = mix(rgb, vec3(0.75, 1.0, 0.65), beam * 0.7);
+        reveal = max(reveal, beam * c.a);
+    } else if (u_style < 2.5) {
+        // Plotter sweep: a cyan head crosses the sheet and leaves the drawing behind.
+        float front = u_reveal * 1.1 - 0.05;
+        reveal = smoothstep(front + 0.004, front - 0.004, uv.x);
+        float beam = exp(-abs(uv.x - front) * u_res.x / (5.0 * unit)) * (1.0 - step(0.999, u_reveal));
+        glow = vec3(0.0, 1.0, 1.0) * beam * 0.85;
+        glowA = beam * 0.85;
+    }
 
     // The frame's top edge cuts through the canopy: dissolve it over a thin band
-    // with a leafy, irregular edge, so it reads as foliage rather than a cut or a
-    // veil. Everything below stays fully opaque; only the keyed sky is see-through.
+    // (leafy noise; ordered dither for the pixel-art painting), so it reads as
+    // foliage rather than a cut. Below it, only the keyed sky is see-through.
     float depth = mix(u_fade.x, u_fade.y, smoothstep(0.3, 0.7, uv.x));
-    float leaf = fbm(vec2(s.x * 95.0, s.y * 42.0));
-    float e = smoothstep(0.36, 0.64, uv.y / depth + (leaf - 0.5) * 0.85 + (n - 0.5) * 0.4);
-    float a = c.a * wash * e;
-    gl_FragColor = vec4(rgb * a, a);
+    float e;
+    if (u_style > 2.5) {
+        e = step(bayer4(px / (6.0 * unit)), clamp(uv.y / depth, 0.0, 1.0));   // chunky, art-sized dither
+    } else {
+        float leaf = fbm(vec2(s.x * 95.0, s.y * 42.0));
+        e = smoothstep(0.36, 0.64, uv.y / depth + (leaf - 0.5) * 0.85 + (n - 0.5) * 0.4);
+    }
+    float a = c.a * reveal * e;
+    gl_FragColor = vec4(rgb * a + glow * (1.0 - a), a + glowA * (1.0 - a));
 }`;
 
     function compile(gl, type, source) {
@@ -280,8 +359,7 @@ void main() {
             || canvas.getContext('experimental-webgl', { alpha: true, premultipliedAlpha: true });
         if (!gl) return;
 
-        const theme = document.body.dataset.theme || 'default';
-        const config = SCENES[theme] || SCENES.default;
+        const config = sceneFor(document.body.dataset.theme || 'default');
         const still = reduceMotion.matches;
 
         const state = {
@@ -322,7 +400,7 @@ void main() {
 
             loc = {};
             ['u_tex', 'u_res', 'u_crop', 'u_stacked', 'u_colorFrac', 'u_alphaCover', 'u_texel',
-             'u_reveal', 'u_rise', 'u_tilt', 'u_fade']
+             'u_reveal', 'u_rise', 'u_tilt', 'u_fade', 'u_style']
                 .forEach(name => { loc[name] = gl.getUniformLocation(program, name); });
 
             texture = gl.createTexture();
@@ -499,11 +577,11 @@ void main() {
 
             if (!still) {
                 const target = scrollProgress();
-                // The wash paints the scene in once, over ~1.8 s, from the moment its top
+                // The entrance plays once (config.revealMs) from the moment the scene's top
                 // edge shows; the depth parallax keeps following the scroll both ways.
                 if (!state.washStart && target > 0.02) state.washStart = now;
                 if (state.washStart && state.reveal < 1) {
-                    const k = Math.min((now - state.washStart) / 1800, 1);
+                    const k = Math.min((now - state.washStart) / config.revealMs, 1);
                     state.reveal = 1 - Math.pow(1 - k, 3);
                     animating = true;
                 }
@@ -563,6 +641,7 @@ void main() {
             gl.uniform1f(loc.u_rise, state.rise);
             gl.uniform2f(loc.u_tilt, state.tilt[0], state.tilt[1]);
             gl.uniform2f(loc.u_fade, state.fade[0], state.fade[1]);
+            gl.uniform1f(loc.u_style, config.style);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
 
@@ -629,6 +708,14 @@ void main() {
 
         // The scene (video + WebGL) only wakes up when the footer is getting close.
         const scene = root.querySelector('.sf-scene');
+
+        // The <img> fallback is lazy: point it at this theme's painting before it loads.
+        const poster = scene?.querySelector('.sf-scene-poster');
+        const config = sceneFor(document.body.dataset.theme || 'default');
+        if (poster && config !== SCENES.default) {
+            poster.srcset = `${ASSET_DIR}${config.sd.poster} 960w, ${ASSET_DIR}${config.hd.poster} 1792w`;
+            poster.src = ASSET_DIR + config.hd.poster;
+        }
         if (scene && 'IntersectionObserver' in window) {
             const wake = new IntersectionObserver(entries => {
                 if (!entries.some(e => e.isIntersecting)) return;

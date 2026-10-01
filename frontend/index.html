@@ -612,6 +612,12 @@
 
       <!-- The card sinks into the scene: its lower part sits behind the painting. -->
       <div class="sf-card" data-sf-group>
+        <!-- Window chrome, only drawn by themes that dress the card as a window. -->
+        <div class="sf-card-chrome" aria-hidden="true">
+          <span class="sf-chrome-dots"><i></i><i></i><i></i></span>
+          <span class="sf-chrome-title"></span>
+          <span class="sf-chrome-btns"><i>_</i><i>□</i><i>×</i></span>
+        </div>
         <div class="sf-grid">
           <div class="sf-brand" data-sf-reveal style="--sf-i:0">
             <a href="#main-content" class="sf-wordmark" aria-label="Tom Andrieu">

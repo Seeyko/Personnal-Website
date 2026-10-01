@@ -39,6 +39,12 @@
   --sf-sink: 0.7;
   --sf-card: #ffffff;
   --sf-card-line: rgba(44, 40, 37, 0.1);
+  --sf-card-radius: 22px 22px 0 0;
+  --sf-card-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 6px rgba(44, 40, 37, 0.04),
+    0 30px 80px -24px rgba(44, 40, 37, 0.22);
+  --sf-blip: url('/assets/brand/blip-default.svg');
   --sf-card-gap: clamp(0.5rem, 1.5vw, 1.25rem);  /* air between the legal bar and the canopy */
 
   container-type: inline-size;
@@ -109,20 +115,23 @@
 
 /* ─── 2. Card: sinks into the scene ─── */
 .sf-card {
+  --sf-card-px: clamp(1.5rem, 3.2vw, 2.75rem);
   position: relative;
-  padding: clamp(1.75rem, 3.2vw, 2.75rem) clamp(1.5rem, 3.2vw, 2.75rem) 0;
+  padding: clamp(1.75rem, 3.2vw, 2.75rem) var(--sf-card-px) 0;
   /* the part of the card the painting covers */
   padding-bottom: calc(100vw / var(--sf-scene-ar) * var(--sf-sink) + var(--sf-card-gap));
   padding-bottom: calc(100cqw / var(--sf-scene-ar) * var(--sf-sink) + var(--sf-card-gap));
-  border-radius: 22px 22px 0 0;
+  border-radius: var(--sf-card-radius);
   background: var(--sf-card);
   border: 1px solid var(--sf-card-line);
   border-bottom: 0;
   /* the shadow reads through the keyed sky as the card sinks into the scene */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 2px 6px rgba(44, 40, 37, 0.04),
-    0 30px 80px -24px rgba(44, 40, 37, 0.22);
+  box-shadow: var(--sf-card-shadow);
+}
+
+/* Window chrome: off by default, themes that dress the card as a window draw it. */
+.sf-card-chrome {
+  display: none;
 }
 
 .sf-grid {
@@ -163,7 +172,7 @@
   width: 30px;
   height: 30px;
   flex: none;
-  background: url('/assets/brand/blip-default.svg') center / contain no-repeat;
+  background: var(--sf-blip) center / contain no-repeat;
   image-rendering: pixelated;
   transition: transform 0.35s var(--sf-ease);
 }
@@ -571,41 +580,431 @@
 }
 
 /* ─── Themes ───
-   The scene is designed for the default paper. Other themes only swap the
-   tokens they need to stay legible; each will get its own scene video (see
-   SCENES in site-footer.js). */
+   Each theme has its own painting of the same scene (SCENES in
+   site-footer.js) and dresses the card in its own idiom: a phosphor
+   terminal, a drawing sheet with its title block, a Windows 95 window. */
+
+/* ── terminal: phosphor on CRT black ── */
 body[data-theme="terminal"] .site-footer {
   --sf-ink: #33ff00;
-  --sf-ink-2: rgba(51, 255, 0, 0.8);
-  --sf-muted: rgba(51, 255, 0, 0.6);
-  --sf-faint: #1f9e00;
+  --sf-ink-2: rgba(51, 255, 0, 0.78);
+  --sf-muted: rgba(51, 255, 0, 0.55);
+  --sf-faint: #1a8000;
   --sf-accent: #ffb000;
   --sf-on-accent: #0a0a0a;
   --sf-line: #1f521f;
-  --sf-surface: #0d0d0d;
+  --sf-surface: #0a0a0a;
   --sf-surface-line: #1f521f;
   --sf-button: #33ff00;
   --sf-on-button: #0a0a0a;
   --sf-chip: transparent;
+  --sf-card: #0d0d0d;
+  --sf-card-line: #1f521f;
+  --sf-card-radius: 4px 4px 0 0;
+  --sf-card-shadow: 0 0 0 1px rgba(51, 255, 0, 0.05), 0 0 60px -12px rgba(51, 255, 0, 0.22);
+  --sf-blip: url('/assets/brand/blip-terminal.svg');
   --sf-font: 'JetBrains Mono', 'Fira Code', monospace;
   --sf-display: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
+body[data-theme="terminal"] .sf-headline {
+  font-size: clamp(1.45rem, 0.8rem + 2vw, 2.4rem);
+  letter-spacing: -0.02em;
+}
+
+body[data-theme="terminal"] .sf-headline-main,
+body[data-theme="terminal"] .sf-wordmark,
+body[data-theme="terminal"] .sf-clock {
+  text-shadow: 0 0 6px rgba(51, 255, 0, 0.55), 0 0 18px rgba(51, 255, 0, 0.25);
+}
+
+body[data-theme="terminal"] .sf-clock {
+  color: var(--sf-accent);
+  text-shadow: 0 0 6px rgba(255, 176, 0, 0.5), 0 0 18px rgba(255, 176, 0, 0.2);
+}
+
+body[data-theme="terminal"] .sf-card {
+  padding-top: 0;
+}
+
+body[data-theme="terminal"] .sf-card-chrome {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 2.25rem;
+  margin: 0 calc(var(--sf-card-px) * -1) clamp(1.5rem, 3vw, 2.25rem);
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--sf-line);
+  background: #0a0a0a;
+  font: 500 0.75rem/1 var(--sf-font);
+  color: var(--sf-muted);
+}
+
+body[data-theme="terminal"] .sf-chrome-dots {
+  display: flex;
+  gap: 6px;
+}
+
+body[data-theme="terminal"] .sf-chrome-dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff3333;
+}
+
+body[data-theme="terminal"] .sf-chrome-dots i:nth-child(2) { background: #ffb000; }
+body[data-theme="terminal"] .sf-chrome-dots i:nth-child(3) { background: #33ff00; }
+
+body[data-theme="terminal"] .sf-chrome-title::before {
+  content: 'tom@dev:~$ ls ~/footer';
+}
+
+body[data-theme="terminal"] .sf-chrome-btns {
+  display: none;
+}
+
+body[data-theme="terminal"] .sf-pill,
+body[data-theme="terminal"] .sf-pill-copy,
+body[data-theme="terminal"] .sf-social {
+  border-radius: 2px;
+}
+
+body[data-theme="terminal"] .sf-pill {
+  box-shadow: 0 0 24px -8px rgba(51, 255, 0, 0.35);
+}
+
+body[data-theme="terminal"] .sf-pill-mail::before {
+  content: '>';
+  color: var(--sf-accent);
+}
+
+body[data-theme="terminal"] .sf-pill-mail .sf-icon {
+  display: none;
+}
+
+body[data-theme="terminal"] .sf-link::before {
+  content: './';
+  color: var(--sf-faint);
+}
+
+body[data-theme="terminal"] .sf-link:hover,
+body[data-theme="terminal"] .sf-link:focus-visible {
+  text-shadow: 0 0 6px rgba(51, 255, 0, 0.6);
+}
+
+body[data-theme="terminal"] .sf-bar {
+  border-top-style: dashed;
+}
+
+/* ── blueprint: a drawing sheet with its title block ── */
 body[data-theme="blueprint"] .site-footer {
-  --sf-ink: rgba(255, 255, 255, 0.92);
+  --sf-ink: rgba(255, 255, 255, 0.94);
   --sf-ink-2: rgba(255, 255, 255, 0.76);
   --sf-muted: rgba(255, 255, 255, 0.58);
-  --sf-faint: rgba(255, 255, 255, 0.55);
+  --sf-faint: rgba(0, 255, 255, 0.72);
   --sf-accent: #00ffff;
   --sf-on-accent: #003366;
-  --sf-line: rgba(255, 255, 255, 0.22);
-  --sf-surface: rgba(0, 34, 68, 0.72);
-  --sf-surface-line: rgba(255, 255, 255, 0.35);
+  --sf-line: rgba(255, 255, 255, 0.24);
+  --sf-surface: rgba(0, 34, 68, 0.9);
+  --sf-surface-line: rgba(255, 255, 255, 0.45);
   --sf-button: #00ffff;
   --sf-on-button: #003366;
   --sf-chip: transparent;
+  --sf-card: rgba(0, 38, 76, 0.9);
+  --sf-card-line: rgba(255, 255, 255, 0.5);
+  --sf-card-radius: 0;
+  --sf-card-shadow: 0 0 0 4px rgba(0, 51, 102, 0.6), 0 0 0 5px rgba(255, 255, 255, 0.14);
+  --sf-blip: url('/assets/brand/blip-blueprint.svg');
   --sf-font: 'Roboto Mono', monospace;
   --sf-display: 'Roboto Mono', monospace;
+}
+
+body[data-theme="blueprint"] .sf-headline {
+  font-size: clamp(1.4rem, 0.75rem + 2vw, 2.3rem);
+  letter-spacing: -0.02em;
+}
+
+body[data-theme="blueprint"] .sf-headline-lead {
+  font-family: 'Architects Daughter', cursive;
+  letter-spacing: 0;
+}
+
+body[data-theme="blueprint"] .sf-card {
+  padding-top: 0;
+}
+
+/* Title block (cartouche) across the top of the sheet. */
+body[data-theme="blueprint"] .sf-card-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 2rem;
+  margin: 0 calc(var(--sf-card-px) * -1) clamp(1.5rem, 3vw, 2.25rem);
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--sf-card-line);
+  font: 500 0.6875rem/1 var(--sf-font);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sf-muted);
+}
+
+body[data-theme="blueprint"] .sf-chrome-dots {
+  display: none;
+}
+
+body[data-theme="blueprint"] .sf-chrome-title::before {
+  content: 'PLAN F-00 · PIED DE PAGE';
+}
+
+html[lang="en"] body[data-theme="blueprint"] .sf-chrome-title::before {
+  content: 'SHEET F-00 · FOOTER';
+}
+
+body[data-theme="blueprint"] .sf-chrome-btns {
+  font-size: 0;
+}
+
+body[data-theme="blueprint"] .sf-chrome-btns::before {
+  content: 'ÉCH. 1:1 · REV. 2026';
+  font-size: 0.6875rem;
+}
+
+html[lang="en"] body[data-theme="blueprint"] .sf-chrome-btns::before {
+  content: 'SCALE 1:1 · REV. 2026';
+}
+
+body[data-theme="blueprint"] .sf-chrome-btns i {
+  display: none;
+}
+
+/* Registration crosses on the sheet's top corners. */
+body[data-theme="blueprint"] .sf-card::before,
+body[data-theme="blueprint"] .sf-card::after {
+  content: '';
+  position: absolute;
+  top: -9px;
+  width: 17px;
+  height: 17px;
+  background:
+    linear-gradient(#00ffff, #00ffff) center / 1px 100% no-repeat,
+    linear-gradient(#00ffff, #00ffff) center / 100% 1px no-repeat;
+}
+
+body[data-theme="blueprint"] .sf-card::before { left: -9px; }
+body[data-theme="blueprint"] .sf-card::after { right: -9px; }
+
+body[data-theme="blueprint"] .sf-pill,
+body[data-theme="blueprint"] .sf-pill-copy,
+body[data-theme="blueprint"] .sf-social {
+  border-radius: 0;
+}
+
+body[data-theme="blueprint"] .sf-pill {
+  border-style: dashed;
+  box-shadow: none;
+}
+
+body[data-theme="blueprint"] .sf-link:hover,
+body[data-theme="blueprint"] .sf-link:focus-visible {
+  color: var(--sf-accent);
+}
+
+body[data-theme="blueprint"] .sf-bar {
+  border-top-style: dashed;
+}
+
+/* ── retro90s: a Windows 95 window ── */
+body[data-theme="retro90s"] .site-footer {
+  --sf-ink: #000000;
+  --sf-ink-2: #000000;
+  --sf-muted: #404040;
+  --sf-faint: #008080;
+  --sf-accent: #000080;
+  --sf-on-accent: #ffffff;
+  --sf-line: #808080;
+  --sf-surface: #ffffff;
+  --sf-surface-line: #808080;
+  --sf-button: #c0c0c0;
+  --sf-on-button: #000000;
+  --sf-chip: #c0c0c0;
+  --sf-card: #c0c0c0;
+  --sf-card-line: #ffffff;
+  --sf-card-radius: 0;
+  --sf-card-shadow:
+    inset -1px 0 0 #404040,
+    inset -2px 0 0 #808080,
+    inset 1px 0 0 #dfdfdf,
+    inset 2px 2px 0 #ffffff,
+    4px 4px 0 rgba(0, 0, 0, 0.25);
+  --sf-blip: url('/assets/brand/blip-retro90s.svg');
+  --sf-font: 'MS Sans Serif', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --sf-display: 'Arial Black', Impact, Haettenschweiler, sans-serif;
+  --sf-bevel-out: inset -1px -1px 0 #404040, inset 1px 1px 0 #ffffff, inset -2px -2px 0 #808080, inset 2px 2px 0 #dfdfdf;
+  --sf-bevel-in: inset 1px 1px 0 #404040, inset -1px -1px 0 #ffffff, inset 2px 2px 0 #808080, inset -2px -2px 0 #dfdfdf;
+}
+
+body[data-theme="retro90s"] .sf-headline {
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: clamp(1.5rem, 0.8rem + 2.2vw, 2.6rem);
+}
+
+body[data-theme="retro90s"] .sf-headline-main {
+  color: #000080;
+  text-shadow: 2px 2px 0 #808080;
+}
+
+body[data-theme="retro90s"] .sf-card {
+  padding-top: 0;
+  border: 0;
+  padding-left: calc(var(--sf-card-px) + 3px);
+  padding-right: calc(var(--sf-card-px) + 3px);
+}
+
+body[data-theme="retro90s"] .sf-card-chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 1.75rem;
+  margin: 3px calc(var(--sf-card-px) * -1) clamp(1.5rem, 3vw, 2.25rem);
+  padding: 0 3px 0 0.5rem;
+  background: linear-gradient(to right, #000080, #1084d0);
+  color: #ffffff;
+  font: 700 0.8125rem/1 var(--sf-font);
+}
+
+body[data-theme="retro90s"] .sf-chrome-dots {
+  display: none;
+}
+
+body[data-theme="retro90s"] .sf-chrome-title {
+  flex: 1;
+}
+
+body[data-theme="retro90s"] .sf-chrome-title::before {
+  content: 'Tom Andrieu - contact.exe';
+}
+
+body[data-theme="retro90s"] .sf-chrome-btns {
+  display: flex;
+  gap: 2px;
+}
+
+body[data-theme="retro90s"] .sf-chrome-btns i {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 16px;
+  background: #c0c0c0;
+  box-shadow: var(--sf-bevel-out);
+  color: #000000;
+  font: 700 0.6875rem/1 var(--sf-font);
+  font-style: normal;
+}
+
+body[data-theme="retro90s"] .sf-chrome-btns i:last-child {
+  margin-left: 2px;
+}
+
+body[data-theme="retro90s"] .sf-pill {
+  border-radius: 0;
+  border: 0;
+  padding: 3px 3px 3px 0.85rem;
+  background: #ffffff;
+  box-shadow: var(--sf-bevel-in);
+}
+
+body[data-theme="retro90s"] .sf-pill:hover {
+  transform: none;
+  box-shadow: var(--sf-bevel-in);
+}
+
+body[data-theme="retro90s"] .sf-pill-mail {
+  font-family: 'Courier New', Courier, monospace;
+  color: #000000;
+}
+
+body[data-theme="retro90s"] .sf-pill-copy,
+body[data-theme="retro90s"] .sf-social {
+  border-radius: 0;
+  border: 0;
+  background: #c0c0c0;
+  color: #000000;
+  box-shadow: var(--sf-bevel-out);
+  transition: none;
+}
+
+body[data-theme="retro90s"] .sf-pill-copy:hover,
+body[data-theme="retro90s"] .sf-social:hover {
+  transform: none;
+  background: #c0c0c0;
+  color: #000000;
+}
+
+body[data-theme="retro90s"] .sf-pill-copy:active,
+body[data-theme="retro90s"] .sf-social:active {
+  transform: none;
+  box-shadow: var(--sf-bevel-in);
+}
+
+body[data-theme="retro90s"] .sf-pill.is-copied .sf-pill-copy {
+  background: #000080;
+  color: #ffffff;
+}
+
+body[data-theme="retro90s"] .sf-link {
+  color: #0000ff;
+  text-decoration: underline;
+  background: none;
+}
+
+body[data-theme="retro90s"] .sf-link:hover,
+body[data-theme="retro90s"] .sf-link:focus-visible {
+  color: #ff0000;
+}
+
+body[data-theme="retro90s"] .sf-col-title {
+  font-weight: 700;
+}
+
+/* The clock as the taskbar tray. */
+body[data-theme="retro90s"] .sf-clock {
+  display: inline-block;
+  padding: 0.35rem 0.6rem;
+  background: #c0c0c0;
+  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #ffffff;
+  font: 400 1.4rem/1 var(--sf-font);
+}
+
+body[data-theme="retro90s"] .sf-bar {
+  margin-top: 1.5rem;
+  border-top: 1px solid #808080;
+  box-shadow: inset 0 1px 0 #ffffff;
+  color: #000000;
+}
+
+body[data-theme="retro90s"] .site-footer .best-viewed {
+  margin: 0;
+  color: #404040;
+  opacity: 1;
+}
+
+body[data-theme="retro90s"] .sf-card .retro-webring {
+  margin: clamp(2rem, 4vw, 2.75rem) auto 0;
+}
+
+/* ── fps: no painting of its own yet, the default one on the concrete field ── */
+body[data-theme="fps"] .sf-card {
+  --sf-ink: #eef4fa;
+  --sf-ink-2: #b3c2d0;
+  --sf-muted: #8496a4;
+  --sf-line: rgba(150, 190, 228, 0.22);
+  --sf-chip: transparent;
+  --sf-card: rgba(13, 19, 29, 0.86);
+  --sf-card-line: rgba(150, 190, 228, 0.36);
+  --sf-card-radius: 2px 2px 0 0;
+  --sf-accent: #2f80e6;
+  --sf-blip: url('/assets/brand/blip-fps.svg');
 }
 
 /* ─── Entrance choreography (only once JS has armed it) ─── */
@@ -650,9 +1049,16 @@ body[data-theme="blueprint"] .site-footer {
   }
 
   .sf-card {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-    border-radius: 18px 18px 0 0;
+    --sf-card-px: 1.25rem;
+  }
+
+  .site-footer {
+    --sf-card-radius: 18px 18px 0 0;
+  }
+
+  /* The title block keeps its sheet number only. */
+  body[data-theme="blueprint"] .sf-chrome-btns {
+    display: none;
   }
 
   .sf-pill {

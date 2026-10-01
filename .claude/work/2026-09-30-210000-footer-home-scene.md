@@ -14,7 +14,8 @@ enverra une vidéo par thème pour les 4 autres.
 - frontend/index.html (markup footer + liens CSS/JS)
 - frontend/css/site-footer.css (nouveau)
 - frontend/js/components/site-footer.js (nouveau : horloge, copie email, scène WebGL)
-- frontend/assets/footer/* (vidéos empilées couleur+alpha 1792/1280 en mp4+webm, posters WebP)
+- frontend/assets/footer/* (vidéos empilées couleur+alpha 1792/1280 en mp4+webm, posters WebP),
+  une scène par thème : default, terminal, blueprint, retro90s (fps réutilise default)
 - frontend/i18n/locales/{fr,en}.json (clés footer.*)
 - frontend/themes/retro90s/retro90s.js (webring → nouvelle barre du footer)
 
@@ -25,6 +26,9 @@ enverra une vidéo par thème pour les 4 autres.
 - [x] Renderer WebGL (alpha empilé, lavis d'entrée, parallaxe, pause, reduced-motion)
 - [x] Tests navigateur (default desktop/tablette/mobile, EN, reduced-motion, sans WebGL,
       autres thèmes lisibles) + vidéo de démo envoyée à Tom
+- [x] Vidéos terminal / blueprint / retro90s de Tom détourées et intégrées, carte habillée par
+      thème (terminal phosphore, cartouche de plan, fenêtre Windows 95) + entrée propre à chaque
+      thème dans le shader (impression ligne à ligne, balayage traceur, GIF entrelacé)
 
 ## Notes/Discoveries
 - Vidéo source 2230×930, 24 fps, 124 frames, fond ≈ #F501F5. Quasi-boucle : fondu de 8 frames
@@ -39,5 +43,11 @@ enverra une vidéo par thème pour les 4 autres.
   paysage (--sf-sink = 0.7 × hauteur de scène, sous l'horizon donc bord bas toujours caché).
   Le haut de la frame coupe l'arbre : dissolution fine « feuillage » (10 %).
 - Autre thème = ajouter une entrée dans SCENES (site-footer.js) avec le même layout empilé.
+- Réglages de détourage par vidéo (scratchpad key.py, variables d'env) :
+  retro KEYISH=150 + horizon 570 (fleurs roses jusqu'à m≈127), terminal crop bas 42 px
+  (bord dentelé magenta) + horizon 600, blueprint horizon 590 ; puis passe « despeck » qui
+  efface les points violets collés au ciel (ciel sombre compressé entre les feuilles).
+- Bug pré-existant repéré (pas corrigé ici) : themes/blueprint/blueprint.js initSVGAnimations
+  appelle getTotalLength sur le SVG du hero masqué en mobile → ThemeInit échoue en mobile.
 - Copy : pas de « fait main », pas de café, pas de tournures « IA slop » (cf. #85). Pas de promesse
   de dispo (now.json : pas de freelance en ce moment) → tagline de BRANDING.md + email.

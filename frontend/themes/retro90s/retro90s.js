@@ -753,7 +753,7 @@ function initAwardsBadges() {
 
 // ─── Webring Navigation ───
 function initWebring() {
-    const footer = document.querySelector('.footer-content') || document.querySelector('.sf-bar');
+    const footer = document.querySelector('.footer-content') || document.querySelector('.sf-card');
     if (!footer) return;
 
     const webring = document.createElement('div');
@@ -764,7 +764,7 @@ function initWebring() {
         <button class="webring-btn" data-tooltip="Next site in the ring">Next ►</button>
     `;
 
-    const footerInfo = footer.querySelector('.footer-info-row');
+    const footerInfo = footer.querySelector('.footer-info-row') || footer.querySelector('.sf-bar');
     if (footerInfo) footer.insertBefore(webring, footerInfo);
     else footer.insertBefore(webring, footer.firstChild);
 
