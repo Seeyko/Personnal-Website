@@ -954,10 +954,12 @@ body[data-theme="retro90s"] .sf-card .retro-webring {
 /* ── fps: dark HUD glass over the de_dust painting ── */
 /* The map runs edge to edge under the HUD: the footer takes back the room
    #main-content keeps for the rail (left) and the side column (right,
-   >=1200px), and ends right on top of the bottom bars (main keeps 56px, the
-   telemetry is 31px). The card stays in the content column. */
+   >=1200px), and ends right on top of the bottom HUD bar (main keeps 56px,
+   the bar is 44px). The card stays in the content column. The side column
+   sits under #main-content, so the painting draws over it; fps.js also
+   slides it off while the painting is on screen. */
 body[data-theme="fps"].fps-hud .site-footer {
-  margin: 0 0 -25px -64px;
+  margin: 0 0 -12px -64px;
 }
 
 body[data-theme="fps"].fps-hud .sf-inner {
@@ -971,19 +973,13 @@ body[data-theme="fps"].fps-hud .sf-inner {
     margin-right: -320px;
   }
 
-  /* The side column is a HUD panel: it stays over the map, not under it
-     (#main-content sits at z 46, the column at 35). */
-  body[data-theme="fps"] #fps-side {
-    z-index: 47;
-  }
-
   body[data-theme="fps"].fps-hud .sf-inner {
     margin-right: 320px;
   }
 }
 
 @media (max-width: 899px) {
-  /* main keeps 112px; the rail + telemetry stack is 86px tall */
+  /* main keeps 112px; the rail + HUD bar stack is 86px tall */
   body[data-theme="fps"].fps-hud .site-footer {
     margin: 0 0 -26px;
   }
@@ -993,16 +989,47 @@ body[data-theme="fps"].fps-hud .sf-inner {
   }
 }
 
+/* Statement over the open sky: dark ink in the HUD face; the e-mail pill
+   becomes a glass chip with a T-gold copy button. */
+body[data-theme="fps"] .site-footer {
+  --sf-ink: #22170b;
+  --sf-faint: #5b4128;
+  --sf-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+}
+
+body[data-theme="fps"] .sf-headline {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 244, 220, 0.45);
+}
+
+body[data-theme="fps"] .sf-pill {
+  --sf-ink: #ffffff;
+  --sf-ink-2: #c8bfae;
+  --sf-accent: #e8a33d;
+  --sf-surface: rgba(17, 16, 14, 0.9);
+  --sf-surface-line: rgba(255, 232, 190, 0.2);
+  --sf-button: #e8a33d;
+  --sf-on-button: #1a1006;
+  border-radius: 0;
+}
+
+body[data-theme="fps"] .sf-pill-copy {
+  border-radius: 0;
+  font-weight: 700;
+}
+
 body[data-theme="fps"] .sf-card {
-  --sf-ink: #eef4fa;
-  --sf-ink-2: #b3c2d0;
-  --sf-muted: #8496a4;
-  --sf-line: rgba(150, 190, 228, 0.22);
+  --sf-ink: #f4efe5;
+  --sf-ink-2: #c8bfae;
+  --sf-muted: #91887a;
+  --sf-line: rgba(255, 232, 190, 0.14);
   --sf-chip: transparent;
-  --sf-card: rgba(13, 19, 29, 0.86);
-  --sf-card-line: rgba(150, 190, 228, 0.36);
-  --sf-card-radius: 2px 2px 0 0;
-  --sf-accent: #2f80e6;
+  --sf-card: rgba(17, 16, 14, 0.88);
+  --sf-card-line: rgba(255, 232, 190, 0.2);
+  --sf-card-radius: 0;
+  --sf-accent: #e8a33d;
   --sf-blip: url('/assets/brand/blip-fps.svg');
 }
 
