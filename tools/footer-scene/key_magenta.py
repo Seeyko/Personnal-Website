@@ -31,6 +31,9 @@ How the key works
   * alpha from magenta-ness m = min(R, B) − G, linear between --lo (opaque) and
     --hi × m(key) (transparent); colour unmixed: F = (C − (1 − a)·K) / a, then a
     light despill;
+  * despeck: near the sky, opaque pixels that stray from the local foreground
+    colour towards the key (sky trapped in a cloud or between leaves, smeared
+    purple by chroma subsampling) are repainted with that local colour;
   * transparent pixels get a push-pull fill of the nearby foreground colours so
     the edges don't pick up magenta when the video is compressed or filtered;
   * the last --loop-blend frames are cross-faded into the first ones for a
@@ -191,6 +194,36 @@ def estimate_key(rgb):
     return np.median(rgb[core], axis=0)
 
 
+def despeck(rgb, a, key, reach, horizon):
+    """Repaint the purple specks left near the sky with the local foreground.
+
+    Each pixel is compared with the push-pull colour F of the clearly
+    non-magenta pixels around it: t is how far it moved from F towards the key
+    K, cos how well K − F explains the move. A speck moves straight towards K
+    (cos high, t > a few %), or, inside the blue clouds, towards K and darker
+    (lower cos, but bluer than red). Red roofs or flowers next to green
+    foliage move towards red, not towards K, and are kept.
+    """
+    if reach <= 0:
+        return rgb
+    near = dilate(a < 0.5, reach)
+    near[horizon:] = False
+    near &= a > 0.15
+    clean = ((magenta(rgb) < -15) & (a > 0.5)).astype(np.float32)
+    f = push_pull_fill(rgb, clean)
+    kf = key - f
+    d = rgb - f
+    dot = (d * kf).sum(-1)
+    kf_n = np.sqrt((kf ** 2).sum(-1)) + 1e-3
+    t = dot / kf_n ** 2
+    cos = dot / (kf_n * (np.sqrt((d ** 2).sum(-1)) + 1e-3))
+    bluish = np.clip((rgb[..., 2] - rgb[..., 0] + 25) / 20, 0, 1)
+    gate = np.maximum(np.clip((cos - 0.78) / 0.1, 0, 1), np.clip((cos - 0.2) / 0.2, 0, 1) * bluish)
+    amount = np.clip((t - 0.02) / 0.05, 0, 1) * np.clip((t * kf_n - 6) / 8, 0, 1)
+    w = (amount * gate * near)[..., None]
+    return rgb + w * (f - rgb)
+
+
 class Keyer:
     def __init__(self, key, opts, h, scale):
         self.key = np.asarray(key, np.float32)
@@ -200,6 +233,7 @@ class Keyer:
         self.core_dist = opts.core_dist
         self.band = max(1, round(opts.band * scale))
         self.horizon = int(opts.horizon * h) if opts.horizon else h
+        self.reach = max(0, round(opts.despeck * scale))
 
     def core(self, rgb):
         """Pure background: the key colour, or a darker shade of it (sky seen
@@ -249,6 +283,7 @@ class Keyer:
         fg[..., 0] -= spill
         fg[..., 2] -= spill
         fg = np.clip(fg, 0.0, 255.0)
+        fg = despeck(fg, a, self.key, self.reach, self.horizon)
 
         fill = push_pull_fill(fg, a)
         colour = np.where((a > 0.0)[..., None], fg, fill)
@@ -311,6 +346,8 @@ def main():
     ap.add_argument('--hi', type=float, default=0.9, help='fraction of key magenta-ness that is fully transparent')
     ap.add_argument('--core-dist', type=float, default=80, help='RGB distance to the key for "pure background"')
     ap.add_argument('--band', type=float, default=4, help='matte band around the background, px at 2230 wide')
+    ap.add_argument('--despeck', type=float, default=35,
+                    help='reach of the purple-speck pass around the sky, px at 2230 wide (0: off)')
     ap.add_argument('--horizon', type=float, help='rows below this fraction of the height stay opaque')
     ap.add_argument('--loop-blend', type=int, default=8, help='frames cross-faded for the loop (0: off)')
     ap.add_argument('--no-patch', action='store_true', help="don't touch site-footer.js")
