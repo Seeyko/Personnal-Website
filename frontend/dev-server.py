@@ -49,7 +49,10 @@ class SPAHandler(http.server.SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)) or '.')
 
-    with socketserver.TCPServer(("", PORT), SPAHandler) as httpd:
+    # Threaded: a streaming request (the footer video) must not block the page.
+    socketserver.ThreadingTCPServer.allow_reuse_address = True
+    socketserver.ThreadingTCPServer.daemon_threads = True
+    with socketserver.ThreadingTCPServer(("", PORT), SPAHandler) as httpd:
         print(f"Development server running at http://localhost:{PORT}")
         print(f"Blog available at http://localhost:{PORT}/blog")
         print("Press Ctrl+C to stop")
