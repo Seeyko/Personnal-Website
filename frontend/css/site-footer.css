@@ -1,0 +1,1116 @@
+/* ═══════════════════════════════════════════════════════════════
+   SITE FOOTER — "cd ~"
+   Tagline + e-mail, then a card holding the links, and the painted home
+   scene in FRONT of it: the card sinks behind the tree, the house and the
+   sea, so the footer lives inside the painting (Bloom-style). The scene's
+   sky is keyed out, so the page and the card show straight through it.
+   js/components/site-footer.js composites the video in WebGL.
+   ═══════════════════════════════════════════════════════════════ */
+
+.site-footer {
+  --sf-ink: #2c2825;
+  --sf-ink-2: #5c5650;
+  --sf-muted: #8a8279;
+  --sf-faint: #958d83;
+  --sf-accent: #3d7a73;
+  --sf-on-accent: #ffffff;
+  --sf-line: rgba(44, 40, 37, 0.12);
+  --sf-surface: #ffffff;
+  --sf-surface-line: rgba(44, 40, 37, 0.1);
+  --sf-button: #2c2825;
+  --sf-on-button: #f8f7f4;
+  --sf-chip: rgba(255, 255, 255, 0.55);
+  --sf-font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --sf-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+  --sf-display: var(--sf-font);
+  --sf-maxw: 1200px;
+  --sf-gutter: clamp(1.25rem, 4vw, 3rem);
+  --sf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Scene: the 2230×930 painting, read by the shader. The top edge of the
+     frame cuts through the canopy, so it dissolves over a thin, leafy band. */
+  --sf-scene-ar: 2.3978;
+  --sf-scene-focus-x: 56%;
+  --sf-scene-fade-tree: 10%;
+  --sf-scene-fade-sky: 6%;
+  /* How deep the card sinks into the scene (× scene height). Past the
+     horizon (~62%) the painting is fully opaque, so the card's bottom edge
+     is always hidden behind the landscape. */
+  --sf-sink: 0.7;
+  --sf-card: #ffffff;
+  --sf-card-line: rgba(44, 40, 37, 0.1);
+  --sf-card-radius: 22px 22px 0 0;
+  --sf-card-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 2px 6px rgba(44, 40, 37, 0.04),
+    0 30px 80px -24px rgba(44, 40, 37, 0.22);
+  --sf-blip: url('/assets/brand/blip-default.svg');
+  --sf-card-gap: clamp(0.5rem, 1.5vw, 1.25rem);  /* air between the legal bar and the canopy */
+
+  container-type: inline-size;
+
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+  overflow: hidden;
+  padding-top: clamp(4rem, 8vw, 7rem);
+  color: var(--sf-ink);
+  font-family: var(--sf-font);
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.site-footer *,
+.site-footer *::before,
+.site-footer *::after {
+  box-sizing: border-box;
+}
+
+.sf-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.sf-sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sf-icon {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.sf-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: calc(var(--sf-maxw) + var(--sf-gutter) * 2);
+  margin: 0 auto;
+  padding: 0 var(--sf-gutter);
+}
+
+/* ─── 1. Statement: tagline + e-mail ─── */
+.sf-statement {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.75rem, 3vw, 2.25rem);
+  text-align: center;
+  margin-bottom: clamp(3.5rem, 7vw, 5.5rem);
+}
+
+/* ─── 2. Card: sinks into the scene ─── */
+.sf-card {
+  --sf-card-px: clamp(1.5rem, 3.2vw, 2.75rem);
+  position: relative;
+  padding: clamp(1.75rem, 3.2vw, 2.75rem) var(--sf-card-px) 0;
+  /* the part of the card the painting covers */
+  padding-bottom: calc(100vw / var(--sf-scene-ar) * var(--sf-sink) + var(--sf-card-gap));
+  padding-bottom: calc(100cqw / var(--sf-scene-ar) * var(--sf-sink) + var(--sf-card-gap));
+  border-radius: var(--sf-card-radius);
+  background: var(--sf-card);
+  border: 1px solid var(--sf-card-line);
+  border-bottom: 0;
+  /* the shadow reads through the keyed sky as the card sinks into the scene */
+  box-shadow: var(--sf-card-shadow);
+}
+
+/* Window chrome: off by default, themes that dress the card as a window draw it. */
+.sf-card-chrome {
+  display: none;
+}
+
+.sf-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3.5vw, 3.5rem);
+  align-items: start;
+}
+
+.sf-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.sf-role {
+  margin: 0;
+  max-width: 28ch;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--sf-ink-2);
+}
+
+.sf-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--sf-mono);
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: 0.08em;
+  color: var(--sf-ink);
+  text-decoration: none;
+}
+
+.sf-blip {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  background: var(--sf-blip) center / contain no-repeat;
+  image-rendering: pixelated;
+  transition: transform 0.35s var(--sf-ease);
+}
+
+.sf-wordmark:hover .sf-blip {
+  transform: translateY(-3px) rotate(-6deg);
+}
+
+/* The brand's block cursor. Blinks on the contractual 1.06 s steps(1) beat. */
+.sf-cursor {
+  display: inline-block;
+  width: 0.56em;
+  height: 1.02em;
+  margin-left: 0.04em;
+  background: var(--sf-accent);
+  transform: translateY(0.06em);
+  animation: sf-blink 1.06s steps(1) infinite;
+}
+
+@keyframes sf-blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+.sf-headline {
+  margin: 0;
+  font-family: var(--sf-display);
+  font-size: clamp(1.85rem, 0.9rem + 2.6vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.sf-headline > span {
+  display: block;
+}
+
+.sf-headline-lead {
+  color: var(--sf-faint);
+}
+
+.sf-headline-main {
+  color: var(--sf-ink);
+}
+
+/* E-mail pill with a copy button. */
+.sf-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+  padding: 0.3rem 0.3rem 0.3rem 1.1rem;
+  border-radius: 999px;
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-surface-line);
+  box-shadow:
+    0 1px 2px rgba(44, 40, 37, 0.05),
+    0 14px 32px -20px rgba(44, 40, 37, 0.35);
+  transition: box-shadow 0.4s var(--sf-ease), transform 0.4s var(--sf-ease);
+}
+
+.sf-pill:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 2px rgba(44, 40, 37, 0.05),
+    0 20px 40px -20px rgba(44, 40, 37, 0.42);
+}
+
+.sf-pill-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  padding-right: 0.7rem;
+  font-family: var(--sf-mono);
+  font-size: 0.875rem;
+  color: var(--sf-ink-2);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sf-pill-mail .sf-icon {
+  font-size: 1.05rem;
+  color: var(--sf-accent);
+}
+
+.sf-pill-address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sf-pill-mail:hover {
+  color: var(--sf-ink);
+}
+
+.sf-pill-copy {
+  display: grid;
+  height: 2.5rem;
+  padding: 0 1.05rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--sf-button);
+  color: var(--sf-on-button);
+  font: 500 0.875rem/1 var(--sf-font);
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.sf-pill-copy:hover {
+  transform: scale(1.03);
+}
+
+.sf-pill-copy:active {
+  transform: scale(0.97);
+}
+
+.sf-pill-copy-face {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: transform 0.45s var(--sf-ease), opacity 0.3s ease;
+}
+
+.sf-pill-copy-done {
+  opacity: 0;
+  transform: translateY(110%);
+}
+
+.sf-pill.is-copied .sf-pill-copy {
+  background: var(--sf-accent);
+  color: var(--sf-on-accent);
+}
+
+.sf-pill.is-copied .sf-pill-copy-idle {
+  opacity: 0;
+  transform: translateY(-110%);
+}
+
+.sf-pill.is-copied .sf-pill-copy-done {
+  opacity: 1;
+  transform: none;
+}
+
+.sf-socials {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sf-social {
+  display: grid;
+  place-items: center;
+  width: 2.625rem;
+  height: 2.625rem;
+  border-radius: 999px;
+  border: 1px solid var(--sf-line);
+  background: var(--sf-chip);
+  color: var(--sf-ink-2);
+  font-size: 1.05rem;
+  text-decoration: none;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.3s var(--sf-ease);
+}
+
+.sf-social:hover {
+  color: var(--sf-on-accent);
+  background: var(--sf-accent);
+  border-color: var(--sf-accent);
+  transform: translateY(-3px);
+}
+
+.sf-col-title {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0 0 1.2rem;
+  font-family: var(--sf-font);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--sf-ink);
+}
+
+/* Zuno-style bullet, drawn as the brand's block cursor. */
+.sf-col-title::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.8rem;
+  background: var(--sf-accent);
+  flex: none;
+}
+
+.sf-links {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9375rem;
+  color: var(--sf-ink-2);
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: color 0.2s ease, background-size 0.35s var(--sf-ease);
+}
+
+.sf-link:hover,
+.sf-link:focus-visible {
+  color: var(--sf-ink);
+  background-size: 100% 1px;
+}
+
+.sf-ext {
+  font-size: 0.7rem;
+  opacity: 0.55;
+  transition: transform 0.25s var(--sf-ease), opacity 0.2s ease;
+}
+
+.sf-link:hover .sf-ext {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
+.sf-clock {
+  margin: 0;
+  font-family: var(--sf-mono);
+  font-size: clamp(1.6rem, 1rem + 1.2vw, 2.1rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--sf-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.sf-clock-colon {
+  animation: sf-blink 1.06s steps(1) infinite;
+}
+
+.sf-clock-meta {
+  margin: 0.7rem 0 0;
+  font-family: var(--sf-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--sf-muted);
+}
+
+/* ─── 2. Legal bar ─── */
+.sf-bar {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  padding: 1.25rem 0 1.5rem;
+  border-top: 1px solid var(--sf-line);
+  font-size: 0.875rem;
+  color: var(--sf-muted);
+}
+
+.sf-legal {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35em;
+  margin: 0;
+}
+
+.sf-heartbit {
+  width: 15px;
+  height: 13px;
+  margin-right: 0.45rem;
+  flex: none;
+  overflow: visible;
+}
+
+.sf-heartbit-bit {
+  animation: sf-blink 1.06s steps(1) infinite;
+}
+
+.sf-bar-end {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.site-footer .best-viewed {
+  display: none;
+}
+
+.sf-bar .sf-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--sf-ink-2);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sf-bar .sf-top .sf-icon {
+  transition: transform 0.3s var(--sf-ease);
+}
+
+.sf-bar .sf-top:hover {
+  color: var(--sf-ink);
+}
+
+.sf-bar .sf-top:hover .sf-icon {
+  transform: translateY(-3px);
+}
+
+/* ─── 3. Scene — in front of everything, climbing over the card ─── */
+.sf-scene {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  aspect-ratio: var(--sf-scene-ar);
+  /* % margins resolve against the footer width: this is --sf-sink × scene height */
+  margin-top: calc(var(--sf-sink) * -100% / var(--sf-scene-ar));
+  pointer-events: none;
+}
+
+.sf-scene-art,
+.sf-scene-poster,
+.sf-scene-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sf-scene-poster {
+  object-fit: cover;
+  object-position: var(--sf-scene-focus-x) 100%;
+  /* Same thin dissolve the shader draws, for the no-WebGL fallback. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 9%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 9%);
+  transition: opacity 0.8s ease;
+}
+
+.sf-scene-canvas {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.sf-scene.is-live .sf-scene-canvas {
+  opacity: 1;
+}
+
+.sf-scene.is-live .sf-scene-poster {
+  opacity: 0;
+}
+
+/* ─── Themes ───
+   Each theme has its own painting of the same scene (SCENES in
+   site-footer.js) and dresses the card in its own idiom: a phosphor
+   terminal, a drawing sheet with its title block, a Windows 95 window. */
+
+/* ── terminal: phosphor on CRT black ── */
+body[data-theme="terminal"] .site-footer {
+  --sf-ink: #33ff00;
+  --sf-ink-2: rgba(51, 255, 0, 0.78);
+  --sf-muted: rgba(51, 255, 0, 0.55);
+  --sf-faint: #1a8000;
+  --sf-accent: #ffb000;
+  --sf-on-accent: #0a0a0a;
+  --sf-line: #1f521f;
+  --sf-surface: #0a0a0a;
+  --sf-surface-line: #1f521f;
+  --sf-button: #33ff00;
+  --sf-on-button: #0a0a0a;
+  --sf-chip: transparent;
+  --sf-card: #0d0d0d;
+  --sf-card-line: #1f521f;
+  --sf-card-radius: 4px 4px 0 0;
+  --sf-card-shadow: 0 0 0 1px rgba(51, 255, 0, 0.05), 0 0 60px -12px rgba(51, 255, 0, 0.22);
+  --sf-blip: url('/assets/brand/blip-terminal.svg');
+  --sf-font: 'JetBrains Mono', 'Fira Code', monospace;
+  --sf-display: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+body[data-theme="terminal"] .sf-headline {
+  font-size: clamp(1.45rem, 0.8rem + 2vw, 2.4rem);
+  letter-spacing: -0.02em;
+}
+
+body[data-theme="terminal"] .sf-headline-main,
+body[data-theme="terminal"] .sf-wordmark,
+body[data-theme="terminal"] .sf-clock {
+  text-shadow: 0 0 6px rgba(51, 255, 0, 0.55), 0 0 18px rgba(51, 255, 0, 0.25);
+}
+
+body[data-theme="terminal"] .sf-clock {
+  color: var(--sf-accent);
+  text-shadow: 0 0 6px rgba(255, 176, 0, 0.5), 0 0 18px rgba(255, 176, 0, 0.2);
+}
+
+body[data-theme="terminal"] .sf-card {
+  padding-top: 0;
+}
+
+body[data-theme="terminal"] .sf-card-chrome {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 2.25rem;
+  margin: 0 calc(var(--sf-card-px) * -1) clamp(1.5rem, 3vw, 2.25rem);
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--sf-line);
+  background: #0a0a0a;
+  font: 500 0.75rem/1 var(--sf-font);
+  color: var(--sf-muted);
+}
+
+body[data-theme="terminal"] .sf-chrome-dots {
+  display: flex;
+  gap: 6px;
+}
+
+body[data-theme="terminal"] .sf-chrome-dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff3333;
+}
+
+body[data-theme="terminal"] .sf-chrome-dots i:nth-child(2) { background: #ffb000; }
+body[data-theme="terminal"] .sf-chrome-dots i:nth-child(3) { background: #33ff00; }
+
+body[data-theme="terminal"] .sf-chrome-title::before {
+  content: 'tom@dev:~$ ls ~/footer';
+}
+
+body[data-theme="terminal"] .sf-chrome-btns {
+  display: none;
+}
+
+body[data-theme="terminal"] .sf-pill,
+body[data-theme="terminal"] .sf-pill-copy,
+body[data-theme="terminal"] .sf-social {
+  border-radius: 2px;
+}
+
+body[data-theme="terminal"] .sf-pill {
+  box-shadow: 0 0 24px -8px rgba(51, 255, 0, 0.35);
+}
+
+body[data-theme="terminal"] .sf-pill-mail::before {
+  content: '>';
+  color: var(--sf-accent);
+}
+
+body[data-theme="terminal"] .sf-pill-mail .sf-icon {
+  display: none;
+}
+
+body[data-theme="terminal"] .sf-link::before {
+  content: './';
+  color: var(--sf-faint);
+}
+
+body[data-theme="terminal"] .sf-link:hover,
+body[data-theme="terminal"] .sf-link:focus-visible {
+  text-shadow: 0 0 6px rgba(51, 255, 0, 0.6);
+}
+
+body[data-theme="terminal"] .sf-bar {
+  border-top-style: dashed;
+}
+
+/* ── blueprint: a drawing sheet with its title block ── */
+body[data-theme="blueprint"] .site-footer {
+  --sf-ink: rgba(255, 255, 255, 0.94);
+  --sf-ink-2: rgba(255, 255, 255, 0.76);
+  --sf-muted: rgba(255, 255, 255, 0.58);
+  --sf-faint: rgba(0, 255, 255, 0.72);
+  --sf-accent: #00ffff;
+  --sf-on-accent: #003366;
+  --sf-line: rgba(255, 255, 255, 0.24);
+  --sf-surface: rgba(0, 34, 68, 0.9);
+  --sf-surface-line: rgba(255, 255, 255, 0.45);
+  --sf-button: #00ffff;
+  --sf-on-button: #003366;
+  --sf-chip: transparent;
+  --sf-card: rgba(0, 38, 76, 0.9);
+  --sf-card-line: rgba(255, 255, 255, 0.5);
+  --sf-card-radius: 0;
+  --sf-card-shadow: 0 0 0 4px rgba(0, 51, 102, 0.6), 0 0 0 5px rgba(255, 255, 255, 0.14);
+  --sf-blip: url('/assets/brand/blip-blueprint.svg');
+  --sf-font: 'Roboto Mono', monospace;
+  --sf-display: 'Roboto Mono', monospace;
+}
+
+body[data-theme="blueprint"] .sf-headline {
+  font-size: clamp(1.4rem, 0.75rem + 2vw, 2.3rem);
+  letter-spacing: -0.02em;
+}
+
+body[data-theme="blueprint"] .sf-headline-lead {
+  font-family: 'Architects Daughter', cursive;
+  letter-spacing: 0;
+}
+
+body[data-theme="blueprint"] .sf-card {
+  padding-top: 0;
+}
+
+/* Title block (cartouche) across the top of the sheet. */
+body[data-theme="blueprint"] .sf-card-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 2rem;
+  margin: 0 calc(var(--sf-card-px) * -1) clamp(1.5rem, 3vw, 2.25rem);
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--sf-card-line);
+  font: 500 0.6875rem/1 var(--sf-font);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sf-muted);
+}
+
+body[data-theme="blueprint"] .sf-chrome-dots {
+  display: none;
+}
+
+body[data-theme="blueprint"] .sf-chrome-title::before {
+  content: 'PLAN F-00 · PIED DE PAGE';
+}
+
+html[lang="en"] body[data-theme="blueprint"] .sf-chrome-title::before {
+  content: 'SHEET F-00 · FOOTER';
+}
+
+body[data-theme="blueprint"] .sf-chrome-btns {
+  font-size: 0;
+}
+
+body[data-theme="blueprint"] .sf-chrome-btns::before {
+  content: 'ÉCH. 1:1 · REV. 2026';
+  font-size: 0.6875rem;
+}
+
+html[lang="en"] body[data-theme="blueprint"] .sf-chrome-btns::before {
+  content: 'SCALE 1:1 · REV. 2026';
+}
+
+body[data-theme="blueprint"] .sf-chrome-btns i {
+  display: none;
+}
+
+/* Registration crosses on the sheet's top corners. */
+body[data-theme="blueprint"] .sf-card::before,
+body[data-theme="blueprint"] .sf-card::after {
+  content: '';
+  position: absolute;
+  top: -9px;
+  width: 17px;
+  height: 17px;
+  background:
+    linear-gradient(#00ffff, #00ffff) center / 1px 100% no-repeat,
+    linear-gradient(#00ffff, #00ffff) center / 100% 1px no-repeat;
+}
+
+body[data-theme="blueprint"] .sf-card::before { left: -9px; }
+body[data-theme="blueprint"] .sf-card::after { right: -9px; }
+
+body[data-theme="blueprint"] .sf-pill,
+body[data-theme="blueprint"] .sf-pill-copy,
+body[data-theme="blueprint"] .sf-social {
+  border-radius: 0;
+}
+
+body[data-theme="blueprint"] .sf-pill {
+  border-style: dashed;
+  box-shadow: none;
+}
+
+body[data-theme="blueprint"] .sf-link:hover,
+body[data-theme="blueprint"] .sf-link:focus-visible {
+  color: var(--sf-accent);
+}
+
+body[data-theme="blueprint"] .sf-bar {
+  border-top-style: dashed;
+}
+
+/* ── retro90s: a Windows 95 window ── */
+body[data-theme="retro90s"] .site-footer {
+  --sf-ink: #000000;
+  --sf-ink-2: #000000;
+  --sf-muted: #404040;
+  --sf-faint: #008080;
+  --sf-accent: #000080;
+  --sf-on-accent: #ffffff;
+  --sf-line: #808080;
+  --sf-surface: #ffffff;
+  --sf-surface-line: #808080;
+  --sf-button: #c0c0c0;
+  --sf-on-button: #000000;
+  --sf-chip: #c0c0c0;
+  --sf-card: #c0c0c0;
+  --sf-card-line: #ffffff;
+  --sf-card-radius: 0;
+  --sf-card-shadow:
+    inset -1px 0 0 #404040,
+    inset -2px 0 0 #808080,
+    inset 1px 0 0 #dfdfdf,
+    inset 2px 2px 0 #ffffff,
+    4px 4px 0 rgba(0, 0, 0, 0.25);
+  --sf-blip: url('/assets/brand/blip-retro90s.svg');
+  --sf-font: 'MS Sans Serif', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --sf-display: 'Arial Black', Impact, Haettenschweiler, sans-serif;
+  --sf-bevel-out: inset -1px -1px 0 #404040, inset 1px 1px 0 #ffffff, inset -2px -2px 0 #808080, inset 2px 2px 0 #dfdfdf;
+  --sf-bevel-in: inset 1px 1px 0 #404040, inset -1px -1px 0 #ffffff, inset 2px 2px 0 #808080, inset -2px -2px 0 #dfdfdf;
+}
+
+body[data-theme="retro90s"] .sf-headline {
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: clamp(1.5rem, 0.8rem + 2.2vw, 2.6rem);
+}
+
+body[data-theme="retro90s"] .sf-headline-main {
+  color: #000080;
+  text-shadow: 2px 2px 0 #808080;
+}
+
+body[data-theme="retro90s"] .sf-card {
+  padding-top: 0;
+  border: 0;
+  padding-left: calc(var(--sf-card-px) + 3px);
+  padding-right: calc(var(--sf-card-px) + 3px);
+}
+
+body[data-theme="retro90s"] .sf-card-chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 1.75rem;
+  margin: 3px calc(var(--sf-card-px) * -1) clamp(1.5rem, 3vw, 2.25rem);
+  padding: 0 3px 0 0.5rem;
+  background: linear-gradient(to right, #000080, #1084d0);
+  color: #ffffff;
+  font: 700 0.8125rem/1 var(--sf-font);
+}
+
+body[data-theme="retro90s"] .sf-chrome-dots {
+  display: none;
+}
+
+body[data-theme="retro90s"] .sf-chrome-title {
+  flex: 1;
+}
+
+body[data-theme="retro90s"] .sf-chrome-title::before {
+  content: 'Tom Andrieu - contact.exe';
+}
+
+body[data-theme="retro90s"] .sf-chrome-btns {
+  display: flex;
+  gap: 2px;
+}
+
+body[data-theme="retro90s"] .sf-chrome-btns i {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 16px;
+  background: #c0c0c0;
+  box-shadow: var(--sf-bevel-out);
+  color: #000000;
+  font: 700 0.6875rem/1 var(--sf-font);
+  font-style: normal;
+}
+
+body[data-theme="retro90s"] .sf-chrome-btns i:last-child {
+  margin-left: 2px;
+}
+
+body[data-theme="retro90s"] .sf-pill {
+  border-radius: 0;
+  border: 0;
+  padding: 3px 3px 3px 0.85rem;
+  background: #ffffff;
+  box-shadow: var(--sf-bevel-in);
+}
+
+body[data-theme="retro90s"] .sf-pill:hover {
+  transform: none;
+  box-shadow: var(--sf-bevel-in);
+}
+
+body[data-theme="retro90s"] .sf-pill-mail {
+  font-family: 'Courier New', Courier, monospace;
+  color: #000000;
+}
+
+body[data-theme="retro90s"] .sf-pill-copy,
+body[data-theme="retro90s"] .sf-social {
+  border-radius: 0;
+  border: 0;
+  background: #c0c0c0;
+  color: #000000;
+  box-shadow: var(--sf-bevel-out);
+  transition: none;
+}
+
+body[data-theme="retro90s"] .sf-pill-copy:hover,
+body[data-theme="retro90s"] .sf-social:hover {
+  transform: none;
+  background: #c0c0c0;
+  color: #000000;
+}
+
+body[data-theme="retro90s"] .sf-pill-copy:active,
+body[data-theme="retro90s"] .sf-social:active {
+  transform: none;
+  box-shadow: var(--sf-bevel-in);
+}
+
+body[data-theme="retro90s"] .sf-pill.is-copied .sf-pill-copy {
+  background: #000080;
+  color: #ffffff;
+}
+
+body[data-theme="retro90s"] .sf-link {
+  color: #0000ff;
+  text-decoration: underline;
+  background: none;
+}
+
+body[data-theme="retro90s"] .sf-link:hover,
+body[data-theme="retro90s"] .sf-link:focus-visible {
+  color: #ff0000;
+}
+
+body[data-theme="retro90s"] .sf-col-title {
+  font-weight: 700;
+}
+
+/* The clock as the taskbar tray. */
+body[data-theme="retro90s"] .sf-clock {
+  display: inline-block;
+  padding: 0.35rem 0.6rem;
+  background: #c0c0c0;
+  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #ffffff;
+  font: 400 1.4rem/1 var(--sf-font);
+}
+
+body[data-theme="retro90s"] .sf-bar {
+  margin-top: 1.5rem;
+  border-top: 1px solid #808080;
+  box-shadow: inset 0 1px 0 #ffffff;
+  color: #000000;
+}
+
+body[data-theme="retro90s"] .site-footer .best-viewed {
+  margin: 0;
+  color: #404040;
+  opacity: 1;
+}
+
+body[data-theme="retro90s"] .sf-card .retro-webring {
+  margin: clamp(2rem, 4vw, 2.75rem) auto 0;
+}
+
+/* ── fps: dark HUD glass over the de_dust painting ── */
+/* The map runs edge to edge under the HUD: the footer takes back the room
+   #main-content keeps for the rail (left) and the side column (right,
+   >=1200px), and ends right on top of the bottom bars (main keeps 56px, the
+   telemetry is 31px). The card stays in the content column. */
+body[data-theme="fps"].fps-hud .site-footer {
+  margin: 0 0 -25px -64px;
+}
+
+body[data-theme="fps"].fps-hud .sf-inner {
+  max-width: none;
+  width: auto;
+  margin: 0 0 0 64px;
+}
+
+@media (min-width: 1200px) {
+  body[data-theme="fps"].fps-hud .site-footer {
+    margin-right: -320px;
+  }
+
+  /* The side column is a HUD panel: it stays over the map, not under it
+     (#main-content sits at z 46, the column at 35). */
+  body[data-theme="fps"] #fps-side {
+    z-index: 47;
+  }
+
+  body[data-theme="fps"].fps-hud .sf-inner {
+    margin-right: 320px;
+  }
+}
+
+@media (max-width: 899px) {
+  /* main keeps 112px; the rail + telemetry stack is 86px tall */
+  body[data-theme="fps"].fps-hud .site-footer {
+    margin: 0 0 -26px;
+  }
+
+  body[data-theme="fps"].fps-hud .sf-inner {
+    margin: 0;
+  }
+}
+
+body[data-theme="fps"] .sf-card {
+  --sf-ink: #eef4fa;
+  --sf-ink-2: #b3c2d0;
+  --sf-muted: #8496a4;
+  --sf-line: rgba(150, 190, 228, 0.22);
+  --sf-chip: transparent;
+  --sf-card: rgba(13, 19, 29, 0.86);
+  --sf-card-line: rgba(150, 190, 228, 0.36);
+  --sf-card-radius: 2px 2px 0 0;
+  --sf-accent: #2f80e6;
+  --sf-blip: url('/assets/brand/blip-fps.svg');
+}
+
+/* ─── Entrance choreography (only once JS has armed it) ─── */
+.site-footer.sf-armed [data-sf-reveal] {
+  transition:
+    opacity 0.9s var(--sf-ease),
+    transform 1.1s var(--sf-ease),
+    filter 0.9s var(--sf-ease);
+  transition-delay: calc(var(--sf-i, 0) * 90ms);
+}
+
+.site-footer.sf-armed [data-sf-group]:not(.sf-in) [data-sf-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 1.4rem, 0);
+  filter: blur(6px);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  .site-footer {
+    --sf-scene-ar: 1.9;
+  }
+
+  .sf-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .sf-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-footer {
+    --sf-scene-ar: 1.18;
+    padding-top: 3.5rem;
+  }
+
+  .sf-statement {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .sf-card {
+    --sf-card-px: 1.25rem;
+  }
+
+  .site-footer {
+    --sf-card-radius: 18px 18px 0 0;
+  }
+
+  /* The title block keeps its sheet number only. */
+  body[data-theme="blueprint"] .sf-chrome-btns {
+    display: none;
+  }
+
+  .sf-pill {
+    display: flex;
+    width: 100%;
+  }
+
+  .sf-pill-mail {
+    flex: 1;
+    font-size: 0.8125rem;
+    gap: 0.5rem;
+    padding-right: 0.25rem;
+  }
+
+  .sf-pill-copy {
+    padding: 0 0.95rem;
+  }
+
+  .sf-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.25rem 1.5rem;
+  }
+
+  .sf-clock-col {
+    grid-column: 1 / -1;
+  }
+
+  .sf-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-cursor,
+  .sf-clock-colon,
+  .sf-heartbit-bit {
+    animation: none;
+  }
+
+  .site-footer.sf-armed [data-sf-reveal],
+  .site-footer.sf-armed [data-sf-group]:not(.sf-in) [data-sf-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  .sf-pill,
+  .sf-pill-copy,
+  .sf-pill-copy-face,
+  .sf-social,
+  .sf-blip {
+    transition: none;
+  }
+}

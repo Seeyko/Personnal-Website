@@ -91,7 +91,18 @@
     "scale": "SCALE: 1:1",
     "copyright": "2026 TOM ANDRIEU - ALL RIGHTS RESERVED",
     "pressAnyKey": "[Press any key to continue...]",
-    "bestViewed": "Best viewed with Netscape Navigator 4.0 at 800x600 resolution"
+    "bestViewed": "Best viewed with Netscape Navigator 4.0 at 800x600 resolution",
+    "headlineLead": "I build products with AI.",
+    "headlineMain": "I help teams do the same.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyStatus": "Email address copied to the clipboard.",
+    "colExplore": "Explore",
+    "colElsewhere": "Elsewhere",
+    "colClock": "Local time",
+    "rights": "All rights reserved.",
+    "backToTop": "Back to top",
+    "sceneLabel": "Animated illustration: a house by the sea, a family and two cats in the garden."
   },
   "cathodeGuide": {
     "hero": "Welcome. An old screen. Still here.",
