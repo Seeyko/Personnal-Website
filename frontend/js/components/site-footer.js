@@ -9,9 +9,9 @@
  *   page shows through. Safari can't play VP9 alpha, so the video is a plain file
  *   with the colour on top and the alpha matte below ("stacked alpha"), and a small
  *   WebGL pass recombines them. On top of that: a watercolour wash reveal as the
- *   scene scrolls in, a depth parallax (the garden rises over the sky) and a
- *   pointer tilt. prefers-reduced-motion keeps the loop but drops the entrance and
- *   the parallax; Save-Data and no WebGL keep the <img> poster.
+ *   scene scrolls in and a depth parallax on scroll (the garden rises over the
+ *   sky). prefers-reduced-motion keeps the loop but drops the entrance and the
+ *   parallax; Save-Data and no WebGL keep the <img> poster.
  *
  * One scene per theme: add an entry to SCENES keyed by the theme id (same stacked
  * layout, see the numbers below); themes without one fall back to `default`.
@@ -216,7 +216,6 @@ uniform float u_alphaCover; // alpha block height / colour block height
 uniform float u_texel;      // half a texel, texture height
 uniform float u_reveal;     // 0..1 watercolour wash
 uniform float u_rise;       // 0..1 scroll parallax (1 = settled)
-uniform vec2  u_tilt;       // pointer parallax, -1..1
 uniform vec2  u_fade;       // top dissolve depth, fraction of canvas height (x: tree side, y: sky side)
 uniform float u_style;      // entrance: 0 watercolour, 1 phosphor print, 2 plotter sweep, 3 interlaced GIF, 4 radar ping
 
@@ -270,8 +269,7 @@ vec4 sampleScene(vec2 s) {
 vec2 sceneUV(vec2 uv) {
     vec2 s = u_crop.xy + uv * u_crop.zw;
     float d = depthAt(s.y);
-    s.x += u_tilt.x * d * 0.011;
-    s.y += u_tilt.y * d * 0.006 - (1.0 - u_rise) * d * 0.06;
+    s.y -= (1.0 - u_rise) * d * 0.06;
     return s;
 }
 
@@ -390,8 +388,6 @@ void main() {
             reveal: still ? 1 : 0,
             washStart: 0,
             rise: still ? 1 : 0,
-            tilt: [0, 0],
-            tiltTarget: [0, 0],
             crop: [0, 0, 1, 1],
             fade: [0.1, 0.06],
             videoRequested: false,
@@ -416,7 +412,7 @@ void main() {
 
             loc = {};
             ['u_tex', 'u_res', 'u_crop', 'u_stacked', 'u_colorFrac', 'u_alphaCover', 'u_texel',
-             'u_reveal', 'u_rise', 'u_tilt', 'u_fade', 'u_style']
+             'u_reveal', 'u_rise', 'u_fade', 'u_style']
                 .forEach(name => { loc[name] = gl.getUniformLocation(program, name); });
 
             texture = gl.createTexture();
@@ -571,14 +567,6 @@ void main() {
             return Math.min(Math.max((vh - rect.top) / (rect.height * 0.75), 0), 1);
         }
 
-        function onPointer(e) {
-            if (!state.visible || e.pointerType === 'touch') return;
-            const rect = scene.getBoundingClientRect();
-            state.tiltTarget[0] = Math.min(Math.max((e.clientX - rect.left) / rect.width * 2 - 1, -1), 1);
-            state.tiltTarget[1] = Math.min(Math.max((e.clientY - rect.top) / rect.height * 2 - 1, -1), 1);
-            requestFrame();
-        }
-
         function requestFrame() {
             if (!state.raf && state.visible) state.raf = requestAnimationFrame(frame);
         }
@@ -603,14 +591,6 @@ void main() {
                 if (Math.abs(target - state.rise) > 1e-3) {
                     state.rise += (target - state.rise) * (1 - Math.exp(-dt * 5));
                     animating = true;
-                }
-                const k = 1 - Math.exp(-dt * 4);
-                for (let i = 0; i < 2; i++) {
-                    const delta = state.tiltTarget[i] - state.tilt[i];
-                    if (Math.abs(delta) > 1e-3) {
-                        state.tilt[i] += delta * k;
-                        animating = true;
-                    }
                 }
             }
 
@@ -655,7 +635,6 @@ void main() {
             }
             gl.uniform1f(loc.u_reveal, state.reveal);
             gl.uniform1f(loc.u_rise, state.rise);
-            gl.uniform2f(loc.u_tilt, state.tilt[0], state.tilt[1]);
             gl.uniform2f(loc.u_fade, state.fade[0], state.fade[1]);
             gl.uniform1f(loc.u_style, config.style);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -708,7 +687,6 @@ void main() {
         loadPoster();
         if (!still) {
             window.addEventListener('scroll', requestFrame, { passive: true });
-            window.addEventListener('pointermove', onPointer, { passive: true });
         }
         io.observe(scene);
         new ResizeObserver(() => { resize(); requestFrame(); }).observe(scene);

@@ -22,6 +22,7 @@
 - [x] Cache : nginx sert les .js en « immutable » 1 an → ?v=2026-10-01 sur site-footer.js et
       theme-manager.js (index.html) et sur le JS du thème (ASSET_VERSION dans theme-manager.js),
       sinon les correctifs n'atteignent pas les navigateurs qui ont déjà l'ancien fichier
+- [x] Parallaxe à la souris retirée de la scène (demande de Tom) ; la parallaxe au scroll reste
 
 ## Notes/Discoveries
 - Prod testée via un miroir local + Google Chrome (H.264) : le code joue dans Chrome. En
