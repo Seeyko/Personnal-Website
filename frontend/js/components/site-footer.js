@@ -10,8 +10,8 @@
  *   with the colour on top and the alpha matte below ("stacked alpha"), and a small
  *   WebGL pass recombines them. On top of that: a watercolour wash reveal as the
  *   scene scrolls in, a depth parallax (the garden rises over the sky) and a
- *   pointer tilt. prefers-reduced-motion gets a still, fully revealed frame; no
- *   WebGL keeps the <img> poster.
+ *   pointer tilt. prefers-reduced-motion keeps the loop but drops the entrance and
+ *   the parallax; Save-Data and no WebGL keep the <img> poster.
  *
  * One scene per theme: add an entry to SCENES keyed by the theme id (same stacked
  * layout, see the numbers below); themes without one fall back to `default`.
@@ -506,8 +506,10 @@ void main() {
             video.setAttribute('aria-hidden', 'true');
             video.preload = 'auto';
             video.disablePictureInPicture = true;
-            // Kept in the DOM (iOS only decodes attached videos) but invisible.
-            video.style.cssText = 'position:absolute;left:0;top:0;width:2px;height:2px;opacity:0.01;pointer-events:none;';
+            video.setAttribute('webkit-playsinline', '');
+            // Kept in the DOM and inside the visible part of the scene (bottom centre):
+            // WebKit pauses, or stops presenting frames of, media it deems off screen.
+            video.style.cssText = 'position:absolute;left:50%;bottom:2px;width:2px;height:2px;opacity:0.01;pointer-events:none;';
             video.addEventListener('error', () => {
                 if (state.video !== video) return;
                 video.remove();
@@ -614,7 +616,9 @@ void main() {
 
             const video = state.video;
             if (state.usingVideo && video && video.readyState >= 2) {
-                const changed = 'requestVideoFrameCallback' in video ? state.frameDirty : video.currentTime !== state.lastVideoTime;
+                // requestVideoFrameCallback is only a hint: Safari stops firing it for a
+                // video it doesn't paint (ours is a 2 px proxy), so the time is polled too.
+                const changed = state.frameDirty || video.currentTime !== state.lastVideoTime;
                 if (changed) {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -626,8 +630,7 @@ void main() {
                     state.frameDirty = false;
                     state.lastVideoTime = video.currentTime;
                 }
-                // Without requestVideoFrameCallback the only way to catch new frames is polling.
-                if (!video.paused && !('requestVideoFrameCallback' in video)) animating = true;
+                if (!video.paused) animating = true;
             }
 
             if (state.dirty || animating) {
@@ -659,9 +662,9 @@ void main() {
         }
 
         // Lazy: the video only starts downloading when the scene is about to show
-        // (never with reduced motion or Save-Data, where the still is enough).
+        // (never with Save-Data, where the still is enough).
         const conn = navigator.connection || {};
-        const wantsVideo = !still && !conn.saveData;
+        const wantsVideo = !conn.saveData;
 
         const io = new IntersectionObserver(([entry]) => {
             state.visible = entry.isIntersecting;
