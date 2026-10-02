@@ -2,19 +2,19 @@
   "meta": {
     "name": "Tom Andrieu",
     "title": "Product Builder · AI Transformation",
-    "description": "I build products, and I help product teams fold AI into their day-to-day work. CBA."
+    "description": "Product builder for 8 years. What drives me: helping society restructure itself around what AI can bring us, instead of just going faster."
   },
   "hero": {
     "title": "HEY",
-    "quote": "I've been coding for 8 years. My job is building products. AI didn't change that craft, it changed who can do it and how fast. From building with it, I ended up helping other teams fold it into their day-to-day work. Same craft, two angles."
+    "quote": "I've been building products for 8 years. What drives me now is helping people, and society more broadly, restructure around what AI can bring us. I don't think we'll get there by doing the same things faster. AI gives us a chance to start again from a blank page, in our work as in our daily lives, and I want us to take it together."
   },
   "about": {
-    "intro": "I think you learn a craft <highlight>by doing it</highlight>, and you learn to transform a craft <highlight>by having done it</highlight>.",
-    "detail": "I prefer short iterations over closed specs, pairs over committees, and tools you understand over tools you put up with. AI didn't change that preference. It just made it apply to more problems, faster.",
+    "intro": "I think AI won't just <highlight>speed up what we already do</highlight>. It will force us to <highlight>rethink how society is organized</highlight>.",
+    "detail": "Most companies use it to save a bit of time on what they were already doing. I get it, it's the reassuring path. But it misses the point: this is a real upheaval, and it touches our work as much as our daily lives. AI lets us rebuild our organizations starting from people, not from tools. Done right, it can change our relationship with work, and more broadly the way we live together. If companies make more money along the way, good, but that's not what gets me up in the morning. What I want is to do my part for a better world.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ YEARS",
-      "focus": "ARCHITECTURE · AI · PRODUCT",
+      "focus": "PEOPLE · AI · PRODUCT",
       "status": "BUILDING"
     }
   },

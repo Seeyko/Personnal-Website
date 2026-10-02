@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tom Andrieu — Product Builder · Transformation IA</title>
-  <meta name="description" content="Product Builder et Transformation IA. Je construis des produits, et je transforme par l'IA les équipes qui construisent des produits. CBA · AgatheYOU." />
+  <meta name="description" content="Product builder depuis 8 ans. Ce qui m'anime : aider la société à se restructurer autour de ce que l'IA peut nous apporter, plutôt que de juste aller plus vite." />
 
   <!-- Favicon (swapped per-theme by theme-manager.js). Defaults to the default
        theme's icon so the common case doesn't fetch a second, unused favicon. -->
@@ -15,7 +15,7 @@
 
   <!-- Social / Open Graph -->
   <meta property="og:title" content="Tom Andrieu — Product Builder · Transformation IA" />
-  <meta property="og:description" content="Product Builder et Transformation IA. Je construis des produits, et je transforme par l'IA les équipes qui construisent des produits. CBA · AgatheYOU." />
+  <meta property="og:description" content="Product builder depuis 8 ans. Ce qui m'anime : aider la société à se restructurer autour de ce que l'IA peut nous apporter, plutôt que de juste aller plus vite." />
   <meta property="og:image" content="https://tomandrieu.com/assets/brand/og-image.png" />
   <meta property="og:url" content="https://tomandrieu.com" />
   <meta property="og:type" content="website" />
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="/css/timeline.css" />
 
   <!-- Site footer ("cd ~" home scene) -->
-  <link rel="stylesheet" href="/css/site-footer.css?v=2026-10-01b" />
+  <link rel="stylesheet" href="/css/site-footer.css?v=2026-10-02" />
 
   <!-- Theme Switcher UI Styles -->
   <link rel="stylesheet" href="/css/theme-switcher.css" />
@@ -481,86 +481,6 @@
     </div>
   </section>
 
-  <!-- Contact Section -->
-  <section id="contact" class="contact">
-    <div class="section-header">
-      <div class="section-label">
-        <span class="section-number">05</span>
-        <span class="section-prompt">$</span>
-        <h2 class="section-title" data-glitch="CONTACT" data-i18n="sections.contact">CONTACT</h2>
-      </div>
-      <div class="section-divider">═══════════════════════════════════════════════════════</div>
-    </div>
-
-    <div class="contact-content">
-      <div class="contact-card">
-        <div class="card-header">
-          <span class="card-title" data-i18n="ui.establishConnection">ESTABLISH CONNECTION</span>
-        </div>
-        <div class="card-body">
-          <!-- CRO: Availability Badge -->
-          <div class="availability-badge">
-            <span class="availability-dot"></span>
-            <span data-i18n="ui.openToConversations">Open to conversations</span>
-          </div>
-
-          <div class="contact-prompt">
-            <p class="output-line">> <span data-i18n="guestbook.initiatingContact">Initiating contact protocol...</span></p>
-            <p class="output-line">[<span class="status-ok">OK</span>] <span data-i18n="guestbook.emailChannelReady">Email channel ready</span></p>
-          </div>
-
-          <!-- Blueprint SVG frame -->
-          <svg class="contact-blueprint-svg" viewBox="0 0 600 200" preserveAspectRatio="none">
-            <rect x="5" y="5" width="590" height="190" class="contact-border" rx="0"/>
-            <g class="corner-mark" transform="translate(5, 5)">
-              <line x1="-10" y1="0" x2="20" y2="0"/><line x1="0" y1="-10" x2="0" y2="20"/>
-            </g>
-            <g class="corner-mark" transform="translate(595, 5)">
-              <line x1="-20" y1="0" x2="10" y2="0"/><line x1="0" y1="-10" x2="0" y2="20"/>
-            </g>
-            <g class="corner-mark" transform="translate(5, 195)">
-              <line x1="-10" y1="0" x2="20" y2="0"/><line x1="0" y1="-20" x2="0" y2="10"/>
-            </g>
-            <g class="corner-mark" transform="translate(595, 195)">
-              <line x1="-20" y1="0" x2="10" y2="0"/><line x1="0" y1="-20" x2="0" y2="10"/>
-            </g>
-          </svg>
-
-          <a href="mailto:contact@tomandrieu.com" class="email-link" id="email-link">
-            <span class="email-prefix">>> </span>
-            <span class="stamp">APPROVED</span>
-            <span class="email-text" data-content="contact.email">CONTACT@TOMANDRIEU.COM</span>
-            <span class="cursor-blink">_</span>
-          </a>
-
-          <!-- CRO: Response Time -->
-          <div class="response-time">
-            <span data-i18n="ui.typicallyResponds">Typically responds within 24 hours</span>
-          </div>
-
-          <div class="social-links" id="social-links">
-            <!-- Populated from content.json -->
-          </div>
-
-          <!-- 90s Guestbook CTA (hidden by default) -->
-          <div class="guestbook-cta" data-i18n="guestbook.signGuestbook">
-            Please sign my guestbook before you leave!
-          </div>
-
-          <!-- 90s Color Squares Decoration (hidden by default) -->
-          <div class="color-squares">
-            <div class="color-square red"></div>
-            <div class="color-square green"></div>
-            <div class="color-square blue"></div>
-            <div class="color-square yellow"></div>
-            <div class="color-square magenta"></div>
-            <div class="color-square cyan"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Interactive 3D heart — lazy-loaded; nothing downloads until it nears the viewport -->
   <section id="heart-experiment" class="heart-experiment" aria-label="Interactive 3D heart">
     <div class="heart-stage">
@@ -584,7 +504,7 @@
     </svg>
 
     <div class="sf-inner">
-      <div class="sf-statement" data-sf-group>
+      <div class="sf-statement" id="contact" data-sf-group>
         <h2 class="sf-headline" data-sf-reveal style="--sf-i:0">
           <span class="sf-headline-lead" data-i18n="footer.headlineLead">Je construis des produits avec l'IA.</span>
           <span class="sf-headline-main" data-i18n="footer.headlineMain">J'aide les équipes à faire pareil.</span>

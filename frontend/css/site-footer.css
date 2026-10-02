@@ -114,6 +114,8 @@
   gap: clamp(1.75rem, 3vw, 2.25rem);
   text-align: center;
   margin-bottom: clamp(3.5rem, 7vw, 5.5rem);
+  /* #contact anchor: land below the fixed header. */
+  scroll-margin-top: 120px;
 }
 
 /* ─── 2. Card: sinks into the scene ─── */

@@ -2,20 +2,20 @@
   "meta": {
     "name": "Tom Andrieu",
     "title": "Product Builder · Transformation IA",
-    "description": "Je construis des produits, et j'aide les équipes qui en construisent à intégrer l'IA dans leur quotidien. CBA."
+    "description": "Product builder depuis 8 ans. Ce qui m'anime : aider la société à se restructurer autour de ce que l'IA peut nous apporter, plutôt que de juste aller plus vite."
   },
   "hero": {
     "title": "SALUT",
     "signature": "Tom",
-    "quote": "Je code depuis 8 ans. Mon métier, c'est de construire des produits. L'IA n'a pas changé ce métier, elle a changé qui peut le faire et à quelle vitesse. À force de construire avec elle, j'ai commencé à aider d'autres équipes à l'intégrer dans leur quotidien."
+    "quote": "Je construis des produits depuis 8 ans. Ce qui m'anime aujourd'hui, c'est d'aider les gens, et plus largement la société, à se restructurer autour de ce que l'IA peut nous apporter. Je ne crois pas qu'on s'en sortira en faisant la même chose plus vite. L'IA nous donne l'occasion de repartir d'une feuille blanche, dans notre travail comme dans notre quotidien, et j'ai envie qu'on la saisisse ensemble."
   },
   "about": {
-    "intro": "Je crois qu'on apprend un métier <highlight>en le faisant</highlight>, et qu'on apprend à le transformer <highlight>en l'ayant fait</highlight>.",
-    "detail": "Je préfère les itérations courtes aux specs fermées, les binômes aux comités, et les outils qu'on comprend aux outils qu'on subit. L'IA n'a pas changé cette préférence, elle l'a juste rendue applicable à plus de problèmes, plus vite.",
+    "intro": "Je pense que l'IA ne va pas seulement <highlight>accélérer ce qu'on fait déjà</highlight>. Elle va nous obliger à <highlight>repenser la façon dont la société s'organise</highlight>.",
+    "detail": "La plupart des entreprises s'en servent pour gagner un peu de temps sur ce qu'elles faisaient déjà. Je les comprends, c'est le chemin le plus rassurant. Mais on passe à côté de l'essentiel : c'est un vrai bouleversement, qui touche notre travail comme notre quotidien. L'IA permet de reconstruire nos organisations en partant des gens, et pas des outils. Bien fait, ça peut changer notre rapport au travail, et plus largement la façon dont on vit ensemble. Si au passage les entreprises gagnent plus d'argent, tant mieux, mais ce n'est pas ce qui me fait me lever le matin. Ce que je veux, c'est apporter ma pierre à un monde meilleur.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ ANS",
-      "focus": "ARCHITECTURE · IA · PRODUIT",
+      "focus": "HUMAIN · IA · PRODUIT",
       "status": "EN BUILD"
     },
     "specLabels": {
@@ -70,15 +70,15 @@
     "noArticles": "Pas encore d'articles. Revenez bientôt !",
     "viewAllArticles": "VOIR TOUS LES ARTICLES",
     "scrollToExplore": "DÉFILER POUR EXPLORER",
-    "startProject": "Démarrer un Projet",
+    "startProject": "Discutons-en",
     "letsTalk": "Discutons",
     "getInTouch": "Me Contacter",
     "maybeLater": "Peut-être plus tard",
     "waitLetsConnect": "Hey, on se connecte ?",
-    "haveProjectInMind": "Un projet en tête ? Parlons-en.",
+    "haveProjectInMind": "Envie de repenser votre façon de travailler ? Parlons-en.",
     "availableForProjects": "Dispo pour des projets",
     "openToConversations": "Ouvert aux échanges",
-    "acceptingClients": "J'accepte de nouveaux clients pour Q2",
+    "acceptingClients": "Ouvert aux premiers accompagnements",
     "typicallyResponds": "Réponse sous 24h",
     "establishConnection": "CONNECTER",
     "systemStatus": "STATUT SYSTÈME",
@@ -92,8 +92,8 @@
     "copyright": "2026 TOM ANDRIEU - TOUS DROITS RÉSERVÉS",
     "pressAnyKey": "[Appuyez sur une touche pour continuer...]",
     "bestViewed": "Meilleur affichage avec Netscape Navigator 4.0 à 800x600",
-    "headlineLead": "Je construis des produits avec l'IA.",
-    "headlineMain": "J'aide les équipes à faire pareil.",
+    "headlineLead": "Repenser le travail, pas seulement l'accélérer.",
+    "headlineMain": "Et repenser ce que l'IA peut apporter à chacun.",
     "copy": "Copier",
     "copied": "Copié",
     "copyStatus": "Adresse e-mail copiée dans le presse-papiers.",
@@ -246,7 +246,7 @@
     "intro": "Notes, posts, et ce que j'apprends en construisant."
   },
   "blog": {
-    "subtitle": "Product engineering, création de produits, et technologie.",
+    "subtitle": "Product engineering, IA, et ce qu'elle change dans notre façon de vivre et de travailler.",
     "minRead": "min de lecture",
     "newBadge": "NOUVEAU !",
     "articleNotFound": "Article Introuvable",
@@ -274,7 +274,7 @@
   "cro": {
     "exitModal": {
       "title": "Hey, on se connecte ?",
-      "subtitle": "Un projet en tête ? Parlons-en.",
+      "subtitle": "Envie de repenser votre façon de travailler ? Parlons-en.",
       "cta": "Me Contacter",
       "dismiss": "Plus tard"
     }
