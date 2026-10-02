@@ -497,8 +497,9 @@ def main():
                     help='rows below this fraction of the height stay untouched '
                          '(default: the sea line, found on the first frame, + 2.5 %%)')
     ap.add_argument('--smooth', type=int, default=0,
-                    help='average N frames over time (8 for loopback) when the video model redraws the '
-                         'textures every few frames (leaves that boil / flicker); 0: off')
+                    help='average N frames over time (8 for loopback), colour and matte, when the video '
+                         'model redraws the textures every few frames (leaves that boil, sky holes that '
+                         'blink between the leaves); 0: off')
     ap.add_argument('--loop-blend', type=int, default=8, help='frames cross-faded for the loop (0: off)')
     ap.add_argument('--no-patch', action='store_true', help="don't touch site-footer.js")
     ap.add_argument('--no-alpha-webm', action='store_true', help='skip the standalone transparent WebM')
@@ -584,8 +585,7 @@ def main():
         encoders.append(('alpha', Encoder(alpha_webm, aw, ah, fps, 'rgba',
                                           vp9_args('yuva420p', '30') + ['-auto-alt-ref', '0'], tmp / 'alpha.log')))
 
-    def emit(index, rgb):
-        colour, a = keyer(rgb)
+    def emit(index, colour, a):
         for tier, enc in encoders:
             if tier == 'alpha':
                 aw, ah = enc_size[enc]
@@ -616,6 +616,7 @@ def main():
     # Loop: play frames [blend, n − blend), then frames n − blend.. cross-faded
     # into 0.. so the last frame flows back into the first one.
     head = []
+    keyed = []
     out_index = 0
     for i, rgb in enumerate(read_frames(src, pw, ph)):
         if i < blend:
@@ -625,10 +626,26 @@ def main():
             j = i - (n - blend)
             t = (j + 1) / (blend + 1)
             rgb = rgb * (1.0 - t) + head[j] * t
-        emit(out_index, rgb)
+        colour, a = keyer(rgb)
+        if SMOOTH > 1:
+            keyed.append((colour.round().clip(0, 255).astype(np.uint8), (a * 255).round().astype(np.uint8)))
+        else:
+            emit(out_index, colour, a)
         out_index += 1
         print(f'\r  frame {out_index}/{n - blend}', end='', flush=True)
     print()
+    if keyed:
+        # --smooth on the matte too: a small sky hole between the leaves that
+        # opens on one frame and closes on the next fades instead of blinking.
+        # Circular window, the video loops.
+        m, half = len(keyed), SMOOTH // 2
+        acc = sum(keyed[(j - half) % m][1].astype(np.uint32) for j in range(SMOOTH))
+        for k in range(m):
+            emit(k, keyed[k][0].astype(np.float32), acc.astype(np.float32) / (255.0 * SMOOTH))
+            acc += keyed[(k - half + SMOOTH) % m][1]
+            acc -= keyed[(k - half) % m][1]
+            print(f'\r  writing {k + 1}/{m}', end='', flush=True)
+        print()
     for _, enc in encoders:
         enc.close()
 
