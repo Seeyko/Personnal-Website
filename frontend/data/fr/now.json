@@ -1,12 +1,10 @@
 {
-  "date": "juillet 2026",
+  "date": "octobre 2026",
   "headerLabel": "OÙ J'EN SUIS",
   "intro": "",
   "paragraph": [
-    { "text": "Ça fait quelques mois que je mène, en parallèle du Lead Front-End, une mission de Platform Architect chez CBA. J'y définis l'archi et les standards autour de l'IA agentique, et je construis la plateforme interne qui va porter tout ça. Une solution basée sur " },
+    { "text": "En parallèle du Lead Front-End, je mène depuis quelques mois une mission de Platform Architect chez CBA : l'archi et les standards autour de l'IA agentique, une plateforme interne basée sur " },
     { "link": { "text": "MnM", "url": "https://github.com/AlphaLuppi/mnm" } },
-    { "text": " : création de workflows agentiques, partage de plugins et de skills, de quoi outiller les équipes produit et tech. Je ne fais pas ça tout seul : avec " },
-    { "link": { "text": "Gabriel Desbouis", "url": "https://fr.linkedin.com/in/gabriel-desbouis" } },
-    { "text": ", ingénieur IA, on a formé une centaine de personnes aux LLM : lui sur la théorie, moi sur la pratique et l'accompagnement au quotidien. Et le chantier continue. Gabriel développe aussi, par-dessus la plateforme, des outils sur mesure, du simple agent à de vrais outils agentiques plus poussés. En ce moment je termine aussi la refonte de RideMyPark : l'ancien site WordPress repart de zéro en React + Go, codé de bout en bout avec l'IA. Une refonte que je repoussais depuis quatre ans, bouclée en un mois. Pas de dispo freelance en ce moment, j'ai déjà les mains bien pleines." }
+    { "text": ", et la formation d'une centaine de personnes aux LLM. C'est là que j'ai compris où ça coince vraiment. Le plus gros frein n'est pas technique, c'est la peur de ne pas s'y retrouver, de ne pas savoir quoi en faire. Et la plupart des équipes utilisent l'IA pour aller un peu plus vite sur ce qu'elles faisaient déjà, sans repenser leur façon de travailler. C'est là-dessus que j'ai envie de passer mon temps : aider les gens à comprendre ce qu'est l'IA, à ne pas la subir, et à oser tout repenser plutôt que de juste accélérer. Je pense que la société va devoir se restructurer autour de ce que l'IA peut nous apporter, et j'ai envie d'aider à ce que ça se fasse bien, avec les gens et pas contre eux." }
   ]
 }

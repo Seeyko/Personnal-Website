@@ -1,12 +1,10 @@
 {
-  "date": "July 2026",
+  "date": "October 2026",
   "headerLabel": "WHERE I'M AT",
   "intro": "",
   "paragraph": [
-    { "text": "For a few months now I've been running a Platform Architect mission at CBA alongside the Lead Front-End role. I set the architecture and standards around agentic AI, and I'm building the internal platform that will carry it all. A solution built on " },
+    { "text": "Alongside the Lead Front-End role, I've been running a Platform Architect mission at CBA for a few months: the architecture and standards around agentic AI, an internal platform built on " },
     { "link": { "text": "MnM", "url": "https://github.com/AlphaLuppi/mnm" } },
-    { "text": ": composing agentic workflows, sharing plugins and skills, everything to equip the product and tech teams. I'm not doing this solo: with " },
-    { "link": { "text": "Gabriel Desbouis", "url": "https://fr.linkedin.com/in/gabriel-desbouis" } },
-    { "text": ", an AI engineer, we've trained around a hundred people on LLMs: him on the theory, me on the hands-on side and day-to-day support. And it's still going. Gabriel also builds custom tools on top of the platform, from simple agents to more advanced agentic ones. I'm also wrapping up the RideMyPark rebuild: the old WordPress site rebuilt from scratch in React + Go, coded end to end with AI. A rewrite I'd been putting off for four years, done in a month. No freelance availability right now, my hands are already full." }
+    { "text": ", and training around a hundred people on LLMs. That's where I understood where things really get stuck. The biggest blocker isn't technical, it's the fear of getting lost, of not knowing what to do with it. And most teams use AI to go a bit faster on what they were already doing, without rethinking the way they work. That's what I want to spend my time on: helping people understand what AI is, not just put up with it, and dare to rethink everything instead of just speeding up. I think society will have to restructure itself around what AI can bring us, and I want to help make that happen well, with people and not against them." }
   ]
 }
