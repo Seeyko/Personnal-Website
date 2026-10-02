@@ -73,6 +73,36 @@ Ligne de style à ajouter selon le thème :
 - **retro90s** : `{COLOUR}` = `flat light grey #C0C0C0` — `Style: 16-bit pixel art with hard pixel edges and a limited palette; keep the pixels sharp, no blur, no anti-aliasing.`
 - **fps** : `{COLOUR}` = `flat sand beige #ECD7AE` — `Style: game-art painting of a Mediterranean village (de_dust); the olive tree stays still, only its leaves shimmer.`
 
+### Variante : rester sur le fond magenta
+
+Envoyer l'image magenta d'origine, puis détourer avec `key_magenta.py <vidéo> --still
+…/loopback/footer-<theme>-still.png` (sans `--bg`). Prompt :
+
+```
+Seamless looping ambient animation of this illustration. Locked-off static camera:
+no pan, no zoom, no parallax, no camera shake.
+
+The background is a chroma-key backdrop: flat pure magenta (#FF00FF), one solid colour,
+identical in every frame. It is not a sky and not a light source: it casts no light,
+no glow, no reflection and no pink tint on the scene. Keep every edge against it
+clean and sharp: no motion blur, no soft halo, no magenta fringe, no bleeding.
+
+The silhouettes against the magenta never move: trees, roof, house and hills keep
+exactly the same outline in every frame. Only the inside of the canopy is alive:
+a few leaves shimmer in place, well inside the foliage, away from its edges.
+
+Other motion, gentle and slow:
+- the clouds keep their shape and drift at most a few pixels, then come back;
+- the sea: small waves roll in, foam breaks softly on the beach;
+- flowers and grass at the bottom sway slightly in the breeze;
+- the couple stands still, breathing; the cats move a little (tail, head).
+
+Keep the exact art style, colours, line work and level of detail of the input image.
+Nothing new appears, nothing disappears. The last frame matches the first frame.
+```
+
+Plus la ligne de style du thème (liste ci-dessus, sans la partie `{COLOUR}`).
+
 Le point qui compte le plus : **le contour des arbres ne bouge pas**. Le ciel n'est jamais
 détouré là où l'image fixe est pleine. Si la silhouette reste en place, il n'y a plus rien à
 deviner sur les bords.
