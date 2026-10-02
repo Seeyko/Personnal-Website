@@ -4,7 +4,7 @@
    scene in FRONT of it: the card sinks behind the tree, the house and the
    sea, so the footer lives inside the painting (Bloom-style). The scene's
    sky is keyed out, so the page and the card show straight through it.
-   js/components/site-footer.js composites the video in WebGL.
+   js/components/site-footer.js draws the still in WebGL.
    ═══════════════════════════════════════════════════════════════ */
 
 .site-footer {

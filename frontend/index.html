@@ -570,7 +570,7 @@
   </section>
 
   <!-- Footer — "cd ~": the page ends at home. The painted scene at the bottom is
-       a keyed video whose sky is transparent, so the page background becomes its
+       a still whose sky is transparent, so the page background becomes its
        sky. site-footer.js composites it in WebGL. -->
   <footer class="site-footer" id="site-footer">
     <svg class="sf-sprite" width="0" height="0" aria-hidden="true" focusable="false">
@@ -682,7 +682,7 @@
     </div>
 
     <div class="sf-scene" id="sf-scene">
-      <div class="sf-scene-art" role="img" aria-label="Illustration animée : une maison au bord de la mer, une famille et deux chats dans le jardin.">
+      <div class="sf-scene-art" role="img" aria-label="Illustration : une maison au bord de la mer, une famille et deux chats dans le jardin.">
         <!-- src/srcset set by site-footer.js when the footer gets close (theme's own painting) -->
         <img class="sf-scene-poster" alt="" decoding="async" sizes="100vw" width="1792" height="748" />
         <canvas class="sf-scene-canvas"></canvas>
@@ -733,9 +733,9 @@
 <!-- CRO Scripts (conversion optimization) -->
 <script src="/js/cro.js"></script>
 
-<!-- Site footer: clock, copy e-mail, WebGL home scene (video loads only near the footer).
+<!-- Site footer: clock, copy e-mail, WebGL home scene.
      ?v= : .js is cached as immutable for a year, bump it when the file changes. -->
-<script src="/js/components/site-footer.js?v=2026-10-01b"></script>
+<script src="/js/components/site-footer.js?v=2026-10-02a"></script>
 
 <!-- Theme JS (dynamically loaded) -->
 <script id="theme-js" src=""></script>
