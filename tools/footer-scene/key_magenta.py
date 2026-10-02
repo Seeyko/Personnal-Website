@@ -169,6 +169,17 @@ def dilate(mask, r):
     return out
 
 
+def box_soft(mask, r):
+    """Box blur of radius r (separable, numpy only)."""
+    out = mask
+    for axis in (0, 1):
+        c = np.cumsum(np.pad(out, [(r + 1, r) if i == axis else (0, 0) for i in (0, 1)], mode='edge'), axis)
+        hi = np.take(c, np.arange(2 * r + 1, c.shape[axis]), axis)
+        lo = np.take(c, np.arange(0, c.shape[axis] - 2 * r - 1), axis)
+        out = (hi - lo) / (2 * r + 1)
+    return out
+
+
 def resize(arr, w, h):
     """Lanczos resize of a float32 H×W or H×W×C array."""
     if arr.ndim == 2:
@@ -500,6 +511,9 @@ def main():
                     help='average N frames over time (8 for loopback), colour and matte, when the video '
                          'model redraws the textures every few frames (leaves that boil, sky holes that '
                          'blink between the leaves); 0: off')
+    ap.add_argument('--fill-holes', type=float, default=0,
+                    help='fill the small sky holes inside the foliage (narrower than 2×N px at 2230 '
+                         'wide) with the shade of the leaves, fixed for the whole loop; 0: off')
     ap.add_argument('--loop-blend', type=int, default=8, help='frames cross-faded for the loop (0: off)')
     ap.add_argument('--no-patch', action='store_true', help="don't touch site-footer.js")
     ap.add_argument('--no-alpha-webm', action='store_true', help='skip the standalone transparent WebM')
@@ -627,7 +641,7 @@ def main():
             t = (j + 1) / (blend + 1)
             rgb = rgb * (1.0 - t) + head[j] * t
         colour, a = keyer(rgb)
-        if SMOOTH > 1:
+        if SMOOTH > 1 or opts.fill_holes > 0:
             keyed.append((colour.round().clip(0, 255).astype(np.uint8), (a * 255).round().astype(np.uint8)))
         else:
             emit(out_index, colour, a)
@@ -638,11 +652,56 @@ def main():
         # --smooth on the matte too: a small sky hole between the leaves that
         # opens on one frame and closes on the next fades instead of blinking.
         # Circular window, the video loops.
-        m, half = len(keyed), SMOOTH // 2
-        acc = sum(keyed[(j - half) % m][1].astype(np.uint32) for j in range(SMOOTH))
+        m, window = len(keyed), max(1, SMOOTH)
+        half = window // 2
+        holes = None
+        if opts.fill_holes > 0:
+            # Small sky holes inside the foliage, away from the open sky: the
+            # video model redraws them every frame, so even smoothed they read
+            # as a grey smudge. Decided once for the whole loop and filled with
+            # the shade of the leaves around them.
+            mean_a = sum(a.astype(np.float32) for _, a in keyed) / (255.0 * m)
+            # Holes = transparent patches enclosed by the foliage: grow the open
+            # sky (what survives an opening of radius r) through the transparent
+            # pixels; what it doesn't reach is enclosed. Notches in the outline
+            # are reached, so the silhouette is left alone.
+            r = max(1, round(opts.fill_holes * pw / 2230))
+            clear = mean_a < 0.5
+            clear[keyer.horizon:] = False
+            sky = dilate(~dilate(~clear, r), r) & clear
+            while True:
+                grown = dilate(sky, 2) & clear
+                if grown.sum() == sky.sum():
+                    break
+                sky = grown
+            enclosed = clear & ~sky
+            holes = (mean_a < 0.97) & dilate(enclosed, max(1, r // 4)) & ~dilate(sky, 2)
+            holes[keyer.horizon:] = False
+            open_sky = dilate(sky, 1)
+            print(f'  filling {int(holes.sum())} px of small sky holes in the foliage')
+        acc = sum(keyed[(j - half) % m][1].astype(np.uint32) for j in range(window))
         for k in range(m):
-            emit(k, keyed[k][0].astype(np.float32), acc.astype(np.float32) / (255.0 * SMOOTH))
-            acc += keyed[(k - half + SMOOTH) % m][1]
+            colour, a = keyed[k][0].astype(np.float32), acc.astype(np.float32) / (255.0 * window)
+            if holes is not None:
+                solid = (a > 0.97) & ~holes
+                # Leaf texture copied from just beside the hole (first solid
+                # neighbour among a few offsets), a bit darker: depth in the canopy.
+                shade = push_pull_fill(colour, solid.astype(np.float32))
+                todo = holes.copy()
+                d = 2 * r
+                for dy, dx in ((-d, 0), (d, 0), (0, -d), (0, d), (-d, -d), (d, d), (-d, d), (d, -d),
+                               (-2 * d, 0), (2 * d, 0), (0, -2 * d), (0, 2 * d)):
+                    src_ok = np.roll(solid, (dy, dx), (0, 1)) & todo
+                    shade[src_ok] = np.roll(colour, (dy, dx), (0, 1))[src_ok]
+                    todo &= ~src_ok
+                shade *= 0.8
+                leafy = holes & (shade[..., 1] >= shade[..., 2])      # foliage around, not cloud
+                w = np.clip(box_soft(leafy.astype(np.float32), max(1, r // 4)) * 2.0, 0.0, 1.0)
+                w[open_sky] = 0.0
+                colour = colour + w[..., None] * (shade - colour)    # feathered: no seam
+                a = np.maximum(a, w)
+            emit(k, colour, a)
+            acc += keyed[(k - half + window) % m][1]
             acc -= keyed[(k - half) % m][1]
             print(f'\r  writing {k + 1}/{m}', end='', flush=True)
         print()
