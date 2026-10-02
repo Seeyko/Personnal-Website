@@ -1,21 +1,21 @@
 {
   "meta": {
     "name": "Tom Andrieu",
-    "title": "Product Builder · AI Transformation",
-    "description": "I build products, and I help product teams fold AI into their day-to-day work. CBA."
+    "title": "Product Builder · Rethinking work with AI",
+    "description": "I build products, and I help people and companies rethink how they work with AI."
   },
   "hero": {
     "title": "HEY",
     "signature": "Tom",
-    "quote": "I've been coding for 8 years. My job is building products. AI didn't change that craft, it changed who can do it and how fast. From building with it, I ended up helping other teams fold it into their day-to-day work."
+    "quote": "I've been building products for 8 years, and I'm convinced AI is going to upend our relationship with work. Most companies use it to go a bit faster and keep everything else as is. I think we can start from scratch: rethink how we work, how we design things, how we live our days. That's what drives me now. Helping people get through this shift without getting lost."
   },
   "about": {
-    "intro": "I think you learn a craft <highlight>by doing it</highlight>, and you learn to transform a craft <highlight>by having done it</highlight>.",
-    "detail": "I prefer short iterations over closed specs, pairs over committees, and tools you understand over tools you put up with. AI didn't change that preference. It just made it apply to more problems, faster.",
+    "intro": "AI is a new kind of entity in our world. What drives me is helping people <highlight>find their place</highlight> next to it, and <highlight>rethink work</highlight> instead of just speeding it up.",
+    "detail": "With Gabriel Desbouis, we're starting our own company. The idea: spend several days inside companies, small businesses and large groups alike, to understand how teams actually work. Then build custom tools with them, AI or not, and explain what AI is and how it works. The biggest blocker is the fear of getting lost. That's what we're here for. If companies come out ahead, great. But what drives me is rethinking our relationship with work, and doing my part for a slightly better world.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ YEARS",
-      "focus": "ARCHITECTURE · AI · PRODUCT",
+      "focus": "PEOPLE · AI · WORK",
       "status": "BUILDING"
     },
     "specLabels": {
@@ -70,19 +70,19 @@
     "noArticles": "No articles yet. Check back soon!",
     "viewAllArticles": "VIEW ALL ARTICLES",
     "scrollToExplore": "SCROLL TO EXPLORE",
-    "startProject": "Start a Project",
+    "startProject": "Let's talk about your team",
     "letsTalk": "Let's Talk",
     "getInTouch": "Get In Touch",
     "maybeLater": "Maybe later",
     "waitLetsConnect": "Wait! Let's Connect",
-    "haveProjectInMind": "Have a project in mind? I'd love to hear about it.",
+    "haveProjectInMind": "Is AI making your head spin? Let's talk.",
     "availableForProjects": "Available for Projects",
     "openToConversations": "Open to conversations",
     "acceptingClients": "Currently accepting new clients for Q2 2025",
     "typicallyResponds": "Typically responds within 24 hours",
     "establishConnection": "ESTABLISH CONNECTION",
     "systemStatus": "SYSTEM STATUS",
-    "availableNote": "available for projects",
+    "availableNote": "company in the making",
     "loadMore": "Load more"
   },
   "footer": {
@@ -92,8 +92,8 @@
     "copyright": "2026 TOM ANDRIEU - ALL RIGHTS RESERVED",
     "pressAnyKey": "[Press any key to continue...]",
     "bestViewed": "Best viewed with Netscape Navigator 4.0 at 800x600 resolution",
-    "headlineLead": "I build products with AI.",
-    "headlineMain": "I help teams do the same.",
+    "headlineLead": "AI is going to change how we work.",
+    "headlineMain": "Might as well rethink it together.",
     "copy": "Copy",
     "copied": "Copied",
     "copyStatus": "Email address copied to the clipboard.",
@@ -274,7 +274,7 @@
   "cro": {
     "exitModal": {
       "title": "Wait! Let's Connect",
-      "subtitle": "Have a project in mind? I'd love to hear about it.",
+      "subtitle": "Is AI making your head spin? Let's talk.",
       "cta": "Get In Touch",
       "dismiss": "Maybe later"
     }

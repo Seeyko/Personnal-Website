@@ -227,6 +227,34 @@
           }
         }
       ]
+    },
+    {
+      "id": "notre-boite",
+      "name": "Notre boîte",
+      "type": "work",
+      "startDate": "2026-10",
+      "endDate": "ongoing",
+      "commits": [
+        {
+          "hash": "boite26",
+          "date": "2026-10",
+          "message": "git init : notre boîte, avec Gabriel Desbouis",
+          "author": "Tom Andrieu & Gabriel Desbouis",
+          "details": {
+            "title": "Co-fondateur · en création",
+            "markerLabel": "Notre boîte",
+            "company": "Avec Gabriel Desbouis",
+            "location": "France",
+            "description": "Aider les entreprises, des PME aux grands groupes, à repenser leur façon de travailler avec l'IA : audits sur place, outils sur mesure construits avec les équipes, et nos propres produits. Structure en cours de création.",
+            "tags": [
+              "Audit IA",
+              "Outils sur mesure",
+              "Produits",
+              "Rapport au travail"
+            ]
+          }
+        }
+      ]
     }
   ]
 }
