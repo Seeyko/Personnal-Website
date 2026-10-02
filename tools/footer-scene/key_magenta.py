@@ -93,10 +93,19 @@ def probe(path):
     return int(s['width']), int(s['height']), f'{num}/{den}', int(s['nb_read_packets'])
 
 
+SMOOTH = 0   # --smooth: frames averaged over time (set in main)
+
+
 def read_frames(path, w, h, limit=None):
     """Yield RGB float32 frames (0..255) scaled to w × h."""
+    vf = f'scale={w}:{h}:flags=area'
+    if SMOOTH > 1:
+        # Moving average: the video model redraws the leaf texture every few
+        # frames (every 4 with loopback); averaging over a multiple of that
+        # period turns the jumps into a smooth shimmer.
+        vf = f'tmix=frames={SMOOTH}:weights=' + ' '.join(['1'] * SMOOTH) + f',{vf}'
     cmd = ['ffmpeg', '-v', 'error', '-i', str(path), *(['-frames:v', str(limit)] if limit else []),
-           '-vf', f'scale={w}:{h}:flags=area', '-pix_fmt', 'rgb24', '-f', 'rawvideo', '-']
+           '-vf', vf, '-pix_fmt', 'rgb24', '-f', 'rawvideo', '-']
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     size = w * h * 3
     try:
@@ -487,6 +496,9 @@ def main():
     ap.add_argument('--horizon', type=float,
                     help='rows below this fraction of the height stay untouched '
                          '(default: the sea line, found on the first frame, + 2.5 %%)')
+    ap.add_argument('--smooth', type=int, default=0,
+                    help='average N frames over time (8 for loopback) when the video model redraws the '
+                         'textures every few frames (leaves that boil / flicker); 0: off')
     ap.add_argument('--loop-blend', type=int, default=8, help='frames cross-faded for the loop (0: off)')
     ap.add_argument('--no-patch', action='store_true', help="don't touch site-footer.js")
     ap.add_argument('--no-alpha-webm', action='store_true', help='skip the standalone transparent WebM')
@@ -513,6 +525,8 @@ def main():
     print(f'{src.name}: {sw}×{sh}, {n} frames @ {fps} → theme "{theme}", keyed at {pw}×{ph}')
 
     first = next(read_frames(src, pw, ph, limit=1))
+    global SMOOTH
+    SMOOTH = max(0, opts.smooth)
     opts.flat = bool(opts.bg)
     opts.still_alpha = None
     if opts.still:
