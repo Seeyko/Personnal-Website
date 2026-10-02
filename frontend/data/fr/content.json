@@ -1,20 +1,20 @@
 {
   "meta": {
     "name": "Tom Andrieu",
-    "title": "Product Builder · Transformation IA",
-    "description": "Je construis des produits, et j'aide les équipes qui en construisent à intégrer l'IA dans leur quotidien. CBA."
+    "title": "Product Builder · Repenser le travail avec l'IA",
+    "description": "Je construis des produits, et j'aide les gens et les entreprises à repenser leur façon de travailler avec l'IA."
   },
   "hero": {
     "title": "SALUT",
-    "quote": "Je code depuis 8 ans. Mon métier, c'est de construire des produits. L'IA n'a pas changé ce métier, elle a changé qui peut le faire et à quelle vitesse. À force de construire avec elle, j'ai commencé à aider d'autres équipes à l'intégrer dans leur quotidien. Même métier, deux angles."
+    "quote": "Je construis des produits depuis 8 ans, et je suis convaincu que l'IA va bouleverser notre rapport au travail. La plupart des entreprises s'en servent pour aller un peu plus vite, en gardant tout le reste. Moi je crois qu'on peut repartir de zéro : repenser comment on travaille, comment on conçoit, comment on vit nos journées. C'est ce qui m'anime aujourd'hui. Aider les gens à traverser ce changement sans s'y perdre."
   },
   "about": {
-    "intro": "Je crois qu'on apprend un métier <highlight>en le faisant</highlight>, et qu'on apprend à le transformer <highlight>en l'ayant fait</highlight>.",
-    "detail": "Je préfère les itérations courtes aux specs fermées, les binômes aux comités, et les outils qu'on comprend aux outils qu'on subit. L'IA n'a pas changé cette préférence, elle l'a juste rendue applicable à plus de problèmes, plus vite.",
+    "intro": "L'IA, c'est un nouveau type d'entité dans notre monde. Ce qui m'anime, c'est d'aider les humains à <highlight>trouver leur place</highlight> à côté d'elle, et à <highlight>repenser le travail</highlight> au lieu de juste l'accélérer.",
+    "detail": "Avec Gabriel Desbouis, on monte notre boîte. L'idée : passer plusieurs jours dans les entreprises, PME comme grands groupes, pour comprendre comment les équipes bossent vraiment. Puis construire avec elles des outils sur mesure, avec ou sans IA, et leur expliquer ce que c'est et comment ça marche. Le plus gros frein, c'est la peur de ne pas s'y retrouver. On est là pour ça. Si les entreprises y gagnent, tant mieux. Mais ce qui me motive, c'est de repenser notre rapport au travail, et d'apporter ma pierre à un monde un peu meilleur.",
     "specs": {
       "location": "FRANCE",
       "experience": "8+ ANS",
-      "focus": "ARCHITECTURE · IA · PRODUIT",
+      "focus": "HUMAINS · IA · TRAVAIL",
       "status": "EN BUILD"
     }
   },

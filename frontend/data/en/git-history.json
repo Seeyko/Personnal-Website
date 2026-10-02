@@ -227,6 +227,34 @@
           }
         }
       ]
+    },
+    {
+      "id": "notre-boite",
+      "name": "Our company",
+      "type": "work",
+      "startDate": "2026-10",
+      "endDate": "ongoing",
+      "commits": [
+        {
+          "hash": "boite26",
+          "date": "2026-10",
+          "message": "git init: our company, with Gabriel Desbouis",
+          "author": "Tom Andrieu & Gabriel Desbouis",
+          "details": {
+            "title": "Co-founder · in the making",
+            "markerLabel": "Our company",
+            "company": "With Gabriel Desbouis",
+            "location": "France",
+            "description": "Helping companies, from small businesses to large groups, rethink how they work with AI: on-site audits, custom tools built with the teams, and our own products. Company being set up.",
+            "tags": [
+              "AI audit",
+              "Custom tools",
+              "Products",
+              "Relationship with work"
+            ]
+          }
+        }
+      ]
     }
   ]
 }
