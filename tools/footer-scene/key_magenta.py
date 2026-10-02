@@ -62,7 +62,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from datetime import date
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -72,12 +72,13 @@ FLAT_CORE, FLAT_EDGE = 20.0, 60.0           # --bg: RGB distance of pure backgro
 REPO = Path(__file__).resolve().parents[2]
 ASSETS = REPO / 'frontend' / 'assets' / 'footer'
 FOOTER_JS = REPO / 'frontend' / 'js' / 'components' / 'site-footer.js'
+INDEX_HTML = REPO / 'frontend' / 'index.html'
 THEMES = ('default', 'terminal', 'blueprint', 'retro90s', 'fps')
 
 # Output variants: width of the video, width of the poster.
-VARIANTS = (('hd', 1792, 1792), ('sd', 1280, 960))
+VARIANTS = (('hd', 2560, 1792), ('sd', 1280, 960))
 ALPHA_LO, ALPHA_SPAN = 0.03, 0.94          # alpha stored as 0.03 + 0.94·a (see shader)
-PROC_MAX_W = 2240                           # keying resolution cap (source is often 2×)
+PROC_MAX_W = 2560                           # keying resolution cap (= the HD video)
 
 
 # ─── ffmpeg helpers ─────────────────────────────────────────────────────────
@@ -144,9 +145,12 @@ BT709 = ['-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt7
 YUV709 = 'scale=out_color_matrix=bt709:out_range=tv,format={}'
 
 
-def h264_args():
-    return ['-vf', YUV709.format('yuv420p'), '-c:v', 'libx264', '-preset', 'slow', '-crf', '21',
-            '-profile:v', 'high', '-level', '4.2', *BT709, '-movflags', '+faststart']
+def h264_args(w, h):
+    # Level 4.2 tops out at 8704 macroblocks (≈ 2048×1088): the 2560 stacked
+    # video needs 5.1, the 1280 one keeps 4.2 for older phones.
+    level = '4.2' if (w // 16) * (-(-h // 16)) <= 8704 else '5.1'
+    return ['-vf', YUV709.format('yuv420p'), '-c:v', 'libx264', '-preset', 'slow', '-crf', '19',
+            '-profile:v', 'high', '-level', level, *BT709, '-movflags', '+faststart']
 
 
 def vp9_args(pix='yuv420p', crf='33'):
@@ -462,10 +466,13 @@ def patch_scenes(theme, sizes, aspect_txt):
     js = FOOTER_JS.read_text(encoding='utf-8')
     base = asset_base(theme)
     for tier, (w, color_h, alpha_h) in sizes.items():
+        poster_w = dict((t, p) for t, _, p in VARIANTS)[tier]
         pattern = re.compile(
-            rf"({tier}: \{{ name: '{re.escape(base)}-{w}', poster: '[^']+', )"
-            r"colorH: \d+, alphaH: \d+, totalH: \d+")
-        js, n = pattern.subn(rf"\g<1>colorH: {color_h}, alphaH: {alpha_h}, totalH: {color_h + alpha_h}", js)
+            rf"{tier}: \{{ name: '{re.escape(base)}-\d+', poster: '[^']+', "
+            r"colorH: \d+, alphaH: \d+, totalH: \d+ \}")
+        line = (f"{tier}: {{ name: '{base}-{w}', poster: '{base}-poster-{poster_w}.webp', "
+                f"colorH: {color_h}, alphaH: {alpha_h}, totalH: {color_h + alpha_h} }}")
+        js, n = pattern.subn(lambda _: line, js)
         if n != 1:
             return False
     block = re.compile(rf"(\n        {theme}: \{{\n            aspect: )(\d+) / (\d+),")
@@ -476,8 +483,15 @@ def patch_scenes(theme, sizes, aspect_txt):
     if abs(int(found[2]) / int(found[3]) - num / den) > 1e-4:   # keep "2230 / 930" when unchanged
         js = js[:found.start()] + f'{found[1]}{aspect_txt},' + js[found.end():]
     # Same file names, new content: bust the cache.
-    js = re.sub(r"(const ASSET_VERSION = ')[^']*'", rf"\g<1>{date.today().isoformat()}'", js)
+    version = f'{datetime.now():%Y%m%d-%H%M}'
+    js = re.sub(r"(const ASSET_VERSION = ')[^']*'", rf"\g<1>{version}'", js)
     FOOTER_JS.write_text(js, encoding='utf-8')
+    # The script itself changed (SCENES): nginx caches it immutable, bump its URL.
+    with open(INDEX_HTML, encoding='utf-8', newline='') as f:
+        html = f.read()
+    html = re.sub(r'(/js/components/site-footer\.js\?v=)[^"]*', rf'\g<1>{version}', html)
+    with open(INDEX_HTML, 'w', encoding='utf-8', newline='') as f:
+        f.write(html)
     return True
 
 
@@ -587,7 +601,7 @@ def main():
         alpha_h = min(color_h, ceil16(color_h * cover))
         sizes[tier] = (w, color_h, alpha_h)
         posters[tier] = (poster_w, round(poster_w / aspect))
-        for ext, args in (('mp4', h264_args()), ('webm', vp9_args())):
+        for ext, args in (('mp4', h264_args(w, color_h + alpha_h)), ('webm', vp9_args())):
             out = tmp / f'{base}-{w}.{ext}'
             encoders.append((tier, Encoder(out, w, color_h + alpha_h, fps, 'rgb24', args, tmp / f'{out.name}.log')))
             out_paths.append(out)
