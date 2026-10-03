@@ -19,21 +19,35 @@ rows where the sky actually is.
 Usage (from the repo root):
     python tools/footer-scene/key_magenta.py "C:/…/footer-terminal.mp4"
     python tools/footer-scene/key_magenta.py video.mp4 --theme retro90s --horizon 0.62
+    python tools/footer-scene/key_magenta.py footer-fps.mp4 --derim 160 --derim-warm
+    python tools/footer-scene/key_magenta.py footer-blueprint.mp4 --derim 160
 
-The theme is read from the file name (footer-<theme>.mp4) unless --theme is
-given. Needs ffmpeg/ffprobe on PATH, numpy and Pillow.
+Nothing below the sea line (found automatically, + 2.5 % of the height) is
+touched: the flowers at the bottom keep their pinks and purples.
+
+Better: animate the painting on its page colour (prep_loopback.py, see
+README.md) and key that video with --bg <colour> --still <keyed still>.
+
+The theme is read from the file name (footer-<theme>.mp4, footer-retro.mp4
+works too) unless --theme is given. Needs ffmpeg/ffprobe on PATH, numpy and Pillow.
 
 How the key works
   * key colour: median of the strongly magenta pixels of the first frame;
-  * "core" background: pixels close to the key colour; the matte is only
+  * "core" background: pixels close to the key colour, plus any saturated
+    violet/magenta right next to them (dark rims of the sky holes); the matte is only
     computed in a thin band around the core, so pink flowers or magenta-ish
     details far from the sky stay opaque;
   * alpha from magenta-ness m = min(R, B) − G, linear between --lo (opaque) and
     --hi × m(key) (transparent); colour unmixed: F = (C − (1 − a)·K) / a, then a
-    light despill;
+    despill of everything near the sky;
   * despeck: near the sky, opaque pixels that stray from the local foreground
     colour towards the key (sky trapped in a cloud or between leaves, smeared
     purple by chroma subsampling) are repainted with that local colour;
+  * purge: near the sky, what still has the key's hue is background (partly
+    transparent pixels drop out, opaque ones take the local foreground colour);
+  * --derim (off by default, on for fps and blueprint): magenta light the generator painted
+    on the foreground near the sky (pink leaf rims) takes the colour of the
+    clean foreground around it, at its own luminance;
   * transparent pixels get a push-pull fill of the nearby foreground colours so
     the edges don't pick up magenta when the video is compressed or filtered;
   * the last --loop-blend frames are cross-faded into the first ones for a
@@ -48,20 +62,23 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
 from PIL import Image
 
+FLAT_CORE, FLAT_EDGE = 20.0, 60.0           # --bg: RGB distance of pure background / sure foreground
 REPO = Path(__file__).resolve().parents[2]
 ASSETS = REPO / 'frontend' / 'assets' / 'footer'
 FOOTER_JS = REPO / 'frontend' / 'js' / 'components' / 'site-footer.js'
+INDEX_HTML = REPO / 'frontend' / 'index.html'
 THEMES = ('default', 'terminal', 'blueprint', 'retro90s', 'fps')
 
 # Output variants: width of the video, width of the poster.
-VARIANTS = (('hd', 1792, 1792), ('sd', 1280, 960))
+VARIANTS = (('hd', 2560, 1792), ('sd', 1280, 960))
 ALPHA_LO, ALPHA_SPAN = 0.03, 0.94          # alpha stored as 0.03 + 0.94·a (see shader)
-PROC_MAX_W = 2240                           # keying resolution cap (source is often 2×)
+PROC_MAX_W = 2560                           # keying resolution cap (= the HD video)
 
 
 # ─── ffmpeg helpers ─────────────────────────────────────────────────────────
@@ -77,10 +94,19 @@ def probe(path):
     return int(s['width']), int(s['height']), f'{num}/{den}', int(s['nb_read_packets'])
 
 
+SMOOTH = 0   # --smooth: frames averaged over time (set in main)
+
+
 def read_frames(path, w, h, limit=None):
     """Yield RGB float32 frames (0..255) scaled to w × h."""
+    vf = f'scale={w}:{h}:flags=area'
+    if SMOOTH > 1:
+        # Moving average: the video model redraws the leaf texture every few
+        # frames (every 4 with loopback); averaging over a multiple of that
+        # period turns the jumps into a smooth shimmer.
+        vf = f'tmix=frames={SMOOTH}:weights=' + ' '.join(['1'] * SMOOTH) + f',{vf}'
     cmd = ['ffmpeg', '-v', 'error', '-i', str(path), *(['-frames:v', str(limit)] if limit else []),
-           '-vf', f'scale={w}:{h}:flags=area', '-pix_fmt', 'rgb24', '-f', 'rawvideo', '-']
+           '-vf', vf, '-pix_fmt', 'rgb24', '-f', 'rawvideo', '-']
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     size = w * h * 3
     try:
@@ -119,9 +145,12 @@ BT709 = ['-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt7
 YUV709 = 'scale=out_color_matrix=bt709:out_range=tv,format={}'
 
 
-def h264_args():
-    return ['-vf', YUV709.format('yuv420p'), '-c:v', 'libx264', '-preset', 'slow', '-crf', '21',
-            '-profile:v', 'high', '-level', '4.2', *BT709, '-movflags', '+faststart']
+def h264_args(w, h):
+    # Level 4.2 tops out at 8704 macroblocks (≈ 2048×1088): the 2560 stacked
+    # video needs 5.1, the 1280 one keeps 4.2 for older phones.
+    level = '4.2' if (w // 16) * (-(-h // 16)) <= 8704 else '5.1'
+    return ['-vf', YUV709.format('yuv420p'), '-c:v', 'libx264', '-preset', 'slow', '-crf', '19',
+            '-profile:v', 'high', '-level', level, *BT709, '-movflags', '+faststart']
 
 
 def vp9_args(pix='yuv420p', crf='33'):
@@ -141,6 +170,17 @@ def dilate(mask, r):
                 src[tuple(slice(None, -d) if a == axis else slice(None) for a in (0, 1))]
             out[tuple(slice(None, -d) if a == axis else slice(None) for a in (0, 1))] |= \
                 src[tuple(slice(d, None) if a == axis else slice(None) for a in (0, 1))]
+    return out
+
+
+def box_soft(mask, r):
+    """Box blur of radius r (separable, numpy only)."""
+    out = mask
+    for axis in (0, 1):
+        c = np.cumsum(np.pad(out, [(r + 1, r) if i == axis else (0, 0) for i in (0, 1)], mode='edge'), axis)
+        hi = np.take(c, np.arange(2 * r + 1, c.shape[axis]), axis)
+        lo = np.take(c, np.arange(0, c.shape[axis] - 2 * r - 1), axis)
+        out = (hi - lo) / (2 * r + 1)
     return out
 
 
@@ -186,12 +226,69 @@ def magenta(rgb):
     return np.minimum(rgb[..., 0], rgb[..., 2]) - rgb[..., 1]
 
 
+def find_horizon(rgb, key, margin=0.025):
+    """Fraction of the height where the keying stops: the last row the sky
+    spans widely (the sea line), plus a margin. Flowers below are never keyed."""
+    m = magenta(rgb)
+    mk = float(min(key[0], key[2]) - key[1])
+    dist = np.sqrt(((rgb - np.asarray(key, np.float32)) ** 2).sum(-1))
+    sky = (dist < 80) & (m > 0.6 * mk)
+    rows = np.where(sky.mean(1) > 0.03)[0]
+    if not len(rows):
+        return 1.0
+    return min(1.0, (rows.max() + 1) / rgb.shape[0] + margin)
+
+
 def estimate_key(rgb):
     m = magenta(rgb)
     core = m > 0.7 * m.max()
     if core.sum() < 1000:
         sys.exit('No magenta background found in the first frame (try --key).')
     return np.median(rgb[core], axis=0)
+
+
+def key_hue(rgb, sat):
+    """Pixels whose hue is the key's (violet to magenta) with saturation > sat."""
+    r, b = rgb[..., 0], rgb[..., 2]
+    hi = np.maximum(r, b)
+    return (magenta(rgb) > sat * hi) & (hi > 40) & (b > 0.55 * r) & (r > 0.4 * b)
+
+
+def derim(rgb, src, a, reach, horizon, warm_too=False):
+    """Magenta light painted into the foreground by the generator (pink rims on
+    leaves lit by the background). Near the sky, a pixel more magenta than the
+    clean foreground around it takes that foreground's colour, at its own
+    luminance (the leaf keeps its shading, loses the pink). The pink is
+    measured on the source: the despill before this pass turns it red."""
+    if reach <= 0:
+        return rgb
+    zone = dilate(a < 0.5, reach)
+    zone[horizon:] = False
+    r, g, b = src[..., 0], src[..., 1], src[..., 2]
+    warm = r - g > 0.3 * r
+    violet = (b - g > 30) & (r - g > -30) & (b > 0.5 * r)
+    clean = ((magenta(src) < -15) & ~warm & ~violet & (a > 0.5)).astype(np.float32)
+    ref = push_pull_fill(src, clean)
+    lum = lambda c: c @ np.array([0.2126, 0.7152, 0.0722], np.float32)  # noqa: E731
+    recol = ref * (lum(rgb) / np.maximum(lum(ref), 1.0))[..., None]
+    # Violet and more magenta than the foreground (white walls, or red details
+    # such as roofs and markers, are not violet and are kept)...
+    w = np.clip((magenta(src) - magenta(ref) - 4.0) / 16.0, 0.0, 1.0) * (violet | warm_too)
+    if warm_too:
+        # ...or the warm red that pink fades to at the leaf edges (--derim-warm).
+        redder = (src[..., 0] - src[..., 1]) - (ref[..., 0] - ref[..., 1])
+        w = np.maximum(w, np.clip((redder - 15.0) / 20.0, 0.0, 1.0))
+    w = w * zone * (a > 0.0)
+    return np.clip(rgb + w[..., None] * (recol - rgb), 0.0, 255.0)
+
+
+def purge(rgb, a, f, near):
+    """Last pass near the sky: whatever still has the key's hue is background.
+    Partly transparent pixels fade out, opaque ones take the local foreground."""
+    hit = key_hue(rgb, 0.25) & near
+    a = np.where(hit & (a < 1.0), 0.0, a).astype(np.float32)
+    rgb = np.where((hit & (a >= 1.0))[..., None], f, rgb)
+    return rgb, a
 
 
 def despeck(rgb, a, key, reach, horizon):
@@ -234,15 +331,39 @@ class Keyer:
         self.band = max(1, round(opts.band * scale))
         self.horizon = int(opts.horizon * h) if opts.horizon else h
         self.reach = max(0, round(opts.despeck * scale))
+        self.grow = max(1, round(8 * scale))
+        self.derim = max(0, round(opts.derim * scale))
+        self.derim_warm = getattr(opts, 'derim_warm', False)
+        # --bg: the video was made on the page colour, not magenta. Leftovers of
+        # it are invisible on the page, so only the matte matters (no despill).
+        self.flat = getattr(opts, 'flat', False)
+        self.protect = None                      # bool mask: surely opaque (from the keyed still)
+        still = getattr(opts, 'still_alpha', None)
+        if still is not None:
+            # Opaque in the still, far enough from its edge that the motion of
+            # the video can't bring sky there: never keyed (no holes in clouds).
+            w = round(2230 * scale)
+            solid = resize(still, w, h) > 0.99
+            self.protect = ~dilate(~solid, max(1, round(14 * scale)))
 
     def core(self, rgb):
         """Pure background: the key colour, or a darker shade of it (sky seen
         between leaves comes out darker after compression)."""
+        if self.flat:
+            core = np.sqrt(((rgb - self.key) ** 2).sum(-1)) < FLAT_CORE
+            if self.protect is not None:
+                core &= ~self.protect
+            core[self.horizon:] = False
+            return core
         m = magenta(rgb)
         hi = rgb.max(-1)
         dist = np.sqrt(((rgb - self.key) ** 2).sum(-1))
         core = (dist < self.core_dist) & (m > 0.6 * self.mk)
         core |= (m > 50) & (m > 0.7 * hi) & (np.abs(rgb[..., 0] - rgb[..., 2]) < 0.35 * hi)
+        # Dark or bluish rims of the sky holes (between leaves, branches): any
+        # saturated key hue right next to the background. Dark purple shadows in
+        # the flowers are far from it and stay.
+        core |= key_hue(rgb, 0.5) & dilate(core, self.grow)
         core[self.horizon:] = False
         return core
 
@@ -261,11 +382,32 @@ class Keyer:
         kf = f_loc - k_loc
         kf2 = (kf ** 2).sum(-1)
         a_proj = ((rgb - k_loc) * kf).sum(-1) / np.maximum(kf2, 1.0)
-        a_mag = (self.hi - m) / (self.hi - self.lo)
+        if self.flat:
+            d = np.sqrt(((rgb - self.key) ** 2).sum(-1))
+            a_mag = (d - FLAT_CORE) / (FLAT_EDGE - FLAT_CORE)
+        else:
+            a_mag = (self.hi - m) / (self.hi - self.lo)
         a = np.where(kf2 > 60.0 ** 2, a_proj, a_mag)
         a = np.clip(a, 0.0, 1.0)
         a = np.where(band, a, 1.0)
+
+        # Small sky holes away from the big sky (between leaves), blurred into
+        # the foreground by the encoder: a pixel that sits on the segment from
+        # the key to the clean foreground around it is that much sky.
+        holes = dilate(core, self.reach) & ~band
+        holes[self.horizon:] = False
+        clean = (((m < -15) | self.flat) & ~band).astype(np.float32)
+        f_clean = push_pull_fill(rgb, clean)
+        kf_c = f_clean - k_loc
+        kf_c2 = np.maximum((kf_c ** 2).sum(-1), 1.0)
+        t = ((rgb - k_loc) * kf_c).sum(-1) / kf_c2
+        off = np.sqrt((((rgb - k_loc) - t[..., None] * kf_c) ** 2).sum(-1) / kf_c2)
+        hole = holes & (t < 0.9) & (off < 0.2) & ((m > 0) | self.flat)
+        a = np.where(hole, np.clip(t, 0.0, 1.0), a)
+        band = band | hole
         a[core] = 0.0
+        if self.protect is not None:
+            a = np.where(self.protect, 1.0, a)
         a = np.where(a < 0.04, 0.0, np.where(a > 0.97, 1.0, a)).astype(np.float32)
 
         # Unmix the background out of the partial pixels.
@@ -273,10 +415,13 @@ class Keyer:
         fg = (rgb - (1.0 - a)[..., None] * k_loc) / safe
         fg = np.where(((a > 0.02) & band)[..., None], fg, rgb)
         fg = np.clip(fg, 0.0, 255.0)
+        if self.flat:
+            fill = push_pull_fill(fg, a)
+            return np.where((a > 0.0)[..., None], fg, fill), a
 
         # Despill: near the sky, nothing may be more magenta than the local
         # foreground (edge fringes, compression bleed between leaves).
-        near = dilate(band, self.band * 4)
+        near = dilate(band, self.band * 6)
         near[self.horizon:] = False
         cap = np.maximum(magenta(f_loc), self.lo)
         spill = np.maximum(magenta(fg) - cap, 0.0) * near
@@ -284,6 +429,8 @@ class Keyer:
         fg[..., 2] -= spill
         fg = np.clip(fg, 0.0, 255.0)
         fg = despeck(fg, a, self.key, self.reach, self.horizon)
+        fg, a = purge(fg, a, f_loc, near)
+        fg = derim(fg, rgb, a, self.derim, self.horizon, self.derim_warm)
 
         fill = push_pull_fill(fg, a)
         colour = np.where((a > 0.0)[..., None], fg, fill)
@@ -319,10 +466,13 @@ def patch_scenes(theme, sizes, aspect_txt):
     js = FOOTER_JS.read_text(encoding='utf-8')
     base = asset_base(theme)
     for tier, (w, color_h, alpha_h) in sizes.items():
+        poster_w = dict((t, p) for t, _, p in VARIANTS)[tier]
         pattern = re.compile(
-            rf"({tier}: \{{ name: '{re.escape(base)}-{w}', poster: '[^']+', )"
-            r"colorH: \d+, alphaH: \d+, totalH: \d+")
-        js, n = pattern.subn(rf"\g<1>colorH: {color_h}, alphaH: {alpha_h}, totalH: {color_h + alpha_h}", js)
+            rf"{tier}: \{{ name: '{re.escape(base)}-\d+', poster: '[^']+', "
+            r"colorH: \d+, alphaH: \d+, totalH: \d+ \}")
+        line = (f"{tier}: {{ name: '{base}-{w}', poster: '{base}-poster-{poster_w}.webp', "
+                f"colorH: {color_h}, alphaH: {alpha_h}, totalH: {color_h + alpha_h} }}")
+        js, n = pattern.subn(lambda _: line, js)
         if n != 1:
             return False
     block = re.compile(rf"(\n        {theme}: \{{\n            aspect: )(\d+) / (\d+),")
@@ -332,7 +482,16 @@ def patch_scenes(theme, sizes, aspect_txt):
     num, den = (int(x) for x in aspect_txt.split(' / '))
     if abs(int(found[2]) / int(found[3]) - num / den) > 1e-4:   # keep "2230 / 930" when unchanged
         js = js[:found.start()] + f'{found[1]}{aspect_txt},' + js[found.end():]
+    # Same file names, new content: bust the cache.
+    version = f'{datetime.now():%Y%m%d-%H%M}'
+    js = re.sub(r"(const ASSET_VERSION = ')[^']*'", rf"\g<1>{version}'", js)
     FOOTER_JS.write_text(js, encoding='utf-8')
+    # The script itself changed (SCENES): nginx caches it immutable, bump its URL.
+    with open(INDEX_HTML, encoding='utf-8', newline='') as f:
+        html = f.read()
+    html = re.sub(r'(/js/components/site-footer\.js\?v=)[^"]*', rf'\g<1>{version}', html)
+    with open(INDEX_HTML, 'w', encoding='utf-8', newline='') as f:
+        f.write(html)
     return True
 
 
@@ -342,13 +501,33 @@ def main():
     ap.add_argument('source', type=Path)
     ap.add_argument('--theme', choices=THEMES, help='default: read from footer-<theme>.mp4')
     ap.add_argument('--key', help='key colour as hex (default: estimated)')
-    ap.add_argument('--lo', type=float, default=24, help='magenta-ness kept fully opaque (default 24)')
+    ap.add_argument('--bg', help='the video was made on this flat page colour (prep_loopback.py) '
+                                 'instead of magenta: key it, no despill')
+    ap.add_argument('--still', type=Path, help='with --bg: the keyed still (footer-<theme>-still.png); '
+                                               'what is solid in it is never keyed')
+    ap.add_argument('--lo', type=float, default=12, help='magenta-ness kept fully opaque (default 12)')
     ap.add_argument('--hi', type=float, default=0.9, help='fraction of key magenta-ness that is fully transparent')
     ap.add_argument('--core-dist', type=float, default=80, help='RGB distance to the key for "pure background"')
-    ap.add_argument('--band', type=float, default=4, help='matte band around the background, px at 2230 wide')
+    ap.add_argument('--band', type=float, default=6, help='matte band around the background, px at 2230 wide')
     ap.add_argument('--despeck', type=float, default=35,
                     help='reach of the purple-speck pass around the sky, px at 2230 wide (0: off)')
-    ap.add_argument('--horizon', type=float, help='rows below this fraction of the height stay opaque')
+    ap.add_argument('--derim', type=float, default=0,
+                    help='reach (px at 2230 wide) of the pass that removes magenta light painted on '
+                         'the foreground near the sky (pink leaf rims); 0: off. Spares nothing pink, '
+                         'so keep pink flowers below --horizon')
+    ap.add_argument('--derim-warm', action='store_true',
+                    help='--derim also takes out the warm red the pink fades to (olive foliage, '
+                         'fps); recolours red details near the sky too')
+    ap.add_argument('--horizon', type=float,
+                    help='rows below this fraction of the height stay untouched '
+                         '(default: the sea line, found on the first frame, + 2.5 %%)')
+    ap.add_argument('--smooth', type=int, default=0,
+                    help='average N frames over time (8 for loopback), colour and matte, when the video '
+                         'model redraws the textures every few frames (leaves that boil, sky holes that '
+                         'blink between the leaves); 0: off')
+    ap.add_argument('--fill-holes', type=float, default=0,
+                    help='fill the small sky holes inside the foliage (narrower than 2×N px at 2230 '
+                         'wide) with the shade of the leaves, fixed for the whole loop; 0: off')
     ap.add_argument('--loop-blend', type=int, default=8, help='frames cross-faded for the loop (0: off)')
     ap.add_argument('--no-patch', action='store_true', help="don't touch site-footer.js")
     ap.add_argument('--no-alpha-webm', action='store_true', help='skip the standalone transparent WebM')
@@ -363,7 +542,8 @@ def main():
     theme = opts.theme
     if not theme:
         stem = src.stem.lower()
-        theme = next((t for t in THEMES if stem.endswith(t)), None)
+        aliases = {'retro': 'retro90s', 'default': 'default'}
+        theme = next((t for t in THEMES if stem.endswith(t)), None)             or next((t for alias, t in aliases.items() if stem.endswith(alias)), None)
         if not theme:
             sys.exit(f'Theme not found in "{src.name}": name it footer-<theme>.mp4 or pass --theme')
 
@@ -374,12 +554,29 @@ def main():
     print(f'{src.name}: {sw}×{sh}, {n} frames @ {fps} → theme "{theme}", keyed at {pw}×{ph}')
 
     first = next(read_frames(src, pw, ph, limit=1))
-    if opts.key:
+    global SMOOTH
+    SMOOTH = max(0, opts.smooth)
+    opts.flat = bool(opts.bg)
+    opts.still_alpha = None
+    if opts.still:
+        opts.still_alpha = np.asarray(Image.open(opts.still).convert('RGBA'))[..., 3].astype(np.float32) / 255.0
+    if opts.bg:
+        hx = opts.bg.lstrip('#')
+        key = [int(hx[i:i + 2], 16) for i in (0, 2, 4)]
+    elif opts.key:
         hx = opts.key.lstrip('#')
         key = [int(hx[i:i + 2], 16) for i in (0, 2, 4)]
     else:
         key = estimate_key(first)
     print('key colour: #%02X%02X%02X' % tuple(int(round(c)) for c in key))
+    if opts.horizon is None and opts.still_alpha is not None:
+        rows = np.where((opts.still_alpha < 0.5).mean(1) > 0.03)[0]
+        opts.horizon = min(1.0, (rows.max() + 1) / len(opts.still_alpha) + 0.025) if len(rows) else 1.0
+    elif opts.horizon is None:
+        if opts.flat:
+            sys.exit('--bg needs --still (or --horizon): the sea line is found on the keyed still')
+        opts.horizon = find_horizon(first, key)
+    print(f'keying stops at {opts.horizon:.1%} of the height (sea line + margin)')
 
     if opts.preview_only:
         folder = opts.preview or src.parent / 'key-preview'
@@ -404,7 +601,7 @@ def main():
         alpha_h = min(color_h, ceil16(color_h * cover))
         sizes[tier] = (w, color_h, alpha_h)
         posters[tier] = (poster_w, round(poster_w / aspect))
-        for ext, args in (('mp4', h264_args()), ('webm', vp9_args())):
+        for ext, args in (('mp4', h264_args(w, color_h + alpha_h)), ('webm', vp9_args())):
             out = tmp / f'{base}-{w}.{ext}'
             encoders.append((tier, Encoder(out, w, color_h + alpha_h, fps, 'rgb24', args, tmp / f'{out.name}.log')))
             out_paths.append(out)
@@ -416,8 +613,7 @@ def main():
         encoders.append(('alpha', Encoder(alpha_webm, aw, ah, fps, 'rgba',
                                           vp9_args('yuva420p', '30') + ['-auto-alt-ref', '0'], tmp / 'alpha.log')))
 
-    def emit(index, rgb):
-        colour, a = keyer(rgb)
+    def emit(index, colour, a):
         for tier, enc in encoders:
             if tier == 'alpha':
                 aw, ah = enc_size[enc]
@@ -448,6 +644,7 @@ def main():
     # Loop: play frames [blend, n − blend), then frames n − blend.. cross-faded
     # into 0.. so the last frame flows back into the first one.
     head = []
+    keyed = []
     out_index = 0
     for i, rgb in enumerate(read_frames(src, pw, ph)):
         if i < blend:
@@ -457,10 +654,71 @@ def main():
             j = i - (n - blend)
             t = (j + 1) / (blend + 1)
             rgb = rgb * (1.0 - t) + head[j] * t
-        emit(out_index, rgb)
+        colour, a = keyer(rgb)
+        if SMOOTH > 1 or opts.fill_holes > 0:
+            keyed.append((colour.round().clip(0, 255).astype(np.uint8), (a * 255).round().astype(np.uint8)))
+        else:
+            emit(out_index, colour, a)
         out_index += 1
         print(f'\r  frame {out_index}/{n - blend}', end='', flush=True)
     print()
+    if keyed:
+        # --smooth on the matte too: a small sky hole between the leaves that
+        # opens on one frame and closes on the next fades instead of blinking.
+        # Circular window, the video loops.
+        m, window = len(keyed), max(1, SMOOTH)
+        half = window // 2
+        holes = None
+        if opts.fill_holes > 0:
+            # Small sky holes inside the foliage, away from the open sky: the
+            # video model redraws them every frame, so even smoothed they read
+            # as a grey smudge. Decided once for the whole loop and filled with
+            # the shade of the leaves around them.
+            mean_a = sum(a.astype(np.float32) for _, a in keyed) / (255.0 * m)
+            # Holes = transparent patches enclosed by the foliage: grow the open
+            # sky (what survives an opening of radius r) through the transparent
+            # pixels; what it doesn't reach is enclosed. Notches in the outline
+            # are reached, so the silhouette is left alone.
+            r = max(1, round(opts.fill_holes * pw / 2230))
+            clear = mean_a < 0.5
+            clear[keyer.horizon:] = False
+            sky = dilate(~dilate(~clear, r), r) & clear
+            while True:
+                grown = dilate(sky, 2) & clear
+                if grown.sum() == sky.sum():
+                    break
+                sky = grown
+            enclosed = clear & ~sky
+            holes = (mean_a < 0.97) & dilate(enclosed, max(1, r // 4)) & ~dilate(sky, 2)
+            holes[keyer.horizon:] = False
+            open_sky = dilate(sky, 1)
+            print(f'  filling {int(holes.sum())} px of small sky holes in the foliage')
+        acc = sum(keyed[(j - half) % m][1].astype(np.uint32) for j in range(window))
+        for k in range(m):
+            colour, a = keyed[k][0].astype(np.float32), acc.astype(np.float32) / (255.0 * window)
+            if holes is not None:
+                solid = (a > 0.97) & ~holes
+                # Leaf texture copied from just beside the hole (first solid
+                # neighbour among a few offsets), a bit darker: depth in the canopy.
+                shade = push_pull_fill(colour, solid.astype(np.float32))
+                todo = holes.copy()
+                d = 2 * r
+                for dy, dx in ((-d, 0), (d, 0), (0, -d), (0, d), (-d, -d), (d, d), (-d, d), (d, -d),
+                               (-2 * d, 0), (2 * d, 0), (0, -2 * d), (0, 2 * d)):
+                    src_ok = np.roll(solid, (dy, dx), (0, 1)) & todo
+                    shade[src_ok] = np.roll(colour, (dy, dx), (0, 1))[src_ok]
+                    todo &= ~src_ok
+                shade *= 0.8
+                leafy = holes & (shade[..., 1] >= shade[..., 2])      # foliage around, not cloud
+                w = np.clip(box_soft(leafy.astype(np.float32), max(1, r // 4)) * 2.0, 0.0, 1.0)
+                w[open_sky] = 0.0
+                colour = colour + w[..., None] * (shade - colour)    # feathered: no seam
+                a = np.maximum(a, w)
+            emit(k, colour, a)
+            acc += keyed[(k - half + window) % m][1]
+            acc -= keyed[(k - half) % m][1]
+            print(f'\r  writing {k + 1}/{m}', end='', flush=True)
+        print()
     for _, enc in encoders:
         enc.close()
 
