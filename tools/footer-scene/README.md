@@ -1,5 +1,16 @@
 # Footer « home scene » : de l'image à la vidéo détourée
 
+> **État au 3 oct. 2026** : le site n'affiche plus de vidéo (rendu pas assez bon), seulement
+> l'image fixe détourée de chaque thème. Pour changer ces images :
+>
+> ```
+> python tools/footer-scene/prep_loopback.py "…/footer-default.png" "…/footer-retro.png" … --posters
+> ```
+>
+> Chaque image (fond magenta, nommée `footer-<theme>`) est détourée et écrite dans
+> `frontend/assets/footer/home-scene[-<theme>]-poster-{1792,960}.webp`.
+> La suite de ce document décrit la pipeline vidéo, en attente.
+
 Une peinture par thème, animée en boucle, avec le ciel transparent.
 
 ## Pourquoi pas magenta → vidéo → détourage

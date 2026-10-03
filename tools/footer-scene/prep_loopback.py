@@ -9,6 +9,9 @@ painting is put back on the colour the sky will show on the site: the page
 background of its theme. Whatever the video model then blends into the leaves
 is that page colour, which is invisible once the video sits on the page.
 
+With --posters it also writes the stills the footer shows (the site has no
+video for now): the keyed painting as RGBA WebP, 1792 and 960 wide.
+
 For each image this writes, next to it in a `loopback/` folder:
   footer-<theme>-loopback.png   the painting on the theme's page colour (send it to fal)
   footer-<theme>-still.png      the keyed painting, RGBA (reference matte)
@@ -38,7 +41,7 @@ import key_magenta as km  # noqa: E402
 # `derim_warm`: same passes as key_magenta.py, for paintings whose generator
 # painted magenta light on the foliage.
 THEMES = {
-    'default':   dict(bg='#F8F7F4'),
+    'default':   dict(bg='#F8F7F4', derim=160),
     'terminal':  dict(bg='#0A0A0A'),
     'blueprint': dict(bg='#003366', derim=160),
     'retro90s':  dict(bg='#C0C0C0'),
@@ -63,7 +66,20 @@ def theme_of(path, forced):
     sys.exit(f'Theme not found in "{path.name}": name it footer-<theme>.png or pass --theme')
 
 
-def prepare(path, theme, out_dir):
+POSTERS = ((1792, 748), (960, 400))   # sizes the footer's <img srcset> expects
+
+
+def write_posters(theme, colour, alpha):
+    """The site's RGBA stills: frontend/assets/footer/home-scene[-<theme>]-poster-<w>.webp."""
+    base = km.asset_base(theme)
+    for w, h in POSTERS:
+        rgba = np.dstack([km.resize(colour, w, h), np.clip(km.resize(alpha, w, h), 0.0, 1.0) * 255.0])
+        out = km.ASSETS / f'{base}-poster-{w}.webp'
+        Image.fromarray(rgba.round().clip(0, 255).astype(np.uint8), 'RGBA').save(out, quality=90, method=6)
+        print(f'  → {out.relative_to(km.REPO)}  ({out.stat().st_size / 1e6:.2f} MB)')
+
+
+def prepare(path, theme, out_dir, posters=False):
     cfg = THEMES[theme]
     rgb = np.asarray(Image.open(path).convert('RGB')).astype(np.float32)
     h, w, _ = rgb.shape
@@ -88,6 +104,8 @@ def prepare(path, theme, out_dir):
     print(f'{path.name} → {theme}: {w2}×{h2}, key {key_hex}, sky stops at {opts.horizon:.0%}, '
           f'page colour {cfg["bg"]}')
     print(f'  → {out_dir / (base + "-loopback.png")}')
+    if posters:
+        write_posters(theme, colour, alpha)
 
 
 def main():
@@ -96,11 +114,13 @@ def main():
     ap.add_argument('images', type=Path, nargs='+')
     ap.add_argument('--theme', choices=THEMES, help='default: read from the file name')
     ap.add_argument('--out', type=Path, help='output folder (default: <image folder>/loopback)')
+    ap.add_argument('--posters', action='store_true',
+                    help="also write the footer's stills (frontend/assets/footer/…-poster-*.webp)")
     opts = ap.parse_args()
     if opts.theme and len(opts.images) > 1:
         sys.exit('--theme only works with a single image')
     for path in opts.images:
-        prepare(path, theme_of(path, opts.theme), opts.out or path.parent / 'loopback')
+        prepare(path, theme_of(path, opts.theme), opts.out or path.parent / 'loopback', opts.posters)
 
 
 if __name__ == '__main__':
