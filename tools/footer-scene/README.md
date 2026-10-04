@@ -1,15 +1,23 @@
 # Footer « home scene » : de l'image à la vidéo détourée
 
-> **État au 3 oct. 2026** : le site n'affiche plus de vidéo (rendu pas assez bon), seulement
-> l'image fixe détourée de chaque thème. Pour changer ces images :
+> **État au 5 oct. 2026** : les cinq thèmes affichent une vidéo détourée.
+>
+> Vidéo sur fond magenta plat (une seule couleur exacte) :
 >
 > ```
-> python tools/footer-scene/prep_loopback.py "…/footer-default.png" "…/footer-retro.png" … --posters
+> python tools/footer-scene/key_exact.py "…/footer-terminal.mp4" --theme terminal --jobs 2
 > ```
 >
-> Chaque image (fond magenta, nommée `footer-<theme>`) est détourée et écrite dans
-> `frontend/assets/footer/home-scene[-<theme>]-poster-{1792,960}.webp`.
-> La suite de ce document décrit la pipeline vidéo, en attente.
+> Le script écrit les vidéos et les images dans `frontend/assets/footer/` et affiche l'entrée
+> `SCENES` à recopier dans `frontend/js/components/site-footer.js` (puis changer `ASSET_VERSION`
+> et le `?v=` du script dans `index.html`). Régler ensuite `--sf-lift` du thème dans
+> `frontend/css/site-footer.css` pour que la cime arrive sous la barre légale.
+>
+> Les nuages clairs viennent de la première image et ne bougent pas : le modèle vidéo les
+> repeint en rose en cours de boucle. Dans blueprint, l'arbre a leurs couleurs et reste figé
+> lui aussi ; dans terminal, les nuages verts sont ceux de la vidéo.
+>
+> La suite de ce document décrit l'ancienne pipeline (`prep_loopback.py`, `key_magenta.py`).
 
 Une peinture par thème, animée en boucle, avec le ciel transparent.
 
