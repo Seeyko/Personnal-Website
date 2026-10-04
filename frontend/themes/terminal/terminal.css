@@ -25,10 +25,12 @@
   --error: #ff3333;
   --border: #1f521f;
   
-  /* Text Colors */
+  /* Text Colors — dim and comment tones stay above 4.5:1 on the panels
+     (WCAG AA), even under the scanlines; the phosphor hierarchy comes from
+     brightness steps, not from text nobody can read. */
   --text-bright: #33ff00;
-  --text-dim: #1a8000;
-  --text-comment: #4a6a4a;
+  --text-dim: #25b000;
+  --text-comment: #739373;
   
   /* Typography */
   --font-terminal: 'JetBrains Mono', 'Fira Code', monospace;
@@ -45,6 +47,11 @@
   /* Effects */
   --glow-primary: 0 0 5px var(--primary-glow), 0 0 10px var(--primary-glow);
   --glow-secondary: 0 0 5px var(--secondary-glow), 0 0 10px var(--secondary-glow);
+  /* Softer bloom for running text: glows, but stays crisp */
+  --glow-soft: 0 0 6px rgba(51, 255, 0, 0.35);
+
+  /* Shell prompt (same string as the footer window) */
+  --prompt: 'tom@dev:~$';
 }
 
 /* ─── Body Theme ─── */
@@ -123,10 +130,12 @@ body[data-theme="terminal"] .theme-overlay::after {
   left: 0;
   width: 100%;
   height: 100%;
+  /* Tube vignette: kept light so text near the edges (nav, cards) keeps
+     its contrast */
   background: radial-gradient(
     ellipse at center,
-    transparent 0%,
-    rgba(0, 0, 0, 0.3) 100%
+    transparent 55%,
+    rgba(0, 0, 0, 0.22) 100%
   );
 }
 
@@ -150,6 +159,14 @@ body[data-theme="terminal"] .custom-cursor .cursor-icon::before {
 
 body[data-theme="terminal"]:hover .custom-cursor {
   opacity: 0.8;
+}
+
+/* No mouse to follow on touch screens: a tap leaves body:hover stuck and the
+   block parked at the top-left corner. */
+@media (hover: none) {
+  body[data-theme="terminal"] .custom-cursor {
+    display: none;
+  }
 }
 
 /* ─── Blink Animations ─── */
@@ -181,54 +198,25 @@ body[data-theme="terminal"] .cursor-blink {
   color: var(--primary);
 }
 
-/* ─── Glitch Effect ─── */
+/* ─── Glitch Effect ───
+   Amber/red channel split drawn with text-shadow, so it works on the
+   translated title (data-glitch only holds the English word) and leaves
+   both pseudo-elements free. */
 body[data-theme="terminal"] .section-title {
   position: relative;
 }
 
-body[data-theme="terminal"] .section-title::before,
-body[data-theme="terminal"] .section-title::after {
-  content: attr(data-glitch);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
+body[data-theme="terminal"] .section-title:hover,
+body[data-theme="terminal"] .section-title.glitching {
+  animation: term-glitch 0.3s steps(1) 2;
 }
 
-body[data-theme="terminal"] .section-title:hover::before,
-body[data-theme="terminal"] .section-title.glitching::before {
-  animation: glitch-1 0.3s linear infinite;
-  color: var(--secondary);
-  z-index: -1;
-  opacity: 0.8;
-}
-
-body[data-theme="terminal"] .section-title:hover::after,
-body[data-theme="terminal"] .section-title.glitching::after {
-  animation: glitch-2 0.3s linear infinite;
-  color: var(--error);
-  z-index: -2;
-  opacity: 0.8;
-}
-
-@keyframes glitch-1 {
-  0% { transform: translate(0); }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(-2px, -2px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(2px, -2px); }
-  100% { transform: translate(0); }
-}
-
-@keyframes glitch-2 {
-  0% { transform: translate(0); }
-  20% { transform: translate(2px, -2px); }
-  40% { transform: translate(2px, 2px); }
-  60% { transform: translate(-2px, -2px); }
-  80% { transform: translate(-2px, 2px); }
-  100% { transform: translate(0); }
+@keyframes term-glitch {
+  0%   { text-shadow: -2px 1px var(--secondary), 2px -1px var(--error); transform: translate(0); }
+  25%  { text-shadow: 2px -1px var(--secondary), -2px 1px var(--error); transform: translate(-1px, 0); }
+  50%  { text-shadow: -1px -1px var(--secondary), 1px 2px var(--error); transform: translate(1px, 0); }
+  75%  { text-shadow: 1px 1px var(--secondary), -1px -2px var(--error); transform: translate(0, 1px); }
+  100% { text-shadow: var(--glow-primary); transform: translate(0); }
 }
 
 /* ─── Header ─── */
@@ -241,148 +229,208 @@ body[data-theme="terminal"] .header {
   box-shadow: 0 1px 12px rgba(51, 255, 0, 0.15), 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
-body[data-theme="terminal"] .header-brand {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+/* The header is the window's title bar: same traffic lights as the
+   footer window (10px dots, 6px apart), then the window title. */
+body[data-theme="terminal"] .brand-link {
+  gap: 0.75rem;
 }
 
-body[data-theme="terminal"] .header-brand::before {
-  content: '';
-  display: flex;
-  gap: 6px;
+body[data-theme="terminal"] .brand-prefix {
+  display: inline-block;
+  width: 42px;
+  height: 10px;
+  flex-shrink: 0;
 }
 
 body[data-theme="terminal"] .brand-prefix::before {
-  content: '●';
-  color: var(--error);
-  margin-right: 6px;
-}
-
-body[data-theme="terminal"] .brand-prefix::after {
-  content: '●';
-  color: var(--secondary);
-}
-
-body[data-theme="terminal"] .brand-name::before {
-  content: '● ';
-  color: var(--primary);
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--error);
+  box-shadow: 16px 0 0 var(--secondary), 32px 0 0 var(--primary);
 }
 
 body[data-theme="terminal"] .brand-name {
   font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   color: var(--primary);
-  text-shadow: var(--glow-primary);
+  text-shadow: var(--glow-soft);
 }
 
 body[data-theme="terminal"] .brand-suffix::before {
-  content: ' tom@portfolio:~';
-  color: var(--text-dim);
+  content: 'tom@portfolio: ~';
+  color: var(--text-comment);
   font-size: 0.75rem;
+  text-transform: none;
 }
 
 body[data-theme="terminal"] .nav {
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
+/* Nav entries are real shell commands: lowercase, like you'd type them */
 body[data-theme="terminal"] .nav-link {
-  color: #2ab800;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  padding: 0.3rem 0.5rem;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  text-transform: lowercase;
+  padding: 0.35rem 0.6rem;
   border: 1px solid transparent;
-  text-shadow: 0 0 3px rgba(51, 255, 0, 0.2);
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
 body[data-theme="terminal"] .nav-prefix::before {
   content: '$';
   color: var(--secondary);
-  margin-right: 0.3rem;
+  margin-right: 0.5rem;
 }
 
 body[data-theme="terminal"] .nav-text::before {
   content: 'cd ./';
 }
 
-body[data-theme="terminal"] .nav-link[href="#about"] .nav-text::before {
+body[data-theme="terminal"] .nav-link[href$="#about"] .nav-text::before {
   content: 'cat ';
 }
 
-body[data-theme="terminal"] .nav-link[href="#about"] .nav-text::after {
+body[data-theme="terminal"] .nav-link[href$="#about"] .nav-text::after {
   content: '.txt';
 }
 
-body[data-theme="terminal"] .nav-link[href="#contact"] .nav-text::before {
+body[data-theme="terminal"] .nav-link[href$="#contact"] .nav-text::before {
   content: './';
 }
 
-body[data-theme="terminal"] .nav-link[href="#contact"] .nav-text::after {
+body[data-theme="terminal"] .nav-link[href$="#contact"] .nav-text::after {
   content: '.sh';
 }
 
 body[data-theme="terminal"] .nav-link:hover {
   color: var(--primary);
-  text-shadow: var(--glow-primary);
-  border-color: var(--primary);
-  background: rgba(51, 255, 0, 0.05);
+  text-shadow: var(--glow-soft);
+  border-color: var(--border);
+  background: rgba(51, 255, 0, 0.06);
 }
 
-/* ─── Hero Section ─── */
+/* Current page: inverse video, like the selected row of a TUI menu */
+body[data-theme="terminal"] .nav-link.active {
+  color: var(--bg-terminal);
+  background: var(--primary);
+  border-color: var(--primary);
+  text-shadow: none;
+}
+
+body[data-theme="terminal"] .nav-link.active .nav-prefix::before {
+  color: inherit;
+}
+
+/* ─── Hero Section ───
+   One tmux session: a live shell pane on top, the manifesto pane below,
+   split by a pane border and closed by tmux's green status line. Every
+   line of the session shares one text size, like a real terminal grid. */
 body[data-theme="terminal"] .hero {
   padding: var(--spacing-xl) var(--spacing-md);
   padding-top: calc(var(--spacing-xl) + 60px);
 }
 
 body[data-theme="terminal"] .hero-content {
+  --pane-text: 0.95rem;
+  --pane-pad: var(--spacing-md);
   text-align: center;
+  width: 100%;
   max-width: 800px;
 }
 
+/* figlet "ANSI Shadow" banner: tight leading so the rows join up */
 body[data-theme="terminal"] .hero-ascii {
   font-family: var(--font-terminal);
   font-size: clamp(0.4rem, 1.5vw, 0.8rem);
-  line-height: 1.2;
+  line-height: 1.1;
   color: var(--primary);
-  text-shadow: var(--glow-primary);
+  text-shadow: 0 0 4px rgba(51, 255, 0, 0.55), 0 0 14px rgba(51, 255, 0, 0.22);
   margin-bottom: var(--spacing-md);
   white-space: pre;
   animation: fadeIn 1s ease forwards;
 }
 
+/* Top pane: the live shell */
 body[data-theme="terminal"] .hero-terminal {
+  position: relative;
   background: var(--bg-terminal-panel);
   border: 1px solid var(--border);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
+  border-bottom: none;
+  padding: var(--pane-pad);
+  margin-bottom: 0;
   text-align: left;
+  font-size: var(--pane-text);
+  line-height: 1.7;
 }
 
+/* Pane title drawn in the border, as tmux's pane-border-status does */
+body[data-theme="terminal"] .hero-terminal::before {
+  content: '0:zsh';
+  position: absolute;
+  top: 0;
+  left: calc(var(--pane-pad) - 0.5ch);
+  transform: translateY(-50%);
+  padding: 0 0.5ch;
+  background: var(--bg-terminal);
+  color: var(--text-comment);
+  font-size: 0.7rem;
+  line-height: 1;
+  text-transform: none;
+}
+
+/* Plain inline flow: a long command wraps back to column 0. Font-size 0
+   swallows the markup's whitespace so the cursor sits right after the
+   last typed character; the children restore the pane size. */
 body[data-theme="terminal"] .terminal-line {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: var(--spacing-sm);
-  font-size: 1rem;
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0;
+  text-transform: none;
+}
+
+body[data-theme="terminal"] .terminal-line > * {
+  font-size: var(--pane-text);
 }
 
 body[data-theme="terminal"] .prompt {
   color: var(--secondary);
   font-weight: 700;
+  margin-right: 1ch;
 }
 
 body[data-theme="terminal"] .typed-text {
   color: var(--primary);
+  text-shadow: var(--glow-soft);
+}
+
+/* Block cursor */
+body[data-theme="terminal"] .terminal-line .cursor-blink {
+  display: inline-block;
+  width: 1ch;
+  height: 1.15em;
+  margin-left: 1px;
+  vertical-align: -0.2em;
+  background: var(--primary);
+  box-shadow: var(--glow-soft);
+  color: transparent;
 }
 
 body[data-theme="terminal"] .terminal-output {
-  padding-left: 1rem;
-  border-left: 2px solid var(--muted);
+  padding: 0;
+  border: none;
 }
 
+/* systemd-style boot log: [ OK ] Loading modules... */
 body[data-theme="terminal"] .output-line {
-  font-size: 0.85rem;
+  font-size: inherit;
   color: var(--text-dim);
-  margin-bottom: 0.3rem;
+  text-transform: none;
+  margin: 0;
   opacity: 0;
   animation: fadeIn 0.5s ease forwards;
 }
@@ -392,8 +440,10 @@ body[data-theme="terminal"] .output-line:nth-child(2) { animation-delay: 2s; }
 body[data-theme="terminal"] .output-line:nth-child(3) { animation-delay: 2.5s; }
 
 body[data-theme="terminal"] .status-ok {
+  margin: 0 1ch;
   color: var(--primary);
   font-weight: 700;
+  text-shadow: var(--glow-soft);
 }
 
 body[data-theme="terminal"] .hero-subtitle {
@@ -405,96 +455,131 @@ body[data-theme="terminal"] .hero-subtitle {
   text-shadow: var(--glow-primary);
 }
 
-/* Citation styled as a terminal output panel — same look as the
-   typewriter box above (dark panel + green border), so it reads as
-   a continuation of the terminal session: $ cat manifesto.txt */
+/* Bottom pane: `cat manifesto.txt` and its output. The pane border on top
+   is the split line shared with the shell pane above. */
 body[data-theme="terminal"] .hero-subtitle.hero-quote {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
-  letter-spacing: 0.02em;
+  font-family: var(--font-terminal);
+  font-size: var(--pane-text);
+  letter-spacing: 0;
+  text-transform: none;
   text-shadow: none;
   max-width: 800px;
-  margin: var(--spacing-md) auto var(--spacing-lg);
+  margin: 0 auto;
   text-align: left;
-  line-height: 1.75;
+  line-height: 1.7;
   background: var(--bg-terminal-panel);
   border: 1px solid var(--border);
-  padding: var(--spacing-md);
+  padding: var(--pane-pad) var(--pane-pad) 0;
   position: relative;
 }
 
-/* Prompt line above the quote: looks like a real shell command */
+/* Prompt in amber, the command in green (shown by the open mark below) */
 body[data-theme="terminal"] .hero-subtitle.hero-quote::before {
-  content: 'tom@dev:~$ cat manifesto.txt';
-  display: block;
+  content: var(--prompt) ' ';
   color: var(--secondary);
   font-weight: 700;
-  margin-bottom: var(--spacing-sm);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px dashed var(--muted);
-  font-size: 1rem;
 }
 
-body[data-theme="terminal"] .hero-quote-paragraph {
-  color: var(--primary);
-  padding-left: 1rem;
-  border-left: 2px solid var(--muted);
-  margin: 0;
-}
-
-/* Drop the > / < animated annotations — the cat-prefix replaces them */
 body[data-theme="terminal"] .hero-subtitle .annotation-mark {
   display: none;
 }
 
-/* Signature inside the manifesto box — looks like a sign-off comment */
-body[data-theme="terminal"] .hero-signature {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  color: var(--secondary);
-  font-size: 0.9rem;
-  text-align: right;
-  margin: var(--spacing-sm) 0 0;
-  padding-left: 1rem;
-  letter-spacing: 0.05em;
+body[data-theme="terminal"] .hero-subtitle .hero-quote-mark-open {
+  display: inline;
 }
 
+body[data-theme="terminal"] .hero-quote-mark-open::before {
+  content: 'cat manifesto.txt';
+  color: var(--primary);
+}
+
+/* Command output: flush left under the prompt, bright, sentence case */
+body[data-theme="terminal"] .hero-quote-paragraph {
+  color: var(--primary);
+  max-width: 72ch;
+  margin: 0.25rem 0 0;
+  text-shadow: var(--glow-soft);
+}
+
+/* Sign-off, written as a shell comment */
+body[data-theme="terminal"] .hero-signature {
+  font-family: var(--font-terminal);
+  color: var(--text-comment);
+  font-size: inherit;
+  text-align: left;
+  margin: 0.75rem 0 0;
+  padding: 0;
+}
+
+body[data-theme="terminal"] .hero-signature::before {
+  content: '# ';
+  color: var(--text-comment);
+}
+
+body[data-theme="terminal"] .hero-signature span {
+  color: var(--secondary);
+}
+
+/* tmux status line: green bar, black text, active window starred */
+body[data-theme="terminal"] .hero-subtitle.hero-quote::after {
+  content: '[tom] 0:zsh- 1:manifesto*';
+  display: block;
+  margin: var(--pane-pad) calc(var(--pane-pad) * -1) 0;
+  padding: 0.2rem var(--pane-pad);
+  background: var(--primary);
+  color: var(--bg-terminal);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* htop-style meters: label column, then the bar, all on one grid */
 body[data-theme="terminal"] .hero-stats {
   flex-direction: column;
-  gap: 0.5rem;
-  max-width: 400px;
-  margin: 0 auto;
+  gap: 0.35rem;
+  width: fit-content;
+  max-width: 100%;
+  margin: var(--spacing-md) auto 0;
   font-size: 0.8rem;
 }
 
 body[data-theme="terminal"] .stat-bar {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: 12ch auto;
+  column-gap: 1ch;
+  align-items: baseline;
 }
 
 body[data-theme="terminal"] .stat-label {
   color: var(--text-dim);
-  min-width: 100px;
   text-align: left;
 }
 
 body[data-theme="terminal"] .stat-value {
   color: var(--primary);
   font-family: var(--font-terminal);
-  text-shadow: var(--glow-primary);
+  text-align: left;
+  white-space: pre;
+  text-shadow: var(--glow-soft);
 }
 
-/* Scroll Indicator */
+/* Scroll Indicator: in the flow, under the stats (it used to sit on top
+   of them on short screens) */
 body[data-theme="terminal"] .scroll-indicator {
-  position: absolute;
-  bottom: var(--spacing-lg);
+  position: relative;
+  bottom: auto;
+  left: auto;
+  transform: none;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  margin-top: var(--spacing-lg);
   opacity: 0;
-  animation: fadeIn 0.5s ease forwards, pulse 2s infinite;
-  animation-delay: 3s, 3s;
+  animation: fadeIn 0.5s ease forwards;
+  animation-delay: 3s;
 }
 
 body[data-theme="terminal"] .scroll-text {
@@ -527,53 +612,73 @@ body[data-theme="terminal"] .section-header {
   margin-bottom: var(--spacing-md);
 }
 
+/* Each section reads as a command and its output:
+     tom@dev:~$ ls -la ./work      ← prompt line (the "$" span + pseudos)
+     WORK                          ← the title, like a man page heading
+     ══════════════════════        ← full-width rule */
 body[data-theme="terminal"] .section-label {
   display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem var(--spacing-sm);
   margin-bottom: var(--spacing-xs);
 }
 
 body[data-theme="terminal"] .section-prompt {
+  flex-basis: 100%;
   color: var(--secondary);
-  font-size: 1.2rem;
+  font-size: 0.85rem;
   font-weight: 700;
+  text-transform: none;
+}
+
+body[data-theme="terminal"] .section-prompt::before {
+  content: 'tom@dev:~';
+}
+
+body[data-theme="terminal"] .section-prompt::after {
+  content: ' ls -la ./';
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+body[data-theme="terminal"] #now .section-prompt::after {
+  content: ' cat now.md';
+}
+
+body[data-theme="terminal"] #work .section-prompt::after {
+  content: ' ls -la ./work';
+}
+
+body[data-theme="terminal"] #about .section-prompt::after {
+  content: ' cat about.txt';
+}
+
+body[data-theme="terminal"] #timeline .section-prompt::after {
+  content: ' git log --graph --all';
 }
 
 body[data-theme="terminal"] .section-title {
   font-family: var(--font-terminal);
-  font-size: clamp(1rem, 3vw, 1.5rem);
-  font-weight: 400;
-  letter-spacing: 0.05em;
+  font-size: clamp(1.6rem, 3.2vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.06em;
   color: var(--primary);
   text-shadow: var(--glow-primary);
-}
-
-body[data-theme="terminal"] .section-title::before {
-  content: 'ls -la ./';
-}
-
-body[data-theme="terminal"] #about .section-title::before {
-  content: 'cat ';
-}
-
-body[data-theme="terminal"] #about .section-title::after {
-  content: '.txt';
-}
-
-body[data-theme="terminal"] #contact .section-title::before {
-  content: './';
-}
-
-body[data-theme="terminal"] #contact .section-title::after {
-  content: '.sh';
 }
 
 body[data-theme="terminal"] .section-divider {
   color: var(--muted);
   font-size: 0.8rem;
+  line-height: 1;
   overflow: hidden;
   white-space: nowrap;
+}
+
+/* The markup holds 55 chars; extend the rule to the full width */
+body[data-theme="terminal"] .section-divider::after {
+  content: '═══════════════════════════════════════════════════════════════════════════════════════════════════';
 }
 
 /* ─── Projects Grid ─── */
@@ -623,6 +728,12 @@ body[data-theme="terminal"] .project-card:hover {
   box-shadow: var(--glow-primary), inset 0 0 30px rgba(51, 255, 0, 0.03);
 }
 
+body[data-theme="terminal"] .project-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-color: var(--primary);
+}
+
 body[data-theme="terminal"] .project-card-header {
   display: flex;
   justify-content: space-between;
@@ -633,28 +744,34 @@ body[data-theme="terminal"] .project-card-header {
 }
 
 body[data-theme="terminal"] .project-index {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: var(--secondary);
 }
 
 body[data-theme="terminal"] .project-type {
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   color: var(--text-comment);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
 }
 
 body[data-theme="terminal"] .project-media-container {
   border-bottom: 1px solid var(--border);
 }
 
+/* Screenshots shown on a monochrome green monitor; hover or focus
+   switches the card to a colour display */
 body[data-theme="terminal"] .project-image,
 body[data-theme="terminal"] .project-video {
-  filter: grayscale(100%) brightness(0.7) contrast(1.2);
+  filter: grayscale(100%) sepia(100%) hue-rotate(68deg) saturate(1.6) brightness(0.55) contrast(1.1);
+  transition: filter 0.35s ease;
 }
 
 body[data-theme="terminal"] .project-card:hover .project-image,
-body[data-theme="terminal"] .project-card:hover .project-video {
-  filter: grayscale(50%) brightness(0.9) contrast(1.1);
+body[data-theme="terminal"] .project-card:hover .project-video,
+body[data-theme="terminal"] .project-card:focus-visible .project-image,
+body[data-theme="terminal"] .project-card:focus-visible .project-video {
+  filter: none;
 }
 
 body[data-theme="terminal"] .project-media-container::after {
@@ -664,9 +781,14 @@ body[data-theme="terminal"] .project-media-container::after {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(51, 255, 0, 0.1) 0%, rgba(10, 10, 10, 0.8) 100%);
+  background: linear-gradient(to bottom, transparent 55%, rgba(13, 13, 13, 0.55) 100%);
   pointer-events: none;
-  mix-blend-mode: multiply;
+  transition: opacity 0.35s ease;
+}
+
+body[data-theme="terminal"] .project-card:hover .project-media-container::after,
+body[data-theme="terminal"] .project-card:focus-visible .project-media-container::after {
+  opacity: 0;
 }
 
 body[data-theme="terminal"] .project-info {
@@ -684,12 +806,12 @@ body[data-theme="terminal"] .project-info h3 {
 }
 
 body[data-theme="terminal"] .project-info p {
-  font-size: 0.7rem;
+  font-size: 0.82rem;
   color: var(--text-dim);
-  line-height: 1.5;
+  line-height: 1.6;
   margin-bottom: 0.5rem;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-transform: none;
@@ -701,8 +823,8 @@ body[data-theme="terminal"] .tags {
 }
 
 body[data-theme="terminal"] .tag {
-  font-size: 0.55rem;
-  letter-spacing: 0.05em;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
   color: var(--text-dim);
   border: 1px solid var(--border);
   padding: 0.2rem 0.4rem;
@@ -721,8 +843,9 @@ body[data-theme="terminal"] .project-link {
   margin-top: 0.5rem;
   padding-top: 0.5rem;
   border-top: 1px dashed var(--border);
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   color: var(--text-comment);
+  text-transform: none;
 }
 
 body[data-theme="terminal"] .link-icon {
@@ -743,9 +866,9 @@ body[data-theme="terminal"] .carousel-btn {
   background: var(--bg-terminal);
   border: 1px solid var(--primary);
   color: var(--primary);
-  width: 24px;
-  height: 24px;
-  font-size: 0.7rem;
+  width: 32px;
+  height: 32px;
+  font-size: 0.75rem;
 }
 
 body[data-theme="terminal"] .carousel-btn:hover {
@@ -880,8 +1003,9 @@ body[data-theme="terminal"] .no-articles {
 /* Section Footer */
 body[data-theme="terminal"] .section-footer {
   margin-top: var(--spacing-md);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--text-comment);
+  text-transform: none;
   border-top: 1px dashed var(--border);
   padding-top: var(--spacing-sm);
 }
@@ -902,53 +1026,91 @@ body[data-theme="terminal"] .card-header {
   border-bottom: 1px solid var(--border);
 }
 
+/* Window title framed like an ncurses box: ─[ SYSTEM STATUS ]─ */
 body[data-theme="terminal"] .card-title {
   font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   color: var(--primary);
-  text-shadow: var(--glow-primary);
+  text-shadow: var(--glow-soft);
 }
 
 body[data-theme="terminal"] .card-title::before {
-  content: '+─── ';
+  content: '─[ ';
+  color: var(--text-dim);
+  font-weight: 400;
 }
 
 body[data-theme="terminal"] .card-title::after {
-  content: ' ───+';
+  content: ' ]─';
+  color: var(--text-dim);
+  font-weight: 400;
+}
+
+body[data-theme="terminal"] .now-date {
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  opacity: 1;
 }
 
 body[data-theme="terminal"] .card-body {
   padding: var(--spacing-md);
 }
 
+/* Long-form text: sentence case and a readable measure (~70 columns) */
+body[data-theme="terminal"] .now-paragraph {
+  max-width: 72ch;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--primary);
+  text-transform: none;
+}
+
+body[data-theme="terminal"] .now-inline-link {
+  color: inherit;
+  text-decoration-color: var(--text-dim);
+  text-underline-offset: 3px;
+}
+
+body[data-theme="terminal"] .now-inline-link:hover {
+  color: var(--bg-terminal);
+  background: var(--primary);
+  text-decoration: none;
+}
+
 body[data-theme="terminal"] .about-text {
   margin-bottom: var(--spacing-md);
 }
 
+/* JetBrains Mono ships without italics: keep comments upright rather
+   than let the browser slant the glyphs */
 body[data-theme="terminal"] .code-comment {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-comment);
-  font-style: italic;
+  font-style: normal;
   margin-bottom: 0.5rem;
   text-transform: none;
 }
 
 body[data-theme="terminal"] .about-main {
+  max-width: 64ch;
   font-size: 1.1rem;
   line-height: 1.8;
   color: var(--text-dim);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
   text-transform: none;
 }
 
 body[data-theme="terminal"] .about-main .highlight {
   color: var(--primary);
-  text-shadow: var(--glow-primary);
+  text-shadow: var(--glow-soft);
 }
 
 body[data-theme="terminal"] .about-detail {
-  font-size: 0.9rem;
-  color: var(--text-comment);
-  line-height: 1.7;
+  max-width: 72ch;
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  line-height: 1.75;
   text-transform: none;
 }
 
@@ -969,7 +1131,7 @@ body[data-theme="terminal"] .spec-row {
 
 body[data-theme="terminal"] .spec-key {
   color: var(--secondary);
-  min-width: 120px;
+  flex: 0 0 14ch;
 }
 
 body[data-theme="terminal"] .spec-val {
@@ -1016,6 +1178,26 @@ body[data-theme="terminal"] .tech-tag:hover {
   border-color: var(--primary);
   text-shadow: var(--glow-primary);
   box-shadow: var(--glow-primary);
+}
+
+/* Stack note: a highlighted block in the file, title as a label */
+body[data-theme="terminal"] .craft-block {
+  border-left-color: var(--primary);
+  background: rgba(51, 255, 0, 0.03);
+}
+
+body[data-theme="terminal"] .craft-title {
+  color: var(--primary);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-shadow: var(--glow-soft);
+}
+
+body[data-theme="terminal"] .craft-description {
+  max-width: 72ch;
+  color: var(--text-dim);
+  text-transform: none;
+  opacity: 1;
 }
 
 /* ─── Contact Section ─── */
@@ -1162,17 +1344,52 @@ body[data-theme="terminal"] ::-webkit-scrollbar-thumb:hover {
   box-shadow: var(--glow-primary);
 }
 
-/* ─── Focus States ─── */
-body[data-theme="terminal"] :focus {
-  outline: 1px solid var(--primary);
+/* ─── Focus States ───
+   Keyboard focus only (no ring on mouse click), 2px and offset so it
+   never merges with the 1px panel borders. */
+body[data-theme="terminal"] :focus:not(:focus-visible) {
+  outline: none;
 }
 
 body[data-theme="terminal"] :focus-visible {
-  outline: 1px solid var(--primary);
-  box-shadow: var(--glow-primary);
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
 }
 
 /* ─── Responsive ─── */
+/* Commands never break across lines; between tablet and desktop the
+   title bar sheds its path, then the "$" prompts, to keep one row */
+body[data-theme="terminal"] .nav-link,
+body[data-theme="terminal"] .brand-name,
+body[data-theme="terminal"] .brand-suffix {
+  white-space: nowrap;
+}
+
+@media (min-width: 769px) and (max-width: 1200px) {
+  body[data-theme="terminal"] .brand-suffix {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1060px) {
+  body[data-theme="terminal"] .header {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  body[data-theme="terminal"] .nav {
+    gap: 0.25rem;
+  }
+
+  body[data-theme="terminal"] .nav-link {
+    padding: 0.35rem 0.4rem;
+    font-size: 0.72rem;
+  }
+
+  body[data-theme="terminal"] .nav-prefix {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   body[data-theme="terminal"] {
     --spacing-lg: 2rem;
@@ -1187,20 +1404,21 @@ body[data-theme="terminal"] :focus-visible {
     display: none;
   }
 
-  /* Mobile nav dropdown */
+  /* Mobile nav dropdown: opaque, or the glowing banner shows through */
   body[data-theme="terminal"] .nav {
     gap: 0;
-    background: rgba(10, 10, 10, 0.98);
+    background: var(--bg-terminal);
     border-top: 1px solid var(--border);
     box-shadow: 0 4px 20px rgba(51, 255, 0, 0.1);
   }
 
+  /* Menu rows left-aligned, like a list you'd pick from in a TUI */
   body[data-theme="terminal"] .nav .nav-link {
     font-size: 0.85rem;
-    padding: 1rem 1.25rem;
+    padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border);
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     min-height: 3.5rem;
     height: 3.5rem;
@@ -1234,23 +1452,32 @@ body[data-theme="terminal"] :focus-visible {
     font-size: clamp(0.25rem, 2vw, 0.5rem);
   }
 
-  body[data-theme="terminal"] .hero-terminal {
-    padding: var(--spacing-sm);
+  body[data-theme="terminal"] .hero-content {
+    --pane-text: 0.85rem;
+    --pane-pad: 1.25rem;
   }
 
+  /* Long commands wrap to a 2nd line here: keep room for it so the
+     panes below don't jump while the command types out */
   body[data-theme="terminal"] .terminal-line {
-    font-size: 0.8rem;
-    flex-wrap: wrap;
+    min-height: calc(2 * 1.7 * var(--pane-text));
   }
 
   body[data-theme="terminal"] .hero-stats {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
   }
 
   body[data-theme="terminal"] .stat-bar {
-    flex-direction: column;
-    gap: 0.2rem;
-    text-align: center;
+    grid-template-columns: 11ch auto;
+  }
+
+  /* The social-proof stack already ends the hero below the fold */
+  body[data-theme="terminal"] .scroll-indicator {
+    display: none;
+  }
+
+  body[data-theme="terminal"] .section-prompt {
+    font-size: 0.78rem;
   }
 
   /* Section padding for mobile is now handled in base.css */
@@ -2095,75 +2322,57 @@ body[data-theme="terminal"] .enderman-pixel .edm-particles span:nth-child(10) { 
 
 /* ═══════════════════════════════════════════════════════════════
    TIMELINE SECTION (Terminal Theme)
-   Git-style graph visualization with commit history aesthetic
+   `git log --graph --all`: phosphor branches, square commit labels,
+   HEAD pointing at today. Selectors match what js/git-timeline.js renders.
    ═══════════════════════════════════════════════════════════════ */
 
-/* Git Graph Color Variables */
+/* Git Graph Color Variables (names read by css/timeline.css) */
 body[data-theme="terminal"] {
   --git-work-color: #33ff00;
   --git-project-color: #ff6b6b;
-  --git-edu-color: #4ecdc4;
+  --git-education-color: #4ecdc4;
   --git-trunk-color: rgba(51, 255, 0, 0.5);
   --git-hash-color: #ffb000;
-  --git-card-bg: rgba(0, 20, 0, 0.85);
-  --git-card-border: rgba(51, 255, 0, 0.3);
-  --git-detail-bg: rgba(0, 30, 0, 0.95);
-  --git-text-primary: #e0ffe0;
-  --git-text-secondary: rgba(51, 255, 0, 0.8);
+  --git-bg-solid: #0d0d0d;
+  --git-overlay-bg: rgba(10, 10, 10, 0.96);
+  --git-border: #1f521f;
+  --git-text: #d8ffcc;
+  --git-text-secondary: var(--text-dim);
   --git-text-muted: var(--text-comment);
-  --git-line-width: 4px;
 }
 
-body[data-theme="terminal"] .timeline-section {
-  padding: var(--spacing-lg) var(--spacing-md);
+/* Header lines up with the other sections' content column (the graph
+   itself stays full-bleed) */
+body[data-theme="terminal"] .git-timeline-section .section-header {
+  padding: 0 calc(max(0px, (100% - var(--section-max-width)) / 2) + var(--section-padding-x));
+}
+
+/* Year Axis */
+body[data-theme="terminal"] .git-year-label {
+  font-family: var(--font-terminal);
+  color: var(--text-dim);
+}
+
+body[data-theme="terminal"] .git-year-marker.current .git-year-label {
+  color: var(--secondary);
+  text-shadow: var(--glow-secondary);
+}
+
+/* Today, as git decorates it: HEAD -> NOW */
+body[data-theme="terminal"] .git-now-marker span {
+  padding: 2px 8px;
+  border: 1px solid var(--secondary);
+  border-radius: 0;
   background: var(--bg-terminal);
-}
-
-body[data-theme="terminal"] #timeline .section-title::before {
-  content: 'git log ';
-}
-
-body[data-theme="terminal"] #timeline .section-title::after {
-  content: ' --graph --all';
-}
-
-body[data-theme="terminal"] .timeline-subtitle {
-  color: var(--text-comment);
-  font-family: var(--font-terminal);
-}
-
-body[data-theme="terminal"] .timeline-subtitle::before {
-  content: '# ';
   color: var(--secondary);
-}
-
-/* Year Axis - BIGGER */
-body[data-theme="terminal"] .timeline-year-label {
-  color: var(--primary);
   font-family: var(--font-terminal);
-  text-shadow: var(--glow-primary);
-  font-size: 1.1rem;
-  font-weight: 700;
+  box-shadow: 0 0 12px rgba(255, 176, 0, 0.3);
+  white-space: nowrap;
 }
 
-body[data-theme="terminal"] .timeline-year-tick {
-  background: var(--primary);
-  opacity: 0.5;
-  height: 25px;
-}
-
-body[data-theme="terminal"] .timeline-year.current .timeline-year-label {
-  color: var(--secondary);
-  text-shadow: 0 0 10px var(--secondary);
-  font-size: 1.2rem;
-}
-
-/* NOW Marker */
-body[data-theme="terminal"] .timeline-now-marker span {
-  background: #ff3333;
-  font-family: var(--font-terminal);
-  text-shadow: 0 0 5px #ff3333;
-  box-shadow: 0 0 20px rgba(255, 51, 51, 0.5);
+body[data-theme="terminal"] .git-now-marker span::before {
+  content: 'HEAD -> ';
+  font-weight: 400;
 }
 
 /* Git Graph SVG */
@@ -2181,91 +2390,38 @@ body[data-theme="terminal"] .git-node {
   stroke: var(--bg-terminal);
 }
 
-/* Git Commit Info */
-body[data-theme="terminal"] .git-commit-info {
+/* Commit labels: square terminal boxes, no frosted glass */
+body[data-theme="terminal"] .git-commit-marker {
+  border-radius: 0;
+  background: var(--git-bg-solid);
   font-family: var(--font-terminal);
-  background: var(--git-card-bg);
-  border: 1px solid var(--git-card-border);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
-body[data-theme="terminal"] .git-item:hover .git-commit-info {
-  background: var(--git-detail-bg);
-  box-shadow: 0 0 20px rgba(51, 255, 0, 0.4);
+body[data-theme="terminal"] .git-commit-marker:hover,
+body[data-theme="terminal"] .git-commit-marker:focus-visible {
+  transform: translateY(-2px);
 }
 
-body[data-theme="terminal"] .git-item.git-work:hover .git-commit-info {
-  border-color: var(--git-work-color);
+body[data-theme="terminal"] .marker-title {
+  color: var(--git-text);
+  font-weight: 700;
 }
 
-body[data-theme="terminal"] .git-item.git-project:hover .git-commit-info {
-  border-color: var(--git-project-color);
-}
-
-body[data-theme="terminal"] .git-item.git-education:hover .git-commit-info {
-  border-color: var(--git-edu-color);
-}
-
-body[data-theme="terminal"] .git-hash {
-  color: var(--git-hash-color);
-  text-shadow: 0 0 5px var(--git-hash-color);
-}
-
-body[data-theme="terminal"] .git-title {
-  color: var(--git-text-primary);
-}
-
-body[data-theme="terminal"] .git-author {
-  color: var(--git-text-muted);
-}
-
-body[data-theme="terminal"] .git-ongoing-badge {
-  background: var(--git-work-color);
-  color: #000;
-  box-shadow: 0 0 10px var(--git-work-color);
-}
-
-/* Git Detail Popup */
-body[data-theme="terminal"] .git-detail {
-  background: var(--git-detail-bg);
-  border: 1px solid var(--git-card-border);
-  font-family: var(--font-terminal);
-  box-shadow: 0 0 40px rgba(51, 255, 0, 0.3);
-}
-
-body[data-theme="terminal"] .git-detail-header {
-  border-bottom-color: var(--git-card-border);
-}
-
-body[data-theme="terminal"] .git-detail-hash {
-  color: var(--git-hash-color);
-  text-shadow: 0 0 5px var(--git-hash-color);
-}
-
-body[data-theme="terminal"] .git-detail-title {
-  color: var(--primary);
-  text-shadow: var(--glow-primary);
-}
-
-body[data-theme="terminal"] .git-detail-company {
-  color: var(--git-text-secondary);
-}
-
-body[data-theme="terminal"] .git-detail-location {
-  color: var(--git-text-muted);
-}
-
-body[data-theme="terminal"] .git-detail-desc {
-  color: var(--git-text-muted);
-}
-
-body[data-theme="terminal"] .git-tag {
-  background: rgba(51, 255, 0, 0.15);
-  border-color: rgba(51, 255, 0, 0.4);
-  color: var(--primary);
+/* Ongoing work: one lit pixel (the markup also holds a "●" glyph,
+   which doubled the dot) */
+body[data-theme="terminal"] .marker-badge,
+body[data-theme="terminal"] .mobile-commit-badge {
+  width: 6px;
+  height: 6px;
+  border-radius: 0;
+  font-size: 0;
+  box-shadow: 0 0 6px var(--branch-color, var(--git-work-color));
 }
 
 /* Scroll Hint */
-body[data-theme="terminal"] .timeline-scroll-hint {
+body[data-theme="terminal"] .git-timeline-scroll-hint {
   color: var(--text-comment);
   font-family: var(--font-terminal);
 }
@@ -2275,27 +2431,26 @@ body[data-theme="terminal"] .scroll-hint-text::before {
   color: var(--secondary);
 }
 
-/* Loading */
-body[data-theme="terminal"] .timeline-loading {
-  color: var(--text-comment);
-  font-family: var(--font-terminal);
+/* ─── Git Timeline Overlay (Terminal Theme) ───
+   The heading here is two lines (prompt + title): open the detail just
+   below it, on the same left edge as the heading. */
+body[data-theme="terminal"] .git-timeline-overlay.fixed-corner {
+  top: 11.5rem;
+  left: calc(max(0px, (100% - var(--section-max-width)) / 2) + var(--section-padding-x));
 }
 
-body[data-theme="terminal"] .timeline-loading::before {
-  content: '> Loading commits...';
-  animation: blink 1s step-end infinite;
-}
-
-/* ─── Git Timeline Overlay (Terminal Theme) ─── */
 body[data-theme="terminal"] .overlay-content {
-  background: rgba(10, 10, 10, 0.95);
+  background: var(--git-overlay-bg);
+  border-width: 1px;
   border-color: var(--primary);
+  border-radius: 0;
   box-shadow: 0 0 20px rgba(51, 255, 0, 0.2), 0 10px 40px rgba(0, 0, 0, 0.6);
   font-family: var(--font-terminal);
 }
 
 body[data-theme="terminal"] .overlay-header {
-  border-bottom-color: rgba(51, 255, 0, 0.3);
+  border-bottom-color: var(--git-border);
+  border-bottom-style: dashed;
 }
 
 body[data-theme="terminal"] .overlay-hash {
@@ -2309,7 +2464,7 @@ body[data-theme="terminal"] .overlay-date {
 
 body[data-theme="terminal"] .overlay-title {
   color: var(--primary);
-  text-shadow: var(--glow-primary);
+  text-shadow: var(--glow-soft);
 }
 
 body[data-theme="terminal"] .overlay-company {
@@ -2322,12 +2477,15 @@ body[data-theme="terminal"] .overlay-location {
 
 body[data-theme="terminal"] .overlay-description {
   color: var(--text-dim);
+  text-transform: none;
 }
 
-body[data-theme="terminal"] .overlay-tag {
-  background: rgba(51, 255, 0, 0.1);
-  border-color: rgba(51, 255, 0, 0.3);
-  color: var(--primary);
+body[data-theme="terminal"] .overlay-tag,
+body[data-theme="terminal"] .mobile-commit-tag {
+  background: transparent;
+  border-color: var(--git-border);
+  border-radius: 0;
+  color: var(--text-dim);
 }
 
 body[data-theme="terminal"] .git-overlay-work .overlay-content {
@@ -2341,6 +2499,74 @@ body[data-theme="terminal"] .git-overlay-project .overlay-content {
 }
 
 body[data-theme="terminal"] .git-overlay-education .overlay-content {
-  border-color: var(--git-edu-color);
+  border-color: var(--git-education-color);
   box-shadow: 0 0 20px rgba(78, 205, 196, 0.3), 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* ─── Vertical timeline (≤ 1024px) ─── */
+body[data-theme="terminal"] .mobile-commit-card {
+  border-radius: 0;
+  background: var(--git-bg-solid);
+  font-family: var(--font-terminal);
+}
+
+body[data-theme="terminal"] .mobile-commit-title {
+  color: var(--git-text);
+  font-weight: 700;
+}
+
+body[data-theme="terminal"] .mobile-commit-date {
+  color: var(--text-comment);
+}
+
+body[data-theme="terminal"] .mobile-commit-description {
+  color: var(--text-dim);
+  text-transform: none;
+}
+
+@media (max-width: 768px) {
+  body[data-theme="terminal"] .git-timeline-section .section-header {
+    padding: 0 var(--section-padding-x-mobile);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   A steady screen: no blinking, glitching or bouncing; boot lines and
+   banner are simply there. The typewriter holds one command (JS).
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme="terminal"].loaded,
+  body[data-theme="terminal"] .cursor-blink,
+  body[data-theme="terminal"] .custom-cursor .cursor-icon::before,
+  body[data-theme="terminal"] .blink-fast,
+  body[data-theme="terminal"] .blink-slow,
+  body[data-theme="terminal"] .section-title:hover,
+  body[data-theme="terminal"] .section-title.glitching,
+  body[data-theme="terminal"] .scroll-arrow,
+  body[data-theme="terminal"] .marker-badge,
+  body[data-theme="terminal"] .mobile-commit-badge,
+  body[data-theme="terminal"] .enderman-hidden-eyes svg {
+    animation: none;
+  }
+
+  body[data-theme="terminal"] .hero-ascii,
+  body[data-theme="terminal"] .output-line,
+  body[data-theme="terminal"] .scroll-indicator {
+    animation: none;
+    opacity: 1;
+  }
+
+  body[data-theme="terminal"] .floating-cta-pulse {
+    animation: none;
+    opacity: 0;
+  }
+
+  body[data-theme="terminal"] .project-image,
+  body[data-theme="terminal"] .project-video,
+  body[data-theme="terminal"] .project-media-container::after,
+  body[data-theme="terminal"] .link-icon,
+  body[data-theme="terminal"] .link-arrow {
+    transition: none;
+  }
 }
