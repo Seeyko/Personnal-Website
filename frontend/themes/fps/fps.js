@@ -188,6 +188,11 @@ function fpsWeapon(n) { return FPS_WEAPONS[(n - 1) % FPS_WEAPONS.length]; }
 function fpsWeaponSvg(w) { return `<svg viewBox="0 0 64 22" fill="currentColor" aria-hidden="true"><path d="${w.d}"/></svg>`; }
 function fpsPrice(n) { return FPS_PRICES[(n - 1) % FPS_PRICES.length]; }
 function fpsMoney(v) { return v ? '$' + String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : 'FREE'; }
+// Theme string from i18n/themes/fps (LanguageManager.t echoes the key back when it's missing).
+function fpsT(key, fallback) {
+    const v = window.LanguageManager && LanguageManager.t(key);
+    return typeof v === 'string' && v !== key ? v : fallback;
+}
 
 const fpsThemeConfig = {
     name: 'FPS',
@@ -243,6 +248,7 @@ function initFpsEffects() {
     injectScoreboard();
     injectMenuChrome();
     injectCallouts();
+    relabelAbout();
     buildSidePanel();
     initCrosshairAndFx();
     initParallax();
@@ -473,7 +479,7 @@ function injectMenuChrome() {
         rib.setAttribute('aria-hidden', 'true');
         rib.innerHTML = `<span><b>de_dust2</b> &middot; de_portfolio</span>
             <span class="fps-ribbon-sep">|</span>
-            <span>bouge la souris &middot; clique pour tirer &middot; scrolle pour avancer sur la map</span>`;
+            <span>${fpsT('fps.hint', 'bouge la souris · clique pour tirer · scrolle pour avancer sur la map')}</span>`;
         document.body.appendChild(rib);
     }
 
@@ -492,7 +498,7 @@ function injectMenuChrome() {
         const newsH = document.createElement('div');
         newsH.className = 'fps-menu-h fps-news-h';
         newsH.setAttribute('aria-hidden', 'true');
-        newsH.innerHTML = `<span><span class="fps-h-dot"></span>NEWS &middot; EN CE MOMENT</span>
+        newsH.innerHTML = `<span><span class="fps-h-dot"></span>${fpsT('fps.news', 'NEWS · EN CE MOMENT')}</span>
             <span class="fps-clock" id="fps-clock">--:--:--</span>`;
         hero.insertBefore(newsH, hero.firstChild);
     }
@@ -500,7 +506,7 @@ function injectMenuChrome() {
     // Secondary ghost CTA next to the filled hero CTA. Text is i18n-driven.
     const heroCta = document.getElementById('hero-cta');
     if (heroCta && !document.getElementById('fps-cta-ghost')) {
-        const label = (window.LanguageManager && LanguageManager.t('ui.seeWork')) || 'Voir le travail';
+        const label = fpsT('ui.seeWork', 'Voir le travail');
         const ghost = document.createElement('a');
         ghost.id = 'fps-cta-ghost';
         ghost.className = 'hero-cta fps-cta-ghost';
@@ -516,7 +522,7 @@ function injectMenuChrome() {
         buyH.id = 'fps-buy-h';
         buyH.className = 'fps-menu-h fps-buy-menu-h';
         buyH.setAttribute('aria-hidden', 'true');
-        buyH.innerHTML = `<span><span class="fps-h-dot"></span>BUY MENU &middot; WORK</span>
+        buyH.innerHTML = `<span><span class="fps-h-dot"></span>${fpsT('fps.buyMenu', 'BUY MENU · WORK')}</span>
             <span class="fps-buy-budget">BUDGET <b>$16&nbsp;000</b></span>`;
         workGrid.parentNode.insertBefore(buyH, workGrid);
     }
@@ -566,6 +572,15 @@ function injectCallouts() {
         tag.innerHTML = `${FPS_CALLOUTS[id]}<svg viewBox="0 0 24 12" fill="currentColor"><path d="M0 4h15V0l9 6-9 6V8H0z"/></svg>`;
         label.appendChild(tag);
     });
+}
+
+// The about card's "/* … */" code comments are a terminal idiom (and stay
+// English in FR): retitle them as CS2 player-card sub-headers, and drop the
+// spec keys' trailing colons (HUD stat lists don't use them).
+function relabelAbout() {
+    const labels = [fpsT('fps.bio', 'BIO'), fpsT('fps.playstyle', 'PLAYSTYLE'), fpsT('fps.loadout', 'LOADOUT')];
+    document.querySelectorAll('#about .code-comment').forEach((el, i) => { if (labels[i]) el.textContent = labels[i]; });
+    document.querySelectorAll('#about .spec-key').forEach(el => { el.textContent = el.textContent.replace(/\s*:\s*$/, ''); });
 }
 
 // Radar + profile/rank card + friends list, injected on the right. Data comes

@@ -42,8 +42,8 @@ body[data-theme="fps"] {
   --glass:rgba(17,16,14,.84); --glass-2:rgba(32,30,26,.9); --glass-3:rgba(46,42,36,.92);
   --glass-line:rgba(255,232,190,.17); --glass-line-2:rgba(255,232,190,.08);
   --hud-shadow:0 18px 36px -16px rgba(40,24,6,.6), 0 3px 10px rgba(40,24,6,.25);
-  /* text on glass */
-  --fg:#f4efe5; --fg-dim:#c8bfae; --muted:#91887a;
+  /* text on glass (muted ≥4.5:1 even where the glass sits on the bright haze) */
+  --fg:#f4efe5; --fg-dim:#c8bfae; --muted:#a59c8d;
   /* text painted straight on the sandstone */
   --ink:#2a1c0e; --ink-dim:#5b4128; --rust:#a3381f;
   /* teams + economy */
@@ -194,7 +194,7 @@ body[data-theme="fps"] .fps-tab.fps-tab-active { color: var(--accent-2); }
   background: rgba(8,7,6,.92); border-left: 1px solid var(--glass-line); border-right: 1px solid var(--glass-line);
 }
 #fps-score .fps-sc-clock b { font-size: 1.35rem; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: .04em; }
-#fps-score .fps-sc-clock small { font-family: var(--mono); font-weight: 500; font-size: .5rem; letter-spacing: .14em; color: var(--muted); margin-top: 2px; }
+#fps-score .fps-sc-clock small { font-family: var(--mono); font-weight: 500; font-size: .56rem; letter-spacing: .12em; color: var(--muted); margin-top: 2px; }
 #fps-score.fps-sc-bomb .fps-sc-clock b { color: var(--red); animation: fps-blink 1s steps(2) infinite; }
 #fps-score.fps-sc-bomb .fps-sc-clock small { color: var(--red); }
 @keyframes fps-blink { 50% { opacity: .35; } }
@@ -297,7 +297,7 @@ body[data-theme="fps"] .contact-card > .card-header .card-title {
   text-transform: uppercase; color: var(--fg-dim);
 }
 body[data-theme="fps"] .now-card .now-date {
-  font-family: var(--mono); font-size: .64rem; letter-spacing: .06em; color: var(--accent-2);
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .06em; color: var(--accent-2);
 }
 body[data-theme="fps"] .now-card > .card-body,
 body[data-theme="fps"] .about-card > .card-body,
@@ -325,6 +325,21 @@ body[data-theme="fps"] .hero-quote-paragraph { margin: 0; max-width: 58ch; font-
 body[data-theme="fps"] .hero-signature { margin: .55rem 0 0; font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: none; color: var(--muted); }
 /* The proof stats live in the PROFILE card (read at init before this hide). */
 body[data-theme="fps"] .hero-content .social-proof { display: none; }
+/* Main-menu glass, the CS2 way: dense under the copy, thinning out to the
+   right so the plate's empty half becomes a blurred window onto Long A
+   instead of a dead dark slab. The NEWS bar keeps its solid header tone. */
+@media (min-width: 900px) {
+  body[data-theme="fps"] .hero-content {
+    background: linear-gradient(90deg, rgba(17,16,14,.9) 0%, rgba(17,16,14,.86) 48%, rgba(17,16,14,.62) 74%, rgba(17,16,14,.38) 100%);
+    /* lighter frost than the other plates so the walls still read through */
+    backdrop-filter: blur(5px) saturate(1.1); -webkit-backdrop-filter: blur(5px) saturate(1.1);
+  }
+}
+/* The kill feed rides in the gap between the header and the first plate
+   (it used to straddle the plate's top edge): plate + side column drop 8px. */
+@media (min-width: 1200px) {
+  body[data-theme="fps"].fps-hud .hero { padding-top: 104px; }
+}
 
 /* Primary CTA = the green ACCEPT button of a found match; ghost = menu button. */
 body[data-theme="fps"] .hero-cta {
@@ -369,7 +384,8 @@ body[data-theme="fps"] #fps-buy-h::before { content: ""; position: absolute; lef
 /* ───────── WORK = the buy menu ───────── */
 body[data-theme="fps"] #work-grid {
   display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1px;
-  background: var(--glass-line-2); border: 1px solid var(--glass-line); border-top: 0;
+  /* opaque hairline gutters: a translucent one let the sky through as blue lines */
+  background: #36322b; border: 1px solid var(--glass-line); border-top: 0;
 }
 body[data-theme="fps"] .fps-buy {
   position: relative; display: flex; flex-direction: column; gap: .2rem; padding: .7rem .9rem .65rem;
@@ -381,8 +397,12 @@ body[data-theme="fps"] .fps-buy::before { display: none; } /* base no-image badg
 body[data-theme="fps"] .fps-buy::after {
   content: ""; position: absolute; inset: 0; pointer-events: none; border: 1px solid transparent;
 }
-body[data-theme="fps"] .fps-buy:hover { background: rgba(58,44,22,.92); }
-body[data-theme="fps"] .fps-buy:hover::after { border-color: var(--accent); box-shadow: inset 0 0 24px rgba(232,163,61,.18); }
+/* Selected slot: a neutral lift with a gold wash from the top edge (CS2's
+   buy-menu highlight), not a flat brown fill. */
+body[data-theme="fps"] .fps-buy:hover,
+body[data-theme="fps"] .fps-buy:focus-visible { background: linear-gradient(180deg, rgba(232,163,61,.15), rgba(232,163,61,.03) 60%), rgba(34,32,28,.94); }
+body[data-theme="fps"] .fps-buy:hover::after,
+body[data-theme="fps"] .fps-buy:focus-visible::after { border-color: var(--accent); box-shadow: inset 0 2px 0 var(--accent-2); }
 /* Buy tiles are compact: no project media/carousel. */
 body[data-theme="fps"] .fps-buy .project-media-container { display: none !important; }
 body[data-theme="fps"] .fps-buy-head { display: flex; align-items: center; gap: .5rem; }
@@ -391,7 +411,8 @@ body[data-theme="fps"] .fps-buy-num {
   font-family: var(--disp); font-weight: 700; font-size: .85rem; color: var(--fg);
   background: rgba(255,240,210,.08); border: 1px solid var(--glass-line);
 }
-body[data-theme="fps"] .fps-buy:hover .fps-buy-num { background: var(--accent); color: #1a1006; border-color: var(--accent); }
+body[data-theme="fps"] .fps-buy:hover .fps-buy-num,
+body[data-theme="fps"] .fps-buy:focus-visible .fps-buy-num { background: var(--accent); color: #1a1006; border-color: var(--accent); }
 body[data-theme="fps"] .fps-buy-gun { font-family: var(--disp); font-weight: 600; font-size: .8rem; letter-spacing: .14em; color: var(--muted); }
 body[data-theme="fps"] .fps-buy-price { margin-left: auto; font-family: var(--disp); font-weight: 700; font-size: 1.05rem; letter-spacing: .04em; color: var(--money); font-variant-numeric: tabular-nums; }
 body[data-theme="fps"] .fps-buy-icon {
@@ -405,9 +426,10 @@ body[data-theme="fps"] .fps-buy h3 {
   margin: .1rem 0 0; font-family: var(--disp); font-weight: 700; font-size: 1.45rem; line-height: 1.05;
   letter-spacing: .04em; text-transform: uppercase; color: var(--fg);
 }
-body[data-theme="fps"] .fps-buy:hover h3 { color: var(--accent-2); }
+body[data-theme="fps"] .fps-buy:hover h3,
+body[data-theme="fps"] .fps-buy:focus-visible h3 { color: var(--accent-2); }
 body[data-theme="fps"] .fps-buy p {
-  margin: .2rem 0 .5rem; font-size: .8rem; color: var(--fg-dim); line-height: 1.45;
+  margin: .2rem 0 .5rem; font-size: .84rem; color: var(--fg-dim); line-height: 1.45;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
 }
 body[data-theme="fps"] .fps-buy .tags { display: flex; gap: .3rem; flex-wrap: wrap; margin-top: auto; }
@@ -422,14 +444,15 @@ body[data-theme="fps"] .fps-buy-foot {
   font-family: var(--disp); font-weight: 600; font-size: .78rem; letter-spacing: .14em; color: var(--muted); text-transform: uppercase;
 }
 body[data-theme="fps"] .fps-buy-cta { color: var(--accent-2); }
-body[data-theme="fps"] .fps-buy:hover .fps-buy-cta { color: #1a1006; background: var(--accent); padding: 0 .45rem; margin-right: -.45rem; }
+body[data-theme="fps"] .fps-buy:hover .fps-buy-cta,
+body[data-theme="fps"] .fps-buy:focus-visible .fps-buy-cta { color: #1a1006; background: var(--accent); padding: 0 .45rem; margin-right: -.45rem; }
 
 /* ───────── right column: radar + profile + friends ───────── */
 #fps-side {
   /* Fixed to <body> UNDER #main-content (46): the header dropdowns and the
      footer painting live in main and must draw over this column. Top aligns
      with the hero plate. */
-  position: fixed; z-index: 35; right: 1rem; top: 96px; width: 288px;
+  position: fixed; z-index: 35; right: 1rem; top: 104px; width: 288px;
   display: none; flex-direction: column; gap: 10px;
   transition: transform .45s cubic-bezier(.6,0,.3,1), opacity .35s ease;
 }
@@ -483,7 +506,7 @@ body[data-theme="fps"] #fps-side .fps-xp-lbl { display: flex; justify-content: s
 body[data-theme="fps"] #fps-side .fps-stats { display: flex; gap: 6px; margin-top: .6rem; }
 body[data-theme="fps"] #fps-side .fps-stat { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: .15rem; padding: .45rem .2rem .4rem; text-align: center; background: rgba(255,240,210,.05); border: 1px solid var(--glass-line-2); }
 body[data-theme="fps"] #fps-side .fps-stat b { font-family: var(--disp); font-weight: 700; font-size: 1.45rem; line-height: 1; color: var(--fg); font-variant-numeric: tabular-nums; }
-body[data-theme="fps"] #fps-side .fps-stat small { font-family: var(--disp); font-weight: 600; font-size: .62rem; letter-spacing: .08em; line-height: 1.1; color: var(--muted); text-transform: uppercase; }
+body[data-theme="fps"] #fps-side .fps-stat small { font-family: var(--disp); font-weight: 600; font-size: .66rem; letter-spacing: .08em; line-height: 1.1; color: var(--muted); text-transform: uppercase; }
 
 /* friends */
 body[data-theme="fps"] #fps-side .fps-friend { display: flex; align-items: center; gap: .6rem; padding: .42rem .8rem; padding-left: calc(.8rem - 2px); border-left: 2px solid transparent; border-bottom: 1px solid var(--glass-line-2); text-decoration: none; color: inherit; transition: none; }
@@ -514,13 +537,16 @@ body[data-theme="fps"] #fps-side .fps-friend-st.idle { background: var(--gold); 
 
 /* ───────── kill feed (top right of the play area) ───────── */
 #fps-killfeed {
-  position: fixed; z-index: 40; top: 80px; right: calc(320px + 2rem);
-  display: flex; flex-direction: column; align-items: flex-end; gap: 3px; pointer-events: none;
+  /* first row sits between the header (ends at 70px) and the hero plate (104px) */
+  position: fixed; z-index: 40; top: 77px; right: calc(320px + 2rem);
+  display: flex; flex-direction: column; align-items: flex-end; gap: 2px; pointer-events: none;
 }
+/* CS2 rows: dark translucent strip, a thin red outline marks your own kills. */
 #fps-killfeed .fps-kf-row {
-  display: flex; align-items: center; gap: .45rem; height: 24px; box-sizing: border-box; padding: 0 .55rem;
-  background: rgba(10,9,8,.84); border: 2px solid rgba(232,71,60,.85);
-  font-family: var(--disp); font-weight: 700; font-size: .86rem; letter-spacing: .03em; white-space: nowrap;
+  display: flex; align-items: center; gap: .45rem; height: 22px; box-sizing: border-box; padding: 0 .5rem;
+  background: rgba(10,9,8,.78); border: 1px solid rgba(232,71,60,.9); box-shadow: inset 0 0 0 1px rgba(232,71,60,.2);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  font-family: var(--disp); font-weight: 700; font-size: .84rem; letter-spacing: .03em; white-space: nowrap;
   animation: fps-kf-in .18s ease-out;
 }
 #fps-killfeed .fps-kf-t { color: var(--accent-2); }
@@ -532,8 +558,6 @@ body[data-theme="fps"] #fps-side .fps-friend-st.idle { background: var(--gold); 
 @keyframes fps-kf-in { from { opacity: 0; transform: translateX(16px); } }
 body.fps-at-footer #fps-killfeed { opacity: 0; }
 @media (max-width: 1199px) { #fps-killfeed { display: none; } }
-/* The feed sits over the NEWS bar's right end at scroll-top: the clock goes. */
-@media (min-width: 1200px) { body[data-theme="fps"] .fps-clock { visibility: hidden; } }
 
 /* ───────── bottom HUD bar (health · net_graph · money/ammo) ───────── */
 #fps-telemetry {
@@ -541,7 +565,8 @@ body.fps-at-footer #fps-killfeed { opacity: 0; }
   position: fixed; z-index: 59; left: 0; right: 0; bottom: 0; height: 44px; box-sizing: border-box;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   padding: 0 1.2rem; pointer-events: none;
-  background: linear-gradient(180deg, rgba(14,12,9,.9), rgba(6,5,4,.97));
+  /* near-opaque: at .9 the scrolled copy ghosted through the bar */
+  background: linear-gradient(180deg, rgba(14,12,9,.97), rgba(6,5,4,.99));
   border-top: 1px solid rgba(232,163,61,.3);
 }
 #fps-telemetry .fps-hud-l, #fps-telemetry .fps-hud-r { display: flex; align-items: center; gap: 1.1rem; }
@@ -629,6 +654,9 @@ body[data-theme="fps"] .language-switcher-toggle:focus-visible {
   outline: 2px solid var(--accent-2);
   outline-offset: 2px;
 }
+/* Buy tiles butt against each other (1px gutters): ring them inside, or the
+   next tile paints over it. Focus also gets the hover "selected slot" look. */
+body[data-theme="fps"] .fps-buy:focus-visible { outline-offset: -2px; }
 
 /* ───────── boot-strip ribbon = console line ───────── */
 #fps-ribbon {
@@ -685,16 +713,50 @@ body[data-theme="fps"] .language-option:hover { background: rgba(232,163,61,.14)
 body[data-theme="fps"] .theme-option.active,
 body[data-theme="fps"] .language-option.active { background: rgba(232,163,61,.2); color: var(--accent-2); }
 body[data-theme="fps"] .theme-name, body[data-theme="fps"] .lang-name { letter-spacing: .06em; }
+/* The 🎨 emoji was the one full-colour glyph in the HUD: a flat spray can
+   (Dust II sprays — repaint the site) drawn in currentColor replaces it. The
+   menu reads like a CS2 list: no emoji, a team-gold edge on hover/active. */
+body[data-theme="fps"] .theme-switcher-toggle { justify-content: center; width: 36px; padding: 0; font-size: 0; }
+body[data-theme="fps"] .theme-switcher-toggle::before {
+  content: ""; width: 17px; height: 17px; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M3 7.5C3 6.7 3.7 6 4.5 6h4C9.3 6 10 6.7 10 7.5V15H3zM3 9.6h7V11H3zM4.5 3h4v2.4h-4zM5.6 1.4h1.8V3H5.6z'/%3E%3Ccircle cx='12.2' cy='2.2' r='.9'/%3E%3Ccircle cx='14.4' cy='3.8' r='.85'/%3E%3Ccircle cx='12.6' cy='5' r='.75'/%3E%3Ccircle cx='14.8' cy='6.6' r='.65'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M3 7.5C3 6.7 3.7 6 4.5 6h4C9.3 6 10 6.7 10 7.5V15H3zM3 9.6h7V11H3zM4.5 3h4v2.4h-4zM5.6 1.4h1.8V3H5.6z'/%3E%3Ccircle cx='12.2' cy='2.2' r='.9'/%3E%3Ccircle cx='14.4' cy='3.8' r='.85'/%3E%3Ccircle cx='12.6' cy='5' r='.75'/%3E%3Ccircle cx='14.8' cy='6.6' r='.65'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+body[data-theme="fps"] .theme-switcher-menu { min-width: 196px; padding: 6px; gap: 2px; }
+body[data-theme="fps"] .theme-option { padding: .62rem .9rem; border-left: 2px solid transparent; }
+body[data-theme="fps"] .theme-option .theme-icon { display: none; }
+body[data-theme="fps"] .theme-option .theme-name { font-size: 1.02rem; text-transform: uppercase; }
+body[data-theme="fps"] .theme-option:hover { border-left-color: var(--accent); }
+body[data-theme="fps"] .theme-option.active { border-left-color: var(--accent-2); }
 body[data-theme="fps"] .lang-arrow, body[data-theme="fps"] .lang-flag { color: var(--fg-dim); }
 body[data-theme="fps"] .hamburger-menu { display: none !important; }
 
 /* ───────── ABOUT ───────── */
 body[data-theme="fps"] .about-text { margin: 0 0 .2rem; }
 body[data-theme="fps"] .about-main,
-body[data-theme="fps"] .about-detail { color: var(--fg-dim); font-size: .94rem; line-height: 1.6; margin: .15rem 0 .7rem; }
+body[data-theme="fps"] .about-detail { color: var(--fg-dim); font-size: .98rem; line-height: 1.62; margin: .15rem 0 .8rem; }
+/* The one-line credo leads the card. */
+body[data-theme="fps"] .about-main { color: var(--fg); font-size: 1.12rem; line-height: 1.5; }
+/* Sub-headers: fps.js retitles the code-comment labels BIO / PLAYSTYLE / LOADOUT. */
 body[data-theme="fps"] .code-comment {
-  display: block; color: var(--accent); font-family: var(--disp); font-weight: 600; font-size: .8rem;
-  letter-spacing: .16em; text-transform: uppercase; margin: .2rem 0 .25rem;
+  display: flex; align-items: center; gap: .5rem; color: var(--accent); font-family: var(--disp); font-weight: 700; font-size: .8rem;
+  letter-spacing: .18em; text-transform: uppercase; margin: .2rem 0 .3rem;
+}
+body[data-theme="fps"] .code-comment::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--glass-line-2); }
+/* Wide screens: CS2 player card — bio on the left, stats + loadout on the
+   right, split by a hairline (keeps the bio near 70 characters a line). */
+@media (min-width: 900px) {
+  body[data-theme="fps"] #about .about-card > .card-body {
+    display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); grid-template-rows: auto 1fr;
+    padding: 1.1rem 1.3rem 1.3rem;
+  }
+  body[data-theme="fps"] #about .about-text {
+    grid-column: 1; grid-row: 1 / 3; margin: 0; padding-right: 1.5rem; border-right: 1px solid var(--glass-line-2);
+  }
+  body[data-theme="fps"] #about .about-text > :last-child { margin-bottom: 0; }
+  body[data-theme="fps"] #about .about-specs { grid-column: 2; grid-row: 1; margin: .15rem 0 0; padding-left: 1.5rem; }
+  body[data-theme="fps"] #about .craft-stack { grid-column: 2; grid-row: 2; align-self: start; margin-top: 1rem; padding-left: 1.5rem; }
+  body[data-theme="fps"] #about .about-specs .spec-key { flex-basis: 6.6rem; }
 }
 body[data-theme="fps"] .about-specs { display: flex; flex-direction: column; gap: 0; margin: .35rem 0 0; color: var(--fg-dim); }
 body[data-theme="fps"] .about-specs .spec-row {
@@ -714,7 +776,12 @@ body[data-theme="fps"] .craft-title { margin: 0; color: var(--accent-2); font-fa
 body[data-theme="fps"] .craft-description { margin: 0; color: var(--fg-dim); font-family: var(--body); font-size: .84rem; line-height: 1.55; opacity: 1; }
 
 /* ───────── NOW ───────── */
-body[data-theme="fps"] .now-paragraph { color: var(--fg-dim); font-size: .94rem; line-height: 1.65; margin: 0; max-width: 78ch; }
+body[data-theme="fps"] .now-paragraph { color: var(--fg-dim); font-size: .98rem; line-height: 1.65; margin: 0; max-width: 70ch; }
+/* Wide plates set the bulletin in two news columns (~60 characters a line)
+   instead of one 100-character line with dead glass beside it. */
+@media (min-width: 900px) {
+  body[data-theme="fps"] .now-paragraph { max-width: none; columns: 2; column-gap: 2.8rem; column-rule: 1px solid var(--glass-line-2); }
+}
 
 /* ───────── CONTACT ───────── */
 body[data-theme="fps"] .contact-blueprint-svg { display: none !important; }
@@ -780,6 +847,52 @@ body[data-theme="fps"] .git-now-marker span { background: var(--red); box-shadow
 body[data-theme="fps"] .git-commit-work:hover { box-shadow: 0 4px 16px rgba(232, 163, 61, .3); }
 body[data-theme="fps"] .git-commit-project:hover { box-shadow: 0 4px 16px rgba(163, 214, 96, .3); }
 body[data-theme="fps"] .git-commit-education:hover { box-shadow: 0 4px 16px rgba(111, 159, 216, .3); }
+/* Commits = match-history rows: square glass chips, condensed caps, team
+   edge, instant hover (no lift/scale — the rest of the menu doesn't bounce). */
+body[data-theme="fps"] .git-commit-marker {
+  gap: 7px; padding: 5px 10px 5px 9px; border-radius: 0; transition: none;
+  background: rgba(20,18,15,.94); border-color: var(--glass-line); border-left: 2px solid var(--branch-color, var(--accent));
+  font-family: var(--disp); font-weight: 600; font-size: .92rem; letter-spacing: .05em; text-transform: uppercase;
+}
+body[data-theme="fps"] .git-commit-marker:hover { transform: none; background: rgba(38,35,30,.97); border-color: var(--branch-color); }
+body[data-theme="fps"] .git-commit-marker::after { transition: none; }
+body[data-theme="fps"] .marker-title { font-weight: 600; }
+/* The badge spans hold a literal "●" that spilled out of the 6px box: glyph off, diamond on. */
+body[data-theme="fps"] .marker-badge { border-radius: 0; width: 5px; height: 5px; transform: rotate(45deg); animation: none; font-size: 0; line-height: 0; overflow: hidden; }
+body[data-theme="fps"] .git-year-label { font-family: var(--disp); font-weight: 700; font-size: 1.02rem; letter-spacing: .08em; }
+body[data-theme="fps"] .git-year-marker.current .git-year-label { font-size: 1.1rem; }
+body[data-theme="fps"] .git-now-marker span { border-radius: 0; font-family: var(--disp); font-size: .78rem; letter-spacing: .14em; padding: 3px 10px; }
+body[data-theme="fps"] .overlay-content {
+  border-radius: 0; border: 1px solid var(--glass-line); border-top: 2px solid var(--accent);
+}
+body[data-theme="fps"] .git-overlay-work .overlay-content { border-top-color: var(--git-work-color); }
+body[data-theme="fps"] .git-overlay-project .overlay-content { border-top-color: var(--git-project-color); }
+body[data-theme="fps"] .git-overlay-education .overlay-content { border-top-color: var(--git-education-color); }
+body[data-theme="fps"] .overlay-title { font-family: var(--disp); font-weight: 700; font-size: 1.4rem; line-height: 1.05; letter-spacing: .04em; text-transform: uppercase; }
+body[data-theme="fps"] .overlay-date,
+body[data-theme="fps"] .overlay-hash { font-family: var(--disp); font-weight: 600; font-size: .8rem; letter-spacing: .1em; }
+body[data-theme="fps"] .overlay-tag,
+body[data-theme="fps"] .mobile-commit-tag {
+  border: 0; border-radius: 0; padding: .05rem .4rem; background: rgba(255,240,210,.07);
+  font-family: var(--disp); font-weight: 600; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-dim);
+}
+/* Vertical history (≤1024px): same rows, stacked. */
+body[data-theme="fps"] .mobile-commit-card {
+  border-radius: 0; border-color: var(--glass-line); border-left: 2px solid var(--branch-color, var(--accent)); padding: 11px 13px; transition: none;
+  background: rgba(20,18,15,.93); box-shadow: var(--hud-shadow);
+}
+body[data-theme="fps"] .mobile-commit-card:active { transform: none; background: rgba(38,35,30,.97); }
+body[data-theme="fps"] .mobile-commit-title { font-family: var(--disp); font-weight: 700; font-size: 1.12rem; line-height: 1.1; letter-spacing: .04em; text-transform: uppercase; }
+body[data-theme="fps"] .mobile-commit-date { font-family: var(--disp); font-weight: 600; font-size: .8rem; letter-spacing: .08em; color: var(--muted); font-variant-numeric: tabular-nums; }
+body[data-theme="fps"] .mobile-commit-badge { border-radius: 0; width: 6px; height: 6px; transform: rotate(45deg); animation: none; font-size: 0; line-height: 0; overflow: hidden; flex: 0 0 auto; }
+body[data-theme="fps"] .mobile-commit-company { font-family: var(--disp); font-weight: 700; font-size: .95rem; letter-spacing: .05em; text-transform: uppercase; }
+body[data-theme="fps"] .mobile-commit-description { font-size: .86rem; }
+body[data-theme="fps"] .mobile-commit::before { border-color: rgba(20,18,15,.95); }
+/* Phones: the shared timeline header keeps a 2rem gutter; line it up with
+   the other section headers and with the list below (1rem). */
+@media (max-width: 768px) {
+  body[data-theme="fps"] .git-timeline-section .section-header { padding-left: 1rem; padding-right: 1rem; }
+}
 body[data-theme="fps"] .git-timeline-scroll-hint { font-family: var(--disp); font-weight: 600; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 body[data-theme="fps"] .git-timeline-scroll-hint .scroll-hint-text { color: var(--muted); }
 body[data-theme="fps"] .git-timeline-scroll-hint .scroll-hint-arrow { color: var(--accent-2); }
@@ -833,24 +946,28 @@ body[data-theme="fps"] #cathode-guide .cg-bar b { font-family: var(--disp); font
   /* Rail full-bleed + opaque, hugging the 29px HUD bar. */
   #fps-rail {
     left: 0; right: 0; top: auto; bottom: 29px; transform: none;
-    flex-direction: row; justify-content: center; gap: 4px; padding: 4px 6px;
+    flex-direction: row; justify-content: center; gap: 4px; padding: 2px 6px;
     background: #110f0c; backdrop-filter: none; -webkit-backdrop-filter: none;
     border-left: 0; border-right: 0; border-bottom: 0;
     box-shadow: 0 -8px 20px -8px rgba(30,18,4,.5);
   }
   #fps-rail::before { display: none; }
-  #fps-rail .fps-rail-btn { width: 40px; height: 40px; }
+  /* 44px tap targets; the 2px rail padding keeps the bar 49px tall (the
+     footer's bottom margin in site-footer.css is tuned to that stack). */
+  #fps-rail .fps-rail-btn { width: 44px; height: 44px; }
   #fps-rail .fps-rail-btn[data-callout]::after { display: none; }
   #fps-rail .fps-rail-gap { width: 1px; height: auto; margin: 6px 4px; }
-  #fps-rail .fps-rail-btn.fps-rail-active::before { left: 8px; right: 8px; top: auto; bottom: -4px; width: auto; height: 3px; }
+  #fps-rail .fps-rail-btn.fps-rail-active::before { left: 8px; right: 8px; top: auto; bottom: -2px; width: auto; height: 3px; }
   body[data-theme="fps"] .section-title { font-size: 1.6rem; }
+  /* Touch layouts: header chips grow to 44px tap targets. */
+  body[data-theme="fps"] .theme-switcher-toggle,
+  body[data-theme="fps"] .language-switcher-toggle { height: 44px; min-width: 44px; justify-content: center; }
   #fps-side { display: none !important; }
   /* Mobile HUD bar: the net_graph line only, scrolled internally. */
   #fps-telemetry { height: 29px; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 1rem; }
   #fps-telemetry .fps-hud-l, #fps-telemetry .fps-hud-r { display: none; }
   #fps-telemetry .fps-hud-c { gap: .9rem; font-size: .6rem; }
   #fps-telemetry .fps-m { flex: 0 0 auto; }
-  body[data-theme="fps"] #work-grid { grid-template-columns: 1fr; }
   /* Panels go near-opaque and drop the blur (cheaper, never washed out). */
   body[data-theme="fps"] .fps-buy.fade-in-up { opacity: 1; }
   body[data-theme="fps"] .hero-content,
@@ -863,6 +980,8 @@ body[data-theme="fps"] #cathode-guide .cg-bar b { font-family: var(--disp); font
   #fps-scene .fps-dust { display: none; }
 }
 @media (max-width: 768px) {
+  /* 8px instead of 12px: the 44px chips keep the header at its old ~60px. */
+  body[data-theme="fps"] .header { padding-top: .5rem; padding-bottom: .5rem; }
   body[data-theme="fps"] .header-brand { padding-left: 0; }
   body[data-theme="fps"] #header-controls { padding-right: 0; }
   body[data-theme="fps"] .language-switcher-menu { right: 0; }
@@ -873,6 +992,10 @@ body[data-theme="fps"] #cathode-guide .cg-bar b { font-family: var(--disp); font
   body[data-theme="fps"] #fps-cta-ghost { margin-left: 0; margin-top: .55rem; }
   #fps-ribbon .fps-ribbon-sep, #fps-ribbon .fps-ribbon-sep + span { display: none; }
   body[data-theme="fps"] .fps-callout { font-size: .9rem; }
+  /* Tablets keep the two-column buy menu; phones stack it. */
+  body[data-theme="fps"] #work-grid { grid-template-columns: 1fr; }
+  /* One line for the role eyebrow on phones (it wrapped at .22em tracking). */
+  body[data-theme="fps"] .fps-eyebrow { font-size: .82rem; letter-spacing: .12em; }
 }
 @media (max-width: 560px) {
   body[data-theme="fps"] .fps-clock { display: none; }
@@ -884,7 +1007,7 @@ body[data-theme="fps"] #cathode-guide .cg-bar b { font-family: var(--disp); font
   #fps-scene .fps-dust { animation: none; }
   #fps-fx .fps-hit, #fps-fx .fps-dmg { animation: none !important; }
   #fps-side, #fps-side #fps-rd-me { transition: none; }
-  #fps-side .fps-rd-ping, #fps-score.fps-sc-bomb .fps-sc-clock b { animation: none; }
+  #fps-side .fps-rd-ping, #fps-score.fps-sc-bomb .fps-sc-clock b, #fps-killfeed .fps-kf-row { animation: none; }
   body[data-theme="fps"] .fps-buy, body[data-theme="fps"] .fps-tab { transition: none !important; }
 }
 
