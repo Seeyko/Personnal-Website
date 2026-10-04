@@ -29,7 +29,8 @@
       "tellMeMore": "Dites-m'en plus !",
       "cool": "Cool !"
     },
-    "secret": "Youhou ! Vous avez trouvé un secret !"
+    "secret": "Youhou ! Vous avez trouvé un secret !",
+    "close": "Fermer"
   },
   "underConstruction": [
     "SITE EN CONSTRUCTION !",
@@ -40,7 +41,12 @@
   ],
   "statusBar": {
     "ready": "Prêt",
-    "viewing": "Affichage :"
+    "viewing": "Affichage :",
+    "home": "Accueil",
+    "zone": "Internet"
+  },
+  "explorer": {
+    "objects": "{n} objet(s)"
   },
   "webring": {
     "prev": "Préc.",

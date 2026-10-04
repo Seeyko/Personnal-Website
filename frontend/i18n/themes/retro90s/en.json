@@ -29,7 +29,8 @@
       "tellMeMore": "Tell me more!",
       "cool": "Cool!"
     },
-    "secret": "Wheee! You found a secret!"
+    "secret": "Wheee! You found a secret!",
+    "close": "Close"
   },
   "underConstruction": [
     "SITE UNDER CONSTRUCTION!",
@@ -40,7 +41,12 @@
   ],
   "statusBar": {
     "ready": "Ready",
-    "viewing": "Viewing:"
+    "viewing": "Viewing:",
+    "home": "Home",
+    "zone": "Internet"
+  },
+  "explorer": {
+    "objects": "{n} object(s)"
   },
   "webring": {
     "prev": "Prev",

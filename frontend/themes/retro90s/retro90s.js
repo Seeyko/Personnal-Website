@@ -9,6 +9,23 @@
 console.log('%c[RETRO 90s] Welcome to 1997!', 'color: #FF00FF; font-size: 20px; font-family: "Comic Sans MS", cursive; text-shadow: 2px 2px 0 #FFFF00;');
 console.log('%c♦♦♦ Best viewed with Netscape Navigator 4.0 at 800x600 ♦♦♦', 'color: #00FF00; font-size: 12px;');
 
+// ─── Theme strings ───
+// i18n/themes/retro90s/{fr,en}.json is loaded by ContentLoader during
+// ThemeInit.init(), i.e. after this file runs: only call rt() from code that
+// runs at render/effects time. LanguageManager.t() echoes the key back when
+// it is missing, so fall back.
+function rt(key, fallback, params = {}) {
+    const value = window.LanguageManager ? LanguageManager.t(key, params) : key;
+    if (value !== undefined && value !== key) return value;
+    if (typeof fallback !== 'string') return fallback;
+    return Object.keys(params).reduce((s, p) => s.replace(`{${p}}`, params[p]), fallback);
+}
+
+const retroLang = () => (window.LanguageManager && LanguageManager.currentLang) || 'fr';
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Mouse-only toys (cursor trail, hover tooltips) stay off on touch screens.
+const FINE_POINTER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
 // ─── Visual Click Feedback ───
 function playVisualClick() {
     const flash = document.createElement('div');
@@ -43,6 +60,7 @@ class CursorTrail {
         for (let i = 0; i < this.maxTrails; i++) {
             const trail = document.createElement('div');
             trail.className = 'cursor-trail';
+            trail.setAttribute('aria-hidden', 'true');
             trail.style.cssText = `
                 position: fixed;
                 pointer-events: none;
@@ -59,12 +77,17 @@ class CursorTrail {
         }
 
         document.addEventListener('mousemove', this.handleMouseMove.bind(this));
-        this.animate();
     }
 
     handleMouseMove(e) {
         this.lastX = e.clientX;
         this.lastY = e.clientY;
+        // Start on the first move, so the trail never parks in the corner at 0,0
+        if (!this.running) {
+            this.running = true;
+            this.trails.forEach(t => { t.x = e.clientX; t.y = e.clientY; });
+            this.animate();
+        }
     }
 
     animate() {
@@ -164,6 +187,7 @@ class FlyingShapes {
         const startY = Math.random() * 80 + 10;
 
         shape.textContent = shapeChar;
+        shape.setAttribute('aria-hidden', 'true');
         shape.style.cssText = `
             position: fixed;
             top: ${startY}vh;
@@ -227,42 +251,52 @@ class RetroTooltips {
 }
 
 // ─── Clippy Helper ───
+// Classic Clippy, minus the nagging: on desktop he says hello once and his
+// bubble closes by itself; on phones it only opens when you tap him. Either
+// way the bubble never camps on top of the text you are reading.
+const CLIPPY_FALLBACK_MESSAGES = [
+    { text: "It looks like you're browsing a portfolio! Need help?", action: "contact" },
+    { text: "Wow, these projects look amazing!", action: "projects" },
+    { text: "Have you tried clicking on a project?", action: "projects" },
+    { text: "Want to get in touch? Click below!", action: "contact" },
+    { text: "This site is best viewed at 800x600!", action: null },
+    { text: "Press ↑↑↓↓←→←→BA for a surprise!", action: null },
+    { text: "Remember to bookmark this page!", action: null },
+    { text: "Did you know? This site uses JavaScript!", action: null },
+    { text: "Check out what I can do!", action: "about" },
+    { text: "The colors! The bevels! So 90s!", action: null },
+    { text: "Want to learn more about me?", action: "about" },
+    { text: "Links turn red when you hover. Cool, right?", action: null }
+];
+
+// Message actions name sections from the old one-page layout
+const CLIPPY_TARGETS = { projects: 'work', contact: 'contact', about: 'about' };
+
 class ClippyHelper {
     constructor() {
-        this.messages = [
-            { text: "It looks like you're browsing a portfolio! Need help?", action: "contact" },
-            { text: "Wow, these projects look amazing!", action: "projects" },
-            { text: "Have you tried clicking on a project?", action: "projects" },
-            { text: "Want to get in touch? Click below!", action: "contact" },
-            { text: "This site is best viewed at 800x600!", action: null },
-            { text: "Press ↑↑↓↓←→←→BA for a surprise!", action: null },
-            { text: "Remember to bookmark this page!", action: null },
-            { text: "Did you know? This site uses JavaScript!", action: null },
-            { text: "Check out what I can do!", action: "about" },
-            { text: "The colors! The bevels! So 90s!", action: null },
-            { text: "Want to learn more about me?", action: "about" },
-            { text: "Links turn red when you hover. Cool, right?", action: null }
-        ];
+        const messages = rt('clippy.messages', CLIPPY_FALLBACK_MESSAGES);
+        this.messages = Array.isArray(messages) && messages.length ? messages : CLIPPY_FALLBACK_MESSAGES;
         this.currentMessage = 0;
         this.isVisible = true;
         this.container = null;
         this.clickCount = 0;
+        this.hideTimer = null;
         this.init();
     }
 
     init() {
         this.container = document.createElement('div');
-        this.container.className = 'retro-clippy show-speech';
+        this.container.className = 'retro-clippy';
         this.container.innerHTML = `
             <div class="clippy-container">
-                <div class="clippy-speech">
-                    <span class="clippy-message">${this.messages[0].text}</span>
+                <div class="clippy-speech" role="status">
+                    <span class="clippy-message"></span>
                     <div class="clippy-buttons">
-                        <button class="clippy-action">Let's go!</button>
-                        <button class="clippy-dismiss">×</button>
+                        <button type="button" class="clippy-action"></button>
+                        <button type="button" class="clippy-dismiss" aria-label="${rt('clippy.close', 'Close')}">×</button>
                     </div>
                 </div>
-                <div class="clippy-body">
+                <div class="clippy-body" role="button" tabindex="0" aria-label="Clippy">
                     <svg class="clippy-svg" viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg">
                         <path class="clippy-wire" d="M30 95 L30 75 Q30 55 15 55 Q5 55 5 45 L5 20 Q5 5 20 5 L40 5 Q55 5 55 20 L55 60 Q55 75 40 75 L35 75"
                               fill="none" stroke="#666" stroke-width="6" stroke-linecap="round"/>
@@ -280,50 +314,70 @@ class ClippyHelper {
         `;
 
         document.body.appendChild(this.container);
+        this.renderMessage();
 
         this.container.querySelector('.clippy-action').addEventListener('click', (e) => {
             e.stopPropagation();
             const currentMsg = this.messages[this.currentMessage];
-            if (currentMsg.action) {
-                const section = document.getElementById(currentMsg.action);
-                if (section) {
-                    section.scrollIntoView({ behavior: 'smooth' });
-                    this.showExcitedAnimation();
-                }
-            } else {
-                const contact = document.getElementById('contact');
-                if (contact) {
-                    contact.scrollIntoView({ behavior: 'smooth' });
-                    this.showExcitedAnimation();
-                }
+            const target = document.getElementById(CLIPPY_TARGETS[currentMsg.action] || 'contact');
+            if (target) {
+                target.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
+                this.showExcitedAnimation();
             }
-            this.container.classList.remove('show-speech');
-            setTimeout(() => this.showNextMessage(), 3000);
+            this.closeSpeech();
+            this.showNextMessage();
         });
 
         this.container.querySelector('.clippy-dismiss').addEventListener('click', (e) => {
             e.stopPropagation();
-            this.container.classList.remove('show-speech');
-            setTimeout(() => this.showNextMessage(), 15000);
+            this.closeSpeech();
+            this.showNextMessage();
         });
 
-        this.container.querySelector('.clippy-body').addEventListener('click', () => {
+        const body = this.container.querySelector('.clippy-body');
+        const poke = () => {
             this.clickCount++;
             if (this.clickCount >= 5) {
                 this.showEasterEgg();
                 this.clickCount = 0;
-            } else if (!this.container.classList.contains('show-speech')) {
+            } else if (this.container.classList.contains('show-speech')) {
+                this.closeSpeech();
+            } else {
                 this.showNextMessage();
-                this.container.classList.add('show-speech');
+                this.openSpeech();
             }
+        };
+        body.addEventListener('click', poke);
+        body.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); poke(); }
         });
 
+        // Desktop only: one unprompted hello, then he goes quiet
+        if (window.matchMedia('(min-width: 769px)').matches) {
+            setTimeout(() => this.openSpeech(), 2500);
+        }
+
         this.startMessageCycle();
-        this.initEyeTracking();
+        if (FINE_POINTER) this.initEyeTracking();
+    }
+
+    openSpeech() {
+        this.container.classList.add('show-speech');
+        clearTimeout(this.hideTimer);
+        this.hideTimer = setTimeout(() => this.closeSpeech(), 12000);
+    }
+
+    closeSpeech() {
+        clearTimeout(this.hideTimer);
+        this.container.classList.remove('show-speech');
     }
 
     showNextMessage() {
         this.currentMessage = (this.currentMessage + 1) % this.messages.length;
+        this.renderMessage();
+    }
+
+    renderMessage() {
         const messageEl = this.container.querySelector('.clippy-message');
         const actionBtn = this.container.querySelector('.clippy-action');
         const currentMsg = this.messages[this.currentMessage];
@@ -331,10 +385,10 @@ class ClippyHelper {
         if (messageEl) messageEl.textContent = currentMsg.text;
 
         if (actionBtn) {
-            if (currentMsg.action === 'contact') actionBtn.textContent = "Let's talk!";
-            else if (currentMsg.action === 'projects') actionBtn.textContent = "Show me!";
-            else if (currentMsg.action === 'about') actionBtn.textContent = "Tell me more!";
-            else actionBtn.textContent = "Cool!";
+            if (currentMsg.action === 'contact') actionBtn.textContent = rt('clippy.buttons.letsTalk', "Let's talk!");
+            else if (currentMsg.action === 'projects') actionBtn.textContent = rt('clippy.buttons.showMe', 'Show me!');
+            else if (currentMsg.action === 'about') actionBtn.textContent = rt('clippy.buttons.tellMeMore', 'Tell me more!');
+            else actionBtn.textContent = rt('clippy.buttons.cool', 'Cool!');
         }
     }
 
@@ -352,8 +406,8 @@ class ClippyHelper {
         body.style.animation = 'clippy-spin 1s ease-in-out';
 
         const messageEl = this.container.querySelector('.clippy-message');
-        if (messageEl) messageEl.textContent = "Wheee! You found a secret!";
-        this.container.classList.add('show-speech');
+        if (messageEl) messageEl.textContent = rt('clippy.secret', 'Wheee! You found a secret!');
+        this.openSpeech();
     }
 
     initEyeTracking() {
@@ -408,8 +462,11 @@ const retroThemeConfig = {
         tagWrapper: '{tag}',
         showUrl: true,
         urlIcon: '&#8594;',
-        urlText: 'Click here to visit!',
-        tooltip: 'Click to visit {title}!',
+        // Getters: the theme strings arrive during ThemeInit.init(), after this
+        // file runs; CardRenderer reads them at render time.
+        get urlText() { return rt('cardElements.clickToVisit', 'Click here to visit!'); },
+        // {title} is filled in by CardRenderer, so keep the placeholder intact
+        get tooltip() { return rt('tooltips.clickToVisit', 'Click to visit {title}!', { title: '{title}' }); },
         // Custom header template for Windows titlebar
         headerTemplate: (project, indexFormatted) => `
             <div class="project-titlebar">
@@ -430,13 +487,13 @@ const retroThemeConfig = {
     blogCards: {
         wrapperClass: 'blog-card',
         showIndex: true,
-        indexPrefix: 'POST #',
+        get indexPrefix() { return rt('cardElements.postPrefix', 'POST #'); },
         indexPadding: 2,
         showNewBadge: true,
         tooltip: 'Read: {title}',
         headerTemplate: (article, indexFormatted) => `
             <div class="project-titlebar blog-titlebar">
-                <span class="project-titlebar-text">blog_post_${indexFormatted}.html</span>
+                <span class="project-titlebar-text">${rt('windowTitles.blogPrefix', 'blog_post_')}${indexFormatted}${rt('windowTitles.blogSuffix', '.html')}</span>
                 <div class="project-titlebar-buttons">
                     <span class="titlebar-btn">_</span>
                     <span class="titlebar-btn">□</span>
@@ -468,11 +525,15 @@ const retroThemeConfig = {
 // ─── Theme-Specific Effects ───
 function initRetroEffects() {
     initRetroSfx();
+    initHeaderOffset();
     setupMarquee();
-    new CursorTrail();
-    new SparkleEffect();
-    new FlyingShapes();
-    new RetroTooltips();
+    // Motion toys: skipped for prefers-reduced-motion, mouse ones on touch
+    if (!REDUCED_MOTION) {
+        if (FINE_POINTER) new CursorTrail();
+        new SparkleEffect();
+        new FlyingShapes();
+    }
+    if (FINE_POINTER) new RetroTooltips();
     new ClippyHelper();
     initBounceOnScroll();
     initConstructionWobble();
@@ -485,16 +546,38 @@ function initRetroEffects() {
     initWebring();
     initSecretDoubleClick();
     initSectionTitleEffects();
+    initHitCounters();
+    initExplorerStatus();
     // Initialize titlebar buttons after cards are rendered
     setTimeout(initTitlebarButtons, 500);
+}
+
+// ─── Header Offset ───
+// The title bar is fixed; the marquee and hero start right under it.
+function initHeaderOffset() {
+    const header = document.querySelector('.header');
+    if (!header) return;
+    const sync = () => document.documentElement.style.setProperty('--retro-header-h', `${header.offsetHeight}px`);
+    sync();
+    if (window.ResizeObserver) new ResizeObserver(sync).observe(header);
+    else window.addEventListener('resize', sync);
 }
 
 // ─── Marquee Setup ───
 function setupMarquee() {
     const marquee = document.querySelector('.retro-marquee .marquee-content');
     if (!marquee) return;
+    const lines = rt('marquee', null);
+    if (Array.isArray(lines)) {
+        marquee.querySelectorAll('.marquee-text').forEach((span, i) => {
+            if (lines[i]) span.textContent = lines[i];
+        });
+    }
+    // Second copy makes the -50% loop seamless; screen readers skip it
     const content = marquee.innerHTML;
     marquee.innerHTML = content + content;
+    const spans = marquee.querySelectorAll('.marquee-text');
+    for (let i = spans.length / 2; i < spans.length; i++) spans[i].setAttribute('aria-hidden', 'true');
 }
 
 // ─── Bounce Animation on Scroll ───
@@ -530,16 +613,20 @@ function initConstructionWobble() {
     const construction = document.querySelector('.under-construction');
     if (!construction) return;
 
-    setInterval(() => {
-        construction.style.transform = `rotate(${Math.random() * 6 - 3}deg)`;
-    }, 2000);
+    const fallback = ['SITE UNDER CONSTRUCTION!', 'COMING SOON!', 'WORK IN PROGRESS!', 'PARDON OUR DUST!', 'MORE FEATURES COMING!'];
+    const found = rt('underConstruction', fallback);
+    const messages = Array.isArray(found) && found.length ? found : fallback;
+    const inner = construction.querySelector('.under-construction-inner');
+    if (inner) inner.textContent = messages[0];
+
+    if (!REDUCED_MOTION) {
+        setInterval(() => {
+            construction.style.transform = `rotate(${Math.random() * 6 - 3}deg)`;
+        }, 2000);
+    }
 
     construction.addEventListener('click', () => {
-        const inner = construction.querySelector('.under-construction-inner');
-        if (inner) {
-            const messages = ['SITE UNDER CONSTRUCTION!', 'COMING SOON!', 'WORK IN PROGRESS!', 'PARDON OUR DUST!', 'MORE FEATURES COMING!'];
-            inner.textContent = messages[Math.floor(Math.random() * messages.length)];
-        }
+        if (inner) inner.textContent = messages[Math.floor(Math.random() * messages.length)];
     });
 }
 
@@ -549,7 +636,7 @@ function initTechTagColors() {
     const tags = document.querySelectorAll('.tech-tag');
 
     tags.forEach((tag, i) => {
-        tag.setAttribute('data-tooltip', `I know ${tag.textContent}!`);
+        tag.setAttribute('data-tooltip', rt('tooltips.techTooltip', 'I know {tech}!', { tech: tag.textContent }));
         tag.addEventListener('mouseenter', () => {
             tag.style.background = colors[i % colors.length];
             tag.style.color = '#FFFFFF';
@@ -577,16 +664,16 @@ function handleKonami() {
 
     alertBox.innerHTML = `
         <div style="background: linear-gradient(to right, #000080, #1084D0); color: white; padding: 4px 8px; font-weight: bold; font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
-            <span> Secret Message</span>
+            <span> ${rt('konamiSecret.title', 'Secret Message')}</span>
             <span style="cursor: pointer;" id="close-secret">×</span>
         </div>
         <div style="padding: 20px; text-align: center;">
             <p style="font-size: 14px; margin-bottom: 16px;">
-                CONGRATULATIONS!<br><br>
-                <span style="font-family: 'Comic Sans MS', cursive; color: #FF00FF; font-size: 16px;">You found the secret!</span><br><br>
-                <span style="font-size: 12px; color: #808080;">Enjoy the rainbow mode for 10 seconds!</span>
+                ${rt('konamiSecret.congratulations', 'CONGRATULATIONS!')}<br><br>
+                <span style="font-family: 'Comic Sans MS', 'Chalkboard SE', casual, sans-serif; color: #800080; font-size: 16px;">${rt('konamiSecret.foundSecret', 'You found the secret!')}</span><br><br>
+                <span style="font-size: 12px; color: #404040;">${rt('konamiSecret.enjoyRainbow', 'Enjoy the rainbow mode for 10 seconds!')}</span>
             </p>
-            <button id="retro-alert-ok" style="background: #C0C0C0; border: 2px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF; padding: 6px 32px; font-family: inherit; cursor: pointer; font-weight: bold; font-size: 12px;">COOL!</button>
+            <button id="retro-alert-ok" style="background: #C0C0C0; border: 2px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF; padding: 6px 32px; font-family: inherit; cursor: pointer; font-weight: bold; font-size: 12px;">${rt('konamiSecret.coolButton', 'COOL!')}</button>
         </div>
     `;
 
@@ -595,6 +682,7 @@ function handleKonami() {
     document.getElementById('retro-alert-ok').addEventListener('click', closeAlert);
     document.getElementById('close-secret').addEventListener('click', closeAlert);
 
+    if (REDUCED_MOTION) return;
     document.body.style.animation = 'rainbow-bg 2s linear infinite';
     const rainbowStyle = document.createElement('style');
     rainbowStyle.id = 'konami-rainbow';
@@ -647,7 +735,7 @@ function initTitlebarButtons() {
 // ─── Color Squares ───
 function initColorSquares() {
     const squares = document.querySelectorAll('.color-square');
-    const sounds = ['boop!', 'beep!', 'click!', 'pop!', 'ding!', 'wow!'];
+    const sounds = rt('colorSquares', ['boop!', 'beep!', 'click!', 'pop!', 'ding!', 'wow!']);
 
     squares.forEach((square, i) => {
         square.setAttribute('data-tooltip', sounds[i] || 'click!');
@@ -691,46 +779,69 @@ function initScrollProgress() {
 }
 
 // ─── Status Bar ───
+// IE4-style: the message area names the section in view, or shows where the
+// hovered link goes, like a real browser; then pointer coords and the clock.
 function initStatusBar() {
     const statusBar = document.createElement('div');
     statusBar.className = 'retro-status-bar';
-    statusBar.style.cssText = `position: fixed; bottom: 0; left: 0; right: 0; height: 26px; background: #C0C0C0; border-top: 2px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF; display: flex; align-items: center; padding: 0 4px; gap: 4px; font-family: "MS Sans Serif", Tahoma, sans-serif; font-size: 11px; z-index: 1000;`;
+    statusBar.setAttribute('aria-hidden', 'true');
 
-    const statusPanel = (content, flex = 0, id = '') => `<div ${id ? `id="${id}"` : ''} style="background: #C0C0C0; border: 1px solid; border-color: #808080 #FFFFFF #FFFFFF #808080; padding: 2px 8px; flex: ${flex}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; height: 18px; display: flex; align-items: center;">${content}</div>`;
+    const locale = retroLang() === 'fr' ? 'fr-FR' : 'en-US';
+    const clock = () => new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 
-    const now = new Date();
-    const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-    statusBar.innerHTML = `${statusPanel('Ready', 1, 'status-message')}${statusPanel('<span id="status-coords">x: 0, y: 0</span>')}${statusPanel(`<span id="status-time">${time}</span>`)}`;
+    statusBar.innerHTML = `
+        <div class="retro-status-panel is-message" id="status-message">${rt('statusBar.ready', 'Ready')}</div>
+        <div class="retro-status-panel is-coords" id="status-coords">x: 0, y: 0</div>
+        <div class="retro-status-panel is-zone">${rt('statusBar.zone', 'Internet')}</div>
+        <div class="retro-status-panel is-clock" id="status-time">${clock()}</div>
+    `;
     document.body.appendChild(statusBar);
 
-    document.addEventListener('mousemove', (e) => {
-        const coords = document.getElementById('status-coords');
-        if (coords) coords.textContent = `x: ${e.clientX}, y: ${e.clientY}`;
+    const messageEl = statusBar.querySelector('#status-message');
+    const coordsEl = statusBar.querySelector('#status-coords');
+    const timeEl = statusBar.querySelector('#status-time');
+    let sectionMessage = messageEl.textContent;
+    let hoveredLink = null;
+
+    if (FINE_POINTER) {
+        document.addEventListener('mousemove', (e) => {
+            coordsEl.textContent = `x: ${e.clientX}, y: ${e.clientY}`;
+        });
+    }
+
+    setInterval(() => { timeEl.textContent = clock(); }, 30000);
+
+    document.addEventListener('mouseover', (e) => {
+        const link = e.target.closest('a[href]');
+        if (link === hoveredLink) return;
+        hoveredLink = link;
+        messageEl.textContent = link ? link.href : sectionMessage;
     });
 
-    setInterval(() => {
-        const timeEl = document.getElementById('status-time');
-        if (timeEl) timeEl.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    }, 60000);
+    // Name each section the way the nav does (already translated)
+    const label = (id) => {
+        if (id === 'hero') return rt('statusBar.home', 'Home');
+        const nav = document.querySelector(`.nav-link[href="#${id}"] .nav-text`);
+        const title = document.querySelector(`#${id} .section-title`);
+        return ((nav || title) ? (nav || title).textContent : id).trim();
+    };
 
-    const sections = ['hero', 'projects', 'about', 'contact'];
+    // A thin band across the middle of the screen: whichever section crosses
+    // it is "in view", however tall it is.
+    const watched = new Map([
+        [document.querySelector('.hero'), 'hero'],
+        ...['now', 'work', 'timeline', 'about'].map(id => [document.getElementById(id), id]),
+        // The whole footer counts as Contact, not just its #contact headline
+        [document.getElementById('site-footer') || document.getElementById('contact'), 'contact']
+    ]);
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const messageEl = document.getElementById('status-message');
-                if (messageEl) {
-                    const sectionName = entry.target.id || entry.target.className.split(' ')[0];
-                    messageEl.innerHTML = `Viewing: ${sectionName.toUpperCase()}`;
-                }
-            }
+            if (!entry.isIntersecting) return;
+            sectionMessage = `${rt('statusBar.viewing', 'Viewing:')} ${label(watched.get(entry.target))}`;
+            if (!hoveredLink) messageEl.textContent = sectionMessage;
         });
-    }, { threshold: 0.5 });
-
-    sections.forEach(section => {
-        const el = document.getElementById(section) || document.querySelector(`.${section}`);
-        if (el) observer.observe(el);
-    });
+    }, { rootMargin: '-45% 0px -54% 0px' });
+    watched.forEach((id, el) => { if (el) observer.observe(el); });
 
     document.body.style.paddingBottom = '26px';
 }
@@ -743,10 +854,10 @@ function initAwardsBadges() {
     const awards = document.createElement('div');
     awards.className = 'retro-awards';
     awards.innerHTML = `
-        <div class="award-badge" data-tooltip="Best Site of 1997!"><span class="award-icon">🏆</span><span>Best Site 1997</span></div>
-        <div class="award-badge" data-tooltip="5 Star Rating!"><span class="award-icon">⭐</span><span>5 Star Site</span></div>
-        <div class="award-badge" data-tooltip="Hot Pick of the Week!"><span class="award-icon">🔥</span><span>Hot Pick</span></div>
-        <div class="award-badge" data-tooltip="Cool Site Award!"><span class="award-icon">❄️</span><span>Cool Site</span></div>
+        <div class="award-badge" data-tooltip="${rt('tooltips.bestSiteTooltip', 'Best Site of 1997!')}"><span class="award-icon">🏆</span><span>${rt('awards.bestSite1997', 'Best Site 1997')}</span></div>
+        <div class="award-badge" data-tooltip="${rt('tooltips.fiveStarTooltip', '5 Star Rating!')}"><span class="award-icon">⭐</span><span>${rt('awards.fiveStarSite', '5 Star Site')}</span></div>
+        <div class="award-badge" data-tooltip="${rt('tooltips.hotPickTooltip', 'Hot Pick of the Week!')}"><span class="award-icon">🔥</span><span>${rt('awards.hotPick', 'Hot Pick')}</span></div>
+        <div class="award-badge" data-tooltip="${rt('tooltips.coolSiteTooltip', 'Cool Site Award!')}"><span class="award-icon">❄️</span><span>${rt('awards.coolSite', 'Cool Site')}</span></div>
     `;
     contactCard.appendChild(awards);
 }
@@ -759,20 +870,22 @@ function initWebring() {
     const webring = document.createElement('div');
     webring.className = 'retro-webring';
     webring.innerHTML = `
-        <button class="webring-btn" data-tooltip="Previous site in the ring">◄ Prev</button>
-        <div class="webring-text"><span class="webring-logo">🌐</span> Creative Dev WebRing</div>
-        <button class="webring-btn" data-tooltip="Next site in the ring">Next ►</button>
+        <button type="button" class="webring-btn" data-tooltip="${rt('tooltips.prevSiteTooltip', 'Previous site in the ring')}">◄ ${rt('webring.prev', 'Prev')}</button>
+        <div class="webring-text"><span class="webring-logo" aria-hidden="true">🌐</span> ${rt('webring.title', 'Creative Dev WebRing')}</div>
+        <button type="button" class="webring-btn" data-tooltip="${rt('tooltips.nextSiteTooltip', 'Next site in the ring')}">${rt('webring.next', 'Next')} ►</button>
     `;
 
     const footerInfo = footer.querySelector('.footer-info-row') || footer.querySelector('.sf-bar');
     if (footerInfo) footer.insertBefore(webring, footerInfo);
     else footer.insertBefore(webring, footer.firstChild);
 
+    const fallback = ["There's only one site in this webring... this one!", "You've reached the end of the internet!", "404: More sites not found!", "Coming soon: More awesome sites!", "This is the best site in the ring!"];
+    const found = rt('webring.messages', fallback);
+    const messages = Array.isArray(found) && found.length ? found : fallback;
     webring.querySelectorAll('.webring-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const messages = ["There's only one site in this webring... this one!", "You've reached the end of the internet!", "404: More sites not found!", "Coming soon: More awesome sites!", "This is the best site in the ring!"];
             const statusEl = document.getElementById('status-message');
-            if (statusEl) statusEl.innerHTML = messages[Math.floor(Math.random() * messages.length)];
+            if (statusEl) statusEl.textContent = messages[Math.floor(Math.random() * messages.length)];
         });
     });
 }
@@ -795,6 +908,31 @@ function initSectionTitleEffects() {
         title.addEventListener('mouseenter', () => title.classList.add('fire-text'));
         title.addEventListener('mouseleave', () => title.classList.remove('fire-text'));
     });
+}
+
+// ─── Hit Counters ───
+// The hero stats become odometers: one LED cell per character.
+function initHitCounters() {
+    document.querySelectorAll('.proof-number').forEach(el => {
+        if (el.querySelector('.odo-digit')) return;
+        const text = el.textContent.trim();
+        el.textContent = '';
+        [...text].forEach(ch => {
+            const cell = document.createElement('span');
+            cell.className = 'odo-digit';
+            cell.textContent = ch;
+            el.appendChild(cell);
+        });
+    });
+}
+
+// ─── Explorer Status ───
+// "total 4 projets | drwxr-xr-x" is the terminal theme talking; here the
+// project folder reports like Windows Explorer does.
+function initExplorerStatus() {
+    const info = document.querySelector('#work-footer-info');
+    const count = document.querySelectorAll('#work-grid .project-card').length;
+    if (info && count) info.textContent = rt('explorer.objects', '{n} object(s)', { n: count });
 }
 
 // ─── Retro 90s Sound Design (synthesized with Web Audio, no assets) ───
