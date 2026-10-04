@@ -32,24 +32,30 @@ const ThemeInit = (() => {
                 footerInfo.textContent = `total ${total} ${word} | drwxr-xr-x`;
             }
 
-            Carousel.initAll();
+            // The blog (blog.html + its SSR twin) and admin pages load a lean script
+            // set without these homepage modules, so only run what the page loaded.
+            window.Carousel?.initAll();
 
-            ScrollEffects.initAll();
-            ScrollEffects.initResizeHandler();
-            ScrollEffects.initSmoothScroll();
+            if (window.ScrollEffects) {
+                ScrollEffects.initAll();
+                ScrollEffects.initResizeHandler();
+                ScrollEffects.initSmoothScroll();
+            }
 
             // Initialize Git Timeline
             if (window.GitTimeline) {
                 await GitTimeline.init();
             }
 
-            const articles = await ContentLoader.loadArticles(1, 3);
-            if (articles.articles?.length) {
-                CardRenderer.renderBlogCards(articles.articles, config.blogCards || config.cards || {}, '#blog-grid');
-                ScrollEffects.animateBlogCards();
+            if (document.querySelector('#blog-grid')) {
+                const articles = await ContentLoader.loadArticles(1, 3);
+                if (articles.articles?.length) {
+                    CardRenderer.renderBlogCards(articles.articles, config.blogCards || config.cards || {}, '#blog-grid');
+                    window.ScrollEffects?.animateBlogCards();
+                }
             }
 
-            if (config.cursor) new CursorTracker(config.cursor);
+            if (config.cursor && window.CursorTracker) new CursorTracker(config.cursor);
 
             if (config.headerScroll) {
                 typeof config.headerScroll === 'string'
@@ -57,8 +63,11 @@ const ThemeInit = (() => {
                     : HeaderScroll.init(config.headerScroll);
             }
 
-            if (config.konami) KonamiCode.init(config.konami);
-            if (config.initEffects) config.initEffects();
+            if (config.konami && window.KonamiCode) KonamiCode.init(config.konami);
+            // Theme effects decorate the homepage (fps HUD, retro assistant, terminal
+            // enderman...); the blog and admin pages stay CSS-only for every theme.
+            const onHome = !!document.querySelector('#work-grid');
+            if (config.initEffects && onHome) config.initEffects();
             if (window.LanguageSwitcher) LanguageSwitcher.init();
 
             document.body.classList.remove('loading');
