@@ -8,10 +8,17 @@ const LanguageManager = (() => {
     const DEFAULT_LANG = 'fr';
     const STORAGE_KEY = 'portfolio_lang';
 
-    let currentLang = DEFAULT_LANG;
+    // Known from the start (detection is synchronous), so anything rendered
+    // before init() resolves already reads the right language. init() only
+    // changes it if that locale fails to load.
+    let currentLang = detectLanguage();
     let translations = {};
     let themeTranslations = {};
     let isLoaded = false;
+    let initPromise = null;
+    let resolveReady;
+    // Settles with the language init() actually applied.
+    const ready = new Promise(resolve => { resolveReady = resolve; });
 
     function detectLanguage() {
         const urlLang = new URLSearchParams(window.location.search).get('lang');
@@ -74,7 +81,19 @@ const LanguageManager = (() => {
         });
     }
 
-    async function init() {
+    // Idempotent: the theme (via ContentLoader) and blog.js both call it on
+    // load; they now share one detection + fetch instead of racing two.
+    function init() {
+        if (!initPromise) {
+            initPromise = applyDetectedLanguage().catch(err => {
+                initPromise = null;
+                throw err;
+            });
+        }
+        return initPromise;
+    }
+
+    async function applyDetectedLanguage() {
         currentLang = detectLanguage();
         try {
             await loadTranslations(currentLang);
@@ -91,6 +110,7 @@ const LanguageManager = (() => {
         window.history.replaceState({}, '', url);
         document.documentElement.lang = currentLang;
         isLoaded = true;
+        resolveReady(currentLang);
         return currentLang;
     }
 
@@ -134,6 +154,7 @@ const LanguageManager = (() => {
         getLanguageName: lang => ({ en: 'English', fr: 'Francais' }[lang] || lang),
         get currentLang() { return currentLang; },
         get isLoaded() { return isLoaded; },
+        get ready() { return ready; },
         SUPPORTED_LANGS,
         DEFAULT_LANG
     };

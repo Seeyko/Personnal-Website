@@ -32,32 +32,41 @@ const ThemeInit = (() => {
                 footerInfo.textContent = `total ${total} ${word} | drwxr-xr-x`;
             }
 
-            Carousel.initAll();
+            // Optional page modules: each page loads only the scripts it uses
+            // (the blog has no carousel, scroll reveals, custom cursor or
+            // Konami), so only touch the ones that are actually present.
+            window.Carousel?.initAll();
 
-            ScrollEffects.initAll();
-            ScrollEffects.initResizeHandler();
-            ScrollEffects.initSmoothScroll();
+            if (window.ScrollEffects) {
+                ScrollEffects.initAll();
+                ScrollEffects.initResizeHandler();
+                ScrollEffects.initSmoothScroll();
+            }
 
             // Initialize Git Timeline
             if (window.GitTimeline) {
                 await GitTimeline.init();
             }
 
-            const articles = await ContentLoader.loadArticles(1, 3);
-            if (articles.articles?.length) {
-                CardRenderer.renderBlogCards(articles.articles, config.blogCards || config.cards || {}, '#blog-grid');
-                ScrollEffects.animateBlogCards();
+            // Latest-articles preview: only on a page that has the grid for it.
+            // (blog.js renders and animates the blog's own list.)
+            if (document.querySelector('#blog-grid')) {
+                const articles = await ContentLoader.loadArticles(1, 3);
+                if (articles.articles?.length) {
+                    CardRenderer.renderBlogCards(articles.articles, config.blogCards || config.cards || {}, '#blog-grid');
+                    window.ScrollEffects?.animateBlogCards();
+                }
             }
 
-            if (config.cursor) new CursorTracker(config.cursor);
+            if (config.cursor && window.CursorTracker) new CursorTracker(config.cursor);
 
-            if (config.headerScroll) {
+            if (config.headerScroll && window.HeaderScroll) {
                 typeof config.headerScroll === 'string'
                     ? HeaderScroll.usePreset(config.headerScroll)
                     : HeaderScroll.init(config.headerScroll);
             }
 
-            if (config.konami) KonamiCode.init(config.konami);
+            if (config.konami && window.KonamiCode) KonamiCode.init(config.konami);
             if (config.initEffects) config.initEffects();
             if (window.LanguageSwitcher) LanguageSwitcher.init();
 

@@ -1,39 +1,39 @@
 /**
  * Language Switcher UI - Dropdown to switch languages
+ *
+ * The chip only mirrors LanguageManager, the one place that decides the page
+ * language. It used to re-detect on its own and fall back to 'fr' when it ran
+ * before LanguageManager.init() had finished, so an English browser got
+ * English content under an "FR" chip.
  */
 
 const LanguageSwitcher = (() => {
     let container = null;
+    let listening = false;
 
-    function detectLang() {
-        // Check URL first, then LanguageManager, then localStorage, then default
-        const urlLang = new URLSearchParams(window.location.search).get('lang');
-        if (urlLang && ['en', 'fr'].includes(urlLang)) return urlLang;
-        if (window.LanguageManager?.isLoaded) return LanguageManager.currentLang;
-        try {
-            const saved = localStorage.getItem('portfolio_lang');
-            if (saved && ['en', 'fr'].includes(saved)) return saved;
-        } catch {}
-        return 'fr';
+    function render(lang) {
+        if (!container || !lang) return;
+        container.querySelector('.lang-current').textContent = lang.toUpperCase();
+        container.querySelectorAll('.language-option').forEach(o =>
+            o.classList.toggle('active', o.dataset.lang === lang)
+        );
     }
 
     function create() {
-        if (document.getElementById('language-switcher')) return;
-
-        const lang = detectLang();
-        const langs = window.LanguageManager?.SUPPORTED_LANGS || ['en', 'fr'];
+        container = document.getElementById('language-switcher');
+        if (container) return;
 
         container = document.createElement('div');
         container.id = 'language-switcher';
         container.className = 'language-switcher';
         container.innerHTML = `
             <button class="language-switcher-toggle" aria-label="Switch language">
-                <span class="lang-current">${lang.toUpperCase()}</span>
+                <span class="lang-current"></span>
                 <span class="lang-arrow">&#9662;</span>
             </button>
             <div class="language-switcher-menu">
-                ${langs.map(l => `
-                    <button class="language-option ${l === lang ? 'active' : ''}" data-lang="${l}">
+                ${LanguageManager.SUPPORTED_LANGS.map(l => `
+                    <button class="language-option" data-lang="${l}">
                         <span class="lang-flag">${l.toUpperCase()}</span>
                         <span class="lang-name">${LanguageManager.getLanguageName(l)}</span>
                     </button>
@@ -50,9 +50,7 @@ const LanguageSwitcher = (() => {
             opt.addEventListener('click', async e => {
                 e.stopPropagation();
                 const code = opt.dataset.lang;
-                toggle.querySelector('.lang-current').textContent = code.toUpperCase();
-                container.querySelectorAll('.language-option').forEach(o => o.classList.remove('active'));
-                opt.classList.add('active');
+                render(code);
                 menu.classList.remove('open');
                 await LanguageManager.setLanguage(code);
                 window.location.reload();
@@ -66,16 +64,15 @@ const LanguageSwitcher = (() => {
         target ? target.appendChild(container) : document.body.appendChild(container);
     }
 
+    // Safe to call more than once (auto-init below, then ThemeInit).
     function init() {
+        if (!window.LanguageManager) return;
         create();
-        window.addEventListener('languageChanged', () => {
-            if (!container) return;
-            const lang = LanguageManager.currentLang;
-            container.querySelector('.lang-current').textContent = lang.toUpperCase();
-            container.querySelectorAll('.language-option').forEach(o =>
-                o.classList.toggle('active', o.dataset.lang === lang)
-            );
-        });
+        render(LanguageManager.currentLang);
+        if (listening) return;
+        listening = true;
+        LanguageManager.ready.then(render);
+        window.addEventListener('languageChanged', () => render(LanguageManager.currentLang));
     }
 
     return { init };
