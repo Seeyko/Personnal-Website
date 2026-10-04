@@ -2409,14 +2409,12 @@ body[data-theme="terminal"] .marker-title {
   font-weight: 700;
 }
 
-/* Ongoing work: one lit pixel (the markup also holds a "●" glyph,
-   which doubled the dot) */
+/* Ongoing work: one lit pixel */
 body[data-theme="terminal"] .marker-badge,
 body[data-theme="terminal"] .mobile-commit-badge {
   width: 6px;
   height: 6px;
   border-radius: 0;
-  font-size: 0;
   box-shadow: 0 0 6px var(--branch-color, var(--git-work-color));
 }
 

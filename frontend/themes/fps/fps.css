@@ -825,14 +825,6 @@ body[data-theme="fps"] {
   --git-text-secondary: #c8bfae;
   --git-text-muted: #91887a;
 }
-/* The timeline JS stamps an inline --branch-color per commit marker, which
-   beats the vars above — remap per type, !important to outrank the inline style. */
-body[data-theme="fps"] .git-commit-work,
-body[data-theme="fps"] .mobile-commit-work { --branch-color: var(--git-work-color) !important; }
-body[data-theme="fps"] .git-commit-project,
-body[data-theme="fps"] .mobile-commit-project { --branch-color: var(--git-project-color) !important; }
-body[data-theme="fps"] .git-commit-education,
-body[data-theme="fps"] .mobile-commit-education { --branch-color: var(--git-education-color) !important; }
 /* Full-bleed section → pull the plate back onto the shared panel grid. */
 @media (min-width: 1025px) {
   body[data-theme="fps"] .git-timeline-viewport { width: auto; margin: 0 2rem; }
@@ -857,8 +849,8 @@ body[data-theme="fps"] .git-commit-marker {
 body[data-theme="fps"] .git-commit-marker:hover { transform: none; background: rgba(38,35,30,.97); border-color: var(--branch-color); }
 body[data-theme="fps"] .git-commit-marker::after { transition: none; }
 body[data-theme="fps"] .marker-title { font-weight: 600; }
-/* The badge spans hold a literal "●" that spilled out of the 6px box: glyph off, diamond on. */
-body[data-theme="fps"] .marker-badge { border-radius: 0; width: 5px; height: 5px; transform: rotate(45deg); animation: none; font-size: 0; line-height: 0; overflow: hidden; }
+/* "In progress" badge: a diamond, not a dot. */
+body[data-theme="fps"] .marker-badge { border-radius: 0; width: 5px; height: 5px; transform: rotate(45deg); animation: none; }
 body[data-theme="fps"] .git-year-label { font-family: var(--disp); font-weight: 700; font-size: 1.02rem; letter-spacing: .08em; }
 body[data-theme="fps"] .git-year-marker.current .git-year-label { font-size: 1.1rem; }
 body[data-theme="fps"] .git-now-marker span { border-radius: 0; font-family: var(--disp); font-size: .78rem; letter-spacing: .14em; padding: 3px 10px; }
@@ -884,7 +876,7 @@ body[data-theme="fps"] .mobile-commit-card {
 body[data-theme="fps"] .mobile-commit-card:active { transform: none; background: rgba(38,35,30,.97); }
 body[data-theme="fps"] .mobile-commit-title { font-family: var(--disp); font-weight: 700; font-size: 1.12rem; line-height: 1.1; letter-spacing: .04em; text-transform: uppercase; }
 body[data-theme="fps"] .mobile-commit-date { font-family: var(--disp); font-weight: 600; font-size: .8rem; letter-spacing: .08em; color: var(--muted); font-variant-numeric: tabular-nums; }
-body[data-theme="fps"] .mobile-commit-badge { border-radius: 0; width: 6px; height: 6px; transform: rotate(45deg); animation: none; font-size: 0; line-height: 0; overflow: hidden; flex: 0 0 auto; }
+body[data-theme="fps"] .mobile-commit-badge { border-radius: 0; width: 6px; height: 6px; transform: rotate(45deg); animation: none; }
 body[data-theme="fps"] .mobile-commit-company { font-family: var(--disp); font-weight: 700; font-size: .95rem; letter-spacing: .05em; text-transform: uppercase; }
 body[data-theme="fps"] .mobile-commit-description { font-size: .86rem; }
 body[data-theme="fps"] .mobile-commit::before { border-color: rgba(20,18,15,.95); }

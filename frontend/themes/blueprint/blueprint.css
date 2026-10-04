@@ -2112,8 +2112,7 @@ body[data-theme="blueprint"] .language-switcher-toggle:hover .lang-arrow {
    ═══════════════════════════════════════════════════════════════ */
 
 /* Git Graph Colors: work in cyan, projects in yellow, schooling in white
-   pencil. git-timeline.js hard-codes its own palette on each marker's
-   --branch-color, hence the !important overrides below. */
+   pencil (markers and mobile rows pick them up through their type class). */
 body[data-theme="blueprint"] {
   --git-work-color: var(--accent-cyan);
   --git-project-color: var(--accent-yellow);
@@ -2128,13 +2127,6 @@ body[data-theme="blueprint"] {
   --git-text-secondary: var(--ink-2);
   --git-text-muted: var(--ink-3);
 }
-
-body[data-theme="blueprint"] .git-commit-work,
-body[data-theme="blueprint"] .mobile-commit-work { --branch-color: var(--git-work-color) !important; }
-body[data-theme="blueprint"] .git-commit-project,
-body[data-theme="blueprint"] .mobile-commit-project { --branch-color: var(--git-project-color) !important; }
-body[data-theme="blueprint"] .git-commit-education,
-body[data-theme="blueprint"] .mobile-commit-education { --branch-color: var(--git-education-color) !important; }
 
 /* The section runs full-bleed for the graph, but its view title stays on
    the same 1200px column as every other sheet. */
@@ -2216,14 +2208,10 @@ body[data-theme="blueprint"] .marker-title {
   color: var(--ink);
 }
 
-/* Ongoing mark: the span also holds a "●" glyph that spilled out of the
-   6px badge as a second, grey dot. Keep only the square. */
+/* Ongoing mark: a square, not a dot. */
 body[data-theme="blueprint"] .marker-badge,
 body[data-theme="blueprint"] .mobile-commit-badge {
   border-radius: 0;
-  font-size: 0;
-  line-height: 0;
-  overflow: hidden;
 }
 
 /* Scroll Hint */

@@ -111,11 +111,8 @@ body[data-theme="retro90s"] ::selection {
 /* Show 90s-specific elements */
 body[data-theme="retro90s"] .retro-marquee,
 body[data-theme="retro90s"] .hero-title,
-body[data-theme="retro90s"] .hit-counter,
 body[data-theme="retro90s"] .retro-badge,
 body[data-theme="retro90s"] .under-construction,
-body[data-theme="retro90s"] .guestbook-cta,
-body[data-theme="retro90s"] .color-squares,
 body[data-theme="retro90s"] .best-viewed,
 body[data-theme="retro90s"] .retro-awards,
 body[data-theme="retro90s"] .retro-webring,
@@ -514,44 +511,6 @@ body[data-theme="retro90s"] .hero-signature {
   text-align: left;
   max-width: 640px;
   margin: 0.75rem auto 0;
-}
-
-/* Hit Counter - Authentic LED Style */
-body[data-theme="retro90s"] .hit-counter {
-  display: inline-block;
-  background: var(--color-black);
-  padding: 12px 20px;
-  border: 3px solid;
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  box-shadow:
-    inset 2px 2px 8px rgba(0,0,0,0.8),
-    0 4px 0 #404040;
-  margin: var(--spacing-sm) auto;
-  animation: counter-glow 2s ease-in-out infinite;
-}
-
-@keyframes counter-glow {
-  0%, 100% { box-shadow: inset 2px 2px 8px rgba(0,0,0,0.8), 0 4px 0 #404040, 0 0 10px rgba(0,255,0,0.2); }
-  50% { box-shadow: inset 2px 2px 8px rgba(0,0,0,0.8), 0 4px 0 #404040, 0 0 20px rgba(0,255,0,0.4); }
-}
-
-body[data-theme="retro90s"] .hit-counter-text {
-  font-family: var(--font-mono);
-  color: var(--color-green);
-  font-size: 0.9rem;
-  text-shadow: 0 0 5px var(--color-green), 0 0 10px var(--color-green);
-}
-
-body[data-theme="retro90s"] .hit-counter-number {
-  font-size: 1.4rem;
-  letter-spacing: 0.2em;
-  display: inline-block;
-  animation: number-flicker 0.1s infinite;
-}
-
-@keyframes number-flicker {
-  0%, 95% { opacity: 1; }
-  96%, 100% { opacity: 0.9; }
 }
 
 /* Under Construction Badge - Extra Wobble! */
@@ -1717,62 +1676,6 @@ body[data-theme="retro90s"] .social-btn:active {
   transform: translate(1px, 1px);
 }
 
-/* Guestbook CTA */
-body[data-theme="retro90s"] .guestbook-cta {
-  margin-top: var(--spacing-md);
-  font-family: var(--font-fun);
-  color: var(--color-magenta);
-  font-size: 1.1rem;
-  animation: guestbook-wobble 2s ease-in-out infinite;
-}
-
-@keyframes guestbook-wobble {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-body[data-theme="retro90s"] .guestbook-cta::before {
-  content: '📝 ';
-}
-
-body[data-theme="retro90s"] .guestbook-cta::after {
-  content: ' 📝';
-}
-
-/* Color Squares Decoration */
-body[data-theme="retro90s"] .color-squares {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-  margin-top: var(--spacing-md);
-}
-
-body[data-theme="retro90s"] .color-square {
-  width: 28px;
-  height: 28px;
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-
-body[data-theme="retro90s"] .color-square:hover {
-  transform: scale(1.3) rotate(10deg);
-  z-index: 10;
-  box-shadow: 0 0 10px currentColor;
-}
-
-body[data-theme="retro90s"] .color-square:active {
-  transform: scale(0.9);
-}
-
-body[data-theme="retro90s"] .color-square.red { background: var(--color-red); }
-body[data-theme="retro90s"] .color-square.green { background: var(--color-green); }
-body[data-theme="retro90s"] .color-square.blue { background: var(--color-blue); }
-body[data-theme="retro90s"] .color-square.yellow { background: var(--color-yellow); }
-body[data-theme="retro90s"] .color-square.magenta { background: var(--color-magenta); }
-body[data-theme="retro90s"] .color-square.cyan { background: var(--color-cyan); }
-
 /* ═══════════════════════════════════════════════════════════════
    AWARDS BADGES SECTION
    ═══════════════════════════════════════════════════════════════ */
@@ -2319,10 +2222,6 @@ body[data-theme="retro90s"] ::-webkit-scrollbar-button:hover {
 
   body[data-theme="retro90s"] .projects-grid {
     grid-template-columns: 1fr;
-  }
-
-  body[data-theme="retro90s"] .hit-counter {
-    transform: scale(0.9);
   }
 
   body[data-theme="retro90s"] .retro-marquee .marquee-content {
@@ -2968,23 +2867,20 @@ body[data-theme="retro90s"] {
   --git-line-width: 5px;
 }
 
-/* git-timeline.js writes hard-coded neon colours inline (--branch-color);
-   an !important declaration in the stylesheet still wins over those. */
+/* --branch-color comes from the type class (css/timeline.css); the text
+   shade of each type, readable on grey and white, is set here. */
 body[data-theme="retro90s"] .git-commit-work,
 body[data-theme="retro90s"] .mobile-commit-work {
-  --branch-color: var(--git-work-color) !important;
   --branch-ink: var(--color-blue);
 }
 
 body[data-theme="retro90s"] .git-commit-project,
 body[data-theme="retro90s"] .mobile-commit-project {
-  --branch-color: var(--git-project-color) !important;
   --branch-ink: var(--color-purple);
 }
 
 body[data-theme="retro90s"] .git-commit-education,
 body[data-theme="retro90s"] .mobile-commit-education {
-  --branch-color: var(--git-education-color) !important;
   --branch-ink: var(--color-green-text);
 }
 
@@ -3135,12 +3031,10 @@ body[data-theme="retro90s"] .marker-hash {
   color: var(--color-purple);
 }
 
-/* Ongoing = a green activity LED (the type is already in the swatch). The
-   badge carries a literal "●" that would leak out as a stray dot. */
+/* Ongoing = a green activity LED (the type is already in the swatch). */
 body[data-theme="retro90s"] .marker-badge {
   width: 8px;
   height: 8px;
-  font-size: 0;
   border-radius: 0;
   border: 1px solid var(--color-black);
   background: var(--color-green);
@@ -3230,7 +3124,6 @@ body[data-theme="retro90s"] {
   }
 
   body[data-theme="retro90s"] .mobile-commit-badge {
-    font-size: 0;
     border-radius: 0;
     border: 1px solid var(--color-black);
     background: var(--color-green);

@@ -1420,15 +1420,6 @@ body[data-theme="default"] {
   --git-text-muted: var(--text-tertiary);
 }
 
-/* git-timeline.js writes its own neon palette inline as --branch-color;
-   the theme palette has to win over that inline value. */
-body[data-theme="default"] .git-commit-work,
-body[data-theme="default"] .mobile-commit-work { --branch-color: var(--git-work-color) !important; }
-body[data-theme="default"] .git-commit-project,
-body[data-theme="default"] .mobile-commit-project { --branch-color: var(--git-project-color) !important; }
-body[data-theme="default"] .git-commit-education,
-body[data-theme="default"] .mobile-commit-education { --branch-color: var(--git-education-color) !important; }
-
 /* The section is full-bleed for the graph; its title still lines up with
    every other section title. */
 body[data-theme="default"] .git-timeline-section .section-header {
@@ -1556,12 +1547,6 @@ body[data-theme="default"] .marker-title {
   color: var(--text-primary);
   font-weight: 500;
   letter-spacing: -0.01em;
-}
-
-/* "Ongoing" dot: drop the ● glyph, keep the pulsing dot it sits on */
-body[data-theme="default"] .marker-badge {
-  font-size: 0;
-  flex: none;
 }
 
 /* Detail overlay */
