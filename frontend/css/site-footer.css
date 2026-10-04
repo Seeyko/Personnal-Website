@@ -4,7 +4,7 @@
    scene in FRONT of it: the card sinks behind the tree, the house and the
    sea, so the footer lives inside the painting (Bloom-style). The scene's
    sky is keyed out, so the page and the card show straight through it.
-   js/components/site-footer.js draws the still in WebGL.
+   js/components/site-footer.js draws the still (or the video) in WebGL.
    ═══════════════════════════════════════════════════════════════ */
 
 .site-footer {
@@ -27,19 +27,20 @@
   --sf-gutter: clamp(1.25rem, 4vw, 3rem);
   --sf-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* Scene: the 2230×930 painting, read by the shader. The top edge of the
-     frame cuts through the canopy, so it dissolves over a thin, leafy band. */
-  --sf-scene-ar: 2.3978;
+  /* Scene: the 16:9 painting (a looping video), read by the shader. Where the
+     top edge of the frame cuts into it, it dissolves over a thin, leafy band. */
+  --sf-scene-ar: 1.7778;
   --sf-scene-focus-x: 56%;
   --sf-scene-fade-tree: 10%;
   --sf-scene-fade-sky: 6%;
   /* How deep the card sinks into the scene (× scene height). Past the
-     horizon (~62%) the painting is fully opaque, so the card's bottom edge
+     horizon (~68%) the painting is fully opaque, so the card's bottom edge
      is always hidden behind the landscape. */
-  --sf-sink: 0.7;
+  --sf-sink: 0.72;
   /* How far the scene climbs over the card's content (× scene height): its
-     top rows are sky, so the legal bar can sit in it. */
-  --sf-lift: 0;
+     top rows are sky, so the legal bar can sit in it. Set per theme, so the
+     tips of the canopy reach the bottom of the legal bar. */
+  --sf-lift: 0.2;
   --sf-card: #ffffff;
   --sf-card-line: rgba(44, 40, 37, 0.1);
   --sf-card-radius: 22px 22px 0 0;
@@ -547,14 +548,14 @@
    site-footer.js) and dresses the card in its own idiom: a phosphor
    terminal, a drawing sheet with its title block, a Windows 95 window. */
 
-/* ── default: the canopy and the clouds start low in the frame, so the
-   scene climbs up to just under the legal bar ── */
+/* ── default ── */
 body[data-theme="default"] .site-footer {
-  --sf-lift: 0.16;
+  --sf-lift: 0.215;
 }
 
 /* ── terminal: phosphor on CRT black ── */
 body[data-theme="terminal"] .site-footer {
+  --sf-lift: 0.19;
   --sf-ink: #33ff00;
   --sf-ink-2: rgba(51, 255, 0, 0.78);
   --sf-muted: rgba(51, 255, 0, 0.55);
@@ -667,6 +668,7 @@ body[data-theme="terminal"] .sf-bar {
 
 /* ── blueprint: a drawing sheet with its title block ── */
 body[data-theme="blueprint"] .site-footer {
+  --sf-lift: 0.23;
   --sf-ink: rgba(255, 255, 255, 0.94);
   --sf-ink-2: rgba(255, 255, 255, 0.76);
   --sf-muted: rgba(255, 255, 255, 0.58);
@@ -784,6 +786,7 @@ body[data-theme="blueprint"] .sf-bar {
 
 /* ── retro90s: a Windows 95 window ── */
 body[data-theme="retro90s"] .site-footer {
+  --sf-lift: 0.22;
   --sf-ink: #000000;
   --sf-ink-2: #000000;
   --sf-muted: #404040;
@@ -1003,6 +1006,7 @@ body[data-theme="fps"].fps-hud .sf-inner {
 /* Statement over the open sky: dark ink in the HUD face; the e-mail pill
    becomes a glass chip with a T-gold copy button. */
 body[data-theme="fps"] .site-footer {
+  --sf-lift: 0.159;
   --sf-ink: #22170b;
   --sf-faint: #5b4128;
   --sf-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
@@ -1061,10 +1065,6 @@ body[data-theme="fps"] .sf-card {
 
 /* ─── Responsive ─── */
 @media (max-width: 1024px) {
-  .site-footer {
-    --sf-scene-ar: 1.9;
-  }
-
   .sf-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

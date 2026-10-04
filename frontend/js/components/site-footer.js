@@ -5,10 +5,14 @@
  * - Entrance choreography: each [data-sf-group] gets .sf-in when it scrolls in.
  * - Hands the floating "Let's talk" button off while the footer is on screen
  *   (the footer carries its own contact pill, and the button would sit on the scene).
- * - Home scene: Tom's painted home (transparent sky, RGBA still), drawn by a small
- *   WebGL pass: a watercolour wash reveal as the scene scrolls in and a depth
- *   parallax on scroll (the garden rises over the sky). prefers-reduced-motion
- *   drops the entrance and the parallax; no WebGL keeps the <img> poster.
+ * - Home scene: Tom's painted home, keyed so its sky is transparent and the page
+ *   shows through: an RGBA still, then a looping video, one per theme. Safari
+ *   can't play VP9 alpha, so the video is a plain file with the colour on top and
+ *   the alpha matte below ("stacked alpha"), and a small WebGL pass recombines
+ *   them. On top of that: a watercolour wash reveal as the scene scrolls in and a
+ *   depth parallax on scroll (the garden rises over the sky).
+ *   prefers-reduced-motion keeps the loop but drops the entrance and the parallax;
+ *   Save-Data and no WebGL keep the <img> poster.
  *
  * One scene per theme: add an entry to SCENES keyed by the theme id; themes
  * without one fall back to `default`.
@@ -141,33 +145,38 @@
     // Home scene — WebGL compositor
     // ═══════════════════════════════════════════════════════════════
 
-    // One painting per theme. `aspect` is the painting's real aspect, `style` picks
-    // the entrance in the shader, `revealMs` its length.
+    // One painting per theme, a looping video keyed out of its magenta backdrop.
+    // `aspect` is the painting's real aspect, `style` picks the entrance in the
+    // shader, `revealMs` its length. `poster` is the RGBA still (first frame).
+    // The video is in the stacked layout: colour block (w × colorH) on top, alpha
+    // block below it (w × alphaH) covering the colour rows [0, alphaH); rows under
+    // it are opaque. A source without a `name` would stay on its still. Numbers
+    // printed by tools/footer-scene/key_exact.py.
     const SCENES = {
         default: {
-            aspect: 2230 / 930, style: 0, revealMs: 1800,
-            hd: { poster: 'home-scene-poster-1792.webp' },
-            sd: { poster: 'home-scene-poster-960.webp' }
+            aspect: 16 / 9, style: 0, revealMs: 1800,
+            hd: { name: 'home-scene-1920', poster: 'home-scene-poster-1792.webp', colorH: 1088, alphaH: 768, totalH: 1856 },
+            sd: { name: 'home-scene-1280', poster: 'home-scene-poster-960.webp', colorH: 720, alphaH: 512, totalH: 1232 }
         },
         terminal: {
-            aspect: 2230 / 930, style: 1, revealMs: 2000,
-            hd: { poster: 'home-scene-terminal-poster-1792.webp' },
-            sd: { poster: 'home-scene-terminal-poster-960.webp' }
+            aspect: 16 / 9, style: 1, revealMs: 2000,
+            hd: { name: 'home-scene-terminal-1920', poster: 'home-scene-terminal-poster-1792.webp', colorH: 1088, alphaH: 752, totalH: 1840 },
+            sd: { name: 'home-scene-terminal-1280', poster: 'home-scene-terminal-poster-960.webp', colorH: 720, alphaH: 496, totalH: 1216 }
         },
         blueprint: {
-            aspect: 2230 / 930, style: 2, revealMs: 2200,
-            hd: { poster: 'home-scene-blueprint-poster-1792.webp' },
-            sd: { poster: 'home-scene-blueprint-poster-960.webp' }
+            aspect: 16 / 9, style: 2, revealMs: 2200,
+            hd: { name: 'home-scene-blueprint-1920', poster: 'home-scene-blueprint-poster-1792.webp', colorH: 1088, alphaH: 736, totalH: 1824 },
+            sd: { name: 'home-scene-blueprint-1280', poster: 'home-scene-blueprint-poster-960.webp', colorH: 720, alphaH: 496, totalH: 1216 }
         },
         retro90s: {
-            aspect: 2230 / 930, style: 3, revealMs: 2400,
-            hd: { poster: 'home-scene-retro90s-poster-1792.webp' },
-            sd: { poster: 'home-scene-retro90s-poster-960.webp' }
+            aspect: 16 / 9, style: 3, revealMs: 2400,
+            hd: { name: 'home-scene-retro90s-1920', poster: 'home-scene-retro90s-poster-1792.webp', colorH: 1088, alphaH: 720, totalH: 1808 },
+            sd: { name: 'home-scene-retro90s-1280', poster: 'home-scene-retro90s-poster-960.webp', colorH: 720, alphaH: 480, totalH: 1200 }
         },
         fps: {
-            aspect: 2230 / 930, style: 4, revealMs: 1800,
-            hd: { poster: 'home-scene-fps-poster-1792.webp' },
-            sd: { poster: 'home-scene-fps-poster-960.webp' }
+            aspect: 16 / 9, style: 4, revealMs: 1800,
+            hd: { name: 'home-scene-fps-1920', poster: 'home-scene-fps-poster-1792.webp', colorH: 1088, alphaH: 720, totalH: 1808 },
+            sd: { name: 'home-scene-fps-1280', poster: 'home-scene-fps-poster-960.webp', colorH: 720, alphaH: 480, totalH: 1200 }
         }
     };
 
@@ -175,6 +184,17 @@
         return SCENES[theme] || SCENES.default;
     }
     const ASSET_DIR = '/assets/footer/';
+    // A new painting keeps its file names: bump this so a cached one is never reused.
+    const ASSET_VERSION = '20261005-0100';
+
+    // H.264 first (Safari/iOS, hardware decode everywhere); VP9 for builds shipped
+    // without proprietary codecs. Both files carry the same stacked layout.
+    function videoUrl(source) {
+        const probe = document.createElement('video');
+        const mp4 = probe.canPlayType('video/mp4; codecs="avc1.64002A"');
+        const webm = probe.canPlayType('video/webm; codecs="vp9"');
+        return `${ASSET_DIR}${source.name}.${mp4 || !webm ? 'mp4' : 'webm'}?v=${ASSET_VERSION}`;
+    }
 
     const VERT = `
 attribute vec2 a_pos;
@@ -195,6 +215,10 @@ varying vec2 v_uv;
 uniform sampler2D u_tex;
 uniform vec2  u_res;        // canvas size, device px
 uniform vec4  u_crop;       // visible scene rect (x, y, w, h), scene uv
+uniform float u_stacked;    // 1: stacked colour/alpha video, 0: RGBA poster
+uniform float u_colorFrac;  // colour block height / texture height
+uniform float u_alphaCover; // alpha block height / colour block height
+uniform float u_texel;      // half a texel, texture height
 uniform float u_reveal;     // 0..1 watercolour wash
 uniform float u_rise;       // 0..1 scroll parallax (1 = settled)
 uniform vec2  u_fade;       // top dissolve depth, fraction of canvas height (x: tree side, y: sky side)
@@ -234,7 +258,17 @@ float bayer4(vec2 p) {
 float depthAt(float v) { return smoothstep(0.5, 1.0, v); }
 
 vec4 sampleScene(vec2 s) {
-    return texture2D(u_tex, clamp(s, vec2(0.0), vec2(1.0)));
+    s = clamp(s, vec2(0.0), vec2(1.0));
+    if (u_stacked > 0.5) {
+        vec3 rgb = texture2D(u_tex, vec2(s.x, min(s.y * u_colorFrac, u_colorFrac - u_texel))).rgb;
+        float a = 1.0;
+        if (s.y < u_alphaCover) {
+            float av = max(u_colorFrac + s.y * u_colorFrac, u_colorFrac + u_texel);
+            a = clamp((texture2D(u_tex, vec2(s.x, av)).g - 0.03) / 0.94, 0.0, 1.0);
+        }
+        return vec4(rgb, a);
+    }
+    return texture2D(u_tex, s);
 }
 
 vec2 sceneUV(vec2 uv) {
@@ -348,6 +382,11 @@ void main() {
         const still = reduceMotion.matches;
 
         const state = {
+            source: null,
+            video: null,
+            usingVideo: false,
+            frameDirty: true,
+            lastVideoTime: -1,
             visible: false,
             raf: 0,
             lastTime: 0,
@@ -356,6 +395,8 @@ void main() {
             rise: still ? 1 : 0,
             crop: [0, 0, 1, 1],
             fade: [0.1, 0.06],
+            videoRequested: false,
+            awaitingGesture: false,
             dirty: true
         };
 
@@ -375,7 +416,8 @@ void main() {
             gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
             loc = {};
-            ['u_tex', 'u_res', 'u_crop', 'u_reveal', 'u_rise', 'u_fade', 'u_style']
+            ['u_tex', 'u_res', 'u_crop', 'u_stacked', 'u_colorFrac', 'u_alphaCover', 'u_texel',
+             'u_reveal', 'u_rise', 'u_fade', 'u_style']
                 .forEach(name => { loc[name] = gl.getUniformLocation(program, name); });
 
             texture = gl.createTexture();
@@ -421,6 +463,14 @@ void main() {
             state.dirty = true;
         }
 
+        function pickSource() {
+            const conn = navigator.connection || {};
+            const slow = conn.saveData || /(^|-)2g$|^3g$/.test(conn.effectiveType || '');
+            const rect = scene.getBoundingClientRect();
+            const need = rect.width * Math.min(window.devicePixelRatio || 1, 2) / (state.crop[2] || 1);
+            return slow || need < 1400 ? 'sd' : 'hd';
+        }
+
         function goLive() {
             scene.classList.add('is-live');
             state.dirty = true;
@@ -428,12 +478,12 @@ void main() {
         }
 
         // The still is the page's own <img> poster (srcset picks its size), so it is
-        // downloaded once and serves both the no-WebGL fallback and the scene.
+        // downloaded once and serves both the no-WebGL fallback and the first frame.
         function loadPoster() {
             const img = scene.querySelector('.sf-scene-poster');
             if (!img) return;
             const upload = () => {
-                if (gl.isContextLost() || !img.naturalWidth) return;
+                if (state.usingVideo || gl.isContextLost() || !img.naturalWidth) return;
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
                 gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
@@ -442,6 +492,76 @@ void main() {
             };
             if (img.complete && img.naturalWidth) upload();
             else img.addEventListener('load', upload, { once: true });
+        }
+
+        function loadVideo(key) {
+            const source = config[key];
+            const video = document.createElement('video');
+            video.muted = true;
+            video.defaultMuted = true;
+            video.autoplay = true;
+            video.loop = true;
+            video.playsInline = true;
+            video.setAttribute('muted', '');
+            video.setAttribute('playsinline', '');
+            video.setAttribute('aria-hidden', 'true');
+            video.preload = 'auto';
+            video.disablePictureInPicture = true;
+            video.setAttribute('webkit-playsinline', '');
+            // Kept in the DOM and inside the visible part of the scene (bottom centre):
+            // WebKit pauses, or stops presenting frames of, media it deems off screen.
+            video.style.cssText = 'position:absolute;left:50%;bottom:2px;width:2px;height:2px;opacity:0.01;pointer-events:none;';
+            video.addEventListener('error', () => {
+                if (state.video !== video) return;
+                video.remove();
+                state.video = null;
+                state.usingVideo = false;
+                if (key === 'hd') loadVideo('sd');
+            }, { once: true });
+            video.addEventListener('loadeddata', () => {
+                if (state.video !== video) return;
+                state.usingVideo = true;
+                state.frameDirty = true;
+                goLive();
+            });
+            if ('requestVideoFrameCallback' in video) {
+                const onFrame = () => {
+                    state.frameDirty = true;
+                    requestFrame();
+                    if (state.video === video) video.requestVideoFrameCallback(onFrame);
+                };
+                video.requestVideoFrameCallback(onFrame);
+            }
+            video.src = videoUrl(source);
+            scene.appendChild(video);
+            state.video = video;
+            state.source = source;
+            syncPlayback();
+        }
+
+        // Autoplay while on screen; stopped off screen and in background tabs.
+        const GESTURES = ['pointerdown', 'keydown', 'touchend'];
+        function retryOnGesture() {
+            state.awaitingGesture = false;
+            GESTURES.forEach(ev => window.removeEventListener(ev, retryOnGesture, true));
+            syncPlayback();
+        }
+
+        function syncPlayback() {
+            const video = state.video;
+            if (!video) return;
+            const shouldPlay = state.visible && !document.hidden;
+            if (shouldPlay && video.paused) {
+                video.play().catch(() => {
+                    // Autoplay refused (iOS low-power mode…): the first frame stays on
+                    // screen and the loop starts on the visitor's first tap or key.
+                    if (state.awaitingGesture) return;
+                    state.awaitingGesture = true;
+                    GESTURES.forEach(ev => window.addEventListener(ev, retryOnGesture, { capture: true, passive: true }));
+                });
+            } else if (!shouldPlay && !video.paused) {
+                video.pause();
+            }
         }
 
         // Reveal completes once most of the scene is on screen (some themes keep
@@ -479,6 +599,25 @@ void main() {
                 }
             }
 
+            const video = state.video;
+            if (state.usingVideo && video && video.readyState >= 2) {
+                // requestVideoFrameCallback is only a hint: Safari stops firing it for a
+                // video it doesn't paint (ours is a 2 px proxy), so the time is polled too.
+                const changed = state.frameDirty || video.currentTime !== state.lastVideoTime;
+                if (changed) {
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
+                    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+                    try {
+                        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
+                        state.dirty = true;
+                    } catch {}
+                    state.frameDirty = false;
+                    state.lastVideoTime = video.currentTime;
+                }
+                if (!video.paused) animating = true;
+            }
+
             if (state.dirty || animating) {
                 draw();
                 state.dirty = false;
@@ -487,10 +626,18 @@ void main() {
         }
 
         function draw() {
+            const stacked = state.usingVideo && state.source;
             gl.viewport(0, 0, canvas.width, canvas.height);
             gl.clear(gl.COLOR_BUFFER_BIT);
             gl.uniform2f(loc.u_res, canvas.width, canvas.height);
             gl.uniform4f(loc.u_crop, state.crop[0], state.crop[1], state.crop[2], state.crop[3]);
+            gl.uniform1f(loc.u_stacked, stacked ? 1 : 0);
+            if (stacked) {
+                const s = state.source;
+                gl.uniform1f(loc.u_colorFrac, s.colorH / s.totalH);
+                gl.uniform1f(loc.u_alphaCover, s.alphaH / s.colorH);
+                gl.uniform1f(loc.u_texel, 0.5 / s.totalH);
+            }
             gl.uniform1f(loc.u_reveal, state.reveal);
             gl.uniform1f(loc.u_rise, state.rise);
             gl.uniform2f(loc.u_fade, state.fade[0], state.fade[1]);
@@ -498,8 +645,18 @@ void main() {
             gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
 
+        // Lazy: the video only starts downloading when the scene is about to show
+        // (never with Save-Data, where the still is enough; not every theme has one).
+        const conn = navigator.connection || {};
+        const wantsVideo = !conn.saveData && !!config.hd.name;
+
         const io = new IntersectionObserver(([entry]) => {
             state.visible = entry.isIntersecting;
+            if (state.visible && wantsVideo && !state.videoRequested) {
+                state.videoRequested = true;
+                loadVideo(pickSource());
+            }
+            syncPlayback();
             if (state.visible) {
                 state.lastTime = 0;
                 state.dirty = true;
@@ -516,7 +673,13 @@ void main() {
         canvas.addEventListener('webglcontextrestored', () => {
             setupGL();
             resize();
-            loadPoster();
+            if (state.video && state.video.readyState >= 2) {
+                state.usingVideo = true;
+                state.frameDirty = true;
+                goLive();
+            } else {
+                loadPoster();
+            }
         });
 
         try {
@@ -532,6 +695,7 @@ void main() {
         }
         io.observe(scene);
         new ResizeObserver(() => { resize(); requestFrame(); }).observe(scene);
+        document.addEventListener('visibilitychange', syncPlayback);
     }
 
     // ─── Boot ───
@@ -547,8 +711,9 @@ void main() {
         initReveal(root);
         initCtaHandoff(root);
 
-        // Nothing of the scene downloads up front: the still and WebGL wake up when
-        // the footer is getting close.
+        // Nothing of the scene downloads up front. The still and WebGL wake up when
+        // the footer is getting close; the video itself waits until the scene is
+        // about to show (see createScene).
         const scene = root.querySelector('.sf-scene');
         if (!scene) return;
 
@@ -557,8 +722,8 @@ void main() {
             const config = sceneFor(document.body.dataset.theme || 'default');
             const poster = scene.querySelector('.sf-scene-poster');
             if (poster && !poster.getAttribute('src')) {
-                poster.srcset = `${ASSET_DIR}${config.sd.poster} 960w, ${ASSET_DIR}${config.hd.poster} 1792w`;
-                poster.src = ASSET_DIR + config.hd.poster;
+                poster.srcset = `${ASSET_DIR}${config.sd.poster}?v=${ASSET_VERSION} 960w, ${ASSET_DIR}${config.hd.poster}?v=${ASSET_VERSION} 1792w`;
+                poster.src = `${ASSET_DIR}${config.hd.poster}?v=${ASSET_VERSION}`;
             }
             const art = scene.querySelector('.sf-scene-art');
             if (art) art.setAttribute('aria-label', t('footer.sceneLabel', art.getAttribute('aria-label')));
