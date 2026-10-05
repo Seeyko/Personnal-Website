@@ -319,10 +319,14 @@ class ClippyHelper {
         this.container.querySelector('.clippy-action').addEventListener('click', (e) => {
             e.stopPropagation();
             const currentMsg = this.messages[this.currentMessage];
-            const target = document.getElementById(CLIPPY_TARGETS[currentMsg.action] || 'contact');
+            const id = CLIPPY_TARGETS[currentMsg.action] || 'contact';
+            const target = document.getElementById(id);
             if (target) {
                 target.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
                 this.showExcitedAnimation();
+            } else {
+                // Not on this page (the blog): the section lives on the home page.
+                window.location.href = `/#${id}`;
             }
             this.closeSpeech();
             this.showNextMessage();
@@ -539,10 +543,8 @@ function initRetroEffects() {
     initConstructionWobble();
     initTechTagColors();
     initBlinkBadges();
-    initColorSquares();
     initScrollProgress();
     initStatusBar();
-    initAwardsBadges();
     initWebring();
     initSecretDoubleClick();
     initSectionTitleEffects();
@@ -550,6 +552,9 @@ function initRetroEffects() {
     initExplorerStatus();
     // Initialize titlebar buttons after cards are rendered
     setTimeout(initTitlebarButtons, 500);
+    // The reveals were measured before the timeline rendered, and About now
+    // sits below it: measure again so its reveal fires when it comes in view.
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
 }
 
 // ─── Header Offset ───
@@ -564,15 +569,11 @@ function initHeaderOffset() {
 }
 
 // ─── Marquee Setup ───
+// The lines are already translated (data-i18n="marquee.N" in index.html,
+// filled by LanguageManager before initEffects runs).
 function setupMarquee() {
     const marquee = document.querySelector('.retro-marquee .marquee-content');
     if (!marquee) return;
-    const lines = rt('marquee', null);
-    if (Array.isArray(lines)) {
-        marquee.querySelectorAll('.marquee-text').forEach((span, i) => {
-            if (lines[i]) span.textContent = lines[i];
-        });
-    }
     // Second copy makes the -50% loop seamless; screen readers skip it
     const content = marquee.innerHTML;
     marquee.innerHTML = content + content;
@@ -609,6 +610,8 @@ function initBounceOnScroll() {
 }
 
 // ─── Under Construction Wobble ───
+// The sign shows underConstruction.0 (data-i18n in index.html); a click
+// swaps in another line of the same list.
 function initConstructionWobble() {
     const construction = document.querySelector('.under-construction');
     if (!construction) return;
@@ -617,7 +620,6 @@ function initConstructionWobble() {
     const found = rt('underConstruction', fallback);
     const messages = Array.isArray(found) && found.length ? found : fallback;
     const inner = construction.querySelector('.under-construction-inner');
-    if (inner) inner.textContent = messages[0];
 
     if (!REDUCED_MOTION) {
         setInterval(() => {
@@ -732,39 +734,6 @@ function initTitlebarButtons() {
     });
 }
 
-// ─── Color Squares ───
-function initColorSquares() {
-    const squares = document.querySelectorAll('.color-square');
-    const sounds = rt('colorSquares', ['boop!', 'beep!', 'click!', 'pop!', 'ding!', 'wow!']);
-
-    squares.forEach((square, i) => {
-        square.setAttribute('data-tooltip', sounds[i] || 'click!');
-        square.addEventListener('mouseenter', () => {
-            square.style.transform = 'scale(1.3) rotate(10deg)';
-            square.style.zIndex = '10';
-        });
-        square.addEventListener('mouseleave', () => {
-            square.style.transform = '';
-            square.style.zIndex = '';
-        });
-        square.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (window.SFX) SFX.play('retro:square-pop');
-            for (let j = 0; j < 6; j++) {
-                const burst = document.createElement('div');
-                burst.style.cssText = `position: fixed; left: ${e.clientX}px; top: ${e.clientY}px; width: 10px; height: 10px; background: ${getComputedStyle(square).backgroundColor}; pointer-events: none; z-index: 10000;`;
-                document.body.appendChild(burst);
-                const angle = (j / 6) * Math.PI * 2;
-                const velocity = 60;
-                burst.animate([
-                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
-                    { transform: `translate(calc(-50% + ${Math.cos(angle) * velocity}px), calc(-50% + ${Math.sin(angle) * velocity}px)) scale(0)`, opacity: 0 }
-                ], { duration: 400 }).onfinish = () => burst.remove();
-            }
-        });
-    });
-}
-
 // ─── Scroll Progress Bar ───
 function initScrollProgress() {
     const progressBar = document.createElement('div');
@@ -844,22 +813,6 @@ function initStatusBar() {
     watched.forEach((id, el) => { if (el) observer.observe(el); });
 
     document.body.style.paddingBottom = '26px';
-}
-
-// ─── Awards Badges ───
-function initAwardsBadges() {
-    const contactCard = document.querySelector('.contact-card .card-body');
-    if (!contactCard) return;
-
-    const awards = document.createElement('div');
-    awards.className = 'retro-awards';
-    awards.innerHTML = `
-        <div class="award-badge" data-tooltip="${rt('tooltips.bestSiteTooltip', 'Best Site of 1997!')}"><span class="award-icon">🏆</span><span>${rt('awards.bestSite1997', 'Best Site 1997')}</span></div>
-        <div class="award-badge" data-tooltip="${rt('tooltips.fiveStarTooltip', '5 Star Rating!')}"><span class="award-icon">⭐</span><span>${rt('awards.fiveStarSite', '5 Star Site')}</span></div>
-        <div class="award-badge" data-tooltip="${rt('tooltips.hotPickTooltip', 'Hot Pick of the Week!')}"><span class="award-icon">🔥</span><span>${rt('awards.hotPick', 'Hot Pick')}</span></div>
-        <div class="award-badge" data-tooltip="${rt('tooltips.coolSiteTooltip', 'Cool Site Award!')}"><span class="award-icon">❄️</span><span>${rt('awards.coolSite', 'Cool Site')}</span></div>
-    `;
-    contactCard.appendChild(awards);
 }
 
 // ─── Webring Navigation ───
@@ -1086,10 +1039,6 @@ function initRetroSfx() {
             [523.25, 587.33, 659.25, 783.99, 880, 1046.5].forEach((f, i) => a.tone(a.t + i * 0.07, 0.08, 0.05, 'square', f, f));
             a.tone(a.t + 0.44, 0.3, 0.06, 'square', 1318.5, 1318.5);
             a.tone(a.t + 0.44, 0.3, 0.035, 'triangle', 659.25, 659.25);
-        },
-        'retro:square-pop': (a) => {
-            a.tone(a.t, 0.05, 0.06, 'square', 987.77, 1318.5);    // bubble pop
-            a.noise(a.t, 0.04, 0.035, 2000, 3500, 1.5);
         }
     });
 }

@@ -238,6 +238,10 @@
     "usersReached": "Users Reached",
     "liveProducts": "Live Products"
   },
+  "heart": {
+    "label": "Interactive 3D heart",
+    "caption": "Built with heart, touch it."
+  },
   "now": {
     "headerLabel": "WHERE I'M AT",
     "intro": ""

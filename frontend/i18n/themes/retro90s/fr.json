@@ -60,30 +60,12 @@
       "C'est le meilleur site du webring !"
     ]
   },
-  "awards": {
-    "bestSite1997": "Meilleur Site 1997",
-    "fiveStarSite": "Site 5 Étoiles",
-    "hotPick": "Sélection du Moment",
-    "coolSite": "Site Cool"
-  },
   "tooltips": {
     "clickToVisit": "Cliquez pour visiter {title} !",
-    "bestSiteTooltip": "Meilleur Site de 1997 !",
-    "fiveStarTooltip": "Note 5 Étoiles !",
-    "hotPickTooltip": "Sélection de la Semaine !",
-    "coolSiteTooltip": "Prix du Site Cool !",
     "prevSiteTooltip": "Site précédent dans le webring",
     "nextSiteTooltip": "Site suivant dans le webring",
     "techTooltip": "Je connais {tech} !"
   },
-  "colorSquares": [
-    "bip !",
-    "beep !",
-    "clic !",
-    "pop !",
-    "ding !",
-    "wow !"
-  ],
   "konamiSecret": {
     "title": "Message Secret",
     "congratulations": "FÉLICITATIONS !",

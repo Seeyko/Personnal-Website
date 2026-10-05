@@ -12,10 +12,10 @@
     "intro": "Je pense que l'IA ne va pas seulement <highlight>accélérer ce qu'on fait déjà</highlight>. Elle va nous obliger à <highlight>repenser la façon dont la société s'organise</highlight>.",
     "detail": "La plupart des entreprises s'en servent pour gagner un peu de temps sur ce qu'elles faisaient déjà. Je les comprends, c'est le chemin le plus rassurant. Mais on passe à côté de l'essentiel : c'est un vrai bouleversement, qui touche notre travail comme notre quotidien. L'IA permet de reconstruire nos organisations en partant des gens, et pas des outils. Bien fait, ça peut changer notre rapport au travail, et plus largement la façon dont on vit ensemble. Si au passage les entreprises gagnent plus d'argent, tant mieux, mais ce n'est pas ce qui me fait me lever le matin. Ce que je veux, c'est apporter ma pierre à un monde meilleur.",
     "specs": {
-      "location": "FRANCE",
-      "experience": "8+ ANS",
+      "localisation": "FRANCE",
+      "expérience": "8+ ANS",
       "focus": "HUMAIN · IA · PRODUIT",
-      "status": "EN BUILD"
+      "statut": "EN BUILD"
     }
   },
   "craft": {

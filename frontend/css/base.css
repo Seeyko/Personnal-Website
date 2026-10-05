@@ -540,11 +540,8 @@ body.loading * {
 .cursor-coord,
 /* 90s Retro elements - hidden by default */
 .retro-marquee,
-.hit-counter,
 .under-construction,
 .retro-badge,
-.guestbook-cta,
-.color-squares,
 .best-viewed {
   display: none;
 }

@@ -19,9 +19,9 @@
  * cg-spinning, which live below the kit marker in the stylesheet.
  *
  * Sections observed: hero (.hero), #now, #work, #writing, #timeline, #about,
- * #contact. Any section missing from the current page (e.g. #writing isn't
- * on index.html yet) is simply skipped - the module never assumes a fixed
- * page shape.
+ * #contact (the whole #site-footer when present). Any section missing from
+ * the current page (e.g. #writing isn't on index.html yet) is simply skipped
+ * - the module never assumes a fixed page shape.
  */
 const CathodeGuide = (() => {
     const STORAGE_KEY = 'cathode-guide-off';
@@ -39,15 +39,19 @@ const CathodeGuide = (() => {
 
     // Sections the guide reacts to, in document order. `bar` is the little
     // tab label shown in the bubble's title bar, adapted to each theme's
-    // fiction (unix tab / drawing number / 90s filename / plain word).
+    // fiction (unix tab / drawing number / 90s filename / plain word). The
+    // labels made of words come per language ({ fr, en }, see barLabel).
     const SECTION_DEFS = [
-        { key: 'hero', selector: '.hero', bar: { terminal: 'guide.sh', default: 'bonjour', blueprint: 'PLAN A-00', retro90s: 'welcome.htm', fps: 'MOTD' } },
-        { key: 'now', selector: '#now', bar: { terminal: 'now --live', default: 'en ce moment', blueprint: 'REV. COURANTE', retro90s: 'news.gif', fps: 'INTEL' } },
-        { key: 'work', selector: '#work', bar: { terminal: 'work.log', default: 'projets', blueprint: 'COUPE B-02', retro90s: 'cool-stuff.htm', fps: 'BUY MENU' } },
-        { key: 'writing', selector: '#writing', bar: { terminal: 'blog.md', default: 'notes', blueprint: 'CARTOUCHE C-03', retro90s: 'zine.txt', fps: 'COMMS' } },
-        { key: 'timeline', selector: '#timeline', bar: { terminal: 'git log', default: 'parcours', blueprint: 'PHASAGE D-04', retro90s: 'history.htm', fps: 'MATCH LOG' } },
-        { key: 'about', selector: '#about', bar: { terminal: 'whoami', default: 'qui suis-je', blueprint: 'DÉTAIL E-05', retro90s: 'aboutme.htm', fps: 'PROFILE' } },
-        { key: 'contact', selector: '#contact', bar: { terminal: 'ping', default: 'contact', blueprint: 'ANNEXE F-06', retro90s: 'guestbook.htm', fps: 'INVITE' } }
+        { key: 'hero', selector: '.hero', bar: { terminal: 'guide.sh', default: { fr: 'bonjour', en: 'hello' }, blueprint: 'PLAN A-00', retro90s: 'welcome.htm', fps: 'MOTD' } },
+        { key: 'now', selector: '#now', bar: { terminal: 'now --live', default: { fr: 'en ce moment', en: 'right now' }, blueprint: { fr: 'REV. COURANTE', en: 'CURRENT REV.' }, retro90s: 'news.gif', fps: 'INTEL' } },
+        { key: 'work', selector: '#work', bar: { terminal: 'work.log', default: { fr: 'projets', en: 'projects' }, blueprint: { fr: 'COUPE B-02', en: 'SECTION B-02' }, retro90s: 'cool-stuff.htm', fps: 'BUY MENU' } },
+        { key: 'writing', selector: '#writing', bar: { terminal: 'blog.md', default: 'notes', blueprint: { fr: 'CARTOUCHE C-03', en: 'NOTES BLOCK C-03' }, retro90s: 'zine.txt', fps: 'COMMS' } },
+        { key: 'timeline', selector: '#timeline', bar: { terminal: 'git log', default: { fr: 'parcours', en: 'journey' }, blueprint: { fr: 'PHASAGE D-04', en: 'PHASING D-04' }, retro90s: 'history.htm', fps: 'MATCH LOG' } },
+        { key: 'about', selector: '#about', bar: { terminal: 'whoami', default: { fr: 'qui suis-je', en: 'who am I' }, blueprint: { fr: 'DÉTAIL E-05', en: 'DETAIL E-05' }, retro90s: 'aboutme.htm', fps: 'PROFILE' } },
+        // The whole footer counts as Contact (its #contact headline can rest
+        // above the reading line at the bottom of the page, so a quick jump
+        // there could skip it); pages without that footer fall back to #contact.
+        { key: 'contact', selector: '#site-footer, #contact', bar: { terminal: 'ping', default: 'contact', blueprint: { fr: 'ANNEXE F-06', en: 'ANNEX F-06' }, retro90s: 'guestbook.htm', fps: 'INVITE' } }
     ];
     const SECTION_MAP = SECTION_DEFS.reduce((m, s) => { m[s.key] = s; return m; }, {});
     const MOBILE_ALLOWED = ['hero', 'contact'];
@@ -184,12 +188,17 @@ const CathodeGuide = (() => {
         return true;
     }
 
-    function renderBubbleContent(key) {
+    // Title-bar label of a section in the current theme and language.
+    function barLabel(key, fallback) {
         const def = SECTION_MAP[key];
+        const bar = def && def.bar ? (def.bar[currentTheme()] || def.bar.terminal) : fallback;
+        return bar && typeof bar === 'object' ? (bar[currentLang()] || bar.fr) : bar;
+    }
+
+    function renderBubbleContent(key) {
         const text = sectionText(key);
         if (!text) return false;
-        const bar = def && def.bar ? (def.bar[currentTheme()] || def.bar.terminal) : 'guide.sh';
-        return fillBubble(bar, text);
+        return fillBubble(barLabel(key, 'guide.sh'), text);
     }
 
     function showBubble(key) {
@@ -295,13 +304,30 @@ const CathodeGuide = (() => {
     }
 
     function buildObserver() {
+        // The section in view is the one under a reading line 38% down the
+        // viewport (a thin band around it tells us when that changes). Not
+        // the middle: a nav jump parks the section at the top, and a short
+        // one (#now) can end above the middle, which then belonged to the
+        // next one. Two sections can share the band (one ends inside it):
+        // the one actually under the line wins, not the one that came last.
+        const READ_LINE = 0.38;
+        const inBand = new Set();
         sectionObserver = new IntersectionObserver(entries => {
+            let entered = null;
             entries.forEach(entry => {
-                if (!entry.isIntersecting) return;
-                const key = entry.target.getAttribute('data-cg-section');
-                if (key) onSectionChange(key);
+                if (entry.isIntersecting) { inBand.add(entry.target); entered = entry.target; }
+                else inBand.delete(entry.target);
             });
-        }, { root: null, rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+            const line = window.innerHeight * READ_LINE;
+            let picked = null;
+            inBand.forEach(el => {
+                const r = el.getBoundingClientRect();
+                if (r.top <= line && r.bottom > line) picked = el;
+            });
+            const el = picked || entered;
+            const key = el && el.getAttribute('data-cg-section');
+            if (key) onSectionChange(key);
+        }, { root: null, rootMargin: '-36% 0px -60% 0px', threshold: 0 });
 
         SECTION_DEFS.forEach(def => {
             const el = document.querySelector(def.selector);
@@ -774,9 +800,7 @@ const CathodeGuide = (() => {
     // and its auto-hide never closes someone else's bubble.
     function speakLine(text, visibleMs) {
         if (!bubbleEl || bubbleShowing() || offState) return false;
-        const def = SECTION_MAP[currentSectionKey];
-        const bar = def && def.bar ? (def.bar[currentTheme()] || def.bar.terminal) : 'cathode';
-        if (!fillBubble(bar, text)) return false;
+        if (!fillBubble(barLabel(currentSectionKey, 'cathode'), text)) return false;
         bubbleOwner = 'quip';
         bubbleEl.classList.remove('cg-hide');
         bubbleEl.classList.add('cg-show');

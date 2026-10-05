@@ -238,6 +238,10 @@
     "usersReached": "Utilisateurs",
     "liveProducts": "Produits en prod"
   },
+  "heart": {
+    "label": "Cœur 3D interactif",
+    "caption": "Fait avec le cœur, touchez-le."
+  },
   "now": {
     "headerLabel": "OÙ J'EN SUIS",
     "intro": ""

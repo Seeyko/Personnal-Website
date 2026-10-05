@@ -60,30 +60,12 @@
       "This is the best site in the ring!"
     ]
   },
-  "awards": {
-    "bestSite1997": "Best Site 1997",
-    "fiveStarSite": "5 Star Site",
-    "hotPick": "Hot Pick",
-    "coolSite": "Cool Site"
-  },
   "tooltips": {
     "clickToVisit": "Click to visit {title}!",
-    "bestSiteTooltip": "Best Site of 1997!",
-    "fiveStarTooltip": "5 Star Rating!",
-    "hotPickTooltip": "Hot Pick of the Week!",
-    "coolSiteTooltip": "Cool Site Award!",
     "prevSiteTooltip": "Previous site in the ring",
     "nextSiteTooltip": "Next site in the ring",
     "techTooltip": "I know {tech}!"
   },
-  "colorSquares": [
-    "boop!",
-    "beep!",
-    "click!",
-    "pop!",
-    "ding!",
-    "wow!"
-  ],
   "konamiSecret": {
     "title": "Secret Message",
     "congratulations": "CONGRATULATIONS!",

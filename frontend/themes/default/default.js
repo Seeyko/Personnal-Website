@@ -41,6 +41,9 @@ const defaultThemeConfig = {
 
 // ─── Theme-Specific Effects ───
 function initDefaultEffects() {
+    // The reveals were measured before the timeline rendered, and About now
+    // sits below it: measure again so its reveal fires when it comes in view.
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
     settleRevealAnimations();
     initDefaultSfx();
 }
