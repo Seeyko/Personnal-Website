@@ -18,9 +18,9 @@
  * the site-integration classes cg-alive/cg-walking/cg-jumping/cg-landing/
  * cg-spinning, which live below the kit marker in the stylesheet.
  *
- * Sections observed: hero (.hero), #now, #work, #writing, #timeline, #about,
- * #contact (the whole #site-footer when present). Any section missing from
- * the current page (e.g. #writing isn't on index.html yet) is simply skipped
+ * Sections observed: hero (.hero), #now, #work, #timeline, #about, #contact
+ * (the whole #site-footer when present), #writing. Any section missing from
+ * the current page (e.g. #writing, which no page has yet) is simply skipped
  * - the module never assumes a fixed page shape.
  */
 const CathodeGuide = (() => {
@@ -41,17 +41,22 @@ const CathodeGuide = (() => {
     // tab label shown in the bubble's title bar, adapted to each theme's
     // fiction (unix tab / drawing number / 90s filename / plain word). The
     // labels made of words come per language ({ fr, en }, see barLabel).
+    // Blueprint sheet codes follow the sheet numbers the page shows (nav and
+    // circled section numbers): A-01 Now … E-05 Contact; the hero is the
+    // cover sheet, 00.
     const SECTION_DEFS = [
         { key: 'hero', selector: '.hero', bar: { terminal: 'guide.sh', default: { fr: 'bonjour', en: 'hello' }, blueprint: 'PLAN A-00', retro90s: 'welcome.htm', fps: 'MOTD' } },
-        { key: 'now', selector: '#now', bar: { terminal: 'now --live', default: { fr: 'en ce moment', en: 'right now' }, blueprint: { fr: 'REV. COURANTE', en: 'CURRENT REV.' }, retro90s: 'news.gif', fps: 'INTEL' } },
+        { key: 'now', selector: '#now', bar: { terminal: 'now --live', default: { fr: 'en ce moment', en: 'right now' }, blueprint: { fr: 'REV. COURANTE A-01', en: 'CURRENT REV. A-01' }, retro90s: 'news.gif', fps: 'INTEL' } },
         { key: 'work', selector: '#work', bar: { terminal: 'work.log', default: { fr: 'projets', en: 'projects' }, blueprint: { fr: 'COUPE B-02', en: 'SECTION B-02' }, retro90s: 'cool-stuff.htm', fps: 'BUY MENU' } },
-        { key: 'writing', selector: '#writing', bar: { terminal: 'blog.md', default: 'notes', blueprint: { fr: 'CARTOUCHE C-03', en: 'NOTES BLOCK C-03' }, retro90s: 'zine.txt', fps: 'COMMS' } },
-        { key: 'timeline', selector: '#timeline', bar: { terminal: 'git log', default: { fr: 'parcours', en: 'journey' }, blueprint: { fr: 'PHASAGE D-04', en: 'PHASING D-04' }, retro90s: 'history.htm', fps: 'MATCH LOG' } },
-        { key: 'about', selector: '#about', bar: { terminal: 'whoami', default: { fr: 'qui suis-je', en: 'who am I' }, blueprint: { fr: 'DÉTAIL E-05', en: 'DETAIL E-05' }, retro90s: 'aboutme.htm', fps: 'PROFILE' } },
+        { key: 'timeline', selector: '#timeline', bar: { terminal: 'git log', default: { fr: 'parcours', en: 'journey' }, blueprint: { fr: 'PHASAGE C-03', en: 'PHASING C-03' }, retro90s: 'history.htm', fps: 'MATCH LOG' } },
+        { key: 'about', selector: '#about', bar: { terminal: 'whoami', default: { fr: 'qui suis-je', en: 'who am I' }, blueprint: { fr: 'DÉTAIL D-04', en: 'DETAIL D-04' }, retro90s: 'aboutme.htm', fps: 'PROFILE' } },
         // The whole footer counts as Contact (its #contact headline can rest
         // above the reading line at the bottom of the page, so a quick jump
         // there could skip it); pages without that footer fall back to #contact.
-        { key: 'contact', selector: '#site-footer, #contact', bar: { terminal: 'ping', default: 'contact', blueprint: { fr: 'ANNEXE F-06', en: 'ANNEX F-06' }, retro90s: 'guestbook.htm', fps: 'INVITE' } }
+        { key: 'contact', selector: '#site-footer, #contact', bar: { terminal: 'ping', default: 'contact', blueprint: { fr: 'ANNEXE E-05', en: 'ANNEX E-05' }, retro90s: 'guestbook.htm', fps: 'INVITE' } },
+        // Writing is sheet 06 in the blog's nav; no page has a #writing
+        // section yet (the guide isn't loaded on /blog), so it's skipped.
+        { key: 'writing', selector: '#writing', bar: { terminal: 'blog.md', default: 'notes', blueprint: { fr: 'CARTOUCHE F-06', en: 'NOTES BLOCK F-06' }, retro90s: 'zine.txt', fps: 'COMMS' } }
     ];
     const SECTION_MAP = SECTION_DEFS.reduce((m, s) => { m[s.key] = s; return m; }, {});
     const MOBILE_ALLOWED = ['hero', 'contact'];

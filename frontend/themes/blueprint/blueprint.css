@@ -56,13 +56,10 @@ body[data-theme="blueprint"] {
 
 /* Show Blueprint-specific elements */
 body[data-theme="blueprint"] .hero-blueprint-svg,
-body[data-theme="blueprint"] .contact-blueprint-svg,
 body[data-theme="blueprint"] .hero-annotation,
 body[data-theme="blueprint"] .section-number,
 body[data-theme="blueprint"] .redline-note,
-body[data-theme="blueprint"] .stamp,
 body[data-theme="blueprint"] .coord-marker,
-body[data-theme="blueprint"] .footer-scale,
 body[data-theme="blueprint"] .cursor-coord,
 body[data-theme="blueprint"] .hero-title {
   display: block;
@@ -80,13 +77,8 @@ body[data-theme="blueprint"] .hero-stats,
 body[data-theme="blueprint"] .section-prompt,
 body[data-theme="blueprint"] .section-divider,
 body[data-theme="blueprint"] .code-comment,
-body[data-theme="blueprint"] .email-prefix,
 body[data-theme="blueprint"] .cursor-blink,
-body[data-theme="blueprint"] .contact-prompt,
-body[data-theme="blueprint"] .footer-line,
-body[data-theme="blueprint"] .footer-exit,
-body[data-theme="blueprint"] .project-card-header,
-body[data-theme="blueprint"] .footer-info-row .footer-sep:nth-child(2) {
+body[data-theme="blueprint"] .project-card-header {
   display: none !important;
 }
 
@@ -586,11 +578,6 @@ body[data-theme="blueprint"] .scroll-arrow {
   animation: bounce 1.5s infinite;
 }
 
-body[data-theme="blueprint"] .scroll-arrow svg {
-  width: 24px;
-  height: 24px;
-}
-
 /* ─── Section Styles ─── */
 /* Section padding is now defined in base.css via CSS variables */
 body[data-theme="blueprint"] {
@@ -1005,10 +992,6 @@ body[data-theme="blueprint"] .project-card:focus-visible .project-link {
 }
 
 /* ─── Blog Section ─── */
-body[data-theme="blueprint"] .blog-grid {
-  gap: var(--spacing-md);
-}
-
 body[data-theme="blueprint"] .blog-card {
   background: rgba(0, 34, 68, 0.6);
   border: 1px solid var(--line-white-dim);
@@ -1066,18 +1049,6 @@ body[data-theme="blueprint"] .blog-card:hover .blog-card-image img {
   filter: grayscale(50%) brightness(1);
 }
 
-body[data-theme="blueprint"] .blog-card-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 34, 68, 0.8);
-  color: var(--ink-3);
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-}
-
 body[data-theme="blueprint"] .blog-index {
   font-size: 0.7rem;
   color: var(--accent-cyan);
@@ -1109,30 +1080,6 @@ body[data-theme="blueprint"] .blog-date {
 
 body[data-theme="blueprint"] .blog-footer {
   padding: var(--spacing-md) 0;
-}
-
-body[data-theme="blueprint"] .view-all-link {
-  color: var(--line-white);
-  font-family: var(--font-technical);
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-}
-
-body[data-theme="blueprint"] .view-all-link:hover {
-  color: var(--accent-cyan);
-}
-
-body[data-theme="blueprint"] .link-bracket {
-  color: var(--line-white-dim);
-}
-
-body[data-theme="blueprint"] .link-arrow {
-  color: var(--accent-cyan);
-  transition: transform 0.3s ease;
-}
-
-body[data-theme="blueprint"] .view-all-link:hover .link-arrow {
-  transform: translateX(5px);
 }
 
 body[data-theme="blueprint"] .no-articles {
@@ -1297,16 +1244,6 @@ body[data-theme="blueprint"] .now-inline-link {
   text-underline-offset: 3px;
 }
 
-body[data-theme="blueprint"] .tech-stack {
-  margin-top: var(--spacing-md);
-}
-
-body[data-theme="blueprint"] .tech-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
 body[data-theme="blueprint"] .tech-tag {
   font-size: 0.7rem;
   color: var(--ink-2);
@@ -1331,157 +1268,10 @@ body[data-theme="blueprint"] .redline-note {
   transform: rotate(-3deg);
 }
 
-/* ─── Contact Section ─── */
-body[data-theme="blueprint"] .contact-content {
-  text-align: center;
-  padding: var(--spacing-md) 0;
-}
-
-/* Hide terminal-specific elements (but NOT the card container) */
-body[data-theme="blueprint"] .contact-card .card-header,
-body[data-theme="blueprint"] .contact-card .card-title,
-body[data-theme="blueprint"] .contact-prompt,
+/* Hide terminal-specific elements */
 body[data-theme="blueprint"] .output-line,
-body[data-theme="blueprint"] .email-prefix,
 body[data-theme="blueprint"] .cursor-blink {
   display: none;
-}
-
-/* Contact card becomes the frame */
-body[data-theme="blueprint"] .contact-card {
-  position: relative;
-  display: inline-block;
-  background: transparent;
-  border: none;
-}
-
-body[data-theme="blueprint"] .contact-card .card-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  z-index: 1;
-  padding: var(--spacing-lg) var(--spacing-xl);
-}
-
-/* Ensure CRO elements fit within the frame */
-body[data-theme="blueprint"] .availability-badge {
-  margin-bottom: var(--spacing-sm);
-}
-
-body[data-theme="blueprint"] .contact-urgency {
-  margin-bottom: var(--spacing-sm);
-}
-
-body[data-theme="blueprint"] .response-time {
-  margin-top: var(--spacing-xs);
-  margin-bottom: var(--spacing-xs);
-}
-
-/* Blueprint SVG Frame - positioned around the email */
-body[data-theme="blueprint"] .contact-blueprint-svg {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
-}
-
-body[data-theme="blueprint"] .contact-border {
-  fill: none;
-  stroke: var(--line-white-dim);
-  stroke-width: 1;
-}
-
-body[data-theme="blueprint"] .corner-mark line {
-  stroke: var(--accent-cyan);
-  stroke-width: 1;
-}
-
-/* Email link - the star of the show */
-body[data-theme="blueprint"] .email-link {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-/* The "APPROVED" stamp */
-body[data-theme="blueprint"] .stamp {
-  font-family: var(--font-technical);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  color: var(--accent-redline);
-  border: 2px solid var(--accent-redline);
-  padding: 0.4rem 1rem;
-  transform: rotate(-5deg);
-  opacity: 0.8;
-  transition: all 0.3s ease;
-}
-
-/* Email text */
-body[data-theme="blueprint"] .email-text {
-  font-family: var(--font-technical);
-  font-size: clamp(1.2rem, 4vw, 2.5rem);
-  font-weight: 700;
-  color: var(--line-white);
-  letter-spacing: 0.1em;
-  transition: all 0.3s ease;
-}
-
-body[data-theme="blueprint"] .email-link:hover .email-text {
-  color: var(--accent-cyan);
-  text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-}
-
-body[data-theme="blueprint"] .email-link:hover .stamp {
-  opacity: 1;
-  transform: rotate(-5deg) scale(1.05);
-}
-
-/* Social Links */
-body[data-theme="blueprint"] .social-links {
-  margin-top: var(--spacing-sm);
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-md);
-}
-
-body[data-theme="blueprint"] .social-btn {
-  font-size: 0.8rem;
-  color: var(--line-white-dim);
-  text-decoration: none;
-  letter-spacing: 0.1em;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  background: transparent;
-  border: none;
-  padding: 0;
-}
-
-body[data-theme="blueprint"] .link-bracket {
-  color: var(--accent-cyan);
-  transition: transform 0.3s ease;
-}
-
-body[data-theme="blueprint"] .social-btn:hover {
-  color: var(--line-white);
-}
-
-body[data-theme="blueprint"] .social-btn:hover .link-bracket:first-child {
-  transform: translateX(-3px);
-}
-
-body[data-theme="blueprint"] .social-btn:hover .link-bracket:last-child {
-  transform: translateX(3px);
 }
 
 /* ─── Footer ─── */
@@ -1495,27 +1285,6 @@ body[data-theme="blueprint"] .footer-content {
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-xs);
-}
-
-body[data-theme="blueprint"] .footer-info-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--spacing-sm);
-  font-size: 0.7rem;
-  color: var(--line-white-dim);
-}
-
-body[data-theme="blueprint"] .footer-session::before {
-  content: 'DRAWING NO. ';
-}
-
-body[data-theme="blueprint"] .footer-version::before {
-  content: 'REV. ';
-}
-
-body[data-theme="blueprint"] .footer-scale::before {
-  content: 'SCALE: ';
 }
 
 body[data-theme="blueprint"] .footer-copyright {
@@ -1761,56 +1530,6 @@ body[data-theme="blueprint"] .footer-copyright {
     font-size: 0.9375rem;
     line-height: 1.75;
   }
-
-  body[data-theme="blueprint"] .footer-info-row {
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  body[data-theme="blueprint"] .footer-sep {
-    display: none;
-  }
-}
-
-/* ─── Visitor Counter (Blueprint Style) ─── */
-body[data-theme="blueprint"] .visitor-counter {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px dashed var(--line-white-dim);
-  color: var(--line-white);
-  font-family: var(--font-technical);
-  font-size: 0.85rem;
-  position: relative;
-}
-
-body[data-theme="blueprint"] .visitor-counter::before,
-body[data-theme="blueprint"] .visitor-counter::after {
-  content: '+';
-  position: absolute;
-  font-size: 0.7rem;
-  color: var(--line-white-dim);
-}
-
-body[data-theme="blueprint"] .visitor-counter::before {
-  top: -3px;
-  left: -3px;
-}
-
-body[data-theme="blueprint"] .visitor-counter::after {
-  bottom: -3px;
-  right: -3px;
-}
-
-body[data-theme="blueprint"] .visitor-counter:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--line-white);
-}
-
-body[data-theme="blueprint"] .visitor-icon {
-  opacity: 0.8;
-}
-
-body[data-theme="blueprint"] .visitor-count {
-  color: var(--accent-cyan);
 }
 
 /* ─── Body Loaded State ─── */
@@ -1892,29 +1611,6 @@ body[data-theme="blueprint"] .proof-label {
 /* Scroll Progress */
 body[data-theme="blueprint"] .scroll-progress {
   background: var(--accent-cyan);
-}
-
-/* Availability Badge */
-body[data-theme="blueprint"] .availability-badge {
-  color: var(--accent-cyan);
-  border-color: var(--accent-cyan);
-  background: rgba(74, 144, 226, 0.1);
-}
-
-body[data-theme="blueprint"] .availability-dot {
-  background: var(--accent-cyan);
-}
-
-/* Contact Urgency */
-body[data-theme="blueprint"] .contact-urgency {
-  background: rgba(255, 107, 107, 0.1);
-  border-color: var(--accent-redline);
-  color: var(--accent-redline);
-}
-
-/* Response Time */
-body[data-theme="blueprint"] .response-time {
-  color: var(--ink-3);
 }
 
 /* Floating CTA: was a glossy light-blue gradient off the palette. Now a
@@ -2247,16 +1943,6 @@ body[data-theme="blueprint"] .marker-title {
 body[data-theme="blueprint"] .marker-badge,
 body[data-theme="blueprint"] .mobile-commit-badge {
   border-radius: 0;
-}
-
-/* Scroll Hint */
-body[data-theme="blueprint"] .git-timeline-scroll-hint {
-  color: var(--ink-3);
-  font-family: var(--font-handwritten);
-}
-
-body[data-theme="blueprint"] .scroll-hint-arrow {
-  color: var(--accent-cyan);
 }
 
 /* ─── Git Timeline Overlay (Blueprint Theme) ─── */

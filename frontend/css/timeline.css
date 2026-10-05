@@ -59,21 +59,6 @@
     display: none; /* Hide divider for cleaner look */
 }
 
-.git-timeline-intro {
-    text-align: center;
-    margin-bottom: 2rem;
-    padding: 0 2rem;
-}
-
-.git-timeline-intro .section-title {
-    margin-bottom: 0.5rem;
-}
-
-.git-timeline-subtitle {
-    font-size: 1.1rem;
-    opacity: 0.7;
-}
-
 /* ─── Viewport & Scroll ─── */
 .git-timeline-viewport {
     position: relative;
@@ -478,44 +463,10 @@
     color: var(--git-text-secondary);
 }
 
-/* ─── Scroll Hint (hidden when timeline fits viewport) ─── */
-.git-timeline-scroll-hint {
-    position: absolute;
-    bottom: 0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: none; /* Hidden by default since timeline fits viewport */
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--git-text-muted);
-    font-size: 0.85rem;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-
-.git-timeline-scroll-hint.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.scroll-hint-arrow {
-    animation: bounce-right 1.5s ease-in-out infinite;
-}
-
-@keyframes bounce-right {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(5px); }
-}
-
 /* ─── Responsive - Tablet/Mobile Vertical Timeline ─── */
 @media (max-width: 1024px) {
     .git-timeline-section {
         padding: 1.5rem 0;
-    }
-
-    .git-timeline-intro {
-        padding: 0 1rem;
-        margin-bottom: 1rem;
     }
 
     /* Hide horizontal timeline on mobile */
@@ -694,11 +645,6 @@
     /* Hide overlay on mobile */
     .git-timeline-overlay {
         display: none !important;
-    }
-
-    /* Hide scroll hint on mobile */
-    .git-timeline-scroll-hint {
-        display: none;
     }
 }
 

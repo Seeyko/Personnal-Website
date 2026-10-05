@@ -79,11 +79,7 @@ body[data-theme="terminal"] .hero-stats,
 body[data-theme="terminal"] .section-prompt,
 body[data-theme="terminal"] .section-divider,
 body[data-theme="terminal"] .code-comment,
-body[data-theme="terminal"] .email-prefix,
-body[data-theme="terminal"] .cursor-blink,
-body[data-theme="terminal"] .contact-prompt,
-body[data-theme="terminal"] .footer-line,
-body[data-theme="terminal"] .footer-exit {
+body[data-theme="terminal"] .cursor-blink {
   display: block;
 }
 
@@ -93,13 +89,10 @@ body[data-theme="terminal"] .hero-stats {
 
 /* Hide Blueprint-specific elements */
 body[data-theme="terminal"] .hero-blueprint-svg,
-body[data-theme="terminal"] .contact-blueprint-svg,
 body[data-theme="terminal"] .hero-annotation,
 body[data-theme="terminal"] .section-number,
 body[data-theme="terminal"] .redline-note,
-body[data-theme="terminal"] .stamp,
 body[data-theme="terminal"] .coord-marker,
-body[data-theme="terminal"] .footer-scale,
 body[data-theme="terminal"] .cursor-coord,
 body[data-theme="terminal"] .hero-title {
   display: none !important;
@@ -173,24 +166,6 @@ body[data-theme="terminal"]:hover .custom-cursor {
 @keyframes blink {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0; }
-}
-
-@keyframes blink-fast {
-  0%, 30% { opacity: 1; }
-  31%, 100% { opacity: 0; }
-}
-
-@keyframes blink-slow {
-  0%, 70% { opacity: 1; }
-  71%, 100% { opacity: 0.3; }
-}
-
-body[data-theme="terminal"] .blink-fast {
-  animation: blink-fast 0.5s step-end infinite;
-}
-
-body[data-theme="terminal"] .blink-slow {
-  animation: blink-slow 1.5s ease infinite;
 }
 
 body[data-theme="terminal"] .cursor-blink {
@@ -895,10 +870,6 @@ body[data-theme="terminal"] .carousel-dot:hover {
 }
 
 /* ─── Blog Section ─── */
-body[data-theme="terminal"] .blog-grid {
-  gap: var(--spacing-sm);
-}
-
 body[data-theme="terminal"] .blog-card {
   background: var(--bg-terminal-panel);
   border: 1px solid var(--border);
@@ -923,17 +894,6 @@ body[data-theme="terminal"] .blog-card-image img {
 
 body[data-theme="terminal"] .blog-card:hover .blog-card-image img {
   filter: grayscale(50%) brightness(0.9) contrast(1.1);
-}
-
-body[data-theme="terminal"] .blog-card-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-terminal);
-  color: var(--text-comment);
-  font-size: 0.7rem;
 }
 
 body[data-theme="terminal"] .blog-card-header {
@@ -970,29 +930,6 @@ body[data-theme="terminal"] .blog-date {
 
 body[data-theme="terminal"] .blog-footer {
   padding: var(--spacing-md) 0;
-}
-
-body[data-theme="terminal"] .view-all-link {
-  color: var(--primary);
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-}
-
-body[data-theme="terminal"] .view-all-link:hover {
-  text-shadow: var(--glow-primary);
-}
-
-body[data-theme="terminal"] .link-bracket {
-  color: var(--text-dim);
-}
-
-body[data-theme="terminal"] .link-arrow {
-  color: var(--secondary);
-  transition: transform 0.3s ease;
-}
-
-body[data-theme="terminal"] .view-all-link:hover .link-arrow {
-  transform: translateX(5px);
 }
 
 body[data-theme="terminal"] .no-articles {
@@ -1146,17 +1083,6 @@ body[data-theme="terminal"] .spec-val::after {
   content: '"';
 }
 
-body[data-theme="terminal"] .tech-stack {
-  margin-top: var(--spacing-md);
-}
-
-body[data-theme="terminal"] .tech-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
 body[data-theme="terminal"] .tech-tag {
   font-size: 0.75rem;
   color: var(--text-dim);
@@ -1200,113 +1126,9 @@ body[data-theme="terminal"] .craft-description {
   opacity: 1;
 }
 
-/* ─── Contact Section ─── */
-body[data-theme="terminal"] .contact-content {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-body[data-theme="terminal"] .contact-card {
-  background: var(--bg-terminal-panel);
-  border: 1px solid var(--border);
-  text-align: center;
-}
-
-body[data-theme="terminal"] .contact-prompt {
-  text-align: left;
-  margin-bottom: var(--spacing-md);
-}
-
-body[data-theme="terminal"] .contact-prompt .output-line {
-  opacity: 1;
-  animation: none;
-}
-
-body[data-theme="terminal"] .email-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-display);
-  font-size: clamp(1.2rem, 4vw, 2rem);
-  color: var(--primary);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--border);
-  background: var(--bg-terminal);
-  margin-bottom: var(--spacing-md);
-}
-
-body[data-theme="terminal"] .email-prefix {
-  color: var(--secondary);
-}
-
-body[data-theme="terminal"] .email-link:hover {
-  border-color: var(--primary);
-  box-shadow: var(--glow-primary);
-  text-shadow: var(--glow-primary);
-  background: rgba(51, 255, 0, 0.05);
-}
-
-body[data-theme="terminal"] .social-links {
-  justify-content: center;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
-}
-
-body[data-theme="terminal"] .social-btn {
-  font-size: 0.85rem;
-  color: var(--text-dim);
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border);
-  background: var(--bg-terminal);
-}
-
-body[data-theme="terminal"] .link-bracket {
-  display: none;
-}
-
-body[data-theme="terminal"] .social-btn::before {
-  content: '[ ';
-}
-
-body[data-theme="terminal"] .social-btn::after {
-  content: ' ]';
-}
-
-body[data-theme="terminal"] .social-btn:hover {
-  color: var(--bg-terminal);
-  background: var(--primary);
-  border-color: var(--primary);
-  box-shadow: var(--glow-primary);
-}
-
 /* ─── Footer ─── */
 body[data-theme="terminal"] .footer {
   padding: var(--spacing-lg) var(--spacing-md);
-}
-
-body[data-theme="terminal"] .footer-line {
-  color: var(--muted);
-  margin-bottom: var(--spacing-sm);
-  overflow: hidden;
-}
-
-body[data-theme="terminal"] .footer-info-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-sm);
-  flex-wrap: wrap;
-  font-size: 0.7rem;
-  color: var(--text-dim);
-}
-
-body[data-theme="terminal"] .footer-session::before {
-  content: 'SESSION: ';
-}
-
-body[data-theme="terminal"] .footer-version::before {
-  content: 'VERSION: ';
 }
 
 body[data-theme="terminal"] .footer-copyright {
@@ -1321,12 +1143,6 @@ body[data-theme="terminal"] .footer-copyright::before {
 
 body[data-theme="terminal"] .footer-copyright::after {
   content: '"';
-}
-
-body[data-theme="terminal"] .footer-exit {
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  margin-top: var(--spacing-sm);
 }
 
 /* ─── Custom Scrollbar ─── */
@@ -1489,45 +1305,6 @@ body[data-theme="terminal"] .brand-suffix {
   body[data-theme="terminal"] .projects-grid {
     grid-template-columns: 1fr;
   }
-
-  body[data-theme="terminal"] .footer-info-row {
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  body[data-theme="terminal"] .footer-sep {
-    display: none;
-  }
-}
-
-/* ─── Visitor Counter (Terminal Style) ─── */
-body[data-theme="terminal"] .visitor-counter {
-  background: rgba(51, 255, 0, 0.05);
-  border: 1px solid var(--border);
-  color: var(--primary);
-  font-family: var(--font-terminal);
-  text-transform: uppercase;
-  font-size: 0.85rem;
-}
-
-body[data-theme="terminal"] .visitor-counter:hover {
-  background: rgba(51, 255, 0, 0.1);
-  box-shadow: var(--glow-primary);
-}
-
-body[data-theme="terminal"] .visitor-icon {
-  filter: grayscale(100%) brightness(1.2);
-  color: var(--primary);
-}
-
-body[data-theme="terminal"] .visitor-label::before {
-  content: ">> ";
-  color: var(--text-comment);
-}
-
-body[data-theme="terminal"] .visitor-count {
-  color: var(--secondary);
-  text-shadow: var(--glow-secondary);
 }
 
 /* ─── Body Loaded State ─── */
@@ -1581,25 +1358,6 @@ body[data-theme="terminal"] .exit-modal-title {
 /* Scroll Progress */
 body[data-theme="terminal"] .scroll-progress {
   box-shadow: var(--glow-primary);
-}
-
-/* Availability Badge */
-body[data-theme="terminal"] .availability-badge {
-  color: var(--primary);
-  border-color: var(--border);
-  background: rgba(51, 255, 0, 0.05);
-}
-
-/* Contact Urgency */
-body[data-theme="terminal"] .contact-urgency {
-  background: rgba(255, 176, 0, 0.05);
-  border-color: var(--border);
-  color: var(--secondary);
-}
-
-/* Response Time */
-body[data-theme="terminal"] .response-time {
-  color: var(--text-dim);
 }
 
 /* Floating CTA */
@@ -2418,17 +2176,6 @@ body[data-theme="terminal"] .mobile-commit-badge {
   box-shadow: 0 0 6px var(--branch-color, var(--git-work-color));
 }
 
-/* Scroll Hint */
-body[data-theme="terminal"] .git-timeline-scroll-hint {
-  color: var(--text-comment);
-  font-family: var(--font-terminal);
-}
-
-body[data-theme="terminal"] .scroll-hint-text::before {
-  content: '$ scroll ';
-  color: var(--secondary);
-}
-
 /* ─── Git Timeline Overlay (Terminal Theme) ───
    The heading here is two lines (prompt + title): open the detail just
    below it, on the same left edge as the heading. */
@@ -2537,8 +2284,6 @@ body[data-theme="terminal"] .mobile-commit-description {
   body[data-theme="terminal"].loaded,
   body[data-theme="terminal"] .cursor-blink,
   body[data-theme="terminal"] .custom-cursor .cursor-icon::before,
-  body[data-theme="terminal"] .blink-fast,
-  body[data-theme="terminal"] .blink-slow,
   body[data-theme="terminal"] .section-title:hover,
   body[data-theme="terminal"] .section-title.glitching,
   body[data-theme="terminal"] .scroll-arrow,
@@ -2563,8 +2308,7 @@ body[data-theme="terminal"] .mobile-commit-description {
   body[data-theme="terminal"] .project-image,
   body[data-theme="terminal"] .project-video,
   body[data-theme="terminal"] .project-media-container::after,
-  body[data-theme="terminal"] .link-icon,
-  body[data-theme="terminal"] .link-arrow {
+  body[data-theme="terminal"] .link-icon {
     transition: none;
   }
 }

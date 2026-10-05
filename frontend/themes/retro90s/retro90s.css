@@ -114,12 +114,8 @@ body[data-theme="retro90s"] .hero-title,
 body[data-theme="retro90s"] .retro-badge,
 body[data-theme="retro90s"] .under-construction,
 body[data-theme="retro90s"] .best-viewed,
-body[data-theme="retro90s"] .retro-awards,
 body[data-theme="retro90s"] .retro-webring,
-body[data-theme="retro90s"] .retro-clippy,
-body[data-theme="retro90s"] .retro-dancing-baby,
-body[data-theme="retro90s"] .retro-divider-animated,
-body[data-theme="retro90s"] .retro-fire-text {
+body[data-theme="retro90s"] .retro-clippy {
   display: block;
 }
 
@@ -134,23 +130,16 @@ body[data-theme="retro90s"] .hero-terminal,
 body[data-theme="retro90s"] .hero-stats,
 body[data-theme="retro90s"] .section-prompt,
 body[data-theme="retro90s"] .code-comment,
-body[data-theme="retro90s"] .email-prefix,
 body[data-theme="retro90s"] .cursor-blink,
-body[data-theme="retro90s"] .contact-prompt,
-body[data-theme="retro90s"] .footer-line,
-body[data-theme="retro90s"] .footer-exit,
 body[data-theme="retro90s"] .project-card-header {
   display: none !important;
 }
 
 /* Hide Blueprint-specific elements */
 body[data-theme="retro90s"] .hero-blueprint-svg,
-body[data-theme="retro90s"] .contact-blueprint-svg,
 body[data-theme="retro90s"] .hero-annotation,
 body[data-theme="retro90s"] .redline-note,
-body[data-theme="retro90s"] .stamp,
 body[data-theme="retro90s"] .coord-marker,
-body[data-theme="retro90s"] .footer-scale,
 body[data-theme="retro90s"] .cursor-coord,
 body[data-theme="retro90s"] .section-number {
   display: none !important;
@@ -163,28 +152,6 @@ body[data-theme="retro90s"] .theme-overlay {
 
 body[data-theme="retro90s"] .custom-cursor {
   display: none !important;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   3D BEVEL UTILITIES
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Outset (Raised) Button/Container */
-.bevel-outset {
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  box-shadow:
-    inset -1px -1px 0 var(--bevel-darker),
-    inset 1px 1px 0 var(--bevel-lighter);
-}
-
-/* Inset (Sunken) Container */
-.bevel-inset {
-  border: 2px solid;
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  box-shadow:
-    inset 1px 1px 0 var(--bevel-darker),
-    inset -1px -1px 0 var(--bevel-lighter);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -619,46 +586,6 @@ body[data-theme="retro90s"] .scroll-arrow {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HORIZONTAL RULE DIVIDER (Groove Effect)
-   ═══════════════════════════════════════════════════════════════ */
-
-body[data-theme="retro90s"] .hr-groove {
-  border: none;
-  height: 4px;
-  background: linear-gradient(
-    to bottom,
-    var(--bevel-dark) 0%, var(--bevel-dark) 50%,
-    var(--bevel-light) 50%, var(--bevel-light) 100%
-  );
-  margin: var(--spacing-md) 0;
-}
-
-/* Animated Divider */
-body[data-theme="retro90s"] .retro-divider-animated {
-  height: 8px;
-  background: linear-gradient(
-    90deg,
-    var(--color-red),
-    var(--color-orange),
-    var(--color-yellow),
-    var(--color-green),
-    var(--color-cyan),
-    var(--color-blue),
-    var(--color-magenta),
-    var(--color-red)
-  );
-  background-size: 200% 100%;
-  animation: rainbow-slide 3s linear infinite;
-  border: 2px solid var(--color-black);
-  margin: var(--spacing-md) 0;
-}
-
-@keyframes rainbow-slide {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
-
-/* ═══════════════════════════════════════════════════════════════
    SECTION STYLES
    ═══════════════════════════════════════════════════════════════ */
 
@@ -1021,25 +948,6 @@ body[data-theme="retro90s"] .carousel-dot:hover {
 }
 
 /* ─── Blog Section ─── */
-body[data-theme="retro90s"] .blog {
-  background: repeating-linear-gradient(
-    0deg,
-    var(--bg-90s) 0px,
-    var(--bg-90s) 2px,
-    #D0D0D0 2px,
-    #D0D0D0 4px
-  );
-}
-
-body[data-theme="retro90s"] .blog .section-title {
-  font-family: var(--font-90s);
-  text-shadow: 2px 2px 0 var(--color-black), -1px -1px 0 var(--color-white);
-}
-
-body[data-theme="retro90s"] .blog-grid {
-  gap: var(--spacing-md);
-}
-
 body[data-theme="retro90s"] .blog-card {
   background: var(--bg-90s);
   border: 2px solid;
@@ -1077,18 +985,6 @@ body[data-theme="retro90s"] .blog-card-image {
 
 body[data-theme="retro90s"] .blog-card-image img {
   filter: saturate(1.3) contrast(1.1);
-}
-
-body[data-theme="retro90s"] .blog-card-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-90s);
-  color: var(--color-gray);
-  font-family: var(--font-90s);
-  font-size: 12px;
 }
 
 body[data-theme="retro90s"] .blog-card-content {
@@ -1148,27 +1044,6 @@ body[data-theme="retro90s"] .blog-new-badge {
 
 body[data-theme="retro90s"] .blog-footer {
   padding: var(--spacing-md) 0;
-}
-
-body[data-theme="retro90s"] .view-all-link {
-  font-family: var(--font-90s);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-blue);
-  text-decoration: underline;
-  background: var(--bg-90s);
-  padding: 4px 12px;
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-}
-
-body[data-theme="retro90s"] .view-all-link:hover {
-  color: var(--color-red);
-  background: var(--color-yellow);
-}
-
-body[data-theme="retro90s"] .link-bracket {
-  display: none;
 }
 
 body[data-theme="retro90s"] .no-articles {
@@ -1528,16 +1403,6 @@ body[data-theme="retro90s"] .spec-val::after {
 }
 
 /* Tech Stack */
-body[data-theme="retro90s"] .tech-stack {
-  margin-top: var(--spacing-sm);
-}
-
-body[data-theme="retro90s"] .tech-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
 body[data-theme="retro90s"] .tech-tag {
   font-family: var(--font-90s);
   font-size: 0.8rem;
@@ -1567,189 +1432,6 @@ body[data-theme="retro90s"] .tech-tag:active {
   border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
   transform: translate(1px, 1px);
   box-shadow: none;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   CONTACT SECTION
-   ═══════════════════════════════════════════════════════════════ */
-
-body[data-theme="retro90s"] .contact {
-  background:
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 10px,
-      rgba(0,0,0,0.03) 10px,
-      rgba(0,0,0,0.03) 20px
-    );
-}
-
-body[data-theme="retro90s"] .contact-content {
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-body[data-theme="retro90s"] .contact-card {
-  background: var(--bg-90s);
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
-}
-
-body[data-theme="retro90s"] .contact-card .card-body {
-  text-align: center;
-}
-
-/* Email Link - Big Hyperlink Style */
-body[data-theme="retro90s"] .email-link {
-  display: inline-block;
-  font-family: var(--font-heading);
-  font-size: clamp(1rem, 4vw, 2rem);
-  color: var(--color-blue);
-  text-decoration: underline;
-  padding: var(--spacing-sm);
-  background: var(--color-white);
-  border: 2px solid;
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  margin-bottom: var(--spacing-sm);
-  animation: email-glow 2s ease-in-out infinite;
-}
-
-@keyframes email-glow {
-  0%, 100% { box-shadow: inset 0 0 0 0 rgba(0,0,255,0.1); }
-  50% { box-shadow: inset 0 0 20px 0 rgba(0,0,255,0.2); }
-}
-
-body[data-theme="retro90s"] .email-link:hover {
-  color: var(--color-red);
-  background: var(--color-panel-yellow);
-  transform: scale(1.05);
-}
-
-body[data-theme="retro90s"] .email-link:visited .email-text {
-  color: var(--color-purple);
-}
-
-/* Social Links */
-body[data-theme="retro90s"] .social-links {
-  gap: 8px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: var(--spacing-sm);
-}
-
-body[data-theme="retro90s"] .social-btn {
-  font-family: var(--font-90s);
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--color-black);
-  background: var(--bg-90s);
-  padding: 6px 16px;
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  box-shadow:
-    inset -1px -1px 0 var(--bevel-darker),
-    inset 1px 1px 0 var(--bevel-lighter);
-  text-decoration: none;
-  text-transform: uppercase;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-body[data-theme="retro90s"] .link-bracket {
-  display: none;
-}
-
-body[data-theme="retro90s"] .social-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.3s;
-}
-
-body[data-theme="retro90s"] .social-btn:hover {
-  background: var(--bg-90s-light);
-}
-
-body[data-theme="retro90s"] .social-btn:hover::before {
-  left: 100%;
-}
-
-body[data-theme="retro90s"] .social-btn:active {
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  box-shadow:
-    inset 1px 1px 0 var(--bevel-darker),
-    inset -1px -1px 0 var(--bevel-lighter);
-  transform: translate(1px, 1px);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   AWARDS BADGES SECTION
-   ═══════════════════════════════════════════════════════════════ */
-
-body[data-theme="retro90s"] .retro-awards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin: var(--spacing-md) auto;
-  padding: var(--spacing-sm);
-  max-width: 600px;
-}
-
-body[data-theme="retro90s"] .award-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, var(--color-yellow) 0%, var(--color-orange) 100%);
-  border: 3px solid var(--color-black);
-  font-family: var(--font-90s);
-  font-size: 0.55rem;
-  font-weight: 700;
-  text-align: center;
-  color: var(--color-black);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: transform 0.1s;
-  box-shadow:
-    inset 2px 2px 0 rgba(255,255,255,0.5),
-    inset -2px -2px 0 rgba(0,0,0,0.2),
-    3px 3px 0 rgba(0,0,0,0.3);
-}
-
-body[data-theme="retro90s"] .award-badge:hover {
-  transform: scale(1.15) rotate(-5deg);
-  box-shadow:
-    inset 2px 2px 0 rgba(255,255,255,0.5),
-    inset -2px -2px 0 rgba(0,0,0,0.2),
-    5px 5px 0 rgba(0,0,0,0.4);
-}
-
-body[data-theme="retro90s"] .award-badge .award-icon {
-  font-size: 1.5rem;
-  margin-bottom: 2px;
-}
-
-body[data-theme="retro90s"] .award-badge:nth-child(2) {
-  background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-blue) 100%);
-}
-
-body[data-theme="retro90s"] .award-badge:nth-child(3) {
-  background: linear-gradient(135deg, var(--color-magenta) 0%, var(--color-purple) 100%);
-  color: var(--color-white);
-}
-
-body[data-theme="retro90s"] .award-badge:nth-child(4) {
-  background: linear-gradient(135deg, var(--color-green) 0%, var(--color-teal) 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2009,26 +1691,6 @@ body[data-theme="retro90s"] .footer-content {
   text-align: center;
 }
 
-body[data-theme="retro90s"] .footer-info-row {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xs);
-  color: var(--color-cyan);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  flex-wrap: wrap;
-}
-
-body[data-theme="retro90s"] .footer-sep {
-  color: var(--color-magenta);
-}
-
-body[data-theme="retro90s"] .footer-session::before,
-body[data-theme="retro90s"] .footer-version::before {
-  content: none;
-}
-
 body[data-theme="retro90s"] .footer-copyright {
   color: var(--color-yellow);
   font-family: var(--font-fun);
@@ -2092,7 +1754,6 @@ body[data-theme="retro90s"] :focus-visible {
   outline-offset: 2px;
 }
 
-body[data-theme="retro90s"] .social-btn:focus-visible,
 body[data-theme="retro90s"] .tech-tag:focus-visible {
   outline: 2px dotted var(--color-black);
   outline-offset: 2px;
@@ -2280,16 +1941,6 @@ body[data-theme="retro90s"] ::-webkit-scrollbar-button:hover {
   body[data-theme="retro90s"] .clippy-dismiss {
     min-height: 36px;
   }
-
-  body[data-theme="retro90s"] .retro-awards {
-    gap: 8px;
-  }
-
-  body[data-theme="retro90s"] .award-badge {
-    width: 65px;
-    height: 65px;
-    font-size: 0.5rem;
-  }
 }
 
 /* Touch screens: the small Win95 controls get a 44px hit area */
@@ -2404,61 +2055,6 @@ body[data-theme="retro90s"] .flying-shape {
 
 body[data-theme="retro90s"].loaded {
   animation: none;
-}
-
-/* ─── Visitor Counter (90s Style) ─── */
-body[data-theme="retro90s"] .visitor-counter {
-  background: var(--color-black);
-  border: 3px inset var(--bevel-dark);
-  color: var(--color-green);
-  font-family: var(--font-mono);
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  margin: 1rem auto;
-  box-shadow:
-    inset 1px 1px 0 var(--bevel-darker),
-    inset -1px -1px 0 var(--bevel-light);
-  display: inline-block;
-}
-
-body[data-theme="retro90s"] .visitor-counter:hover {
-  background: #111;
-}
-
-body[data-theme="retro90s"] .visitor-icon {
-  filter: none;
-}
-
-body[data-theme="retro90s"] .visitor-label {
-  color: var(--color-green);
-  opacity: 1;
-}
-
-body[data-theme="retro90s"] .visitor-count {
-  color: var(--color-green);
-  font-weight: normal;
-  text-shadow: 0 0 5px var(--color-green);
-  letter-spacing: 2px;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   CONSTRUCTION STRIPES SECTION BACKGROUND
-   ═══════════════════════════════════════════════════════════════ */
-
-body[data-theme="retro90s"] .construction-bg {
-  background: repeating-linear-gradient(
-    45deg,
-    var(--color-yellow),
-    var(--color-yellow) 20px,
-    var(--color-black) 20px,
-    var(--color-black) 40px
-  );
-  padding: 8px;
-}
-
-body[data-theme="retro90s"] .construction-bg-inner {
-  background: var(--bg-90s);
-  padding: var(--spacing-md);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2616,38 +2212,6 @@ body[data-theme="retro90s"] .exit-modal-dismiss:hover {
 body[data-theme="retro90s"] .scroll-progress {
   height: 5px;
   background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
-}
-
-/* Availability Badge */
-body[data-theme="retro90s"] .availability-badge {
-  background: #000;
-  border: 2px solid #00ff00;
-  color: #00ff00;
-  font-family: 'Courier New', monospace;
-  animation: retro-blink 1s step-end infinite;
-}
-
-@keyframes retro-blink {
-  50% { opacity: 0.7; }
-}
-
-/* Contact Urgency */
-body[data-theme="retro90s"] .contact-urgency {
-  background: #ffff00;
-  border: 2px dashed #ff0000;
-  color: #000;
-  font-weight: bold;
-  animation: retro-flash 0.5s ease infinite;
-}
-
-@keyframes retro-flash {
-  50% { background: #ff9900; }
-}
-
-/* Response Time */
-body[data-theme="retro90s"] .response-time {
-  color: #00ff00;
-  font-family: 'Courier New', monospace;
 }
 
 /* Floating CTA */
@@ -3052,21 +2616,6 @@ body[data-theme="retro90s"] .marker-badge {
   border: 1px solid var(--color-black);
   background: var(--color-green);
   animation: blink-90s 1.2s step-end infinite;
-}
-
-/* Scroll Hint */
-body[data-theme="retro90s"] .git-timeline-scroll-hint {
-  color: var(--color-black);
-  font-family: var(--font-90s);
-  font-weight: 700;
-}
-
-body[data-theme="retro90s"] .scroll-hint-text::before {
-  content: '👉 ';
-}
-
-body[data-theme="retro90s"] .scroll-hint-arrow {
-  color: var(--color-blue);
 }
 
 /* Responsive */

@@ -87,10 +87,7 @@ body {
 /* Centralized section styling - themes should NOT override padding */
 section,
 .projects,
-.about,
-.contact,
-.blog,
-.timeline {
+.about {
   position: relative;
   z-index: 10;
   padding: var(--section-padding-y, 4rem) var(--section-padding-x, 2rem);
@@ -113,10 +110,7 @@ section,
 @media (max-width: 768px) {
   section,
   .projects,
-  .about,
-  .contact,
-  .blog,
-  .timeline {
+  .about {
     padding: var(--section-padding-y-mobile, 2.5rem) var(--section-padding-x-mobile, 1rem);
   }
 
@@ -284,21 +278,6 @@ section,
 }
 
 .tag {
-  transition: all 0.3s ease;
-}
-
-/* ─── Contact Base ─── */
-.email-link {
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.social-links {
-  display: flex;
-}
-
-.social-links a {
-  text-decoration: none;
   transition: all 0.3s ease;
 }
 
@@ -505,10 +484,6 @@ body.loading * {
   .projects-grid {
     grid-template-columns: 1fr !important;
   }
-
-  .social-links {
-    flex-direction: column;
-  }
 }
 
 /* ─── Custom Scrollbar Base ─── */
@@ -522,21 +497,14 @@ body.loading * {
 .hero-terminal,
 .hero-stats,
 .hero-blueprint-svg,
-.contact-blueprint-svg,
 .hero-annotation,
 .section-number,
 .section-prompt,
 .section-divider,
 .code-comment,
-.email-prefix,
 .cursor-blink,
-.contact-prompt,
-.footer-line,
-.footer-exit,
 .redline-note,
-.stamp,
 .coord-marker,
-.footer-scale,
 .cursor-coord,
 /* 90s Retro elements - hidden by default */
 .retro-marquee,
@@ -552,8 +520,7 @@ body.loading * {
   max-width: 100%;
 }
 
-.about-card,
-.contact-card {
+.about-card {
   position: relative;
   width: 100%;
 }
@@ -567,13 +534,6 @@ body.loading * {
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-/* ─── Tech Grid (legacy, kept for back-compat) ─── */
-.tech-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
 }
 
 /* ─── Craft block (replaces tech grid) ─── */
@@ -653,61 +613,7 @@ body.loading * {
   pointer-events: none;
 }
 
-/* ─── Responsive social links fix ─── */
-@media (max-width: 768px) {
-  .social-links {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-  }
-}
-
 /* ─── Blog Section Base ─── */
-.blog-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.blog-grid-loading {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem 0;
-}
-
-.skeleton-card {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  background: rgba(128, 128, 128, 0.1);
-  border-radius: 4px;
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
-}
-
-.skeleton-card::before {
-  content: '';
-  flex-shrink: 0;
-  width: 180px;
-  height: 120px;
-  background: rgba(128, 128, 128, 0.2);
-  border-radius: 4px;
-}
-
-.skeleton-card::after {
-  content: '';
-  flex: 1;
-  height: 80px;
-  background: rgba(128, 128, 128, 0.15);
-  border-radius: 4px;
-}
-
-@keyframes skeleton-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
 .blog-card {
   display: flex;
   text-decoration: none;
@@ -773,14 +679,6 @@ body.loading * {
   padding: 2rem 0;
 }
 
-.view-all-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
 .no-articles {
   text-align: center;
   padding: 2rem;
@@ -806,53 +704,6 @@ body.loading * {
   }
 }
 
-/* ─── Global Visitor Counter ─── */
-.visitor-counter {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  margin: 1rem auto;
-  font-family: inherit;
-  font-size: 0.9rem;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-.visitor-counter:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.visitor-icon {
-  font-size: 1.1rem;
-}
-
-.visitor-label {
-  opacity: 0.7;
-}
-
-.visitor-count {
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  min-width: 4ch;
-  text-align: center;
-}
-
-.visitor-count.loading {
-  animation: pulse 1.5s infinite;
-}
-
-/* ─── Writing Section ─── */
-.writing-intro {
-  margin-bottom: 1.75rem;
-  opacity: 0.75;
-  font-size: 0.95rem;
-  max-width: 38rem;
-}
-
 .projects-grid-hidden {
   display: none !important;
 }
@@ -873,88 +724,11 @@ body.loading * {
   flex-wrap: wrap;
 }
 
-/* Code comment markers around the intro — hidden by default, shown only in terminal */
-.code-comment-marker {
-  display: none;
-}
-body[data-theme="terminal"] .code-comment-marker {
-  display: inline;
-  opacity: 0.55;
-}
-
 .now-date {
   opacity: 0.7;
   font-variant-numeric: tabular-nums;
   font-size: 0.875em;
   letter-spacing: 0.02em;
-}
-
-.now-intro {
-  margin-bottom: 1.25rem;
-}
-
-.now-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-}
-
-.now-list-loading {
-  opacity: 0.5;
-  font-style: italic;
-}
-
-.now-item {
-  display: grid;
-  grid-template-columns: 1.5rem 7rem 1fr;
-  gap: 0.75rem;
-  align-items: baseline;
-  line-height: 1.55;
-}
-
-@media (max-width: 640px) {
-  .now-item {
-    grid-template-columns: 1.5rem 1fr;
-  }
-  .now-item .now-label {
-    grid-column: 2;
-  }
-  .now-item .now-value {
-    grid-column: 1 / -1;
-    padding-left: 2.25rem;
-  }
-}
-
-.now-arrow {
-  opacity: 0.6;
-}
-
-.now-label {
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 0.85em;
-  opacity: 0.75;
-}
-
-.now-value {
-  opacity: 0.95;
-}
-
-.now-link {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.15rem;
-}
-
-.now-link-arrow {
-  font-size: 0.85em;
-  opacity: 0.7;
 }
 
 /* ─── Hero Quote (intro paragraph, left-aligned) ─── */
@@ -971,20 +745,6 @@ body[data-theme="terminal"] .code-comment-marker {
   line-height: 1.7;
   font-size: inherit;
   color: inherit;
-}
-
-/* Legacy multi-line rules kept for back-compat with any cached HTML */
-.hero-quote-line {
-  margin: 0;
-  line-height: 1.6;
-  font-size: inherit;
-  color: inherit;
-}
-
-.hero-quote-final {
-  margin-top: 0.6rem;
-  font-weight: 600;
-  font-style: italic;
 }
 
 /* ── Interactive 3D heart (lazy-loaded, theme-aware) ─────────────────── */
