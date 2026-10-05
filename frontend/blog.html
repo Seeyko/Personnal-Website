@@ -243,7 +243,7 @@
 // Cache-busting for development
 (function() {
     const script = document.createElement('script');
-    const cacheBuster = window.location.hostname === 'localhost' ? '?v=' + Date.now() : '';
+    const cacheBuster = window.location.hostname === 'localhost' ? '?v=' + Date.now() : '?v=2026-10-05';
     script.src = '/js/blog.js' + cacheBuster;
     document.body.appendChild(script);
 })();

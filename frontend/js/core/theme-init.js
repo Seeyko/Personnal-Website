@@ -5,6 +5,14 @@
 const ThemeInit = (() => {
     let isInitialized = false;
 
+    // A theme switch reloads the page and theme-manager.js puts the visitor
+    // back where they were (sessionStorage, read and cleared on
+    // DOMContentLoaded — this file loads before it, so the key is still here).
+    // That saved spot is more recent than any #hash left in the URL, so it wins.
+    const restoringScroll = (() => {
+        try { return sessionStorage.getItem('portfolio_scroll') !== null; } catch { return false; }
+    })();
+
     async function init(config = {}) {
         const name = config.name || 'Theme';
         console.log(`%c[${name.toUpperCase()}] Initializing...`, 'color: #ffb000;');
@@ -74,6 +82,10 @@ const ThemeInit = (() => {
             document.body.classList.add('loaded');
             isInitialized = true;
 
+            // Arriving with a #hash (/#contact from the blog nav): put that
+            // section in place now that the page has its real height.
+            scrollToHashTarget();
+
             // Content is on screen now — dismiss the boot loader as a single,
             // coordinated reveal (loader fades out while #main-content fades in).
             // This is the moment that kills the old double-loader flash.
@@ -89,8 +101,84 @@ const ThemeInit = (() => {
         }
     }
 
+    // ─── #hash landing ───
+    // On a fresh load the browser jumps to the fragment as soon as the element
+    // is parsed, before the projects, timeline and footer have rendered and
+    // grown the page, so /#contact used to land a few sections off. Once the
+    // content is in, put the target just below the fixed header (or at its
+    // scroll-margin-top when that is larger, e.g. #contact's 120px), then hold
+    // it there while late layout settles (images, fonts) until the visitor
+    // scrolls. The boot loader still covers the page at this point, so the jump
+    // is instant and never seen; if the page is already showing, glide there
+    // unless reduced motion is requested.
+    const STOP_EVENTS = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
+
+    function hashTarget() {
+        let id = '';
+        try { id = decodeURIComponent(window.location.hash.slice(1)); } catch { return null; }
+        const el = id ? document.getElementById(id) : null;
+        return el && el.getClientRects().length ? el : null;
+    }
+
+    function headerOffset() {
+        const header = document.querySelector('header.header');
+        if (!header) return 0;
+        const position = getComputedStyle(header).position;
+        if (position !== 'fixed' && position !== 'sticky') return 0;
+        return Math.max(0, header.getBoundingClientRect().bottom);
+    }
+
+    function targetScrollY(el) {
+        const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+        const y = el.getBoundingClientRect().top + window.scrollY - Math.max(margin, headerOffset());
+        const maxY = document.documentElement.scrollHeight - window.innerHeight;
+        return Math.round(Math.max(0, Math.min(y, maxY)));
+    }
+
+    function scrollToHashTarget() {
+        if (restoringScroll) return;
+        // Reload / back-forward: the browser restores the visitor's own spot.
+        const nav = performance.getEntriesByType?.('navigation')?.[0];
+        if (nav && nav.type !== 'navigate') return;
+        const el = hashTarget();
+        if (!el) return;
+
+        const loader = document.getElementById('loading-screen');
+        const covered = loader && !loader.classList.contains('hidden');
+        const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        if (!covered && !reduced) {
+            window.scrollTo({ top: targetScrollY(el), behavior: 'smooth' });
+            return;
+        }
+
+        // html has scroll-behavior: smooth; pause it so each correction snaps.
+        const html = document.documentElement;
+        const prevBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
+        let done = false;
+        const stop = () => {
+            if (done) return;
+            done = true;
+            html.style.scrollBehavior = prevBehavior;
+            STOP_EVENTS.forEach(type => window.removeEventListener(type, stop));
+        };
+        STOP_EVENTS.forEach(type => window.addEventListener(type, stop, { passive: true }));
+
+        const deadline = performance.now() + 2500;
+        (function pin() {
+            if (done) return;
+            const y = targetScrollY(el);
+            if (Math.abs(window.scrollY - y) > 1) window.scrollTo(0, y);
+            performance.now() < deadline ? requestAnimationFrame(pin) : stop();
+        })();
+    }
+
+    // Themes hand blog.js their card renderer from the top of their script,
+    // which ThemeManager loads after the theme CSS. Announce it so blog.js can
+    // render the moment it lands instead of polling for it.
     function exportBlogRenderer(renderer) {
         window.ThemeBlogCardRenderer = renderer;
+        window.dispatchEvent(new Event('blogRendererReady'));
     }
 
     function whenReady(fn) {

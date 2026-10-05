@@ -68,6 +68,12 @@ async function fetchArticle(slug, shareToken) {
     }
 }
 
+// Cover paths come back relative to the API (/api/articles/<slug>/image/...).
+function withApiCovers(articles) {
+    const apiBase = Utils.getApiBaseUrl();
+    return articles.map(a => ({ ...a, coverImage: a.coverImage ? `${apiBase}${a.coverImage}` : null }));
+}
+
 async function fetchArticles(page = 1) {
     const apiBase = Utils.getApiBaseUrl();
     const lang = window.LanguageManager?.currentLang || 'fr';
@@ -75,12 +81,7 @@ async function fetchArticles(page = 1) {
         const response = await fetch(`${apiBase}/api/articles?page=${page}&lang=${lang}`);
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
-        if (data.articles) {
-            data.articles = data.articles.map(a => ({
-                ...a,
-                coverImage: a.coverImage ? `${apiBase}${a.coverImage}` : null
-            }));
-        }
+        if (data.articles) data.articles = withApiCovers(data.articles);
         return data;
     } catch {
         return { articles: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0, hasNext: false, hasPrev: false } };
@@ -295,93 +296,122 @@ function showNotFound() {
     document.getElementById('pagination').innerHTML = '';
 }
 
+// blog.js owns the list reveal. The cards carry the home page's scroll-reveal
+// class (.fade-in-up: opacity 0, plus a CSS keyframe on this page whose
+// fill-mode pinned the transform) and every theme gives .blog-card a
+// `transition: all`, which replayed GSAP's frames with a lag (retro90s cards
+// dipped back to ~0.2 opacity mid-reveal). So: drop the class, switch the
+// transition off while GSAP runs, then hand opacity/transform back to the
+// stylesheet so the themes' hover lift works again.
 function initListAnimations() {
-    const cards = document.querySelectorAll('.blog-list-card');
+    const cards = [...document.querySelectorAll('#blog-list .blog-list-card')];
     if (!cards.length) return;
+    cards.forEach(card => card.classList.remove('fade-in-up'));
 
-    // Use GSAP if available
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
     if (typeof gsap !== 'undefined') {
-        gsap.utils.toArray(cards).forEach((card, i) => {
-            gsap.fromTo(card, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, delay: i * 0.1, ease: 'power3.out' });
+        gsap.set(cards, { transition: 'none' });
+        gsap.fromTo(cards, { opacity: 0, y: 30 }, {
+            opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power3.out',
+            clearProps: 'transition,transform,opacity'
         });
         return;
     }
 
-    // Native fallback: staggered CSS animations
-    cards.forEach((card, i) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(30px)';
-        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    // No GSAP: Web Animations sit above the cascade without touching the
+    // inline style, so the CSS transition never sees them and nothing is left
+    // behind once they finish.
+    cards.forEach((card, i) => card.animate?.(
+        [{ opacity: 0, transform: 'translateY(30px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 500, delay: i * 100, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'backwards' }
+    ));
+}
 
-        // Stagger the animations
-        setTimeout(() => {
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, i * 100);
+// The theme script, which ThemeManager loads right after the theme CSS, hands
+// over its card renderer via ThemeInit.exportBlogRenderer() (all five themes
+// do). Wait for that announcement, or for the page to be revealed without it
+// (theme failed to load or hit the loader's safety timeout): generic cards then.
+function themeReady() {
+    return new Promise(resolve => {
+        const body = document.body;
+        if (window.ThemeBlogCardRenderer || !body.classList.contains('loading')) return resolve();
+        const observer = new MutationObserver(() => { if (!body.classList.contains('loading')) done(); });
+        function done() {
+            observer.disconnect();
+            window.removeEventListener('blogRendererReady', done);
+            resolve();
+        }
+        window.addEventListener('blogRendererReady', done);
+        observer.observe(body, { attributes: true, attributeFilter: ['class'] });
     });
 }
 
-function waitForThemeRenderer(timeout = 2000) {
-    return new Promise(resolve => {
-        if (window.ThemeBlogCardRenderer) return resolve(true);
-        const start = Date.now();
-        const check = setInterval(() => {
-            if (window.ThemeBlogCardRenderer) { clearInterval(check); resolve(true); }
-            else if (Date.now() - start > timeout) { clearInterval(check); resolve(false); }
-        }, 50);
-    });
+function revealPage() {
+    document.body.classList.add('loaded');
+    if (window.ThemeManager?.hideLoading) {
+        ThemeManager.hideLoading();
+        return;
+    }
+    document.body.classList.remove('loading');
+    document.getElementById('loading-screen')?.classList.add('hidden');
 }
 
 async function initBlog() {
+    const { view, slug, page, shareToken } = getViewFromURL();
+    const ssrData = window.__SSR_DATA__;
+    const isArticle = view === 'article' && slug;
+    const ssrArticle = isArticle && ssrData?.article?.slug === slug ? ssrData.article : null;
+    const ssrList = !isArticle && Array.isArray(ssrData?.articles) ? ssrData : null;
+
+    // Whatever the server didn't render is requested right away, alongside
+    // the language and theme loading (the language is known synchronously).
+    const request = isArticle
+        ? (ssrArticle ? null : fetchArticle(slug, shareToken))
+        : (ssrList ? null : fetchArticles(page || 1));
+
     // Ensure i18n is ready before rendering
     if (window.LanguageManager && !LanguageManager.isLoaded) {
         await LanguageManager.init();
     }
+    // The list needs the theme's card renderer; revealing the page needs the
+    // theme CSS, which is in by the time the renderer is.
+    await themeReady();
 
-    const { view, slug, page, shareToken } = getViewFromURL();
-    await waitForThemeRenderer();
-
-    // Check for server-side rendered content
-    const ssrData = window.__SSR_DATA__;
-
-    if (view === 'article' && slug) {
-        if (ssrData?.article && ssrData.article.slug === slug) {
+    if (isArticle) {
+        if (ssrArticle) {
             // SSR: content already in DOM
             document.getElementById('blog-listing').style.display = 'none';
             document.getElementById('article-view').style.display = 'block';
-
-            if (ssrData.article.requiresPassword) {
+            if (ssrArticle.requiresPassword) {
                 showPasswordPrompt({ slug, requiresPassword: true });
             }
-            // else: HTML already rendered by Go template, nothing to do
         } else {
             // Client-side navigation: fetch and render
-            const article = await fetchArticle(slug, shareToken);
+            const article = await request;
             article ? renderArticle(article) : showNotFound();
         }
-    } else {
-        if (ssrData?.articles && ssrData.articles.length > 0) {
-            // SSR: article list already in DOM, just animate and wire pagination.
-            // Sync currentPage with what the server rendered so subsequent
-            // "Load more" clicks request the right next page.
-            currentPage = ssrData.pagination?.page || page || 1;
-            initListAnimations();
-            if (ssrData.pagination) {
-                renderPagination(ssrData.pagination);
-            }
-        } else if (!ssrData?.articles) {
-            // No SSR data: fetch client-side (e.g. client-side navigation)
-            currentPage = page || 1;
-            const data = await fetchArticles(currentPage);
-            renderArticleList(data.articles);
-            renderPagination(data.pagination);
+    } else if (ssrList) {
+        // Sync currentPage with what the server rendered so subsequent
+        // "Load more" clicks request the right next page.
+        currentPage = ssrList.pagination?.page || page || 1;
+        if (ssrList.articles.length) {
+            // The server's plain cards are there for crawlers and no-JS
+            // visitors; swap in the theme's own cards, as on a client render.
+            window.ThemeBlogCardRenderer
+                ? renderArticleList(withApiCovers(ssrList.articles))
+                : initListAnimations();
+            if (ssrList.pagination) renderPagination(ssrList.pagination);
         }
-        // If ssrData.articles is an empty array, the template already shows "no articles"
+        // If ssrList.articles is empty, the template already shows "no articles"
+    } else {
+        currentPage = page || 1;
+        const data = await request;
+        renderArticleList(data.articles);
+        renderPagination(data.pagination);
     }
 
-    document.body.classList.remove('loading');
-    document.body.classList.add('loaded');
-    document.getElementById('loading-screen')?.classList.add('hidden');
+    revealPage();
 }
 
 window.addEventListener('popstate', async () => {
