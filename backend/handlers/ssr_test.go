@@ -133,3 +133,82 @@ func TestBlogTemplateMatchesFrontendPage(t *testing.T) {
 		t.Errorf("template header drifted from frontend/blog.html:\n got: %s\nwant: %s", got, want)
 	}
 }
+
+// The articles must come in the language of the UI around them: detectLang
+// follows the same order as the frontend's LanguageManager (?lang, the `lang`
+// cookie it writes, the browser's ranked languages, then French).
+func TestDetectLang(t *testing.T) {
+	h := &SSRHandler{}
+	cases := []struct{ name, query, cookie, accept, want string }{
+		{"no header (crawler)", "", "", "", "fr"},
+		{"English browser", "", "", "en-US", "en"},
+		{"French browser", "", "", "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7", "fr"},
+		{"English first, French listed too", "", "", "en-US,en;q=0.9,fr;q=0.8", "en"},
+		{"q-values win over order", "", "", "fr;q=0.5, en;q=0.8", "en"},
+		{"other language first, then English", "", "", "de-DE,de;q=0.9,en;q=0.8", "en"},
+		{"neither language", "", "", "de-DE,de;q=0.9", "fr"},
+		{"English refused", "", "", "en;q=0", "fr"},
+		{"cookie beats Accept-Language", "", "fr", "en-US", "fr"},
+		{"cookie en on a French browser", "", "en", "fr-FR,fr", "en"},
+		{"?lang beats the cookie", "lang=en", "fr", "fr-FR", "en"},
+		{"unknown cookie ignored", "", "de", "en-US", "en"},
+		{"unknown ?lang ignored", "lang=de", "", "en-GB", "en"},
+	}
+	for _, c := range cases {
+		r := httptest.NewRequest(http.MethodGet, "/blog/?"+c.query, nil)
+		if c.cookie != "" {
+			r.AddCookie(&http.Cookie{Name: "lang", Value: c.cookie})
+		}
+		if c.accept != "" {
+			r.Header.Set("Accept-Language", c.accept)
+		}
+		if got := h.detectLang(r); got != c.want {
+			t.Errorf("%s: detectLang = %q, want %q", c.name, got, c.want)
+		}
+	}
+}
+
+// What crawlers get is unchanged: no cookie and no Accept-Language means the
+// French canonical page, with its English alternate.
+func TestBlogLanguageSEO(t *testing.T) {
+	srv := newTestSSRServer(t)
+	fetch := func(path, accept string) string {
+		t.Helper()
+		req, err := http.NewRequest(http.MethodGet, srv.URL+path, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if accept != "" {
+			req.Header.Set("Accept-Language", accept)
+		}
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer res.Body.Close()
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return string(body)
+	}
+
+	cases := []struct{ path, accept, lang, canonical, alt string }{
+		{"/blog/", "", "fr", "https://tomandrieu.com/blog/", `hreflang="en" href="https://tomandrieu.com/blog/?lang=en"`},
+		{"/blog/bonjour/", "", "fr", "https://tomandrieu.com/blog/bonjour/", `hreflang="en" href="https://tomandrieu.com/blog/bonjour/?lang=en"`},
+		{"/blog/?lang=en", "", "en", "https://tomandrieu.com/blog/?lang=en", `hreflang="fr" href="https://tomandrieu.com/blog/"`},
+		{"/blog/", "en-US,en;q=0.9,fr;q=0.8", "en", "https://tomandrieu.com/blog/?lang=en", `hreflang="fr" href="https://tomandrieu.com/blog/"`},
+	}
+	for _, c := range cases {
+		html := fetch(c.path, c.accept)
+		if !strings.Contains(html, `<html lang="`+c.lang+`">`) {
+			t.Errorf("%s (%q): page not rendered in %s", c.path, c.accept, c.lang)
+		}
+		if !strings.Contains(html, `<link rel="canonical" href="`+c.canonical+`" />`) {
+			t.Errorf("%s (%q): canonical is not %s", c.path, c.accept, c.canonical)
+		}
+		if !strings.Contains(html, c.alt) {
+			t.Errorf("%s (%q): missing alternate %s", c.path, c.accept, c.alt)
+		}
+	}
+}

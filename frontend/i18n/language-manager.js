@@ -1,12 +1,29 @@
 /**
  * Language Manager - i18n for the portfolio
- * Detection: URL param > localStorage > browser > default
+ * Detection: URL param > server-rendered page > localStorage > browser > default
+ *
+ * The production blog is rendered by the Go SSR (backend/handlers/ssr.go),
+ * which picks the articles' language itself: ?lang, then the `lang` cookie,
+ * then Accept-Language. Both sides agree on one choice: every language settled
+ * here is also written to that cookie, the browser fallback ranks languages
+ * the way the SSR reads Accept-Language, and on a server-rendered page the UI
+ * takes the language the server rendered in. So the blog's articles are always
+ * in the language of the UI around them.
  */
 
 const LanguageManager = (() => {
     const SUPPORTED_LANGS = ['en', 'fr'];
     const DEFAULT_LANG = 'fr';
     const STORAGE_KEY = 'portfolio_lang';
+    const COOKIE_NAME = 'lang'; // read by the Go SSR (detectLang)
+
+    // A Go-rendered page declares window.__SSR_DATA__ and states the language
+    // of its content in <html lang> (read now, before init() rewrites it).
+    const SERVER_LANG = (() => {
+        if (window.__SSR_DATA__ === undefined) return null;
+        const lang = document.documentElement.lang;
+        return SUPPORTED_LANGS.includes(lang) ? lang : null;
+    })();
 
     // Known from the start (detection is synchronous), so anything rendered
     // before init() resolves already reads the right language. init() only
@@ -24,15 +41,31 @@ const LanguageManager = (() => {
         const urlLang = new URLSearchParams(window.location.search).get('lang');
         if (urlLang && SUPPORTED_LANGS.includes(urlLang)) return urlLang;
 
+        // The articles on this page are already in this language.
+        if (SERVER_LANG) return SERVER_LANG;
+
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved && SUPPORTED_LANGS.includes(saved)) return saved;
         } catch {}
 
-        const browser = navigator.language?.split('-')[0];
-        if (browser && SUPPORTED_LANGS.includes(browser)) return browser;
+        // First supported language in the browser's ranked list, as the SSR
+        // reads Accept-Language ("en-US, fr" → en; "de, en" → en; "de" → default).
+        const ranked = navigator.languages?.length ? navigator.languages : [navigator.language];
+        const browser = ranked
+            .map(tag => String(tag || '').split('-')[0].toLowerCase())
+            .find(lang => SUPPORTED_LANGS.includes(lang));
+        return browser || DEFAULT_LANG;
+    }
 
-        return DEFAULT_LANG;
+    // Where the language is kept: localStorage for this script, the cookie for
+    // the SSR, so the next /blog request is rendered in the same language.
+    function remember(lang) {
+        try { localStorage.setItem(STORAGE_KEY, lang); } catch {}
+        try {
+            const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+            document.cookie = `${COOKIE_NAME}=${lang}; path=/; max-age=31536000; SameSite=Lax${secure}`;
+        } catch {}
     }
 
     async function loadTranslations(lang) {
@@ -104,7 +137,7 @@ const LanguageManager = (() => {
             }
         }
 
-        try { localStorage.setItem(STORAGE_KEY, currentLang); } catch {}
+        remember(currentLang);
         const url = new URL(window.location);
         url.searchParams.set('lang', currentLang);
         window.history.replaceState({}, '', url);
@@ -123,12 +156,7 @@ const LanguageManager = (() => {
         const themeId = window.ThemeManager?.getCurrentThemeId?.();
         if (themeId) await loadThemeTranslations(themeId, lang);
 
-        try { localStorage.setItem(STORAGE_KEY, lang); } catch {}
-        // Set cookie for SSR language detection (Secure on HTTPS only).
-        try {
-            const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-            document.cookie = `lang=${lang}; path=/; max-age=31536000; SameSite=Lax${secure}`;
-        } catch {}
+        remember(lang);
         const url = new URL(window.location);
         url.searchParams.set('lang', lang);
         window.history.replaceState({}, '', url);
