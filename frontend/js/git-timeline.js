@@ -395,6 +395,10 @@ const GitTimeline = (() => {
                 const marker = document.createElement('div');
                 marker.className = `git-commit-marker git-commit-${branch.type} ${ongoing ? 'ongoing' : ''}`;
                 marker.dataset.branchId = branch.id;
+                // Reachable and operable from the keyboard (see setupEvents())
+                marker.tabIndex = 0;
+                marker.setAttribute('role', 'button');
+                marker.setAttribute('aria-expanded', 'false');
                 //Do not show hash for the first one
                 //marker.dataset.commitHash = commit.hash;
                 // All markers sit centered on the branch line — keeping them
@@ -531,6 +535,7 @@ const GitTimeline = (() => {
      */
     function createOverlay() {
         if (overlay) overlay.remove();
+        activeCommit = null; // its marker went away with the previous render
 
         overlay = document.createElement('div');
         overlay.className = 'git-timeline-overlay';
@@ -587,6 +592,8 @@ const GitTimeline = (() => {
         overlay.className = `git-timeline-overlay active git-overlay-${branchType} fixed-corner`;
         placeOverlay(card);
 
+        if (activeCommit && activeCommit !== card) activeCommit.setAttribute('aria-expanded', 'false');
+        card.setAttribute('aria-expanded', 'true');
         activeCommit = card;
     }
 
@@ -625,7 +632,20 @@ const GitTimeline = (() => {
         if (overlay) {
             overlay.classList.remove('active');
         }
+        activeCommit?.setAttribute('aria-expanded', 'false');
         activeCommit = null;
+    }
+
+    /**
+     * Click / tap / Enter / Space on a marker: open it, or close it when it
+     * is the one already shown.
+     */
+    function toggleOverlay(marker) {
+        if (activeCommit === marker && overlay?.classList.contains('active')) {
+            hideOverlay();
+        } else {
+            showOverlay(marker);
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -643,20 +663,31 @@ const GitTimeline = (() => {
      * setupGlobalListeners().
      */
     function setupEvents() {
-        // Commit marker hover/click
+        // Commit marker hover/click.
+        // Hover-to-preview is for a real mouse only (pointerType 'mouse').
+        // A tap on a touch screen also fires the compatibility mouseenter
+        // before its click: with mouseenter listeners that opened the overlay
+        // and the click right after toggled it shut, so on a touch device
+        // with the desktop layout (iPad landscape) it only flashed. Touch and
+        // pen now go through the click toggle alone: tap opens, tap again
+        // closes.
         document.querySelectorAll('.git-commit-marker').forEach(marker => {
-            marker.addEventListener('mouseenter', () => showOverlay(marker));
-            marker.addEventListener('mouseleave', (e) => {
-                if (!overlay?.contains(e.relatedTarget)) {
+            marker.addEventListener('pointerenter', (e) => {
+                if (e.pointerType === 'mouse') showOverlay(marker);
+            });
+            marker.addEventListener('pointerleave', (e) => {
+                if (e.pointerType === 'mouse' && !overlay?.contains(e.relatedTarget)) {
                     hideOverlay();
                 }
             });
             marker.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (activeCommit === marker && overlay?.classList.contains('active')) {
-                    hideOverlay();
-                } else {
-                    showOverlay(marker);
+                toggleOverlay(marker);
+            });
+            marker.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault(); // Space would scroll the page
+                    toggleOverlay(marker);
                 }
             });
         });
@@ -664,7 +695,9 @@ const GitTimeline = (() => {
         // Overlay hover (overlay is recreated by createOverlay() each render,
         // and the old one is removed, so this does not accumulate)
         if (overlay) {
-            overlay.addEventListener('mouseleave', hideOverlay);
+            overlay.addEventListener('pointerleave', (e) => {
+                if (e.pointerType === 'mouse') hideOverlay();
+            });
         }
 
         // Listeners on window/document/scroll container — bound exactly once
@@ -683,10 +716,22 @@ const GitTimeline = (() => {
         globalListenersBound = true;
 
         // Click outside → hide overlay
+        const isOutside = (target) =>
+            !target.closest?.('.git-commit-marker') && !target.closest?.('.git-timeline-overlay');
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.git-commit-marker') && !e.target.closest('.git-timeline-overlay')) {
-                hideOverlay();
-            }
+            if (isOutside(e.target)) hideOverlay();
+        });
+        // Tap outside → hide overlay. iOS Safari does not fire click on a tap
+        // over a non-interactive element, so the click listener above can
+        // miss it. pointerup only ends a tap: a scroll gesture ends in
+        // pointercancel, so scrolling the page leaves the overlay open.
+        document.addEventListener('pointerup', (e) => {
+            if (e.pointerType !== 'mouse' && isOutside(e.target)) hideOverlay();
+        });
+
+        // Escape → hide overlay
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && activeCommit) hideOverlay();
         });
 
         // Update overlay position on scroll (reads the module-scoped
@@ -744,11 +789,17 @@ const GitTimeline = (() => {
             scrollContainer.scrollLeft += e.deltaY * 1.5;
         }, { passive: false });
 
-        // Re-render on resize to recalculate yearWidth
+        // Re-render on resize to recalculate yearWidth. Width only: the layout
+        // does not depend on the height, and touch browsers fire height-only
+        // resizes when their toolbars slide on scroll — re-rendering then
+        // would close an overlay the user just opened.
         let resizeTimeout;
+        let lastWidth = window.innerWidth;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
+                if (window.innerWidth === lastWidth) return;
+                lastWidth = window.innerWidth;
                 if (data) render();
             }, 250);
         });
