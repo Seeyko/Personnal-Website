@@ -240,7 +240,8 @@ function initFpsEffects() {
     // hide and the #main-content padding that reserves space for that chrome on
     // this class. The blog gets the same HUD: what needs the home page's
     // sections degrades there (the rail jumps to /#section, the radar stays at
-    // spawn, the scroll-spy and callouts find nothing to mark).
+    // spawn, the scroll-spy and callouts find nothing to mark). The admin page
+    // never runs this (ThemeInit skips theme effects there).
     document.body.classList.add('fps-hud');
     injectScene();
     injectHud();

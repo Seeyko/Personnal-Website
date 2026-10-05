@@ -75,7 +75,11 @@ const ThemeInit = (() => {
             }
 
             if (config.konami && window.KonamiCode) KonamiCode.init(config.konami);
-            if (config.initEffects) config.initEffects();
+            // Theme effects (fps HUD, retro assistant, terminal enderman...) run on
+            // the home page and the blog; the admin page is a tool and stays
+            // CSS-only.
+            const onAdmin = !!document.querySelector('.admin-section');
+            if (config.initEffects && !onAdmin) config.initEffects();
             if (window.LanguageSwitcher) LanguageSwitcher.init();
 
             document.body.classList.remove('loading');
