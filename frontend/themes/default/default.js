@@ -35,39 +35,48 @@ const defaultThemeConfig = {
 
     // Ready callback
     onReady: () => {
-        console.log('%c✦ Default theme loaded', 'color: #0f766e;');
+        console.log('%c✦ Default theme loaded', 'color: #3d7a73;');
     }
 };
 
 // ─── Theme-Specific Effects ───
 function initDefaultEffects() {
-    initRevealAnimation();
+    // The reveals were measured before the timeline rendered, and About now
+    // sits below it: measure again so its reveal fires when it comes in view.
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
+    settleRevealAnimations();
     initDefaultSfx();
 }
 
 // ─── Smooth Reveal Animation ───
-function initRevealAnimation() {
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        },
-        { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
-    );
+// ScrollEffects (GSAP + ScrollTrigger, observer fallback) already reveals the
+// cards as they scroll in; a second reveal here used to fight it. What this
+// theme adds: once a card has arrived, hand it back to the stylesheet (GSAP
+// leaves an inline transform behind that cancels the CSS hover lift), and
+// with reduced motion, show everything in place straight away.
+function settleRevealAnimations() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
 
-    // Observe cards and sections after a short delay to allow rendering
-    setTimeout(() => {
-        document.querySelectorAll('.project-card, .about-card, .contact-card').forEach((el) => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            observer.observe(el);
-        });
-    }, 100);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const settle = (el) => {
+        el.classList.add('visible'); // .fade-in-up rests at opacity 0 without it
+        gsap.set(el, { clearProps: 'transform,translate,rotate,scale,opacity' });
+    };
+
+    ScrollTrigger.getAll().forEach((st) => {
+        const tween = st.animation;
+        const el = st.trigger;
+        if (!tween || !el) return;
+        const isCard = el.matches('.project-card, .about-card, .blog-card');
+
+        if (reduceMotion) {
+            tween.progress(1);
+            st.kill();
+            if (isCard) settle(el);
+        } else if (isCard) {
+            tween.progress() === 1 ? settle(el) : tween.eventCallback('onComplete', () => settle(el));
+        }
+    });
 }
 
 // ─── Default Sound Design (synthesized with Web Audio, no assets) ───
@@ -182,16 +191,19 @@ function initDefaultSfx() {
 
 // ─── Konami Code Handler ───
 function handleKonami() {
-    console.log('%c You found the easter egg!', 'color: #0f766e; font-size: 16px;');
+    console.log('%c You found the easter egg!', 'color: #3d7a73; font-size: 16px;');
     if (window.SFX) SFX.play('konami');
 
     // Subtle color shift
-    document.documentElement.style.setProperty('--accent', '#6366f1');
-    document.documentElement.style.setProperty('--accent-hover', '#818cf8');
+    const root = document.documentElement.style;
+    root.setProperty('--accent', '#6366f1');
+    root.setProperty('--accent-hover', '#818cf8');
 
+    // Hand the accent back to the stylesheet (a hard-coded reset used to
+    // leave the page on a different teal than the theme's).
     setTimeout(() => {
-        document.documentElement.style.setProperty('--accent', '#0f766e');
-        document.documentElement.style.setProperty('--accent-hover', '#0d9488');
+        root.removeProperty('--accent');
+        root.removeProperty('--accent-hover');
     }, 5000);
 }
 

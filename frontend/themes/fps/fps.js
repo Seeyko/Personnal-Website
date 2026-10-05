@@ -151,18 +151,19 @@ if (window.SFX) SFX.register('fps', {
 /* ───────────────────────── de_dust2 callouts ─────────────────────────
    Each real section is a spot on the map. The same callouts drive the radar
    (player dot walks T spawn → Long → A → CT → B as you scroll), the stencil
-   tags painted next to the section titles and the rail tooltips. */
+   tags painted next to the section titles and the rail tooltips. Listed in
+   page order: the walk follows the sections as they come down the page. */
 const FPS_CALLOUTS = {
     hero: 'T SPAWN',
     now: 'OUTSIDE LONG',
     work: 'LONG A',
-    about: 'A SITE',
-    timeline: 'CT SPAWN',
+    timeline: 'A SITE',
+    about: 'CT SPAWN',
     contact: 'B SITE',
     footer: 'B SITE'
 };
 // Radar route (radar viewBox 0 0 200 200). ROUTE[i] is the walk from the
-// i-th anchor (hero, now, work, about, timeline, contact) to the next one.
+// i-th anchor (hero, now, work, timeline, about, contact) to the next one.
 const FPS_ROUTE = [
     [[95, 178], [128, 172], [150, 169]],
     [[150, 169], [168, 152], [172, 112]],
@@ -188,6 +189,11 @@ function fpsWeapon(n) { return FPS_WEAPONS[(n - 1) % FPS_WEAPONS.length]; }
 function fpsWeaponSvg(w) { return `<svg viewBox="0 0 64 22" fill="currentColor" aria-hidden="true"><path d="${w.d}"/></svg>`; }
 function fpsPrice(n) { return FPS_PRICES[(n - 1) % FPS_PRICES.length]; }
 function fpsMoney(v) { return v ? '$' + String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : 'FREE'; }
+// Theme string from i18n/themes/fps (LanguageManager.t echoes the key back when it's missing).
+function fpsT(key, fallback) {
+    const v = window.LanguageManager && LanguageManager.t(key);
+    return typeof v === 'string' && v !== key ? v : fallback;
+}
 
 const fpsThemeConfig = {
     name: 'FPS',
@@ -232,9 +238,10 @@ function initFpsEffects() {
     // Flags that the HUD chrome (background scene, left rail, side panel,
     // HUD bar, crosshair, ribbon) is present. CSS gates the native-cursor
     // hide and the #main-content padding that reserves space for that chrome on
-    // this class — so pages that never reach here (the blog and admin, where
-    // ThemeInit skips initEffects) keep their native cursor and stay centered
-    // instead of clearing absent chrome.
+    // this class. The blog gets the same HUD: what needs the home page's
+    // sections degrades there (the rail jumps to /#section, the radar stays at
+    // spawn, the scroll-spy and callouts find nothing to mark). The admin page
+    // never runs this (ThemeInit skips theme effects there).
     document.body.classList.add('fps-hud');
     injectScene();
     injectHud();
@@ -243,6 +250,7 @@ function initFpsEffects() {
     injectScoreboard();
     injectMenuChrome();
     injectCallouts();
+    relabelAbout();
     buildSidePanel();
     initCrosshairAndFx();
     initParallax();
@@ -252,6 +260,10 @@ function initFpsEffects() {
     initKillfeed();
     initFooterHandoff();
     bindSfx();
+    // The reveals were measured before the timeline rendered and before the
+    // chrome above was injected: measure again so About's reveal (now below
+    // the timeline) fires when it comes in view.
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
 }
 
 // Dust II at noon, fixed behind the scrolling content: a hazy sky, the
@@ -355,14 +367,14 @@ function injectScene() {
     document.body.insertBefore(scene, document.body.firstChild);
 }
 
-// Left icon rail (maps to the real sections) + mute toggle.
+// Left icon rail (maps to the real sections, in page/nav order) + mute toggle.
 function injectHud() {
     if (document.getElementById('fps-rail')) return;
     const SECTIONS = [
         { id: 'now', label: 'Now', icon: '<path d="M8 5v14l11-7z"/>', fill: true },
         { id: 'work', label: 'Buy', icon: '<rect x="3" y="7" width="18" height="13"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>' },
-        { id: 'about', label: 'Profile', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>' },
         { id: 'timeline', label: 'Log', icon: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>' },
+        { id: 'about', label: 'Profile', icon: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>' },
         { id: 'contact', label: 'Invite', icon: '<path d="M12 3v9"/><path d="M6.6 6.6a8 8 0 1 0 10.8 0"/>', warn: true }
     ];
     const rail = document.createElement('nav');
@@ -390,7 +402,10 @@ function injectHud() {
             return;
         }
         const target = document.getElementById(btn.dataset.target);
-        if (target) { target.scrollIntoView({ behavior: RM_FPS ? 'auto' : 'smooth', block: 'start' }); FpsSound.tab(); }
+        // Same landing as the #hash (below the header, reduced motion honoured).
+        if (target) { ThemeInit.scrollToSection(target); FpsSound.tab(); }
+        // Not on this page (the blog): the section lives on the home page.
+        else window.location.href = `/#${btn.dataset.target}`;
     });
     // Icon follows the shared bus state — button click OR window.sound() in console.
     const muteBtn = document.getElementById('fps-mute');
@@ -473,7 +488,7 @@ function injectMenuChrome() {
         rib.setAttribute('aria-hidden', 'true');
         rib.innerHTML = `<span><b>de_dust2</b> &middot; de_portfolio</span>
             <span class="fps-ribbon-sep">|</span>
-            <span>bouge la souris &middot; clique pour tirer &middot; scrolle pour avancer sur la map</span>`;
+            <span>${fpsT('fps.hint', 'bouge la souris · clique pour tirer · scrolle pour avancer sur la map')}</span>`;
         document.body.appendChild(rib);
     }
 
@@ -492,7 +507,7 @@ function injectMenuChrome() {
         const newsH = document.createElement('div');
         newsH.className = 'fps-menu-h fps-news-h';
         newsH.setAttribute('aria-hidden', 'true');
-        newsH.innerHTML = `<span><span class="fps-h-dot"></span>NEWS &middot; EN CE MOMENT</span>
+        newsH.innerHTML = `<span><span class="fps-h-dot"></span>${fpsT('fps.news', 'NEWS · EN CE MOMENT')}</span>
             <span class="fps-clock" id="fps-clock">--:--:--</span>`;
         hero.insertBefore(newsH, hero.firstChild);
     }
@@ -500,7 +515,7 @@ function injectMenuChrome() {
     // Secondary ghost CTA next to the filled hero CTA. Text is i18n-driven.
     const heroCta = document.getElementById('hero-cta');
     if (heroCta && !document.getElementById('fps-cta-ghost')) {
-        const label = (window.LanguageManager && LanguageManager.t('ui.seeWork')) || 'Voir le travail';
+        const label = fpsT('ui.seeWork', 'Voir le travail');
         const ghost = document.createElement('a');
         ghost.id = 'fps-cta-ghost';
         ghost.className = 'hero-cta fps-cta-ghost';
@@ -516,7 +531,7 @@ function injectMenuChrome() {
         buyH.id = 'fps-buy-h';
         buyH.className = 'fps-menu-h fps-buy-menu-h';
         buyH.setAttribute('aria-hidden', 'true');
-        buyH.innerHTML = `<span><span class="fps-h-dot"></span>BUY MENU &middot; WORK</span>
+        buyH.innerHTML = `<span><span class="fps-h-dot"></span>${fpsT('fps.buyMenu', 'BUY MENU · WORK')}</span>
             <span class="fps-buy-budget">BUDGET <b>$16&nbsp;000</b></span>`;
         workGrid.parentNode.insertBefore(buyH, workGrid);
     }
@@ -568,6 +583,15 @@ function injectCallouts() {
     });
 }
 
+// The about card's "/* … */" code comments are a terminal idiom: retitle
+// them as CS2 player-card sub-headers, and drop the spec keys' trailing
+// colons (HUD stat lists don't use them).
+function relabelAbout() {
+    const labels = [fpsT('fps.bio', 'BIO'), fpsT('fps.playstyle', 'PLAYSTYLE'), fpsT('fps.loadout', 'LOADOUT')];
+    document.querySelectorAll('#about .code-comment').forEach((el, i) => { if (labels[i]) el.textContent = labels[i]; });
+    document.querySelectorAll('#about .spec-key').forEach(el => { el.textContent = el.textContent.replace(/\s*:\s*$/, ''); });
+}
+
 // Radar + profile/rank card + friends list, injected on the right. Data comes
 // from the already-populated DOM (social links + email + proof stats) so it
 // stays i18n-correct and never hardcodes content.
@@ -580,10 +604,14 @@ function buildSidePanel() {
     const rawTier = (content.meta && content.meta.title) || 'PRODUCT BUILDER';
     const tier = rawTier.split('·')[0].trim() || rawTier;
 
+    // The blog has no hero to read them from: same figures, same labels.
     const proof = fpsProofStats();
-    const statsHtml = proof.length
-        ? proof.map(p => `<div class="fps-stat"><b>${p.n}</b><small>${p.l}</small></div>`).join('')
-        : '<div class="fps-stat"><b>8+</b><small>years</small></div><div class="fps-stat"><b>30K</b><small>users</small></div><div class="fps-stat"><b>4</b><small>products</small></div>';
+    const stats = proof.length ? proof : [
+        { n: '8+', l: fpsT('stats.yearsExperience', 'years') },
+        { n: '30K+', l: fpsT('stats.usersReached', 'users') },
+        { n: '4', l: fpsT('stats.liveProducts', 'products') }
+    ];
+    const statsHtml = stats.map(p => `<div class="fps-stat"><b>${p.n}</b><small>${p.l}</small></div>`).join('');
 
     // Friends list from the real contact/social data.
     const contacts = [];
@@ -665,12 +693,13 @@ function fpsRadarSvg() {
 }
 
 // Walk the radar player along FPS_ROUTE as the page scrolls. The anchor
-// line sits 35% down the viewport, like the scroll-spy.
+// line sits 35% down the viewport, like the scroll-spy. `ids` must follow
+// the page order (each anchor's top below the previous one's).
 function initRadar() {
     const me = document.getElementById('fps-rd-me');
     const spot = document.getElementById('fps-radar-spot');
     if (!me) return;
-    const ids = ['hero', 'now', 'work', 'about', 'timeline', 'contact', 'footer'];
+    const ids = ['hero', 'now', 'work', 'timeline', 'about', 'contact', 'footer'];
     const els = ids.map(id => id === 'hero' ? document.querySelector('.hero')
         : id === 'footer' ? document.getElementById('site-footer') : document.getElementById(id));
     if (els.some(el => !el)) return;

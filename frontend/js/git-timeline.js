@@ -40,7 +40,10 @@ const GitTimeline = (() => {
         curveRadius: 20,
         lineWidth: 3,
 
-        // Colors by type
+        // Fallback colors by type, used only when the active theme leaves
+        // the matching --git-<type>-color custom property undefined
+        // (see themeColor()). Commit markers and the mobile list take their
+        // color from their .git-commit-<type> / .mobile-commit-<type> class.
         colors: {
             work: '#33ff00',
             project: '#ff6b6b',
@@ -48,6 +51,15 @@ const GitTimeline = (() => {
             trunk: 'rgba(255, 255, 255, 0.3)'
         }
     };
+
+    /**
+     * Color of a branch type ('work', 'project', 'education', 'trunk') in the
+     * active theme: its --git-<type>-color custom property, else CONFIG.colors.
+     */
+    function themeColor(type) {
+        const value = getComputedStyle(document.body).getPropertyValue(`--git-${type}-color`).trim();
+        return value || CONFIG.colors[type] || CONFIG.colors.work;
+    }
 
     /**
      * Calculate yearWidth dynamically to fit timeline in viewport
@@ -275,7 +287,7 @@ const GitTimeline = (() => {
             y1: trunkY,
             x2: totalWidth - CONFIG.padding.right + 30,
             y2: trunkY,
-            stroke: CONFIG.colors.trunk,
+            stroke: themeColor('trunk'),
             'stroke-width': CONFIG.lineWidth,
             'stroke-linecap': 'round'
         });
@@ -285,7 +297,7 @@ const GitTimeline = (() => {
         // laneY goes UP from trunk (smaller Y values)
         [...branches].reverse().forEach(branch => {
             const laneY = trunkY - (branch._lane + 1) * CONFIG.laneHeight;
-            const color = CONFIG.colors[branch.type] || CONFIG.colors.work;
+            const color = themeColor(branch.type);
             const ongoing = isOngoing(branch);
 
             // Branch path (now passes trunkY)
@@ -375,7 +387,6 @@ const GitTimeline = (() => {
         branches.forEach(branch => {
             // laneY is above the trunk (smaller Y value)
             const laneY = trunkY - (branch._lane + 1) * CONFIG.laneHeight;
-            const color = CONFIG.colors[branch.type] || CONFIG.colors.work;
             const ongoing = isOngoing(branch);
 
             branch.commits.forEach((commit, idx) => {
@@ -384,6 +395,10 @@ const GitTimeline = (() => {
                 const marker = document.createElement('div');
                 marker.className = `git-commit-marker git-commit-${branch.type} ${ongoing ? 'ongoing' : ''}`;
                 marker.dataset.branchId = branch.id;
+                // Reachable and operable from the keyboard (see setupEvents())
+                marker.tabIndex = 0;
+                marker.setAttribute('role', 'button');
+                marker.setAttribute('aria-expanded', 'false');
                 //Do not show hash for the first one
                 //marker.dataset.commitHash = commit.hash;
                 // All markers sit centered on the branch line — keeping them
@@ -392,7 +407,8 @@ const GitTimeline = (() => {
                 // they sit side-by-side instead of stacking vertically.
                 marker.style.left = `${commitX}px`;
                 marker.style.top = `${laneY - 14}px`;
-                marker.style.setProperty('--branch-color', color);
+                // No inline --branch-color: the .git-commit-<type> class maps
+                // it to the theme's --git-<type>-color (css/timeline.css).
 
                 // Format date range — commit-level override (commit.details.dateRange)
                 // wins, so a sub-mission with bounded dates (e.g. "Apr 2026 → Sept 2026")
@@ -423,7 +439,7 @@ const GitTimeline = (() => {
                 marker.innerHTML = `
                     <!-- Do not show for first one <span class="marker-hash">${commit.hash.substring(0, 7)}</span>-->
                     <span class="marker-title">${displayTitle}</span>
-                    ${ongoing ? '<span class="marker-badge">●</span>' : ''}
+                    ${ongoing ? '<span class="marker-badge" aria-hidden="true"></span>' : ''}
                 `;
 
                 // Store data for overlay
@@ -519,6 +535,7 @@ const GitTimeline = (() => {
      */
     function createOverlay() {
         if (overlay) overlay.remove();
+        activeCommit = null; // its marker went away with the previous render
 
         overlay = document.createElement('div');
         overlay.className = 'git-timeline-overlay';
@@ -548,7 +565,7 @@ const GitTimeline = (() => {
 
     /**
      * Show overlay for a commit marker
-     * Positions in a fixed corner (top-right of viewport) to not obstruct navigation
+     * Positions in a corner of the section, away from the marker it describes
      */
     function showOverlay(card) {
         if (!overlay) createOverlay();
@@ -571,10 +588,41 @@ const GitTimeline = (() => {
         // border rules (.git-overlay-work/project/education) never applied.
         const branchType = card.className.match(/git-commit-(work|project|education)/)?.[1] || 'work';
 
-        // Fixed position: top-right corner of viewport
+        // Corner position set by the theme CSS (top-left of the section)
         overlay.className = `git-timeline-overlay active git-overlay-${branchType} fixed-corner`;
+        placeOverlay(card);
 
+        if (activeCommit && activeCommit !== card) activeCommit.setAttribute('aria-expanded', 'false');
+        card.setAttribute('aria-expanded', 'true');
         activeCommit = card;
+    }
+
+    /**
+     * Keep the marker being read visible: when the theme's corner placement
+     * would cover it, mirror the panel to the section's right edge (same
+     * gutter). Offsets, not getBoundingClientRect(), for the panel itself so
+     * its entry translate doesn't skew the measure.
+     */
+    function placeOverlay(card) {
+        overlay.style.left = '';
+        const host = overlay.offsetParent;
+        if (!host) return; // overlay not displayed (mobile)
+
+        const hostRect = host.getBoundingClientRect();
+        const m = card.getBoundingClientRect();
+        const width = overlay.offsetWidth;
+        const top = hostRect.top + host.clientTop + overlay.offsetTop;
+        const bottom = top + overlay.offsetHeight;
+        const gutter = overlay.offsetLeft;
+        const mirrored = host.clientWidth - gutter - width;
+        const covers = left => {
+            const x = hostRect.left + host.clientLeft + left;
+            return x < m.right && x + width > m.left && top < m.bottom && bottom > m.top;
+        };
+
+        if (covers(gutter) && !covers(mirrored)) {
+            overlay.style.left = `${mirrored}px`;
+        }
     }
 
     /**
@@ -584,7 +632,20 @@ const GitTimeline = (() => {
         if (overlay) {
             overlay.classList.remove('active');
         }
+        activeCommit?.setAttribute('aria-expanded', 'false');
         activeCommit = null;
+    }
+
+    /**
+     * Click / tap / Enter / Space on a marker: open it, or close it when it
+     * is the one already shown.
+     */
+    function toggleOverlay(marker) {
+        if (activeCommit === marker && overlay?.classList.contains('active')) {
+            hideOverlay();
+        } else {
+            showOverlay(marker);
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -602,20 +663,31 @@ const GitTimeline = (() => {
      * setupGlobalListeners().
      */
     function setupEvents() {
-        // Commit marker hover/click
+        // Commit marker hover/click.
+        // Hover-to-preview is for a real mouse only (pointerType 'mouse').
+        // A tap on a touch screen also fires the compatibility mouseenter
+        // before its click: with mouseenter listeners that opened the overlay
+        // and the click right after toggled it shut, so on a touch device
+        // with the desktop layout (iPad landscape) it only flashed. Touch and
+        // pen now go through the click toggle alone: tap opens, tap again
+        // closes.
         document.querySelectorAll('.git-commit-marker').forEach(marker => {
-            marker.addEventListener('mouseenter', () => showOverlay(marker));
-            marker.addEventListener('mouseleave', (e) => {
-                if (!overlay?.contains(e.relatedTarget)) {
+            marker.addEventListener('pointerenter', (e) => {
+                if (e.pointerType === 'mouse') showOverlay(marker);
+            });
+            marker.addEventListener('pointerleave', (e) => {
+                if (e.pointerType === 'mouse' && !overlay?.contains(e.relatedTarget)) {
                     hideOverlay();
                 }
             });
             marker.addEventListener('click', (e) => {
                 e.stopPropagation();
-                if (activeCommit === marker && overlay?.classList.contains('active')) {
-                    hideOverlay();
-                } else {
-                    showOverlay(marker);
+                toggleOverlay(marker);
+            });
+            marker.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault(); // Space would scroll the page
+                    toggleOverlay(marker);
                 }
             });
         });
@@ -623,7 +695,9 @@ const GitTimeline = (() => {
         // Overlay hover (overlay is recreated by createOverlay() each render,
         // and the old one is removed, so this does not accumulate)
         if (overlay) {
-            overlay.addEventListener('mouseleave', hideOverlay);
+            overlay.addEventListener('pointerleave', (e) => {
+                if (e.pointerType === 'mouse') hideOverlay();
+            });
         }
 
         // Listeners on window/document/scroll container — bound exactly once
@@ -642,10 +716,22 @@ const GitTimeline = (() => {
         globalListenersBound = true;
 
         // Click outside → hide overlay
+        const isOutside = (target) =>
+            !target.closest?.('.git-commit-marker') && !target.closest?.('.git-timeline-overlay');
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.git-commit-marker') && !e.target.closest('.git-timeline-overlay')) {
-                hideOverlay();
-            }
+            if (isOutside(e.target)) hideOverlay();
+        });
+        // Tap outside → hide overlay. iOS Safari does not fire click on a tap
+        // over a non-interactive element, so the click listener above can
+        // miss it. pointerup only ends a tap: a scroll gesture ends in
+        // pointercancel, so scrolling the page leaves the overlay open.
+        document.addEventListener('pointerup', (e) => {
+            if (e.pointerType !== 'mouse' && isOutside(e.target)) hideOverlay();
+        });
+
+        // Escape → hide overlay
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && activeCommit) hideOverlay();
         });
 
         // Update overlay position on scroll (reads the module-scoped
@@ -703,11 +789,17 @@ const GitTimeline = (() => {
             scrollContainer.scrollLeft += e.deltaY * 1.5;
         }, { passive: false });
 
-        // Re-render on resize to recalculate yearWidth
+        // Re-render on resize to recalculate yearWidth. Width only: the layout
+        // does not depend on the height, and touch browsers fire height-only
+        // resizes when their toolbars slide on scroll — re-rendering then
+        // would close an overlay the user just opened.
         let resizeTimeout;
+        let lastWidth = window.innerWidth;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
+                if (window.innerWidth === lastWidth) return;
+                lastWidth = window.innerWidth;
                 if (data) render();
             }, 250);
         });
@@ -743,7 +835,6 @@ const GitTimeline = (() => {
 
         sortedBranches.forEach(branch => {
             const ongoing = isOngoing(branch);
-            const color = CONFIG.colors[branch.type] || CONFIG.colors.work;
 
             branch.commits.forEach(commit => {
                 const startYear = branch.startDate.split('-')[0];
@@ -763,14 +854,13 @@ const GitTimeline = (() => {
 
                 const commitEl = document.createElement('div');
                 commitEl.className = `mobile-commit mobile-commit-${branch.type}`;
-                commitEl.style.setProperty('--branch-color', color);
 
                 commitEl.innerHTML = `
                     <div class="mobile-commit-card">
                         <div class="mobile-commit-header">
                             <span class="mobile-commit-title">${displayTitle}</span>
                             <span class="mobile-commit-date">${dateRange}</span>
-                            ${ongoing ? '<span class="mobile-commit-badge"></span>' : ''}
+                            ${ongoing ? '<span class="mobile-commit-badge" aria-hidden="true"></span>' : ''}
                             <span class="mobile-commit-chevron">›</span>
                         </div>
                         <div class="mobile-commit-details">

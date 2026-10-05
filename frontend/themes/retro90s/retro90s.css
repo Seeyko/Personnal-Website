@@ -29,6 +29,9 @@
   --color-panel-yellow: #FFFFCC;
   --color-orange: #FF8000;
   --color-teal: #008080;
+  /* Text-safe variants (WCAG AA on white / #FFFFCC / silver) */
+  --color-green-text: #008000;
+  --color-ink-muted: #404040;
 
   /* Bevel Colors */
   --bevel-light: #FFFFFF;
@@ -36,11 +39,29 @@
   --bevel-darker: #404040;
   --bevel-lighter: #DFDFDF;
 
-  /* Typography */
-  --font-90s: "MS Sans Serif", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  --font-heading: "Arial Black", Impact, Haettenschweiler, sans-serif;
+  /* 4-tone Win95 bevel (same recipe as the footer window in site-footer.css):
+     a 1px white/black outer edge plus a 1px light/dark inner edge. */
+  --bevel-out:
+    inset -1px -1px 0 var(--bevel-darker),
+    inset 1px 1px 0 var(--bevel-light),
+    inset -2px -2px 0 var(--bevel-dark),
+    inset 2px 2px 0 var(--bevel-lighter);
+  --bevel-in:
+    inset 1px 1px 0 var(--bevel-dark),
+    inset -1px -1px 0 var(--bevel-light),
+    inset 2px 2px 0 var(--bevel-darker),
+    inset -2px -2px 0 var(--bevel-lighter);
+
+  /* Typography. Tahoma first: it is what MS Sans Serif became, and modern
+     browsers can't draw the bitmap original anyway. The comic stack avoids the
+     generic `cursive`, which is a calligraphic script on iOS/Android:
+     Chalkboard SE (Apple) and `casual` (Android's Coming Soon) keep the
+     Comic Sans energy while staying readable. */
+  --font-90s: Tahoma, "MS Sans Serif", Verdana, "Segoe UI", Geneva, sans-serif;
+  --font-heading: "Arial Black", "Arial Bold", Impact, Haettenschweiler, sans-serif;
   --font-mono: "Courier New", Courier, monospace;
-  --font-fun: "Comic Sans MS", cursive;
+  --font-fun: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", casual, sans-serif;
+  --font-page: "Times New Roman", Times, serif;
 
   /* Spacing */
   --spacing-xs: 0.5rem;
@@ -90,18 +111,11 @@ body[data-theme="retro90s"] ::selection {
 /* Show 90s-specific elements */
 body[data-theme="retro90s"] .retro-marquee,
 body[data-theme="retro90s"] .hero-title,
-body[data-theme="retro90s"] .hit-counter,
 body[data-theme="retro90s"] .retro-badge,
 body[data-theme="retro90s"] .under-construction,
-body[data-theme="retro90s"] .guestbook-cta,
-body[data-theme="retro90s"] .color-squares,
 body[data-theme="retro90s"] .best-viewed,
-body[data-theme="retro90s"] .retro-awards,
 body[data-theme="retro90s"] .retro-webring,
-body[data-theme="retro90s"] .retro-clippy,
-body[data-theme="retro90s"] .retro-dancing-baby,
-body[data-theme="retro90s"] .retro-divider-animated,
-body[data-theme="retro90s"] .retro-fire-text {
+body[data-theme="retro90s"] .retro-clippy {
   display: block;
 }
 
@@ -115,25 +129,17 @@ body[data-theme="retro90s"] .hero-ascii,
 body[data-theme="retro90s"] .hero-terminal,
 body[data-theme="retro90s"] .hero-stats,
 body[data-theme="retro90s"] .section-prompt,
-body[data-theme="retro90s"] .section-divider,
 body[data-theme="retro90s"] .code-comment,
-body[data-theme="retro90s"] .email-prefix,
 body[data-theme="retro90s"] .cursor-blink,
-body[data-theme="retro90s"] .contact-prompt,
-body[data-theme="retro90s"] .footer-line,
-body[data-theme="retro90s"] .footer-exit,
 body[data-theme="retro90s"] .project-card-header {
   display: none !important;
 }
 
 /* Hide Blueprint-specific elements */
 body[data-theme="retro90s"] .hero-blueprint-svg,
-body[data-theme="retro90s"] .contact-blueprint-svg,
 body[data-theme="retro90s"] .hero-annotation,
 body[data-theme="retro90s"] .redline-note,
-body[data-theme="retro90s"] .stamp,
 body[data-theme="retro90s"] .coord-marker,
-body[data-theme="retro90s"] .footer-scale,
 body[data-theme="retro90s"] .cursor-coord,
 body[data-theme="retro90s"] .section-number {
   display: none !important;
@@ -146,28 +152,6 @@ body[data-theme="retro90s"] .theme-overlay {
 
 body[data-theme="retro90s"] .custom-cursor {
   display: none !important;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   3D BEVEL UTILITIES
-   ═══════════════════════════════════════════════════════════════ */
-
-/* Outset (Raised) Button/Container */
-.bevel-outset {
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  box-shadow:
-    inset -1px -1px 0 var(--bevel-darker),
-    inset 1px 1px 0 var(--bevel-lighter);
-}
-
-/* Inset (Sunken) Container */
-.bevel-inset {
-  border: 2px solid;
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  box-shadow:
-    inset 1px 1px 0 var(--bevel-darker),
-    inset -1px -1px 0 var(--bevel-lighter);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -257,8 +241,15 @@ body[data-theme="retro90s"] .nav-link:hover {
   background: var(--bg-90s-light);
 }
 
+/* Hover arrow sits in the left padding, so the button never changes width
+   (the old inline '→ ' made the whole nav jump sideways on every hover). */
 body[data-theme="retro90s"] .nav-link:hover::before {
-  content: '→ ';
+  content: '►';
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.5rem;
 }
 
 body[data-theme="retro90s"] .nav-link:active {
@@ -269,22 +260,43 @@ body[data-theme="retro90s"] .nav-link:active {
   transform: translate(1px, 1px);
 }
 
+/* Current page (the blog's "Writing"): the Win95 taskbar button of the open
+   window — pushed in, with the 1px silver/white dither face. Only aria-current
+   marks it — the home nav never sets it. */
+body[data-theme="retro90s"] .nav-link[aria-current="page"] {
+  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
+  box-shadow:
+    inset 1px 1px 0 var(--bevel-darker),
+    inset -1px -1px 0 var(--bevel-lighter);
+  background-color: var(--bg-90s-white);
+  background-image: conic-gradient(var(--bg-90s) 25%, var(--bg-90s-white) 0 50%, var(--bg-90s) 0 75%, var(--bg-90s-white) 0);
+  background-size: 2px 2px;
+}
+
+/* Win95 focus: a dotted rectangle drawn inside the button face (an outer
+   outline would vanish against the navy title bar). */
 body[data-theme="retro90s"] .nav-link:focus-visible {
-  outline: 2px dotted var(--color-black);
-  outline-offset: 2px;
+  outline: 1px dotted var(--color-black);
+  outline-offset: -5px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
    MARQUEE BANNER - Extra Colorful!
    ═══════════════════════════════════════════════════════════════ */
 
+/* The header is position: fixed, so the marquee has to start below it or it
+   scrolls by hidden underneath. --retro-header-h is kept in sync by
+   retro90s.js; the fallbacks match the header's desktop/mobile heights. */
 body[data-theme="retro90s"] .retro-marquee {
   background: var(--color-navy);
+  margin-top: var(--retro-header-h, 36px);
   padding: 8px 0;
   border-bottom: 2px solid var(--color-black);
+  box-shadow: inset 0 -2px 0 var(--color-navy-light);
   overflow: hidden;
   white-space: nowrap;
   position: relative;
+  z-index: 2;
 }
 
 body[data-theme="retro90s"] .retro-marquee::before,
@@ -300,6 +312,17 @@ body[data-theme="retro90s"] .retro-marquee::after {
 
 body[data-theme="retro90s"] .retro-marquee::before { left: 10px; }
 body[data-theme="retro90s"] .retro-marquee::after { right: 10px; animation-direction: reverse; }
+
+/* The spinning stars sit on a navy pad so scrolling text slides under them */
+body[data-theme="retro90s"] .retro-marquee::before,
+body[data-theme="retro90s"] .retro-marquee::after {
+  z-index: 1;
+  width: 1.6rem;
+  line-height: 1.6rem;
+  text-align: center;
+  background: var(--color-navy);
+  box-shadow: 0 0 6px 6px var(--color-navy);
+}
 
 @keyframes star-spin {
   from { transform: translateY(-50%) rotate(0deg); }
@@ -344,11 +367,15 @@ body[data-theme="retro90s"] .marquee-text.white { color: var(--color-white); }
    HERO SECTION - Maximum Impact!
    ═══════════════════════════════════════════════════════════════ */
 
+/* Transparent: the tiled desktop pattern runs behind the hero like every
+   other section (a solid silver slab here framed an odd 1200px box). The
+   marquee already clears the fixed header, so the hero only needs to fill
+   what is left of the first screen. */
 body[data-theme="retro90s"] .hero {
-  padding: var(--spacing-lg) var(--spacing-md);
-  padding-top: calc(var(--spacing-lg) + 100px);
-  background: var(--bg-90s);
-  min-height: 100vh;
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-md);
+  background: transparent;
+  min-height: calc(100vh - var(--retro-header-h, 36px) - 46px);
+  min-height: calc(100svh - var(--retro-header-h, 36px) - 46px);
   position: relative;
   z-index: 1;
   overflow: hidden;
@@ -380,12 +407,21 @@ body[data-theme="retro90s"] .hero::before {
   100% { opacity: 0.3; transform: translateY(-10px); }
 }
 
+/* One centred column, read top to bottom like a 1997 homepage: the
+   under-construction sign first, then the words, the button, the counters. */
 body[data-theme="retro90s"] .hero-content {
   text-align: center;
   max-width: 800px;
   margin: 0 auto;
   position: relative;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body[data-theme="retro90s"] .hero-content > .under-construction {
+  order: -1;
 }
 
 /* Hero is now the manifesto, signed "— Tom" — the giant rainbow SALUT
@@ -423,7 +459,8 @@ body[data-theme="retro90s"] .hero-subtitle {
 body[data-theme="retro90s"] .hero-subtitle.hero-quote {
   animation: none;
   font-family: var(--font-fun);
-  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+  width: 100%;
   max-width: 640px;
   margin: var(--spacing-md) auto 0;
   text-align: left;
@@ -444,53 +481,16 @@ body[data-theme="retro90s"] .hero-subtitle .annotation-mark {
 }
 
 /* Signature: handwritten-feel, left-aligned under the citation */
+/* Purple, not magenta: #FF00FF on silver is 1.7:1, #800080 is 5.2:1 */
 body[data-theme="retro90s"] .hero-signature {
   font-family: var(--font-fun);
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: bold;
-  color: #ff00ff;
+  color: var(--color-purple);
   text-shadow: 1px 1px 0 var(--color-white);
   text-align: left;
   max-width: 640px;
   margin: 0.75rem auto 0;
-}
-
-/* Hit Counter - Authentic LED Style */
-body[data-theme="retro90s"] .hit-counter {
-  display: inline-block;
-  background: var(--color-black);
-  padding: 12px 20px;
-  border: 3px solid;
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  box-shadow:
-    inset 2px 2px 8px rgba(0,0,0,0.8),
-    0 4px 0 #404040;
-  margin: var(--spacing-sm) auto;
-  animation: counter-glow 2s ease-in-out infinite;
-}
-
-@keyframes counter-glow {
-  0%, 100% { box-shadow: inset 2px 2px 8px rgba(0,0,0,0.8), 0 4px 0 #404040, 0 0 10px rgba(0,255,0,0.2); }
-  50% { box-shadow: inset 2px 2px 8px rgba(0,0,0,0.8), 0 4px 0 #404040, 0 0 20px rgba(0,255,0,0.4); }
-}
-
-body[data-theme="retro90s"] .hit-counter-text {
-  font-family: var(--font-mono);
-  color: var(--color-green);
-  font-size: 0.9rem;
-  text-shadow: 0 0 5px var(--color-green), 0 0 10px var(--color-green);
-}
-
-body[data-theme="retro90s"] .hit-counter-number {
-  font-size: 1.4rem;
-  letter-spacing: 0.2em;
-  display: inline-block;
-  animation: number-flicker 0.1s infinite;
-}
-
-@keyframes number-flicker {
-  0%, 95% { opacity: 1; }
-  96%, 100% { opacity: 0.9; }
 }
 
 /* Under Construction Badge - Extra Wobble! */
@@ -504,7 +504,7 @@ body[data-theme="retro90s"] .under-construction {
     var(--color-black) 20px
   );
   padding: 4px;
-  margin: var(--spacing-sm) auto;
+  margin: 0 auto;
   animation: construction-shake 0.5s ease-in-out infinite, construction-pulse 1.5s ease-in-out infinite;
   cursor: pointer;
 }
@@ -527,9 +527,10 @@ body[data-theme="retro90s"] .under-construction:hover {
 
 body[data-theme="retro90s"] .under-construction-inner {
   background: var(--color-yellow);
-  padding: 8px 24px;
+  padding: 6px 18px;
   font-family: var(--font-heading);
-  font-size: 0.9rem;
+  font-weight: 900;
+  font-size: 0.85rem;
   color: var(--color-black);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -585,46 +586,6 @@ body[data-theme="retro90s"] .scroll-arrow {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HORIZONTAL RULE DIVIDER (Groove Effect)
-   ═══════════════════════════════════════════════════════════════ */
-
-body[data-theme="retro90s"] .hr-groove {
-  border: none;
-  height: 4px;
-  background: linear-gradient(
-    to bottom,
-    var(--bevel-dark) 0%, var(--bevel-dark) 50%,
-    var(--bevel-light) 50%, var(--bevel-light) 100%
-  );
-  margin: var(--spacing-md) 0;
-}
-
-/* Animated Divider */
-body[data-theme="retro90s"] .retro-divider-animated {
-  height: 8px;
-  background: linear-gradient(
-    90deg,
-    var(--color-red),
-    var(--color-orange),
-    var(--color-yellow),
-    var(--color-green),
-    var(--color-cyan),
-    var(--color-blue),
-    var(--color-magenta),
-    var(--color-red)
-  );
-  background-size: 200% 100%;
-  animation: rainbow-slide 3s linear infinite;
-  border: 2px solid var(--color-black);
-  margin: var(--spacing-md) 0;
-}
-
-@keyframes rainbow-slide {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
-
-/* ═══════════════════════════════════════════════════════════════
    SECTION STYLES
    ═══════════════════════════════════════════════════════════════ */
 
@@ -638,7 +599,7 @@ body[data-theme="retro90s"] {
 }
 
 body[data-theme="retro90s"] .section-header {
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
 }
 
 body[data-theme="retro90s"] .section-label {
@@ -649,13 +610,14 @@ body[data-theme="retro90s"] .section-label {
 
 body[data-theme="retro90s"] .section-title {
   font-family: var(--font-heading);
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 900;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.1;
   color: var(--color-navy);
   text-transform: uppercase;
   text-shadow: 2px 2px 0 var(--bevel-dark);
   position: relative;
   display: inline-block;
-  cursor: pointer;
   transition: transform 0.1s;
 }
 
@@ -668,10 +630,21 @@ body[data-theme="retro90s"] .section-title::before {
   content: none;
 }
 
-/* Fire Text Effect for Section Titles */
+/* The terminal's ════ rule becomes a Netscape <hr>: a 2px etched groove */
+body[data-theme="retro90s"] .section-divider {
+  display: block;
+  height: 0;
+  margin: 10px 0 0;
+  overflow: hidden;
+  font-size: 0;
+  border-top: 1px solid var(--bevel-dark);
+  border-bottom: 1px solid var(--bevel-light);
+}
+
+/* Fire Text Effect for Section Titles (0.3s: slow enough not to strobe) */
 body[data-theme="retro90s"] .section-title.fire-text {
   color: var(--color-red);
-  animation: fire-flicker 0.15s infinite;
+  animation: fire-flicker 0.3s infinite;
 }
 
 @keyframes fire-flicker {
@@ -713,10 +686,18 @@ body[data-theme="retro90s"] .section-footer {
   text-align: center;
 }
 
+/* Explorer status bar field ("4 objet(s)"; text rewritten by retro90s.js) */
 body[data-theme="retro90s"] .footer-info {
-  font-family: var(--font-mono);
+  display: inline-block;
+  min-width: 12rem;
+  padding: 3px 10px;
+  font-family: var(--font-90s);
   font-size: 0.75rem;
-  color: var(--bevel-dark);
+  text-align: left;
+  color: var(--color-black);
+  background: var(--bg-90s);
+  border: 1px solid;
+  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -772,16 +753,22 @@ body[data-theme="retro90s"] .project-card {
   overflow: visible;
 }
 
+body[data-theme="retro90s"] .project-card:focus-visible {
+  outline: 2px dotted var(--color-black);
+  outline-offset: 3px;
+}
+
+/* HOT! starburst on hover: a yellow clip-path star with the word on top
+   (the old 20px square with 8px text was unreadable). */
 body[data-theme="retro90s"] .project-card::before {
   content: '';
   position: absolute;
-  top: -5px;
-  right: -5px;
-  width: 20px;
-  height: 20px;
+  top: -16px;
+  right: -14px;
+  width: 46px;
+  height: 46px;
   background: var(--color-yellow);
-  border: 2px solid var(--color-black);
-  border-radius: 0;
+  clip-path: polygon(50% 0%, 61% 18%, 82% 10%, 79% 32%, 100% 39%, 84% 55%, 96% 75%, 73% 77%, 68% 100%, 50% 86%, 32% 100%, 27% 77%, 4% 75%, 16% 55%, 0% 39%, 21% 32%, 18% 10%, 39% 18%);
   opacity: 0;
   transition: opacity 0.1s;
   z-index: 100;
@@ -790,12 +777,15 @@ body[data-theme="retro90s"] .project-card::before {
 body[data-theme="retro90s"] .project-card::after {
   content: 'HOT!';
   position: absolute;
-  top: -3px;
-  right: -3px;
-  font-size: 8px;
-  font-weight: bold;
-  color: var(--color-black);
-  font-family: var(--font-90s);
+  top: -16px;
+  right: -14px;
+  width: 46px;
+  line-height: 46px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--color-red);
+  font-family: var(--font-heading);
   opacity: 0;
   transition: opacity 0.1s;
   z-index: 101;
@@ -804,7 +794,7 @@ body[data-theme="retro90s"] .project-card::after {
 body[data-theme="retro90s"] .project-card:hover::before,
 body[data-theme="retro90s"] .project-card:hover::after {
   opacity: 1;
-  animation: hot-badge-pulse 0.3s infinite;
+  animation: hot-badge-pulse 0.6s infinite;
 }
 
 @keyframes hot-badge-pulse {
@@ -958,25 +948,6 @@ body[data-theme="retro90s"] .carousel-dot:hover {
 }
 
 /* ─── Blog Section ─── */
-body[data-theme="retro90s"] .blog {
-  background: repeating-linear-gradient(
-    0deg,
-    var(--bg-90s) 0px,
-    var(--bg-90s) 2px,
-    #D0D0D0 2px,
-    #D0D0D0 4px
-  );
-}
-
-body[data-theme="retro90s"] .blog .section-title {
-  font-family: var(--font-90s);
-  text-shadow: 2px 2px 0 var(--color-black), -1px -1px 0 var(--color-white);
-}
-
-body[data-theme="retro90s"] .blog-grid {
-  gap: var(--spacing-md);
-}
-
 body[data-theme="retro90s"] .blog-card {
   background: var(--bg-90s);
   border: 2px solid;
@@ -1014,18 +985,6 @@ body[data-theme="retro90s"] .blog-card-image {
 
 body[data-theme="retro90s"] .blog-card-image img {
   filter: saturate(1.3) contrast(1.1);
-}
-
-body[data-theme="retro90s"] .blog-card-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-90s);
-  color: var(--color-gray);
-  font-family: var(--font-90s);
-  font-size: 12px;
 }
 
 body[data-theme="retro90s"] .blog-card-content {
@@ -1087,27 +1046,6 @@ body[data-theme="retro90s"] .blog-footer {
   padding: var(--spacing-md) 0;
 }
 
-body[data-theme="retro90s"] .view-all-link {
-  font-family: var(--font-90s);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-blue);
-  text-decoration: underline;
-  background: var(--bg-90s);
-  padding: 4px 12px;
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-}
-
-body[data-theme="retro90s"] .view-all-link:hover {
-  color: var(--color-red);
-  background: var(--color-yellow);
-}
-
-body[data-theme="retro90s"] .link-bracket {
-  display: none;
-}
-
 body[data-theme="retro90s"] .no-articles {
   font-family: var(--font-90s);
   color: var(--color-gray);
@@ -1120,7 +1058,7 @@ body[data-theme="retro90s"] .carousel-dot.active {
 
 /* Project Info */
 body[data-theme="retro90s"] .project-info {
-  padding: 8px;
+  padding: 10px 12px 12px;
   background: var(--color-panel-yellow);
   flex: 1;
   display: flex;
@@ -1131,35 +1069,37 @@ body[data-theme="retro90s"] .project-info {
 
 body[data-theme="retro90s"] .project-type {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--bevel-dark);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-ink-muted);
   text-transform: uppercase;
   margin-bottom: 4px;
 }
 
 body[data-theme="retro90s"] .project-info h3 {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-weight: 900;
+  font-size: 1.1rem;
   color: var(--color-navy);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 body[data-theme="retro90s"] .project-info p {
   font-family: var(--font-90s);
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: var(--color-black);
-  line-height: 1.4;
+  line-height: 1.5;
   flex: 1;
 }
 
 body[data-theme="retro90s"] .tags {
   gap: 4px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 body[data-theme="retro90s"] .tag {
   font-family: var(--font-90s);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--color-white);
   background: var(--color-navy);
@@ -1174,12 +1114,13 @@ body[data-theme="retro90s"] .tag:hover {
   background: var(--color-blue);
 }
 
+/* #008000, not #00AA00: white on the brighter green was 3.1:1 */
 body[data-theme="retro90s"] .tag:nth-child(2n) {
-  background: var(--color-green-dark);
+  background: var(--color-green-text);
 }
 
 body[data-theme="retro90s"] .tag:nth-child(2n):hover {
-  background: var(--color-green);
+  background: var(--color-green-dark);
 }
 
 body[data-theme="retro90s"] .tag:nth-child(3n) {
@@ -1190,12 +1131,15 @@ body[data-theme="retro90s"] .tag:nth-child(3n):hover {
   background: var(--color-magenta);
 }
 
+/* "Click here!" in the browser's own link style: Times, blue, underlined */
 body[data-theme="retro90s"] .project-link {
-  margin-top: auto;
+  margin-top: 10px;
   padding-top: 8px;
   border-top: 1px solid var(--bevel-dark);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
+  box-shadow: inset 0 1px 0 var(--bevel-light);
+  font-family: var(--font-page);
+  font-size: 0.95rem;
+  font-weight: 700;
   color: var(--color-blue);
   text-decoration: underline;
   display: flex;
@@ -1203,7 +1147,9 @@ body[data-theme="retro90s"] .project-link {
   gap: 4px;
 }
 
-body[data-theme="retro90s"] .project-link:hover {
+body[data-theme="retro90s"] .project-link:hover,
+body[data-theme="retro90s"] .project-card:hover .project-link,
+body[data-theme="retro90s"] .project-card:focus-visible .project-link {
   color: var(--color-red);
   text-decoration: underline;
 }
@@ -1222,23 +1168,45 @@ body[data-theme="retro90s"] .link-icon {
    ABOUT SECTION
    ═══════════════════════════════════════════════════════════════ */
 
-body[data-theme="retro90s"] .about-content {
-  max-width: 100%;
+/* Windows are sized to their content, like real Win95 windows, which also
+   keeps the reading measure near 75 characters instead of 160. */
+body[data-theme="retro90s"] .about-content,
+body[data-theme="retro90s"] .now-content {
+  max-width: 880px;
 }
 
 body[data-theme="retro90s"] .about-card {
   background: var(--bg-90s);
   border: 2px solid;
   border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+  box-shadow:
+    inset -1px -1px 0 var(--bevel-darker),
+    inset 1px 1px 0 var(--bevel-lighter),
+    4px 4px 0 rgba(0,0,0,0.3);
 }
 
 body[data-theme="retro90s"] .card-header {
   background: linear-gradient(to right, var(--color-navy), var(--color-navy-light));
-  padding: 4px 8px;
+  padding: 4px 4px 4px 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+}
+
+/* Every window gets its close box, like the project .exe windows */
+body[data-theme="retro90s"] .card-header::after {
+  content: '×';
+  flex: none;
+  width: 16px;
+  height: 14px;
+  margin-left: auto;
+  background: var(--bg-90s);
+  border: 1px solid;
+  border-color: var(--bevel-light) var(--bevel-darker) var(--bevel-darker) var(--bevel-light);
+  color: var(--color-black);
+  font: 700 11px/12px var(--font-90s);
+  text-align: center;
 }
 
 body[data-theme="retro90s"] .card-title {
@@ -1246,6 +1214,27 @@ body[data-theme="retro90s"] .card-title {
   font-family: var(--font-90s);
   font-size: 0.85rem;
   font-weight: 700;
+}
+
+/* "OÙ J'EN SUIS - octobre 2026", the Win95 "Document - App" title format.
+   The date was dark text on the light end of the gradient (4:1). */
+body[data-theme="retro90s"] .now-date {
+  margin-right: auto;
+  color: var(--color-white);
+  opacity: 1;
+  font-family: var(--font-90s);
+  font-size: 0.85rem;
+  letter-spacing: 0;
+}
+
+body[data-theme="retro90s"] .now-date::before {
+  content: '- ';
+}
+
+/* base.css spaces the /now header by 1rem with an id selector */
+body[data-theme="retro90s"] #now .card-header {
+  gap: 6px;
+  align-items: center;
 }
 
 body[data-theme="retro90s"] .card-title::before,
@@ -1261,13 +1250,43 @@ body[data-theme="retro90s"] .card-body {
   margin: 4px;
 }
 
+/* /now reads like a page in the browser window: default Times on white */
+body[data-theme="retro90s"] .now-paragraph {
+  font-family: var(--font-page);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--color-black);
+}
+
+body[data-theme="retro90s"] .now-paragraph a,
+body[data-theme="retro90s"] .now-inline-link {
+  color: var(--color-blue);
+  text-decoration: underline;
+}
+
+body[data-theme="retro90s"] .now-paragraph a:visited {
+  color: var(--color-purple);
+}
+
+body[data-theme="retro90s"] .now-paragraph a:hover {
+  color: var(--color-red);
+}
+
+/* About is a "System Properties" dialog: text straight on the silver face */
+body[data-theme="retro90s"] .about .card-body {
+  background: var(--bg-90s);
+  border: none;
+  margin: 0;
+  padding: 16px 18px 20px;
+}
+
 body[data-theme="retro90s"] .about-text {
   margin-bottom: var(--spacing-sm);
 }
 
 body[data-theme="retro90s"] .about-main {
   font-family: var(--font-90s);
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   line-height: 1.7;
   color: var(--color-black);
   margin-bottom: var(--spacing-xs);
@@ -1278,7 +1297,7 @@ body[data-theme="retro90s"] .about-main .highlight {
   color: var(--color-black);
   padding: 0 4px;
   font-weight: 700;
-  animation: highlight-pulse 2s ease-in-out infinite;
+  animation: highlight-pulse 3s ease-in-out infinite;
 }
 
 @keyframes highlight-pulse {
@@ -1286,54 +1305,96 @@ body[data-theme="retro90s"] .about-main .highlight {
   50% { background: var(--color-cyan); }
 }
 
+/* Was #808080 on white (3.9:1) */
 body[data-theme="retro90s"] .about-detail {
   font-family: var(--font-90s);
   font-size: 0.95rem;
-  color: var(--bevel-dark);
-  line-height: 1.6;
+  color: var(--color-black);
+  line-height: 1.65;
 }
 
-/* About Specs Table */
+/* About specs: the read-only fields of a properties sheet, label above a
+   sunken white box. Not clickable, so no pointer and no hover zoom. */
 body[data-theme="retro90s"] .about-specs,
 body[data-theme="retro90s"] #about-specs {
-  background: var(--color-white);
-  border: 2px solid;
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  padding: 8px;
-  margin-bottom: var(--spacing-sm);
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: var(--spacing-sm) 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px 14px;
 }
 
 body[data-theme="retro90s"] .spec-row {
   display: flex;
   flex-direction: column;
-  padding: 4px;
-  background: var(--color-panel-yellow);
-  border: 1px solid var(--bevel-dark);
-  transition: transform 0.1s, background 0.1s;
-  cursor: pointer;
-}
-
-body[data-theme="retro90s"] .spec-row:hover {
-  transform: scale(1.05);
-  background: var(--color-cyan);
-  z-index: 10;
+  gap: 3px;
+  padding: 0;
+  background: transparent;
+  border: none;
 }
 
 body[data-theme="retro90s"] .spec-key {
   font-family: var(--font-90s);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: var(--color-navy);
+  color: var(--color-black);
+  text-transform: lowercase;
+}
+
+/* "Location:" with its Alt-key letter underlined, like a dialog label */
+body[data-theme="retro90s"] .spec-key::first-letter {
   text-transform: uppercase;
+  text-decoration: underline;
 }
 
 body[data-theme="retro90s"] .spec-val {
+  display: block;
+  padding: 5px 7px 4px;
+  background: var(--color-white);
+  box-shadow: var(--bevel-in);
   font-family: var(--font-mono);
   font-size: 0.85rem;
+  font-weight: 700;
   color: var(--color-black);
+}
+
+/* The craft note as an etched Win95 group box, its title sitting in the
+   groove line. */
+body[data-theme="retro90s"] .craft-stack {
+  margin-top: var(--spacing-md);
+}
+
+body[data-theme="retro90s"] .craft-block {
+  position: relative;
+  padding: 18px 14px 14px;
+  border: 1px solid var(--bevel-dark);
+  box-shadow: inset 1px 1px 0 var(--bevel-light), 1px 1px 0 var(--bevel-light);
+  opacity: 1;
+}
+
+body[data-theme="retro90s"] .craft-title {
+  position: absolute;
+  top: -0.6em;
+  left: 10px;
+  padding: 0 4px;
+  background: var(--bg-90s);
+  font-family: var(--font-90s);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-transform: none;
+  color: var(--color-navy);
+}
+
+body[data-theme="retro90s"] .craft-description {
+  font-family: var(--font-90s);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-black);
+  opacity: 1;
 }
 
 body[data-theme="retro90s"] .spec-val::before,
@@ -1342,16 +1403,6 @@ body[data-theme="retro90s"] .spec-val::after {
 }
 
 /* Tech Stack */
-body[data-theme="retro90s"] .tech-stack {
-  margin-top: var(--spacing-sm);
-}
-
-body[data-theme="retro90s"] .tech-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
 body[data-theme="retro90s"] .tech-tag {
   font-family: var(--font-90s);
   font-size: 0.8rem;
@@ -1381,245 +1432,6 @@ body[data-theme="retro90s"] .tech-tag:active {
   border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
   transform: translate(1px, 1px);
   box-shadow: none;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   CONTACT SECTION
-   ═══════════════════════════════════════════════════════════════ */
-
-body[data-theme="retro90s"] .contact {
-  background:
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 10px,
-      rgba(0,0,0,0.03) 10px,
-      rgba(0,0,0,0.03) 20px
-    );
-}
-
-body[data-theme="retro90s"] .contact-content {
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-body[data-theme="retro90s"] .contact-card {
-  background: var(--bg-90s);
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
-}
-
-body[data-theme="retro90s"] .contact-card .card-body {
-  text-align: center;
-}
-
-/* Email Link - Big Hyperlink Style */
-body[data-theme="retro90s"] .email-link {
-  display: inline-block;
-  font-family: var(--font-heading);
-  font-size: clamp(1rem, 4vw, 2rem);
-  color: var(--color-blue);
-  text-decoration: underline;
-  padding: var(--spacing-sm);
-  background: var(--color-white);
-  border: 2px solid;
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  margin-bottom: var(--spacing-sm);
-  animation: email-glow 2s ease-in-out infinite;
-}
-
-@keyframes email-glow {
-  0%, 100% { box-shadow: inset 0 0 0 0 rgba(0,0,255,0.1); }
-  50% { box-shadow: inset 0 0 20px 0 rgba(0,0,255,0.2); }
-}
-
-body[data-theme="retro90s"] .email-link:hover {
-  color: var(--color-red);
-  background: var(--color-panel-yellow);
-  transform: scale(1.05);
-}
-
-body[data-theme="retro90s"] .email-link:visited .email-text {
-  color: var(--color-purple);
-}
-
-/* Social Links */
-body[data-theme="retro90s"] .social-links {
-  gap: 8px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: var(--spacing-sm);
-}
-
-body[data-theme="retro90s"] .social-btn {
-  font-family: var(--font-90s);
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--color-black);
-  background: var(--bg-90s);
-  padding: 6px 16px;
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  box-shadow:
-    inset -1px -1px 0 var(--bevel-darker),
-    inset 1px 1px 0 var(--bevel-lighter);
-  text-decoration: none;
-  text-transform: uppercase;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-body[data-theme="retro90s"] .link-bracket {
-  display: none;
-}
-
-body[data-theme="retro90s"] .social-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.3s;
-}
-
-body[data-theme="retro90s"] .social-btn:hover {
-  background: var(--bg-90s-light);
-}
-
-body[data-theme="retro90s"] .social-btn:hover::before {
-  left: 100%;
-}
-
-body[data-theme="retro90s"] .social-btn:active {
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  box-shadow:
-    inset 1px 1px 0 var(--bevel-darker),
-    inset -1px -1px 0 var(--bevel-lighter);
-  transform: translate(1px, 1px);
-}
-
-/* Guestbook CTA */
-body[data-theme="retro90s"] .guestbook-cta {
-  margin-top: var(--spacing-md);
-  font-family: var(--font-fun);
-  color: var(--color-magenta);
-  font-size: 1.1rem;
-  animation: guestbook-wobble 2s ease-in-out infinite;
-}
-
-@keyframes guestbook-wobble {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-body[data-theme="retro90s"] .guestbook-cta::before {
-  content: '📝 ';
-}
-
-body[data-theme="retro90s"] .guestbook-cta::after {
-  content: ' 📝';
-}
-
-/* Color Squares Decoration */
-body[data-theme="retro90s"] .color-squares {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-  margin-top: var(--spacing-md);
-}
-
-body[data-theme="retro90s"] .color-square {
-  width: 28px;
-  height: 28px;
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  cursor: pointer;
-  transition: transform 0.1s;
-}
-
-body[data-theme="retro90s"] .color-square:hover {
-  transform: scale(1.3) rotate(10deg);
-  z-index: 10;
-  box-shadow: 0 0 10px currentColor;
-}
-
-body[data-theme="retro90s"] .color-square:active {
-  transform: scale(0.9);
-}
-
-body[data-theme="retro90s"] .color-square.red { background: var(--color-red); }
-body[data-theme="retro90s"] .color-square.green { background: var(--color-green); }
-body[data-theme="retro90s"] .color-square.blue { background: var(--color-blue); }
-body[data-theme="retro90s"] .color-square.yellow { background: var(--color-yellow); }
-body[data-theme="retro90s"] .color-square.magenta { background: var(--color-magenta); }
-body[data-theme="retro90s"] .color-square.cyan { background: var(--color-cyan); }
-
-/* ═══════════════════════════════════════════════════════════════
-   AWARDS BADGES SECTION
-   ═══════════════════════════════════════════════════════════════ */
-
-body[data-theme="retro90s"] .retro-awards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin: var(--spacing-md) auto;
-  padding: var(--spacing-sm);
-  max-width: 600px;
-}
-
-body[data-theme="retro90s"] .award-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, var(--color-yellow) 0%, var(--color-orange) 100%);
-  border: 3px solid var(--color-black);
-  font-family: var(--font-90s);
-  font-size: 0.55rem;
-  font-weight: 700;
-  text-align: center;
-  color: var(--color-black);
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: transform 0.1s;
-  box-shadow:
-    inset 2px 2px 0 rgba(255,255,255,0.5),
-    inset -2px -2px 0 rgba(0,0,0,0.2),
-    3px 3px 0 rgba(0,0,0,0.3);
-}
-
-body[data-theme="retro90s"] .award-badge:hover {
-  transform: scale(1.15) rotate(-5deg);
-  box-shadow:
-    inset 2px 2px 0 rgba(255,255,255,0.5),
-    inset -2px -2px 0 rgba(0,0,0,0.2),
-    5px 5px 0 rgba(0,0,0,0.4);
-}
-
-body[data-theme="retro90s"] .award-badge .award-icon {
-  font-size: 1.5rem;
-  margin-bottom: 2px;
-}
-
-body[data-theme="retro90s"] .award-badge:nth-child(2) {
-  background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-blue) 100%);
-}
-
-body[data-theme="retro90s"] .award-badge:nth-child(3) {
-  background: linear-gradient(135deg, var(--color-magenta) 0%, var(--color-purple) 100%);
-  color: var(--color-white);
-}
-
-body[data-theme="retro90s"] .award-badge:nth-child(4) {
-  background: linear-gradient(135deg, var(--color-green) 0%, var(--color-teal) 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1750,12 +1562,13 @@ body[data-theme="retro90s"] .clippy-speech {
   padding: 10px 12px;
   font-family: var(--font-90s);
   font-size: 0.75rem;
-  max-width: 180px;
-  min-width: 150px;
+  max-width: 200px;
+  min-width: 180px;
   box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
   opacity: 0;
+  visibility: hidden;
   transform: translateY(10px);
-  transition: opacity 0.3s, transform 0.3s;
+  transition: opacity 0.3s, transform 0.3s, visibility 0s 0.3s;
   pointer-events: none;
 }
 
@@ -1779,11 +1592,24 @@ body[data-theme="retro90s"] .clippy-speech::before {
   border-color: var(--color-white) transparent transparent transparent;
 }
 
-body[data-theme="retro90s"] .retro-clippy:hover .clippy-speech,
 body[data-theme="retro90s"] .retro-clippy.show-speech .clippy-speech {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0);
+  transition-delay: 0s;
   pointer-events: auto;
+}
+
+/* Hover-peek only where hover is real: on touch screens :hover sticks after
+   a tap and the bubble could never be closed. */
+@media (hover: hover) {
+  body[data-theme="retro90s"] .retro-clippy:hover .clippy-speech {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 0s;
+    pointer-events: auto;
+  }
 }
 
 body[data-theme="retro90s"] .clippy-message {
@@ -1807,6 +1633,7 @@ body[data-theme="retro90s"] .clippy-action {
   font-family: var(--font-90s);
   font-size: 0.7rem;
   font-weight: bold;
+  white-space: nowrap;
   color: var(--color-white);
   cursor: pointer;
   text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
@@ -1864,26 +1691,6 @@ body[data-theme="retro90s"] .footer-content {
   text-align: center;
 }
 
-body[data-theme="retro90s"] .footer-info-row {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xs);
-  color: var(--color-cyan);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  flex-wrap: wrap;
-}
-
-body[data-theme="retro90s"] .footer-sep {
-  color: var(--color-magenta);
-}
-
-body[data-theme="retro90s"] .footer-session::before,
-body[data-theme="retro90s"] .footer-version::before {
-  content: none;
-}
-
 body[data-theme="retro90s"] .footer-copyright {
   color: var(--color-yellow);
   font-family: var(--font-fun);
@@ -1929,7 +1736,7 @@ body[data-theme="retro90s"] .retro-tooltip {
   pointer-events: none;
   z-index: 99999;
   box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-  max-width: 200px;
+  max-width: 280px;
   opacity: 0;
   transition: opacity 0.1s;
 }
@@ -1947,11 +1754,16 @@ body[data-theme="retro90s"] :focus-visible {
   outline-offset: 2px;
 }
 
-body[data-theme="retro90s"] .nav-link:focus-visible,
-body[data-theme="retro90s"] .social-btn:focus-visible,
 body[data-theme="retro90s"] .tech-tag:focus-visible {
   outline: 2px dotted var(--color-black);
   outline-offset: 2px;
+}
+
+/* On navy surfaces a black ring disappears: switch to a yellow one */
+body[data-theme="retro90s"] .header :focus-visible:not(.nav-link),
+body[data-theme="retro90s"] .retro-webring :focus-visible,
+body[data-theme="retro90s"] .retro-marquee :focus-visible {
+  outline-color: var(--color-yellow);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2079,35 +1891,75 @@ body[data-theme="retro90s"] ::-webkit-scrollbar-button:hover {
   }
 
   body[data-theme="retro90s"] .hero {
-    padding-top: calc(var(--spacing-lg) + 80px);
+    padding: var(--spacing-md) var(--spacing-sm);
   }
 
   body[data-theme="retro90s"] .projects-grid {
     grid-template-columns: 1fr;
   }
 
-  body[data-theme="retro90s"] .hit-counter {
-    transform: scale(0.9);
-  }
-
   body[data-theme="retro90s"] .retro-marquee .marquee-content {
     font-size: 0.8rem;
   }
 
+  /* Three small odometers fit on one row (cro.css stacks the stats) */
+  body[data-theme="retro90s"] .social-proof {
+    flex-direction: row;
+    justify-content: center;
+    gap: 14px 18px;
+  }
+
+  body[data-theme="retro90s"] .proof-number {
+    font-size: 1.3rem;
+  }
+
+  body[data-theme="retro90s"] .proof-label {
+    font-size: 0.7rem;
+    max-width: 7rem;
+  }
+
+  /* Phones: Clippy shrinks and joins the bottom row of floating helpers,
+     between Cathode and the CTA; his bubble only opens when tapped
+     (retro90s.js), so it never sits on the text. */
   body[data-theme="retro90s"] .retro-clippy {
-    transform: scale(0.8);
-    bottom: 100px;
-    right: 10px;
+    bottom: 40px;
+    right: 88px;
   }
 
-  body[data-theme="retro90s"] .retro-awards {
-    gap: 8px;
+  body[data-theme="retro90s"] .clippy-body {
+    width: 40px;
+    height: 66px;
   }
 
-  body[data-theme="retro90s"] .award-badge {
-    width: 65px;
-    height: 65px;
-    font-size: 0.5rem;
+  body[data-theme="retro90s"] .clippy-speech {
+    bottom: 76px;
+    max-width: 210px;
+    font-size: 0.8rem;
+  }
+
+  body[data-theme="retro90s"] .clippy-action,
+  body[data-theme="retro90s"] .clippy-dismiss {
+    min-height: 36px;
+  }
+}
+
+/* Touch screens: the small Win95 controls get a 44px hit area */
+@media (pointer: coarse) {
+  body[data-theme="retro90s"] .hamburger-menu,
+  body[data-theme="retro90s"] .theme-switcher-toggle,
+  body[data-theme="retro90s"] .language-switcher-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  body[data-theme="retro90s"] .carousel-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+  }
+
+  body[data-theme="retro90s"] .webring-btn {
+    min-height: 44px;
   }
 }
 
@@ -2205,61 +2057,6 @@ body[data-theme="retro90s"].loaded {
   animation: none;
 }
 
-/* ─── Visitor Counter (90s Style) ─── */
-body[data-theme="retro90s"] .visitor-counter {
-  background: var(--color-black);
-  border: 3px inset var(--bevel-dark);
-  color: var(--color-green);
-  font-family: var(--font-mono);
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  margin: 1rem auto;
-  box-shadow:
-    inset 1px 1px 0 var(--bevel-darker),
-    inset -1px -1px 0 var(--bevel-light);
-  display: inline-block;
-}
-
-body[data-theme="retro90s"] .visitor-counter:hover {
-  background: #111;
-}
-
-body[data-theme="retro90s"] .visitor-icon {
-  filter: none;
-}
-
-body[data-theme="retro90s"] .visitor-label {
-  color: var(--color-green);
-  opacity: 1;
-}
-
-body[data-theme="retro90s"] .visitor-count {
-  color: var(--color-green);
-  font-weight: normal;
-  text-shadow: 0 0 5px var(--color-green);
-  letter-spacing: 2px;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   CONSTRUCTION STRIPES SECTION BACKGROUND
-   ═══════════════════════════════════════════════════════════════ */
-
-body[data-theme="retro90s"] .construction-bg {
-  background: repeating-linear-gradient(
-    45deg,
-    var(--color-yellow),
-    var(--color-yellow) 20px,
-    var(--color-black) 20px,
-    var(--color-black) 40px
-  );
-  padding: 8px;
-}
-
-body[data-theme="retro90s"] .construction-bg-inner {
-  background: var(--bg-90s);
-  padding: var(--spacing-md);
-}
-
 /* ═══════════════════════════════════════════════════════════════
    CRO - CONVERSION RATE OPTIMIZATION (Retro90s Theme)
    ═══════════════════════════════════════════════════════════════ */
@@ -2269,9 +2066,13 @@ body[data-theme="retro90s"] .hero-cta {
   background: linear-gradient(180deg, #ffff00 0%, #ff9900 100%);
   border: 3px outset #ffff00;
   color: #000;
-  font-family: 'Comic Sans MS', cursive;
+  font-family: var(--font-fun);
+  font-weight: 700;
   text-shadow: none;
   box-shadow: 4px 4px 0 #000;
+  margin-top: var(--spacing-md);
+  min-height: 48px;
+  transition: none;
 }
 
 body[data-theme="retro90s"] .hero-cta:hover {
@@ -2282,18 +2083,63 @@ body[data-theme="retro90s"] .hero-cta:hover {
   color: #000;
 }
 
+body[data-theme="retro90s"] .hero-cta:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -7px;
+}
+
 body[data-theme="retro90s"] .hero-cta::before {
   display: none;
 }
 
-/* Social Proof */
+/* Social proof as a row of hit counters: black LED odometers, one cell per
+   character (retro90s.js splits the digits; without it the box still reads).
+   Green on black is 15:1 — the old neon green on silver was 1.3:1. */
 body[data-theme="retro90s"] .social-proof {
-  border-top: 3px dashed #ff00ff;
+  border-top: none;
+  gap: clamp(1rem, 4vw, 2.5rem);
+  margin-top: var(--spacing-md);
+  padding-top: 0;
+  flex-wrap: wrap;
+}
+
+body[data-theme="retro90s"] .proof-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
 body[data-theme="retro90s"] .proof-number {
-  color: #00ff00;
-  text-shadow: 2px 2px #000;
+  display: inline-flex;
+  gap: 2px;
+  margin: 0;
+  padding: 4px;
+  background: var(--color-black);
+  box-shadow: var(--bevel-in);
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-green);
+  text-shadow: 0 0 4px rgba(0, 255, 0, 0.6);
+}
+
+body[data-theme="retro90s"] .odo-digit {
+  display: inline-block;
+  min-width: 1.15ch;
+  padding: 4px 3px 3px;
+  text-align: center;
+  background: linear-gradient(#222 0%, #000 45%, #000 55%, #222 100%);
+  border: 1px solid #3a3a3a;
+}
+
+body[data-theme="retro90s"] .proof-label {
+  font-family: var(--font-90s);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-black);
 }
 
 /* Exit Modal */
@@ -2330,7 +2176,7 @@ body[data-theme="retro90s"] .exit-modal-icon {
 
 body[data-theme="retro90s"] .exit-modal-title {
   color: #ffff00;
-  font-family: 'Comic Sans MS', cursive;
+  font-family: var(--font-fun);
   text-shadow: 2px 2px 0 #000;
 }
 
@@ -2368,38 +2214,6 @@ body[data-theme="retro90s"] .scroll-progress {
   background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff);
 }
 
-/* Availability Badge */
-body[data-theme="retro90s"] .availability-badge {
-  background: #000;
-  border: 2px solid #00ff00;
-  color: #00ff00;
-  font-family: 'Courier New', monospace;
-  animation: retro-blink 1s step-end infinite;
-}
-
-@keyframes retro-blink {
-  50% { opacity: 0.7; }
-}
-
-/* Contact Urgency */
-body[data-theme="retro90s"] .contact-urgency {
-  background: #ffff00;
-  border: 2px dashed #ff0000;
-  color: #000;
-  font-weight: bold;
-  animation: retro-flash 0.5s ease infinite;
-}
-
-@keyframes retro-flash {
-  50% { background: #ff9900; }
-}
-
-/* Response Time */
-body[data-theme="retro90s"] .response-time {
-  color: #00ff00;
-  font-family: 'Courier New', monospace;
-}
-
 /* Floating CTA */
 body[data-theme="retro90s"] .floating-cta {
   background: linear-gradient(180deg, #ff00ff 0%, #9900ff 100%);
@@ -2407,7 +2221,7 @@ body[data-theme="retro90s"] .floating-cta {
   border: 3px outset #ff99ff;
   border-radius: 0;
   box-shadow: 4px 4px 0 #000;
-  font-family: 'Comic Sans MS', cursive;
+  font-family: var(--font-fun);
   text-shadow: 1px 1px 0 #000;
 }
 
@@ -2419,6 +2233,87 @@ body[data-theme="retro90s"] .floating-cta:hover {
 
 body[data-theme="retro90s"] .floating-cta-pulse {
   display: none;
+}
+
+/* Clear the 26px status bar (and slide far enough to leave it when hidden) */
+body[data-theme="retro90s"] .floating-cta {
+  bottom: calc(26px + 1rem);
+}
+
+body[data-theme="retro90s"] .floating-cta.hidden {
+  transform: translateY(160px);
+}
+
+body[data-theme="retro90s"] .floating-cta:focus-visible {
+  outline: 1px dotted var(--color-white);
+  outline-offset: -7px;
+}
+
+/* ─── Browser status bar (built by retro90s.js) ───
+   IE4-style: message area (section in view, or the URL of the hovered
+   link), pointer coordinates, and the tray clock. */
+body[data-theme="retro90s"] .retro-status-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 26px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 3px;
+  background: var(--bg-90s);
+  box-shadow: inset 0 1px 0 var(--bevel-lighter), inset 0 2px 0 var(--bevel-light);
+  font-family: var(--font-90s);
+  font-size: 11px;
+  color: var(--color-black);
+}
+
+body[data-theme="retro90s"] .retro-status-panel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 19px;
+  margin-top: 2px;
+  padding: 0 7px;
+  flex: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid;
+  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
+}
+
+body[data-theme="retro90s"] .retro-status-panel.is-message {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+  line-height: 17px;
+}
+
+body[data-theme="retro90s"] .retro-status-panel.is-coords {
+  min-width: 92px;
+  font-variant-numeric: tabular-nums;
+}
+
+body[data-theme="retro90s"] .retro-status-panel.is-zone::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--color-navy);
+  background:
+    linear-gradient(90deg, transparent 45%, var(--color-navy) 45% 55%, transparent 55%),
+    linear-gradient(transparent 45%, var(--color-navy) 45% 55%, transparent 55%),
+    radial-gradient(circle at 35% 35%, var(--color-cyan), var(--color-blue));
+}
+
+@media (max-width: 768px) {
+  body[data-theme="retro90s"] .retro-status-panel.is-coords,
+  body[data-theme="retro90s"] .retro-status-panel.is-zone {
+    display: none;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2535,104 +2430,104 @@ body[data-theme="retro90s"] .language-switcher-toggle:hover .lang-arrow {
    Git-style graph with Windows 95 aesthetic
    ═══════════════════════════════════════════════════════════════ */
 
-/* Git Graph Color Variables */
+/* Git Graph Color Variables. One mapping everywhere (desktop graph, mobile
+   list, detail window): work = link blue, side projects = purple/magenta,
+   education = green. */
 body[data-theme="retro90s"] {
   --git-work-color: var(--color-blue);
   --git-project-color: var(--color-magenta);
-  --git-edu-color: var(--color-green-dark);
-  --git-trunk-color: rgba(0, 0, 128, 0.5);
+  --git-education-color: var(--color-green-dark);
+  --git-trunk-color: var(--color-navy);
   --git-hash-color: var(--color-purple);
-  --git-card-bg: var(--bg-90s);
-  --git-card-border: var(--bevel-dark);
-  --git-detail-bg: var(--bg-90s);
   --git-text-primary: var(--color-navy);
-  --git-text-secondary: var(--color-purple);
-  --git-text-muted: var(--color-teal);
+  --git-text-secondary: var(--color-black);
   --git-line-width: 5px;
 }
 
-body[data-theme="retro90s"] .timeline-section {
-  padding: var(--spacing-lg) var(--spacing-md);
-  background: repeating-linear-gradient(
-    0deg,
-    var(--bg-90s) 0px,
-    var(--bg-90s) 2px,
-    #D0D0D0 2px,
-    #D0D0D0 4px
-  );
+/* --branch-color comes from the type class (css/timeline.css); the text
+   shade of each type, readable on grey and white, is set here. */
+body[data-theme="retro90s"] .git-commit-work,
+body[data-theme="retro90s"] .mobile-commit-work {
+  --branch-ink: var(--color-blue);
+}
+
+body[data-theme="retro90s"] .git-commit-project,
+body[data-theme="retro90s"] .mobile-commit-project {
+  --branch-ink: var(--color-purple);
+}
+
+body[data-theme="retro90s"] .git-commit-education,
+body[data-theme="retro90s"] .mobile-commit-education {
+  --branch-ink: var(--color-green-text);
+}
+
+body[data-theme="retro90s"] .git-timeline-section {
   position: relative;
   z-index: 10;
 }
 
-body[data-theme="retro90s"] #timeline .section-title {
-  font-family: var(--font-heading);
-  color: var(--color-navy);
-  text-shadow: 2px 2px 0 var(--color-yellow), -1px -1px 0 var(--color-white);
+/* Header lines up with the other sections (timeline.css gives it its own
+   2rem gutter, which put the title 120px left of every other title). */
+body[data-theme="retro90s"] .git-timeline-section .section-header {
+  max-width: var(--section-max-width);
+  margin: 0 auto var(--spacing-md);
+  padding: 0 var(--section-padding-x);
+  box-sizing: border-box;
 }
 
-body[data-theme="retro90s"] .timeline-subtitle {
-  color: var(--color-purple);
-  font-family: var(--font-fun);
-  font-size: 1.1rem;
+/* The graph is drawn on a sunken white canvas, MS Paint style */
+body[data-theme="retro90s"] .git-timeline-viewport {
+  background: var(--color-white);
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  border-color: var(--bevel-dark) transparent var(--bevel-light);
+  box-shadow: inset 0 1px 0 var(--bevel-darker), inset 0 -1px 0 var(--bevel-lighter);
 }
 
-/* Under construction badge */
-body[data-theme="retro90s"] .timeline-intro::after {
-  content: '🚧 NEW! 🚧';
-  display: inline-block;
-  margin-left: 0.5rem;
-  color: var(--color-red);
-  font-family: var(--font-fun);
-  font-size: 0.8rem;
-  animation: blink-90s 0.5s step-end infinite;
+/* Year Axis */
+body[data-theme="retro90s"] .git-year-label {
+  font-family: var(--font-90s);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0;
+  color: var(--color-black);
+  padding: 1px 6px;
+}
+
+body[data-theme="retro90s"] .git-year-tick {
+  background: var(--color-black);
+  width: 2px;
+}
+
+/* Current year = the selected item of a Win95 list */
+body[data-theme="retro90s"] .git-year-marker.current .git-year-label {
+  background: var(--color-navy);
+  color: var(--color-white);
+  font-size: 0.9rem;
+  outline: 1px dotted var(--color-yellow);
+  outline-offset: -2px;
+}
+
+body[data-theme="retro90s"] .git-year-marker.current .git-year-tick {
+  background: var(--color-navy);
+}
+
+/* NOW: a red sticker that blinks (slowly) like a proper <blink> */
+body[data-theme="retro90s"] .git-now-marker span {
+  background: var(--color-red);
+  color: var(--color-white);
+  font-family: var(--font-90s);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--color-black);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 var(--color-black);
+  animation: blink-90s 1.2s step-end infinite;
 }
 
 @keyframes blink-90s {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-/* Viewport - Windows 95 Desktop */
-body[data-theme="retro90s"] .timeline-viewport {
-  background: var(--color-teal);
-  border: 2px solid;
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  box-shadow: inset 2px 2px 0 var(--bevel-darker);
-}
-
-/* Year Axis - BIGGER */
-body[data-theme="retro90s"] .timeline-year-label {
-  font-family: var(--font-90s);
-  font-weight: 700;
-  color: var(--color-white);
-  text-shadow: 1px 1px 0 var(--color-black);
-  font-size: 1rem;
-  background: var(--color-navy);
-  padding: 3px 10px;
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-}
-
-body[data-theme="retro90s"] .timeline-year-tick {
-  background: var(--color-white);
-  width: 3px;
-  height: 25px;
-  opacity: 0.7;
-}
-
-body[data-theme="retro90s"] .timeline-year.current .timeline-year-label {
-  background: var(--color-red);
-  font-size: 1.1rem;
-  animation: blink-90s 1s step-end infinite;
-}
-
-/* NOW Marker */
-body[data-theme="retro90s"] .timeline-now-marker span {
-  background: var(--color-red);
-  font-family: var(--font-90s);
-  font-weight: 700;
-  border: 2px solid var(--color-white);
-  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4);
+  0%, 70% { opacity: 1; }
+  71%, 100% { opacity: 0.25; }
 }
 
 /* Git Graph SVG */
@@ -2642,166 +2537,91 @@ body[data-theme="retro90s"] .git-trunk {
 }
 
 body[data-theme="retro90s"] .git-branch {
-  stroke-width: 5px;
+  stroke-width: 4px;
 }
 
 body[data-theme="retro90s"] .git-node {
-  stroke: var(--color-white);
-  stroke-width: 3px;
+  stroke: var(--color-black);
+  stroke-width: 2px;
 }
 
-/* Git Commit Info - Windows 95 Button Style */
-body[data-theme="retro90s"] .git-commit-info {
-  font-family: var(--font-90s);
+/* Commit markers are Win95 push buttons with a colour swatch for the type */
+body[data-theme="retro90s"] .git-commit-marker {
+  gap: 7px;
+  padding: 5px 8px 5px 7px;
   background: var(--bg-90s);
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  border: 0;
   border-radius: 0;
-}
-
-body[data-theme="retro90s"] .git-item:hover .git-commit-info {
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
-}
-
-body[data-theme="retro90s"] .git-item.git-work:hover .git-commit-info {
-  border-color: var(--bevel-light) var(--color-blue) var(--color-blue) var(--bevel-light);
-}
-
-body[data-theme="retro90s"] .git-item.git-project:hover .git-commit-info {
-  border-color: var(--bevel-light) var(--color-magenta) var(--color-magenta) var(--bevel-light);
-}
-
-body[data-theme="retro90s"] .git-item.git-education:hover .git-commit-info {
-  border-color: var(--bevel-light) var(--color-green-dark) var(--color-green-dark) var(--bevel-light);
-}
-
-body[data-theme="retro90s"] .git-hash {
-  color: var(--color-purple);
-  font-family: var(--font-mono);
-}
-
-body[data-theme="retro90s"] .git-title {
-  color: var(--color-navy);
-  font-weight: 700;
-}
-
-body[data-theme="retro90s"] .git-author {
-  color: var(--color-teal);
-}
-
-body[data-theme="retro90s"] .git-ongoing-badge {
-  background: var(--color-yellow);
-  color: var(--color-red);
-  font-family: var(--font-fun);
-  border: 1px solid var(--color-red);
-  animation: blink-90s 0.8s step-end infinite;
-}
-
-/* Git Detail Popup - Windows 95 Window */
-body[data-theme="retro90s"] .git-detail {
-  background: var(--bg-90s);
-  border: 2px solid;
-  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
-  border-radius: 0;
+  box-shadow: var(--bevel-out), 2px 2px 0 rgba(0, 0, 0, 0.25);
+  backdrop-filter: none;
   font-family: var(--font-90s);
+  font-size: 0.75rem;
+  transition: none;
 }
 
-body[data-theme="retro90s"] .git-detail-header {
-  background: linear-gradient(to right, var(--color-navy), var(--color-navy-light));
-  margin: -1rem -1rem 0.75rem -1rem;
-  padding: 4px 8px;
-  border-bottom: none;
-}
-
-body[data-theme="retro90s"] .git-detail-hash {
-  color: var(--color-white);
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
-}
-
-body[data-theme="retro90s"] .git-detail-date {
-  color: var(--color-yellow);
-}
-
-body[data-theme="retro90s"] .git-detail-title {
-  color: var(--color-navy);
-  font-weight: 700;
-}
-
-body[data-theme="retro90s"] .git-detail-company {
-  color: var(--color-purple);
-  font-weight: 700;
-}
-
-body[data-theme="retro90s"] .git-detail-company::before {
-  content: '>> ';
-  color: var(--color-blue);
-}
-
-body[data-theme="retro90s"] .git-detail-location {
-  color: var(--color-teal);
-  font-family: var(--font-fun);
-}
-
-body[data-theme="retro90s"] .git-detail-desc {
-  color: var(--color-black);
-  background: var(--color-white);
-  border: 1px solid;
-  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
-  padding: 8px;
-}
-
-body[data-theme="retro90s"] .git-tag {
-  background: var(--color-panel-yellow);
-  color: var(--color-black);
+body[data-theme="retro90s"] .git-commit-marker::before {
+  content: '';
+  flex: none;
+  width: 10px;
+  height: 10px;
+  background: var(--branch-color);
   border: 1px solid var(--color-black);
+}
+
+body[data-theme="retro90s"] .git-commit-marker::after {
+  color: var(--color-black);
+  margin-left: 0;
+}
+
+body[data-theme="retro90s"] .git-commit-marker:hover {
+  background: var(--bg-90s-light);
+  border: 0;
+  transform: none;
+  box-shadow: var(--bevel-out), 2px 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+body[data-theme="retro90s"] .git-commit-marker:hover .marker-title {
+  color: var(--branch-ink, var(--color-blue));
+  text-decoration: underline;
+}
+
+body[data-theme="retro90s"] .git-commit-marker:hover::after {
+  color: var(--color-black);
+}
+
+body[data-theme="retro90s"] .git-commit-marker:active {
+  box-shadow: var(--bevel-in);
+  transform: translate(1px, 1px);
+}
+
+body[data-theme="retro90s"] .git-commit-marker:focus-visible {
+  outline: 1px dotted var(--color-black);
+  outline-offset: -4px;
+}
+
+body[data-theme="retro90s"] .marker-title {
+  color: var(--color-black);
+  font-weight: 700;
+}
+
+body[data-theme="retro90s"] .marker-hash {
+  color: var(--color-purple);
+}
+
+/* Ongoing = a green activity LED (the type is already in the swatch). */
+body[data-theme="retro90s"] .marker-badge {
+  width: 8px;
+  height: 8px;
   border-radius: 0;
-  font-weight: 700;
-}
-
-/* Scroll Hint */
-body[data-theme="retro90s"] .timeline-scroll-hint {
-  color: var(--color-white);
-  font-family: var(--font-90s);
-  font-weight: 700;
-  text-shadow: 1px 1px 0 var(--color-black);
-}
-
-body[data-theme="retro90s"] .scroll-hint-text::before {
-  content: '👉 ';
-}
-
-body[data-theme="retro90s"] .scroll-hint-arrow {
-  color: var(--color-yellow);
-}
-
-/* Loading - Hourglass */
-body[data-theme="retro90s"] .timeline-loading {
-  color: var(--color-white);
-  font-family: var(--font-90s);
-  text-shadow: 1px 1px 0 var(--color-black);
-}
-
-body[data-theme="retro90s"] .timeline-loading::before {
-  content: '⌛ ';
-  animation: hourglass 1s step-end infinite;
-}
-
-body[data-theme="retro90s"] .timeline-loading::after {
-  content: ' Please wait...';
-}
-
-@keyframes hourglass {
-  0%, 50% { content: '⌛ '; }
-  51%, 100% { content: '⏳ '; }
+  border: 1px solid var(--color-black);
+  background: var(--color-green);
+  animation: blink-90s 1.2s step-end infinite;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  body[data-theme="retro90s"] .timeline-section {
-    padding: var(--spacing-md) var(--spacing-sm);
+  body[data-theme="retro90s"] .git-timeline-section .section-header {
+    padding: 0 var(--section-padding-x-mobile);
   }
 }
 
@@ -2810,7 +2630,7 @@ body[data-theme="retro90s"] {
   --git-bg-solid: var(--bg-90s-white);
   --git-border: var(--bevel-dark);
   --git-text: var(--color-black);
-  --git-text-muted: var(--bg-90s-dark);
+  --git-text-muted: var(--color-ink-muted);
   --git-trunk-color: var(--color-navy);
 }
 
@@ -2820,8 +2640,10 @@ body[data-theme="retro90s"] {
     width: 3px;
   }
 
+  /* Square nodes with a black edge, like the swatches on desktop */
   body[data-theme="retro90s"] .mobile-commit::before {
-    border: 2px solid var(--bg-90s);
+    border-radius: 0;
+    border: 1px solid var(--color-black);
     box-shadow: 1px 1px 0 var(--bevel-dark);
   }
 
@@ -2829,39 +2651,46 @@ body[data-theme="retro90s"] {
     background: var(--bg-90s-white);
     border: 2px solid;
     border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
+    border-left: 6px solid var(--branch-color);
     box-shadow: 2px 2px 0 var(--bevel-darker);
     font-family: var(--font-90s);
     border-radius: 0;
+    min-height: 44px;
   }
 
   body[data-theme="retro90s"] .mobile-commit-card:active {
     border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
+    border-left-color: var(--branch-color);
     box-shadow: inset 1px 1px 2px var(--bevel-dark);
     transform: translate(1px, 1px);
   }
 
   body[data-theme="retro90s"] .mobile-commit-title {
-    color: var(--color-navy);
+    color: var(--branch-ink, var(--color-navy));
     font-weight: bold;
     text-shadow: none;
   }
 
   body[data-theme="retro90s"] .mobile-commit-date {
-    color: var(--bg-90s-dark);
+    color: var(--color-ink-muted);
     font-size: 0.7rem;
   }
 
   body[data-theme="retro90s"] .mobile-commit-chevron {
-    color: var(--bg-90s-dark);
+    color: var(--color-black);
     font-family: var(--font-mono);
   }
 
   body[data-theme="retro90s"] .mobile-commit.expanded .mobile-commit-chevron {
-    color: var(--color-blue);
+    color: var(--branch-ink, var(--color-blue));
   }
 
   body[data-theme="retro90s"] .mobile-commit-badge {
+    border-radius: 0;
+    border: 1px solid var(--color-black);
+    background: var(--color-green);
     box-shadow: 1px 1px 0 var(--bevel-dark);
+    animation: blink-90s 1.2s step-end infinite;
   }
 
   body[data-theme="retro90s"] .mobile-commit-details {
@@ -2872,18 +2701,19 @@ body[data-theme="retro90s"] {
   }
 
   body[data-theme="retro90s"] .mobile-commit-company {
-    color: var(--color-blue);
+    color: var(--branch-ink, var(--color-blue));
     font-weight: bold;
   }
 
   body[data-theme="retro90s"] .mobile-commit-location {
-    color: var(--bg-90s-dark);
+    color: var(--color-ink-muted);
     font-size: 0.75rem;
   }
 
   body[data-theme="retro90s"] .mobile-commit-description {
     color: var(--color-black);
-    font-family: var(--font-fun);
+    font-family: var(--font-90s);
+    font-size: 0.85rem;
   }
 
   body[data-theme="retro90s"] .mobile-commit-tag {
@@ -2891,34 +2721,37 @@ body[data-theme="retro90s"] {
     border: none;
     color: var(--color-white);
     font-family: var(--font-90s);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     border-radius: 0;
     box-shadow: 1px 1px 0 var(--bevel-darker);
   }
-
-  /* Type-specific colors */
-  body[data-theme="retro90s"] .mobile-commit-work .mobile-commit-title {
-    color: var(--color-green-dark);
-  }
-
-  body[data-theme="retro90s"] .mobile-commit-project .mobile-commit-title {
-    color: var(--color-red);
-  }
-
-  body[data-theme="retro90s"] .mobile-commit-education .mobile-commit-title {
-    color: var(--color-blue);
-  }
 }
 
-/* ─── Git Timeline Overlay (Retro90s Theme) ─── */
+/* ─── Git Timeline Overlay (Retro90s Theme) ───
+   A plain Win95 window: every title bar is navy, the type shows in the
+   title colour and a swatch, the same mapping as the graph. */
 body[data-theme="retro90s"] .overlay-content {
-  background: var(--bg-90s-white);
+  background: var(--bg-90s);
   border: 2px solid;
   border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
-  box-shadow: 3px 3px 0 var(--bevel-darker);
+  box-shadow:
+    inset -1px -1px 0 var(--bevel-darker),
+    inset 1px 1px 0 var(--bevel-lighter),
+    4px 4px 0 rgba(0, 0, 0, 0.35);
+  backdrop-filter: none;
   font-family: var(--font-90s);
   border-radius: 0;
 }
+
+body[data-theme="retro90s"] .git-overlay-work .overlay-content,
+body[data-theme="retro90s"] .git-overlay-project .overlay-content,
+body[data-theme="retro90s"] .git-overlay-education .overlay-content {
+  border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
+}
+
+body[data-theme="retro90s"] .git-overlay-work { --branch-color: var(--git-work-color); --branch-ink: var(--color-blue); }
+body[data-theme="retro90s"] .git-overlay-project { --branch-color: var(--git-project-color); --branch-ink: var(--color-purple); }
+body[data-theme="retro90s"] .git-overlay-education { --branch-color: var(--git-education-color); --branch-ink: var(--color-green-text); }
 
 body[data-theme="retro90s"] .overlay-header {
   background: linear-gradient(90deg, var(--color-navy) 0%, var(--color-navy-light) 100%);
@@ -2938,26 +2771,39 @@ body[data-theme="retro90s"] .overlay-date {
 }
 
 body[data-theme="retro90s"] .overlay-title {
-  color: var(--color-navy);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--branch-ink, var(--color-navy));
   font-weight: bold;
   text-shadow: none;
 }
 
+body[data-theme="retro90s"] .overlay-title::before {
+  content: '';
+  flex: none;
+  width: 12px;
+  height: 12px;
+  background: var(--branch-color, var(--color-navy));
+  border: 1px solid var(--color-black);
+}
+
 body[data-theme="retro90s"] .overlay-company {
-  color: var(--color-blue);
+  color: var(--color-black);
   font-weight: bold;
 }
 
 body[data-theme="retro90s"] .overlay-location {
-  color: var(--bg-90s-dark);
+  color: var(--color-ink-muted);
 }
 
 body[data-theme="retro90s"] .overlay-description {
   color: var(--color-black);
-  font-family: var(--font-fun);
-  background: var(--color-panel-yellow);
-  padding: 8px;
-  margin: 0 -8px;
+  font-family: var(--font-90s);
+  background: var(--color-white);
+  box-shadow: var(--bevel-in);
+  padding: 8px 10px;
+  margin: 0 0 0.75rem;
 }
 
 body[data-theme="retro90s"] .overlay-tag {
@@ -2966,28 +2812,4 @@ body[data-theme="retro90s"] .overlay-tag {
   color: var(--color-white);
   border-radius: 0;
   box-shadow: 1px 1px 0 var(--bevel-darker);
-}
-
-body[data-theme="retro90s"] .git-overlay-work .overlay-content {
-  border-color: var(--color-green-dark) var(--bevel-dark) var(--bevel-dark) var(--color-green-dark);
-}
-
-body[data-theme="retro90s"] .git-overlay-work .overlay-header {
-  background: linear-gradient(90deg, var(--color-green-dark) 0%, var(--color-green) 100%);
-}
-
-body[data-theme="retro90s"] .git-overlay-project .overlay-content {
-  border-color: var(--color-red) var(--bevel-dark) var(--bevel-dark) var(--color-red);
-}
-
-body[data-theme="retro90s"] .git-overlay-project .overlay-header {
-  background: linear-gradient(90deg, var(--color-red) 0%, var(--color-orange) 100%);
-}
-
-body[data-theme="retro90s"] .git-overlay-education .overlay-content {
-  border-color: var(--color-blue) var(--bevel-dark) var(--bevel-dark) var(--color-blue);
-}
-
-body[data-theme="retro90s"] .git-overlay-education .overlay-header {
-  background: linear-gradient(90deg, var(--color-navy) 0%, var(--color-blue) 100%);
 }

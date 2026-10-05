@@ -3,6 +3,15 @@
     "title": "HEY, I'M <highlight>TOM</highlight>."
   },
   "ui": {
-    "seeWork": "See the work"
+    "seeWork": "See the work",
+    "systemStatus": "PLAYER CARD"
+  },
+  "fps": {
+    "hint": "move the mouse · click to shoot · scroll to push through the map",
+    "news": "NEWS · RIGHT NOW",
+    "buyMenu": "BUY MENU · WORK",
+    "bio": "BIO",
+    "playstyle": "PLAYSTYLE",
+    "loadout": "LOADOUT"
   }
 }

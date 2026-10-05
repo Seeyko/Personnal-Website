@@ -415,7 +415,12 @@ func (h *SSRHandler) ServeRobots(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n", h.frontendURL)
 }
 
-// detectLang reads the preferred language from cookie, query param, or Accept-Language header.
+// detectLang picks the language of the page, in the same order as the
+// frontend's LanguageManager (frontend/i18n/language-manager.js), so the
+// articles come in the language of the UI around them: ?lang=, then the `lang`
+// cookie (LanguageManager writes it with every language it settles on, the
+// counterpart of its localStorage), then the browser's ranked languages,
+// then French. A request without any of these (crawlers) gets French.
 func (h *SSRHandler) detectLang(r *http.Request) string {
 	// 1. Query param ?lang=
 	if lang := r.URL.Query().Get("lang"); lang == "en" || lang == "fr" {
@@ -430,13 +435,41 @@ func (h *SSRHandler) detectLang(r *http.Request) string {
 	}
 
 	// 3. Accept-Language header
-	accept := r.Header.Get("Accept-Language")
-	if strings.Contains(accept, "en") && !strings.Contains(accept, "fr") {
-		return "en"
+	if lang := preferredLang(r.Header.Get("Accept-Language")); lang != "" {
+		return lang
 	}
 
 	// 4. Default
 	return "fr"
+}
+
+// preferredLang returns the blog language ("en" or "fr") an Accept-Language
+// header ranks highest (by q-value, then by order), or "" when it lists
+// neither. It mirrors LanguageManager's walk through navigator.languages: an
+// English-first browser that also lists French gets English
+// ("en-US,en;q=0.9,fr;q=0.8" → "en"), where the old "en unless fr appears
+// anywhere" rule served it French articles under an English UI.
+func preferredLang(header string) string {
+	best, bestQ := "", 0.0
+	for _, part := range strings.Split(header, ",") {
+		fields := strings.Split(part, ";")
+		primary, _, _ := strings.Cut(strings.ToLower(strings.TrimSpace(fields[0])), "-")
+		if primary != "en" && primary != "fr" {
+			continue
+		}
+		q := 1.0
+		for _, param := range fields[1:] {
+			if v, ok := strings.CutPrefix(strings.TrimSpace(param), "q="); ok {
+				if f, err := strconv.ParseFloat(strings.TrimSpace(v), 64); err == nil {
+					q = f
+				}
+			}
+		}
+		if q > bestQ {
+			best, bestQ = primary, q
+		}
+	}
+	return best
 }
 
 // altLang returns the opposite language.

@@ -59,21 +59,6 @@
     display: none; /* Hide divider for cleaner look */
 }
 
-.git-timeline-intro {
-    text-align: center;
-    margin-bottom: 2rem;
-    padding: 0 2rem;
-}
-
-.git-timeline-intro .section-title {
-    margin-bottom: 0.5rem;
-}
-
-.git-timeline-subtitle {
-    font-size: 1.1rem;
-    opacity: 0.7;
-}
-
 /* ─── Viewport & Scroll ─── */
 .git-timeline-viewport {
     position: relative;
@@ -278,6 +263,25 @@
     transform: translateX(2px);
 }
 
+/* Each commit's accent (--branch-color) comes from its type class, so a
+   theme only has to set the --git-*-color variables: git-timeline.js no
+   longer writes a color inline. Covers the desktop markers and the mobile
+   list alike. */
+.git-commit-work,
+.mobile-commit-work {
+    --branch-color: var(--git-work-color);
+}
+
+.git-commit-project,
+.mobile-commit-project {
+    --branch-color: var(--git-project-color);
+}
+
+.git-commit-education,
+.mobile-commit-education {
+    --branch-color: var(--git-education-color);
+}
+
 /* Type-specific left border colors */
 .git-commit-work {
     border-left-color: var(--git-work-color);
@@ -309,7 +313,9 @@
     vertical-align: middle;
 }
 
+/* "In progress" dot: an empty span (aria-hidden), the CSS draws the dot */
 .marker-badge {
+    flex: none;
     width: 6px;
     height: 6px;
     background: var(--branch-color, var(--git-work-color));
@@ -457,44 +463,10 @@
     color: var(--git-text-secondary);
 }
 
-/* ─── Scroll Hint (hidden when timeline fits viewport) ─── */
-.git-timeline-scroll-hint {
-    position: absolute;
-    bottom: 0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: none; /* Hidden by default since timeline fits viewport */
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--git-text-muted);
-    font-size: 0.85rem;
-    opacity: 1;
-    transition: opacity 0.3s ease;
-}
-
-.git-timeline-scroll-hint.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.scroll-hint-arrow {
-    animation: bounce-right 1.5s ease-in-out infinite;
-}
-
-@keyframes bounce-right {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(5px); }
-}
-
 /* ─── Responsive - Tablet/Mobile Vertical Timeline ─── */
 @media (max-width: 1024px) {
     .git-timeline-section {
         padding: 1.5rem 0;
-    }
-
-    .git-timeline-intro {
-        padding: 0 1rem;
-        margin-bottom: 1rem;
     }
 
     /* Hide horizontal timeline on mobile */
@@ -603,6 +575,7 @@
     }
 
     .mobile-commit-badge {
+        flex: none;
         width: 8px;
         height: 8px;
         background: var(--branch-color, var(--git-work-color));
@@ -669,27 +642,9 @@
         color: var(--git-text-secondary, rgba(255, 255, 255, 0.7));
     }
 
-    /* Type-specific colors */
-    .mobile-commit-work {
-        --branch-color: var(--git-work-color);
-    }
-
-    .mobile-commit-project {
-        --branch-color: var(--git-project-color);
-    }
-
-    .mobile-commit-education {
-        --branch-color: var(--git-education-color);
-    }
-
     /* Hide overlay on mobile */
     .git-timeline-overlay {
         display: none !important;
-    }
-
-    /* Hide scroll hint on mobile */
-    .git-timeline-scroll-hint {
-        display: none;
     }
 }
 

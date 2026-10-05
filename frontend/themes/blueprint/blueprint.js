@@ -63,11 +63,70 @@ const blueprintThemeConfig = {
 };
 
 // ─── Theme-Specific Effects ───
+const prefersReducedMotion = () =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 function initBlueprintEffects() {
     initSVGAnimations();
+    initCrosshair();
+    initHeroDimensions();
+    initAnnotations();
     initParallax();
     initCardEffects();
     initBlueprintSfx();
+    // The reveals were measured before the timeline rendered, and About now
+    // sits below it: measure again so its reveal fires when it comes in view.
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
+}
+
+// ─── Crosshair Cursor ───
+// CursorTracker parks the crosshair at 0,0 until the mouse moves; the CSS
+// keeps it hidden until this flag is set.
+function initCrosshair() {
+    document.addEventListener('mousemove', () => {
+        document.body.classList.add('bp-pointer');
+    }, { once: true, passive: true });
+}
+
+// ─── Hero Dimensions ───
+// The manifesto's frame is dimensioned in CSS (.hero-quote::after and the
+// paragraph's ::before); this writes the live figures they print, so the
+// drawing measures itself as the window is resized.
+function initHeroDimensions() {
+    const quote = document.querySelector('.hero-quote');
+    const paragraph = quote?.querySelector('.hero-quote-paragraph');
+    if (!quote || !paragraph) return;
+
+    const measure = () => {
+        const rect = quote.getBoundingClientRect();
+        if (!rect.width) return;
+        quote.dataset.dim = `${Math.round(rect.width)} px`;
+        paragraph.dataset.dimH = `${Math.round(rect.height)} px`;
+    };
+
+    measure();
+    if ('ResizeObserver' in window) new ResizeObserver(measure).observe(quote);
+    else window.addEventListener('resize', measure, { passive: true });
+}
+
+// ─── Redline Annotations (theme i18n) ───
+// The hero's redline is drawn by CSS next to the frame
+// (.hero-quote-paragraph::after) from this data-note; the loose
+// .hero-annotation element keeps the same text for consistency.
+function initAnnotations() {
+    const paragraph = document.querySelector('.hero-quote-paragraph');
+    const note = document.querySelector('.hero-annotation .annotation-text');
+    if (!paragraph || !window.LanguageManager) return;
+
+    const render = () => {
+        const text = LanguageManager.t('annotations.revisionNeeded');
+        if (!text || text === 'annotations.revisionNeeded') return;
+        paragraph.dataset.note = text;
+        if (note) note.textContent = `${text} →`;
+    };
+
+    render();
+    window.addEventListener('languageChanged', render);
 }
 
 // ─── SVG Line Drawing Animation ───
@@ -85,17 +144,20 @@ function initSVGAnimations() {
 }
 
 // ─── Blueprint Grid Parallax ───
+// Slides the grid itself (background-position) rather than the fixed
+// overlay: translating the overlay pulled it off the top of the viewport,
+// leaving the upper part of every screen without grid further down the page.
 function initParallax() {
     const overlay = document.getElementById('theme-overlay');
-    if (!overlay) return;
+    if (!overlay || prefersReducedMotion()) return;
 
     let ticking = false;
 
     window.addEventListener('scroll', () => {
         if (!ticking) {
             requestAnimationFrame(() => {
-                const scrollY = window.scrollY;
-                overlay.style.transform = `translateY(${scrollY * 0.1}px)`;
+                const offset = Math.round(window.scrollY * 0.1) % 100;
+                overlay.style.backgroundPosition = `-1px ${-1 - offset}px`;
                 ticking = false;
             });
             ticking = true;
@@ -103,30 +165,33 @@ function initParallax() {
     }, { passive: true });
 }
 
-// ─── Project Card Hover Effects (3D Tilt) ───
+// ─── Project Card Hover Effects (Tilt) ───
+// A sheet lifted off the table: only the card under the pointer tilts, a
+// couple of degrees at most. Mouse devices only, and not with reduced motion.
 function initCardEffects() {
+    if (prefersReducedMotion() || !window.matchMedia('(hover: hover)').matches) return;
+
+    let frame = null;
+
     document.addEventListener('mousemove', (e) => {
-        document.querySelectorAll('.project-card').forEach(card => {
+        const card = e.target.closest?.('.project-card');
+        if (!card || frame) return;
+        frame = requestAnimationFrame(() => {
+            frame = null;
             const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            // Check if mouse is near the card
-            const isNear = x >= -50 && x <= rect.width + 50 &&
-                          y >= -50 && y <= rect.height + 50;
-
-            if (isNear) {
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = (y - centerY) / 30;
-                const rotateY = (centerX - x) / 30;
-
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
-            } else {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
-            }
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            card.style.transform = `perspective(1200px) rotateX(${(y * 4).toFixed(2)}deg) rotateY(${(-x * 4).toFixed(2)}deg) translateY(-4px)`;
         });
-    });
+    }, { passive: true });
+
+    document.addEventListener('mouseout', (e) => {
+        const card = e.target.closest?.('.project-card');
+        if (!card || card.contains(e.relatedTarget)) return;
+        // Drop a tilt still queued for this frame, or it lands after the reset.
+        if (frame) { cancelAnimationFrame(frame); frame = null; }
+        card.style.transform = '';
+    }, { passive: true });
 }
 
 // ─── Konami Code Handler ───
@@ -136,9 +201,10 @@ function handleKonami() {
     console.log('%c KONAMI CODE ACTIVATED!', 'color: #FFD700; font-size: 20px;');
     if (window.SFX) SFX.play('konami');
 
+    // Hand the accents back to the stylesheet's tokens.
     setTimeout(() => {
-        document.body.style.setProperty('--accent-cyan', '#00FFFF');
-        document.body.style.setProperty('--accent-redline', '#FF3333');
+        document.body.style.removeProperty('--accent-cyan');
+        document.body.style.removeProperty('--accent-redline');
     }, 5000);
 }
 

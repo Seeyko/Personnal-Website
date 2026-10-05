@@ -809,7 +809,7 @@ body[data-theme="retro90s"] .site-footer {
     inset 2px 2px 0 #ffffff,
     4px 4px 0 rgba(0, 0, 0, 0.25);
   --sf-blip: url('/assets/brand/blip-retro90s.svg');
-  --sf-font: 'MS Sans Serif', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --sf-font: Tahoma, 'MS Sans Serif', Verdana, 'Segoe UI', Geneva, sans-serif;
   --sf-display: 'Arial Black', Impact, Haettenschweiler, sans-serif;
   --sf-bevel-out: inset -1px -1px 0 #404040, inset 1px 1px 0 #ffffff, inset -2px -2px 0 #808080, inset 2px 2px 0 #dfdfdf;
   --sf-bevel-in: inset 1px 1px 0 #404040, inset -1px -1px 0 #ffffff, inset 2px 2px 0 #808080, inset -2px -2px 0 #dfdfdf;
@@ -1046,6 +1046,13 @@ body[data-theme="fps"] .sf-card {
   --sf-card-radius: 0;
   --sf-accent: #e8a33d;
   --sf-blip: url('/assets/brand/blip-fps.svg');
+}
+
+/* The card runs on behind the painting; in fps the sky is blue, so fade it out under the legal bar. */
+body[data-theme="fps"] .sf-card {
+  --sf-card-fade: calc(100% - 100cqw / var(--sf-scene-ar) * (var(--sf-sink) - var(--sf-lift)));
+  -webkit-mask-image: linear-gradient(180deg, #000 var(--sf-card-fade), transparent calc(var(--sf-card-fade) + 3rem));
+          mask-image: linear-gradient(180deg, #000 var(--sf-card-fade), transparent calc(var(--sf-card-fade) + 3rem));
 }
 
 /* ─── Entrance choreography (only once JS has armed it) ─── */

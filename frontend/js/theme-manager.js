@@ -12,9 +12,10 @@ const ThemeManager = (() => {
     };
 
     const DEFAULT_THEME = 'default';
-    // nginx serves .js as immutable for a year: bump this whenever a theme's JS
-    // changes, or visitors keep the old file (the HTML pages version this script too).
-    const ASSET_VERSION = '2026-10-04';
+    // nginx serves .js and .css as immutable for a year: bump this whenever a
+    // theme's JS or CSS changes, or visitors keep the old file (the pages version
+    // this script too).
+    const ASSET_VERSION = '2026-10-05';
     const STORAGE_KEY = 'portfolio_theme';
     const SCROLL_KEY = 'portfolio_scroll';
     let currentThemeId = null;
@@ -42,8 +43,9 @@ const ThemeManager = (() => {
     async function loadCSS(theme) {
         const link = document.getElementById('theme-css');
         if (!link) throw new Error('Theme CSS link not found');
-        if (link.href?.endsWith(theme.css)) return;
-        return new Promise((res, rej) => { link.onload = res; link.onerror = rej; link.href = theme.css; });
+        const href = `${theme.css}?v=${ASSET_VERSION}`;
+        if (link.getAttribute('href') === href) return;
+        return new Promise((res, rej) => { link.onload = res; link.onerror = rej; link.href = href; });
     }
 
     function updateFavicon(themeId) {

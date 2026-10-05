@@ -52,6 +52,11 @@
     "drive": "DRIVE",
     "codeSkill": "CODE_SKILL"
   },
+  "codeComments": {
+    "whoAmI": "/* Who am I? */",
+    "howIWork": "/* How I work */",
+    "stack": "/* Stack */"
+  },
   "cardPrefix": "PRJ",
   "blogPrefix": "BLOG",
   "readingTime": "~{time} min read"

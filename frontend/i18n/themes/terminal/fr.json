@@ -49,8 +49,13 @@
   },
   "heroStats": {
     "creativity": "CRÉATIVITÉ",
-    "drive": "DRIVE",
+    "drive": "MOTIVATION",
     "codeSkill": "CODE_SKILL"
+  },
+  "codeComments": {
+    "whoAmI": "/* Qui suis-je ? */",
+    "howIWork": "/* Ma façon de travailler */",
+    "stack": "/* Stack */"
   },
   "cardPrefix": "PRJ",
   "blogPrefix": "BLOG",

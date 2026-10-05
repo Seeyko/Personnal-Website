@@ -86,10 +86,17 @@ class Typewriter {
         this.textIndex = 0;
         this.charIndex = 0;
         this.isDeleting = false;
+        this.nextTexts = null;
 
         if (this.element) {
             this.type();
         }
+    }
+
+    // Swap the command list (language change) once the current command
+    // has been erased, so nothing half-typed flips language mid-word.
+    setTexts(texts) {
+        this.nextTexts = texts;
     }
 
     type() {
@@ -110,6 +117,10 @@ class Typewriter {
             this.isDeleting = true;
         } else if (this.isDeleting && this.charIndex === 0) {
             this.isDeleting = false;
+            if (this.nextTexts) {
+                this.texts = this.nextTexts;
+                this.nextTexts = null;
+            }
             this.textIndex = (this.textIndex + 1) % this.texts.length;
             delay = 500;
         }
@@ -195,12 +206,16 @@ function initTerminalEffects() {
     randomGlitch();
     createEndermanElement();
     initTerminalSfx();
+    // The reveals were measured before the timeline rendered, and About now
+    // sits below it: measure again so its reveal fires when it comes in view.
+    if (window.ScrollTrigger) ScrollTrigger.refresh();
 }
 
 // ─── Typewriter Initialization ───
 function initTypewriter() {
     const heroTyped = document.getElementById('hero-typed');
-    const heroMessages = [
+    if (!heroTyped) return;
+    const fallbackMessages = [
         'echo "Hello, World!"',
         'npm run create-awesome-stuff',
         'git commit -m "made it better"',
@@ -209,9 +224,24 @@ function initTypewriter() {
         './build-dreams.sh --with-passion',
         'grep -r "bugs" . | ./fix-them-with-ai-pipelines.sh',
     ];
+    // Commands come from the theme's i18n file (typewriter), per language
+    const heroMessages = () => {
+        const list = window.LanguageManager?.t('typewriter');
+        return Array.isArray(list) && list.length ? list : fallbackMessages;
+    };
+
+    // Reduced motion: a steady prompt holding one command, no typing loop
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        heroTyped.textContent = heroMessages()[0];
+        window.addEventListener('languageChanged', () => {
+            heroTyped.textContent = heroMessages()[0];
+        });
+        return;
+    }
 
     setTimeout(() => {
-        new Typewriter(heroTyped, heroMessages, 60);
+        const typewriter = new Typewriter(heroTyped, heroMessages(), 60);
+        window.addEventListener('languageChanged', () => typewriter.setTexts(heroMessages()));
     }, 1000);
 }
 

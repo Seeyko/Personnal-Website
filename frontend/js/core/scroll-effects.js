@@ -98,12 +98,23 @@ const ScrollEffects = (() => {
         });
     }
 
+    // Every same-page #link (nav, menu, CTAs, footer), including ones added
+    // later, lands its section through ThemeInit.scrollToSection: the same
+    // spot as arriving with that #hash, just below the fixed header.
+    let smoothScrollBound = false;
+
     function initSmoothScroll() {
-        document.querySelectorAll('a[href^="#"]').forEach(a => {
-            a.addEventListener('click', e => {
-                e.preventDefault();
-                document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
+        if (smoothScrollBound) return;
+        smoothScrollBound = true;
+        document.addEventListener('click', e => {
+            if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            const link = e.target.closest?.('a[href^="#"]');
+            if (!link) return;
+            let target = null;
+            try { target = document.getElementById(decodeURIComponent(link.getAttribute('href').slice(1))); } catch {}
+            if (!target) return;
+            e.preventDefault();
+            ThemeInit.scrollToSection(target);
         });
     }
 

@@ -26,16 +26,16 @@
   <script src="/js/analytics.js"></script>
 
   <!-- Base Styles (always loaded) -->
-  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/base.css?v=2026-10-05" />
 
   <!-- CRO Styles (conversion optimization) -->
   <link rel="stylesheet" href="/css/cro.css" />
 
   <!-- Timeline Styles -->
-  <link rel="stylesheet" href="/css/timeline.css" />
+  <link rel="stylesheet" href="/css/timeline.css?v=2026-10-05" />
 
   <!-- Site footer ("cd ~" home scene) -->
-  <link rel="stylesheet" href="/css/site-footer.css?v=2026-10-05" />
+  <link rel="stylesheet" href="/css/site-footer.css?v=2026-10-05.2" />
 
   <!-- Theme Switcher UI Styles -->
   <link rel="stylesheet" href="/css/theme-switcher.css" />
@@ -214,15 +214,16 @@
     </div>
   </header>
 
-  <!-- 90s Marquee Banner (hidden by default, shown by retro90s theme) -->
+  <!-- 90s Marquee Banner (hidden by default, shown by retro90s theme;
+       strings in i18n/themes/retro90s) -->
   <div class="retro-marquee">
     <div class="marquee-content">
-      <span class="marquee-text red">*** WELCOME TO MY PORTFOLIO ***</span>
-      <span class="marquee-text yellow">*** UNDER CONSTRUCTION ***</span>
-      <span class="marquee-text green">*** BEST VIEWED AT 800x600 ***</span>
-      <span class="marquee-text cyan">*** JAVASCRIPT REQUIRED ***</span>
-      <span class="marquee-text magenta">*** SIGN MY GUESTBOOK! ***</span>
-      <span class="marquee-text white">*** YOU ARE VISITOR #001337 ***</span>
+      <span class="marquee-text red" data-i18n="marquee.0">*** WELCOME TO MY PORTFOLIO ***</span>
+      <span class="marquee-text yellow" data-i18n="marquee.1">*** UNDER CONSTRUCTION ***</span>
+      <span class="marquee-text green" data-i18n="marquee.2">*** BEST VIEWED AT 800x600 ***</span>
+      <span class="marquee-text cyan" data-i18n="marquee.3">*** JAVASCRIPT REQUIRED ***</span>
+      <span class="marquee-text magenta" data-i18n="marquee.4">*** SIGN MY GUESTBOOK! ***</span>
+      <span class="marquee-text white" data-i18n="marquee.5">*** YOU ARE VISITOR #001337 ***</span>
     </div>
   </div>
 
@@ -295,25 +296,24 @@
         <p class="hero-signature">— <span data-i18n="hero.signature">Tom</span></p>
       </div>
 
-      <!-- 90s Under Construction Badge -->
+      <!-- 90s Under Construction Badge (strings in i18n/themes/retro90s;
+           a click swaps in a random underConstruction.* line) -->
       <div class="under-construction">
-        <div class="under-construction-inner">
-          SITE UNDER CONSTRUCTION!
-        </div>
+        <div class="under-construction-inner" data-i18n="underConstruction.0">SITE UNDER CONSTRUCTION!</div>
       </div>
 
-      <!-- Terminal stats bars -->
+      <!-- Terminal stats bars (labels in i18n/themes/terminal) -->
       <div class="hero-stats">
         <div class="stat-bar">
-          <span class="stat-label">CREATIVITY</span>
+          <span class="stat-label" data-i18n="heroStats.creativity">CREATIVITY</span>
           <span class="stat-value">[████████████████████] 100%</span>
         </div>
         <div class="stat-bar">
-          <span class="stat-label">DRIVE</span>
+          <span class="stat-label" data-i18n="heroStats.drive">DRIVE</span>
           <span class="stat-value">[████████████████████] 100%</span>
         </div>
         <div class="stat-bar">
-          <span class="stat-label">CODE_SKILL</span>
+          <span class="stat-label" data-i18n="heroStats.codeSkill">CODE_SKILL</span>
           <span class="stat-value">[██████████████████░░] 90%</span>
         </div>
       </div>
@@ -403,56 +403,6 @@
     </div>
   </section>
 
-  <!-- About Section -->
-  <section id="about" class="about">
-    <div class="section-header">
-      <div class="section-label">
-        <span class="section-number">04</span>
-        <span class="section-prompt">$</span>
-        <h2 class="section-title" data-glitch="ABOUT" data-i18n="sections.about">ABOUT</h2>
-      </div>
-      <div class="section-divider">═══════════════════════════════════════════════════════</div>
-    </div>
-
-    <div class="about-content">
-      <div class="about-card">
-        <div class="card-header">
-          <span class="card-title" data-i18n="ui.systemStatus">SYSTEM STATUS</span>
-        </div>
-        <div class="card-body">
-          <div class="about-text">
-            <p class="code-comment">/* Who am I? */</p>
-            <p class="about-main" data-i18n="about.intro">
-              I build <span class="highlight">MEANINGFUL</span> products and help small teams
-              do their <span class="highlight">BEST WORK</span>.
-            </p>
-            <p class="code-comment">/* How I work */</p>
-            <p class="about-detail" data-i18n="about.detail">
-              I care about craft and iteration. I'd rather enable others than micromanage them.
-              Working with AI has made me even more optimistic about what focused teams can create.
-            </p>
-          </div>
-
-          <div class="about-specs" id="about-specs">
-            <!-- Populated from content.json -->
-          </div>
-
-          <div class="craft-stack">
-            <p class="code-comment">/* Stack */</p>
-            <div class="craft-block" id="craft-block">
-              <!-- Populated from content.json -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Blueprint redline note -->
-        <div class="redline-note">
-          <span data-i18n="ui.availableNote">available for projects</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Timeline / History Section -->
   <section id="timeline" class="git-timeline-section">
     <div class="section-header">
@@ -473,20 +423,69 @@
           <div id="git-timeline-lanes"></div>
         </div>
       </div>
-      <!-- Scroll hint -->
-      <div class="git-timeline-scroll-hint">
-        <span class="scroll-hint-text">Scroll to explore</span>
-        <span class="scroll-hint-arrow">→</span>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about">
+    <div class="section-header">
+      <div class="section-label">
+        <span class="section-number">04</span>
+        <span class="section-prompt">$</span>
+        <h2 class="section-title" data-glitch="ABOUT" data-i18n="sections.about">ABOUT</h2>
+      </div>
+      <div class="section-divider">═══════════════════════════════════════════════════════</div>
+    </div>
+
+    <div class="about-content">
+      <div class="about-card">
+        <div class="card-header">
+          <span class="card-title" data-i18n="ui.systemStatus">SYSTEM STATUS</span>
+        </div>
+        <div class="card-body">
+          <div class="about-text">
+            <p class="code-comment" data-i18n="codeComments.whoAmI">/* Who am I? */</p>
+            <p class="about-main" data-i18n="about.intro">
+              I build <span class="highlight">MEANINGFUL</span> products and help small teams
+              do their <span class="highlight">BEST WORK</span>.
+            </p>
+            <p class="code-comment" data-i18n="codeComments.howIWork">/* How I work */</p>
+            <p class="about-detail" data-i18n="about.detail">
+              I care about craft and iteration. I'd rather enable others than micromanage them.
+              Working with AI has made me even more optimistic about what focused teams can create.
+            </p>
+          </div>
+
+          <div class="about-specs" id="about-specs">
+            <!-- Populated from content.json -->
+          </div>
+
+          <div class="craft-stack">
+            <p class="code-comment" data-i18n="codeComments.stack">/* Stack */</p>
+            <div class="craft-block" id="craft-block">
+              <!-- Populated from content.json -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Blueprint redline note -->
+        <div class="redline-note">
+          <span data-i18n="ui.availableNote">available for projects</span>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Interactive 3D heart — lazy-loaded; nothing downloads until it nears the viewport -->
-  <section id="heart-experiment" class="heart-experiment" aria-label="Interactive 3D heart">
+  <!-- Interactive 3D heart — lazy-loaded; nothing downloads until it nears the viewport.
+       It closes the page right before the footer ("cd ~"), after About: an outro,
+       not part of History. Its accessible name comes from the hidden, translated
+       label (data-i18n only fills text, so aria-labelledby instead of aria-label). -->
+  <section id="heart-experiment" class="heart-experiment" aria-labelledby="heart-experiment-label">
+    <span id="heart-experiment-label" hidden data-i18n="heart.label">Cœur 3D interactif</span>
     <div class="heart-stage">
       <canvas id="heart-canvas" aria-hidden="true"></canvas>
     </div>
-    <p class="heart-experiment-caption">Built with heart, touch it.</p>
+    <p class="heart-experiment-caption" data-i18n="heart.caption">Fait avec le cœur, touchez-le.</p>
   </section>
 
   <!-- Footer — "cd ~": the page ends at home. The painted scene at the bottom is
@@ -623,32 +622,32 @@
 <script src="/js/core/content-loader.js"></script>
 <script src="/js/core/card-renderer.js"></script>
 <script src="/js/core/carousel.js"></script>
-<script src="/js/core/scroll-effects.js"></script>
+<script src="/js/core/scroll-effects.js?v=2026-10-05"></script>
 <script src="/js/core/effects/cursor-tracker.js"></script>
 <script src="/js/core/effects/header-scroll.js"></script>
 <script src="/js/core/effects/mobile-menu.js"></script>
 <script src="/js/core/effects/konami.js"></script>
 <script src="/js/core/effects/sfx.js"></script>
 <script src="/js/core/effects/blip-cursor.js"></script>
-<script src="/js/core/effects/cathode-guide.js"></script>
+<script src="/js/core/effects/cathode-guide.js?v=2026-10-05"></script>
 <script>
   document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', CathodeGuide.init)
     : CathodeGuide.init();
 </script>
-<script src="/js/core/theme-init.js?v=2026-10-04"></script>
+<script src="/js/core/theme-init.js?v=2026-10-05"></script>
 
 <!-- Git Timeline -->
-<script src="/js/git-timeline.js"></script>
+<script src="/js/git-timeline.js?v=2026-10-05"></script>
 
 <!-- i18n / Language Manager -->
-<script src="/i18n/language-manager.js"></script>
+<script src="/i18n/language-manager.js?v=2026-10-05"></script>
 
 <!-- Theme Manager (loads before language-switcher for correct order) -->
-<script src="/js/theme-manager.js?v=2026-10-04"></script>
+<script src="/js/theme-manager.js?v=2026-10-05"></script>
 
 <!-- Language Switcher UI -->
-<script src="/i18n/language-switcher.js"></script>
+<script src="/i18n/language-switcher.js?v=2026-10-05"></script>
 
 <!-- CRO Scripts (conversion optimization) -->
 <script src="/js/cro.js"></script>
