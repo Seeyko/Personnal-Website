@@ -151,6 +151,18 @@ body[data-theme="default"] .nav-link:hover {
   background: rgba(0, 0, 0, 0.04);
 }
 
+/* Current page (the blog's "Writing"): a teal-tinted tab, the same accent the
+   page uses for links, so it reads as "you are here" rather than as a hover.
+   Only aria-current marks it — the home nav never sets it. */
+body[data-theme="default"] .nav-link[aria-current="page"] {
+  color: var(--accent-ink);
+  background: var(--accent-light);
+}
+
+body[data-theme="default"] .nav-link[aria-current="page"]:hover {
+  background: rgba(61, 122, 115, 0.13);
+}
+
 body[data-theme="default"] .nav-prefix {
   display: none;
 }

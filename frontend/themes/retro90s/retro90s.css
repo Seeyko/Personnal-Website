@@ -293,6 +293,19 @@ body[data-theme="retro90s"] .nav-link:active {
   transform: translate(1px, 1px);
 }
 
+/* Current page (the blog's "Writing"): the Win95 taskbar button of the open
+   window — pushed in, with the 1px silver/white dither face. Only aria-current
+   marks it — the home nav never sets it. */
+body[data-theme="retro90s"] .nav-link[aria-current="page"] {
+  border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
+  box-shadow:
+    inset 1px 1px 0 var(--bevel-darker),
+    inset -1px -1px 0 var(--bevel-lighter);
+  background-color: var(--bg-90s-white);
+  background-image: conic-gradient(var(--bg-90s) 25%, var(--bg-90s-white) 0 50%, var(--bg-90s) 0 75%, var(--bg-90s-white) 0);
+  background-size: 2px 2px;
+}
+
 /* Win95 focus: a dotted rectangle drawn inside the button face (an outer
    outline would vanish against the navy title bar). */
 body[data-theme="retro90s"] .nav-link:focus-visible {
