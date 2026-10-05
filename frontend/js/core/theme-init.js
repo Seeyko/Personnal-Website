@@ -101,17 +101,20 @@ const ThemeInit = (() => {
         }
     }
 
-    // ─── #hash landing ───
-    // On a fresh load the browser jumps to the fragment as soon as the element
-    // is parsed, before the projects, timeline and footer have rendered and
-    // grown the page, so /#contact used to land a few sections off. Once the
-    // content is in, put the target just below the fixed header (or at its
-    // scroll-margin-top when that is larger, e.g. #contact's 120px), then hold
-    // it there while late layout settles (images, fonts) until the visitor
-    // scrolls. The boot loader still covers the page at this point, so the jump
-    // is instant and never seen; if the page is already showing, glide there
-    // unless reduced motion is requested.
+    // ─── Section landing: #hash arrival and in-page links ───
+    // Every way of reaching a section (arriving on /#contact from the blog,
+    // the nav and footer links, the fps rail, Clippy) puts its top just below
+    // the fixed header, or at its scroll-margin-top when that is larger (e.g.
+    // #contact's 120px). scrollIntoView() alone left it at 0, under the header,
+    // and clipped scroll-margin-top to the overflow:hidden footer around
+    // #contact. Late layout (images, fonts, the header's own transition: the
+    // blueprint one gains a border once scrolled) is absorbed by holding the
+    // spot for a moment after landing, until the visitor scrolls.
     const STOP_EVENTS = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
+
+    function prefersReducedMotion() {
+        return !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    }
 
     function hashTarget() {
         let id = '';
@@ -132,25 +135,12 @@ const ThemeInit = (() => {
         const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
         const y = el.getBoundingClientRect().top + window.scrollY - Math.max(margin, headerOffset());
         const maxY = document.documentElement.scrollHeight - window.innerHeight;
-        return Math.round(Math.max(0, Math.min(y, maxY)));
+        // floor: a fractional offset never tucks the section under the header
+        return Math.floor(Math.max(0, Math.min(y, maxY)));
     }
 
-    function scrollToHashTarget() {
-        if (restoringScroll) return;
-        // Reload / back-forward: the browser restores the visitor's own spot.
-        const nav = performance.getEntriesByType?.('navigation')?.[0];
-        if (nav && nav.type !== 'navigate') return;
-        const el = hashTarget();
-        if (!el) return;
-
-        const loader = document.getElementById('loading-screen');
-        const covered = loader && !loader.classList.contains('hidden');
-        const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-        if (!covered && !reduced) {
-            window.scrollTo({ top: targetScrollY(el), behavior: 'smooth' });
-            return;
-        }
-
+    // Snap to el's spot and keep it there for `ms`, until the visitor scrolls.
+    function hold(el, ms) {
         // html has scroll-behavior: smooth; pause it so each correction snaps.
         const html = document.documentElement;
         const prevBehavior = html.style.scrollBehavior;
@@ -164,13 +154,51 @@ const ThemeInit = (() => {
         };
         STOP_EVENTS.forEach(type => window.addEventListener(type, stop, { passive: true }));
 
-        const deadline = performance.now() + 2500;
+        const deadline = performance.now() + ms;
         (function pin() {
             if (done) return;
             const y = targetScrollY(el);
-            if (Math.abs(window.scrollY - y) > 1) window.scrollTo(0, y);
+            if (Math.abs(window.scrollY - y) >= 1) window.scrollTo(0, y);
             performance.now() < deadline ? requestAnimationFrame(pin) : stop();
         })();
+    }
+
+    // Glide to the section (snap under reduced motion), then hold it briefly.
+    function scrollToSection(el) {
+        if (!el?.getClientRects().length) return;
+        if (prefersReducedMotion()) return hold(el, 600);
+
+        const y = targetScrollY(el);
+        window.scrollTo({ top: y, behavior: 'smooth' });
+        let interrupted = false;
+        const interrupt = () => { interrupted = true; };
+        STOP_EVENTS.forEach(type => window.addEventListener(type, interrupt, { passive: true }));
+        const deadline = performance.now() + 3000;
+        requestAnimationFrame(function arrive() {
+            const tracking = !interrupted && performance.now() < deadline;
+            if (tracking && Math.abs(window.scrollY - y) > 2) return requestAnimationFrame(arrive);
+            STOP_EVENTS.forEach(type => window.removeEventListener(type, interrupt));
+            if (tracking) hold(el, 600);
+        });
+    }
+
+    // On a fresh load the browser jumps to the fragment as soon as the element
+    // is parsed, before the projects, timeline and footer have rendered and
+    // grown the page, so /#contact used to land a few sections off. Once the
+    // content is in, land it; the boot loader still covers the page at this
+    // point, so the jump is instant and never seen. If the page is already
+    // showing, glide there like a nav click (unless reduced motion is asked).
+    function scrollToHashTarget() {
+        if (restoringScroll) return;
+        // Reload / back-forward: the browser restores the visitor's own spot.
+        const nav = performance.getEntriesByType?.('navigation')?.[0];
+        if (nav && nav.type !== 'navigate') return;
+        const el = hashTarget();
+        if (!el) return;
+
+        const loader = document.getElementById('loading-screen');
+        const covered = loader && !loader.classList.contains('hidden');
+        covered || prefersReducedMotion() ? hold(el, 2500) : scrollToSection(el);
     }
 
     // Themes hand blog.js their card renderer from the top of their script,
@@ -191,6 +219,7 @@ const ThemeInit = (() => {
         init,
         exportBlogRenderer,
         whenReady,
+        scrollToSection,
         get isInitialized() { return isInitialized; }
     };
 })();

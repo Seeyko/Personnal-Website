@@ -401,7 +401,8 @@ function injectHud() {
             return;
         }
         const target = document.getElementById(btn.dataset.target);
-        if (target) { target.scrollIntoView({ behavior: RM_FPS ? 'auto' : 'smooth', block: 'start' }); FpsSound.tab(); }
+        // Same landing as the #hash (below the header, reduced motion honoured).
+        if (target) { ThemeInit.scrollToSection(target); FpsSound.tab(); }
         // Not on this page (the blog): the section lives on the home page.
         else window.location.href = `/#${btn.dataset.target}`;
     });

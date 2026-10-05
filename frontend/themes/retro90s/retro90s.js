@@ -322,7 +322,8 @@ class ClippyHelper {
             const id = CLIPPY_TARGETS[currentMsg.action] || 'contact';
             const target = document.getElementById(id);
             if (target) {
-                target.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
+                // Same landing as the #hash (below the header, reduced motion honoured).
+                ThemeInit.scrollToSection(target);
                 this.showExcitedAnimation();
             } else {
                 // Not on this page (the blog): the section lives on the home page.
