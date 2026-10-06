@@ -212,10 +212,11 @@ precision mediump float;
 #endif
 varying vec2 v_uv;
 
-uniform sampler2D u_tex;
+uniform sampler2D u_tex;    // stacked colour/alpha video frame
+uniform sampler2D u_poster; // RGBA still
+uniform float u_mix;        // 0: still only, 1: video only (crossfade in between)
 uniform vec2  u_res;        // canvas size, device px
 uniform vec4  u_crop;       // visible scene rect (x, y, w, h), scene uv
-uniform float u_stacked;    // 1: stacked colour/alpha video, 0: RGBA poster
 uniform float u_colorFrac;  // colour block height / texture height
 uniform float u_alphaCover; // alpha block height / colour block height
 uniform float u_texel;      // half a texel, texture height
@@ -257,18 +258,27 @@ float bayer4(vec2 p) {
 // Near things sit low in a landscape: depth grows from the horizon to the grass.
 float depthAt(float v) { return smoothstep(0.5, 1.0, v); }
 
+vec4 sampleVideo(vec2 s) {
+    vec3 rgb = texture2D(u_tex, vec2(s.x, min(s.y * u_colorFrac, u_colorFrac - u_texel))).rgb;
+    float a = 1.0;
+    if (s.y < u_alphaCover) {
+        float av = max(u_colorFrac + s.y * u_colorFrac, u_colorFrac + u_texel);
+        a = clamp((texture2D(u_tex, vec2(s.x, av)).g - 0.03) / 0.94, 0.0, 1.0);
+    }
+    return vec4(rgb, a);
+}
+
 vec4 sampleScene(vec2 s) {
     s = clamp(s, vec2(0.0), vec2(1.0));
-    if (u_stacked > 0.5) {
-        vec3 rgb = texture2D(u_tex, vec2(s.x, min(s.y * u_colorFrac, u_colorFrac - u_texel))).rgb;
-        float a = 1.0;
-        if (s.y < u_alphaCover) {
-            float av = max(u_colorFrac + s.y * u_colorFrac, u_colorFrac + u_texel);
-            a = clamp((texture2D(u_tex, vec2(s.x, av)).g - 0.03) / 0.94, 0.0, 1.0);
-        }
-        return vec4(rgb, a);
-    }
-    return texture2D(u_tex, s);
+    if (u_mix <= 0.0) return texture2D(u_poster, s);
+    vec4 v = sampleVideo(s);
+    if (u_mix >= 1.0) return v;
+    // The still and the video's first frame differ a little (compression):
+    // blend them, weighted by alpha, instead of cutting from one to the other.
+    vec4 p = texture2D(u_poster, s);
+    float a = mix(p.a, v.a, u_mix);
+    vec3 rgb = (p.rgb * p.a * (1.0 - u_mix) + v.rgb * v.a * u_mix) / max(a, 1e-4);
+    return vec4(rgb, a);
 }
 
 vec2 sceneUV(vec2 uv) {
@@ -372,6 +382,7 @@ void main() {
     function createScene(scene) {
         const canvas = scene.querySelector('.sf-scene-canvas');
         const root = scene.closest('.site-footer') || document.body;
+        const img = scene.querySelector('.sf-scene-poster');
         if (!canvas) return;
 
         const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' })
@@ -380,13 +391,19 @@ void main() {
 
         const config = sceneFor(document.body.dataset.theme || 'default');
         const still = reduceMotion.matches;
+        const MIX_MS = 450;           // still → video crossfade
 
         const state = {
-            source: null,
+            source: null,             // video source being played
+            texSource: null,          // source of the frame in the video texture
             video: null,
             usingVideo: false,
+            hasPoster: false,         // the still is in its texture
+            mix: 0,                   // 0 still … 1 video
+            mixStart: 0,
             frameDirty: true,
             lastVideoTime: -1,
+            lastFrameCallback: 0,
             visible: false,
             raf: 0,
             lastTime: 0,
@@ -400,7 +417,19 @@ void main() {
             dirty: true
         };
 
-        let program, loc, texture;
+        function makeTexture(unit) {
+            const tex = gl.createTexture();
+            gl.activeTexture(unit);
+            gl.bindTexture(gl.TEXTURE_2D, tex);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+            return tex;
+        }
+
+        let program, loc, videoTex, posterTex;
         function setupGL() {
             program = gl.createProgram();
             gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, VERT));
@@ -416,20 +445,15 @@ void main() {
             gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
             loc = {};
-            ['u_tex', 'u_res', 'u_crop', 'u_stacked', 'u_colorFrac', 'u_alphaCover', 'u_texel',
+            ['u_tex', 'u_poster', 'u_mix', 'u_res', 'u_crop', 'u_colorFrac', 'u_alphaCover', 'u_texel',
              'u_reveal', 'u_rise', 'u_fade', 'u_style']
                 .forEach(name => { loc[name] = gl.getUniformLocation(program, name); });
 
-            texture = gl.createTexture();
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+            videoTex = makeTexture(gl.TEXTURE0);
+            posterTex = makeTexture(gl.TEXTURE1);
             gl.uniform1i(loc.u_tex, 0);
+            gl.uniform1i(loc.u_poster, 1);
             gl.clearColor(0, 0, 0, 0);
         }
 
@@ -443,7 +467,8 @@ void main() {
             if (rect.width * rect.height * dpr * dpr > maxPixels) dpr = Math.sqrt(maxPixels / (rect.width * rect.height));
             const w = Math.max(1, Math.round(rect.width * dpr));
             const h = Math.max(1, Math.round(rect.height * dpr));
-            if (canvas.width !== w || canvas.height !== h) {
+            const resized = canvas.width !== w || canvas.height !== h;
+            if (resized) {
                 canvas.width = w;
                 canvas.height = h;
             }
@@ -461,6 +486,8 @@ void main() {
             ];
             state.crop = [Math.min(Math.max(focus - cw / 2, 0), 1 - cw), 1 - ch - 0.008, cw, ch];
             state.dirty = true;
+            // Resizing clears the canvas: repaint now, or one blank frame shows.
+            if (resized && program && !gl.isContextLost()) draw();
         }
 
         function pickSource() {
@@ -471,27 +498,48 @@ void main() {
             return slow || need < 1400 ? 'sd' : 'hd';
         }
 
-        function goLive() {
-            scene.classList.add('is-live');
-            state.dirty = true;
-            requestFrame();
-        }
-
         // The still is the page's own <img> poster (srcset picks its size), so it is
         // downloaded once and serves both the no-WebGL fallback and the first frame.
+        // With WebGL the <img> itself stays hidden (.is-gl): only the canvas paints.
+        function uploadPoster(force) {
+            if ((state.usingVideo && !force) || !img || !img.complete || !img.naturalWidth || gl.isContextLost()) return false;
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D, posterTex);
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+            state.hasPoster = true;
+            state.dirty = true;
+            return true;
+        }
+
         function loadPoster() {
-            const img = scene.querySelector('.sf-scene-poster');
             if (!img) return;
-            const upload = () => {
-                if (state.usingVideo || gl.isContextLost() || !img.naturalWidth) return;
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, texture);
-                gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-                goLive();
-            };
-            if (img.complete && img.naturalWidth) upload();
-            else img.addEventListener('load', upload, { once: true });
+            if (uploadPoster()) requestFrame();
+            else img.addEventListener('load', () => { if (uploadPoster()) requestFrame(); }, { once: true });
+        }
+
+        function uploadVideoFrame(video) {
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, videoTex);
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+            try {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
+            } catch {
+                return false;
+            }
+            state.texSource = state.source;
+            state.frameDirty = false;
+            state.lastVideoTime = video.currentTime;
+            state.dirty = true;
+            return true;
+        }
+
+        // Once the video plays, the still's texture is no longer needed.
+        function releasePoster() {
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D, posterTex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+            state.hasPoster = false;
         }
 
         function loadVideo(key) {
@@ -520,13 +568,22 @@ void main() {
             }, { once: true });
             video.addEventListener('loadeddata', () => {
                 if (state.video !== video) return;
+                if (!state.usingVideo) {
+                    // Crossfade from the still if it is showing, else cut straight in.
+                    state.mix = state.hasPoster ? 0 : 1;
+                    state.mixStart = 0;
+                }
                 state.usingVideo = true;
                 state.frameDirty = true;
-                goLive();
+                requestFrame();
             });
+            // Wake the loop back up whenever playback (re)starts: after the seek
+            // back to the start at each loop, a stall, or a refused autoplay.
+            ['playing', 'seeked', 'timeupdate'].forEach(ev => video.addEventListener(ev, requestFrame));
             if ('requestVideoFrameCallback' in video) {
                 const onFrame = () => {
                     state.frameDirty = true;
+                    state.lastFrameCallback = performance.now();
                     requestFrame();
                     if (state.video === video) video.requestVideoFrameCallback(onFrame);
                 };
@@ -576,64 +633,70 @@ void main() {
             if (!state.raf && state.visible) state.raf = requestAnimationFrame(frame);
         }
 
+        // Redraws only when something changed (a new video frame, the entrance, the
+        // parallax); the loop itself keeps running as long as the video plays.
         function frame(now) {
             state.raf = 0;
             if (!state.visible || gl.isContextLost()) return;
             const dt = Math.min((now - (state.lastTime || now)) / 1000, 0.1);
             state.lastTime = now;
-            let animating = false;
+            let busy = false;
 
             if (!still) {
                 const target = scrollProgress();
                 // The entrance plays once (config.revealMs) from the moment the scene's top
-                // edge shows; the depth parallax keeps following the scroll both ways.
-                if (!state.washStart && target > 0.02) state.washStart = now;
+                // edge shows, and only once there is a picture to reveal; the depth
+                // parallax keeps following the scroll both ways.
+                const ready = state.hasPoster || state.usingVideo;
+                if (!state.washStart && ready && target > 0.02) state.washStart = now;
                 if (state.washStart && state.reveal < 1) {
                     const k = Math.min((now - state.washStart) / config.revealMs, 1);
                     state.reveal = 1 - Math.pow(1 - k, 3);
-                    animating = true;
+                    state.dirty = busy = true;
                 }
                 if (Math.abs(target - state.rise) > 1e-3) {
                     state.rise += (target - state.rise) * (1 - Math.exp(-dt * 5));
-                    animating = true;
+                    state.dirty = busy = true;
                 }
             }
 
             const video = state.video;
-            if (state.usingVideo && video && video.readyState >= 2) {
-                // requestVideoFrameCallback is only a hint: Safari stops firing it for a
-                // video it doesn't paint (ours is a 2 px proxy), so the time is polled too.
-                const changed = state.frameDirty || video.currentTime !== state.lastVideoTime;
-                if (changed) {
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-                    try {
-                        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
-                        state.dirty = true;
-                    } catch {}
-                    state.frameDirty = false;
-                    state.lastVideoTime = video.currentTime;
+            if (state.usingVideo && video) {
+                if (!video.paused && !video.ended) busy = true;
+                // No upload while seeking (the jump back to the start of the loop) or
+                // without a decoded frame: the last good frame stays on screen.
+                // requestVideoFrameCallback says when a new frame is up; Safari stops
+                // firing it for a video it doesn't paint (ours is a 2 px proxy), so
+                // when it goes quiet the time is polled instead (about twice per frame).
+                if (video.readyState >= 2 && !video.seeking) {
+                    const quiet = now - state.lastFrameCallback > 250;
+                    const moved = Math.abs(video.currentTime - state.lastVideoTime) >= 0.02;
+                    if ((state.frameDirty || (quiet && moved)) && uploadVideoFrame(video) && state.mix < 1 && !state.mixStart) {
+                        state.mixStart = now;
+                    }
                 }
-                if (!video.paused) animating = true;
+                if (state.mixStart && state.mix < 1) {
+                    state.mix = still ? 1 : Math.min((now - state.mixStart) / MIX_MS, 1);
+                    if (state.mix >= 1) releasePoster();
+                    state.dirty = busy = true;
+                }
             }
 
-            if (state.dirty || animating) {
+            if (state.dirty) {
                 draw();
                 state.dirty = false;
             }
-            if (animating) requestFrame();
+            if (busy) requestFrame();
         }
 
         function draw() {
-            const stacked = state.usingVideo && state.source;
+            const s = state.texSource;
             gl.viewport(0, 0, canvas.width, canvas.height);
             gl.clear(gl.COLOR_BUFFER_BIT);
             gl.uniform2f(loc.u_res, canvas.width, canvas.height);
             gl.uniform4f(loc.u_crop, state.crop[0], state.crop[1], state.crop[2], state.crop[3]);
-            gl.uniform1f(loc.u_stacked, stacked ? 1 : 0);
-            if (stacked) {
-                const s = state.source;
+            gl.uniform1f(loc.u_mix, s ? state.mix : 0);
+            if (s) {
                 gl.uniform1f(loc.u_colorFrac, s.colorH / s.totalH);
                 gl.uniform1f(loc.u_alphaCover, s.alphaH / s.colorH);
                 gl.uniform1f(loc.u_texel, 0.5 / s.totalH);
@@ -664,22 +727,39 @@ void main() {
             }
         }, { rootMargin: '200px 0px' });
 
+        // A lost context shows the <img> still until the context comes back; the
+        // textures are then refilled and drawn before the canvas is shown again.
         canvas.addEventListener('webglcontextlost', e => {
             e.preventDefault();
-            scene.classList.remove('is-live');
+            scene.classList.remove('is-gl');
             if (state.raf) cancelAnimationFrame(state.raf);
             state.raf = 0;
         });
         canvas.addEventListener('webglcontextrestored', () => {
-            setupGL();
-            resize();
-            if (state.video && state.video.readyState >= 2) {
-                state.usingVideo = true;
-                state.frameDirty = true;
-                goLive();
-            } else {
-                loadPoster();
+            try {
+                setupGL();
+            } catch (err) {
+                console.warn(err);
+                return;
             }
+            state.hasPoster = false;
+            state.texSource = null;
+            resize();
+            const video = state.video;
+            if (state.usingVideo && video && video.readyState >= 2 && uploadVideoFrame(video)) {
+                state.mix = 1;
+            } else {
+                // No frame to grab right now: back on the still, and the next video
+                // frame crossfades in as on the first load.
+                state.mix = 0;
+                state.mixStart = 0;
+                state.frameDirty = true;
+                uploadPoster(true);
+            }
+            draw();
+            state.dirty = false;
+            scene.classList.add('is-gl');
+            requestFrame();
         });
 
         try {
@@ -688,6 +768,7 @@ void main() {
             console.warn(err);
             return;
         }
+        scene.classList.add('is-gl');
         resize();
         loadPoster();
         if (!still) {
