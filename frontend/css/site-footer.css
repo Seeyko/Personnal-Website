@@ -527,19 +527,20 @@
   /* Same thin dissolve the shader draws, for the no-WebGL fallback. */
   -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 9%);
   mask-image: linear-gradient(180deg, transparent 0%, #000 9%);
-  transition: opacity 0.8s ease;
 }
 
 .sf-scene-canvas {
   opacity: 0;
-  transition: opacity 0.8s ease;
 }
 
-.sf-scene.is-live .sf-scene-canvas {
+/* WebGL is up: the canvas paints the scene and plays its entrance; the <img>
+   is only its texture source. Switched at once, never crossfaded: a fade would
+   show the still, then take it away while the canvas starts its entrance. */
+.sf-scene.is-gl .sf-scene-canvas {
   opacity: 1;
 }
 
-.sf-scene.is-live .sf-scene-poster {
+.sf-scene.is-gl .sf-scene-poster {
   opacity: 0;
 }
 
