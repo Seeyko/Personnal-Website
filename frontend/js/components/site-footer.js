@@ -364,7 +364,7 @@ void main() {
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
             const log = gl.getShaderInfoLog(shader);
             gl.deleteShader(shader);
-            throw new Error(`[site-footer] shader: ${log}`);
+            throw new Error(gl.isContextLost() ? '[site-footer] context lost' : `[site-footer] shader: ${log}`);
         }
         return shader;
     }
@@ -671,7 +671,13 @@ void main() {
             state.raf = 0;
         });
         canvas.addEventListener('webglcontextrestored', () => {
-            setupGL();
+            if (gl.isContextLost()) return;
+            try {
+                setupGL();
+            } catch (err) {
+                console.warn(err);
+                return;
+            }
             resize();
             if (state.video && state.video.readyState >= 2) {
                 state.usingVideo = true;
