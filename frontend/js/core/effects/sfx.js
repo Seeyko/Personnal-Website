@@ -30,9 +30,9 @@
  *   card:reveal          a project/blog card scrolls into view ({step}: 0,1,2…
  *                        climbs while reveals cascade — pitch ladders welcome)
  *
- * Events emitted by blip-cursor.js (Blip, the cursor mascot):
+ * Events emitted by blip-cursor.js (Blip, the page pet):
  *   blip:click blip:blink blip:joy blip:listen blip:wave blip:wake
- *   blip:twirl blip:snooze
+ *   blip:twirl blip:snooze blip:grab blip:throw blip:bonk({speed})
  *
  * Events emitted by cathode-guide.js (Cathode, the guide mascot):
  *   cathode:boot cathode:enter cathode:speak({chars}) cathode:jump
@@ -254,9 +254,25 @@ const SFX = (() => {
                 io.observe(el);
             }
         });
+        // Re-scan only when a card actually arrives (not on every node the
+        // mascots, cursors or effects add and remove), at most once a frame.
+        const CARD = '.project-card, .blog-card';
+        let scanQueued = false;
+        const onMutations = (muts) => {
+            if (scanQueued) return;
+            for (const m of muts) {
+                for (const n of m.addedNodes) {
+                    if (n.nodeType === 1 && (n.matches(CARD) || n.querySelector(CARD))) {
+                        scanQueued = true;
+                        requestAnimationFrame(() => { scanQueued = false; scan(); });
+                        return;
+                    }
+                }
+            }
+        };
         const startWatching = () => {
             scan();
-            new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
+            new MutationObserver(onMutations).observe(document.body, { childList: true, subtree: true });
         };
         if (document.body) startWatching();
         else document.addEventListener('DOMContentLoaded', startWatching);

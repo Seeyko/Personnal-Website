@@ -570,9 +570,22 @@ const CathodeGuide = (() => {
         return id;
     }
 
+    // Read by the rAF loop many times per frame: offsetWidth there forced a
+    // synchronous layout every frame. The size only changes with the
+    // viewport (media queries on --cg-size), so it's cached and re-read at
+    // most once a second, or right after a resize.
+    let spriteW = 0;
+    let spriteReadAt = -1;
     function spriteSize() {
-        return root ? (root.offsetWidth || 74) : 74;
+        if (!root) return 74;
+        const t = performance.now();
+        if (!spriteW || t - spriteReadAt > 1000) {
+            spriteW = root.offsetWidth || 74;
+            spriteReadAt = t;
+        }
+        return spriteW;
     }
+    window.addEventListener('resize', () => { spriteW = 0; }, { passive: true });
 
     function lifeMaxX() {
         return Math.max(LIFE.EDGE_PAD, window.innerWidth - spriteSize() - LIFE.CTA_CLEARANCE);

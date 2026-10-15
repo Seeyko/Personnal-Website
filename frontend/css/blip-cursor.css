@@ -39,47 +39,59 @@ html.bc-active,html.bc-active *{cursor:none!important}
    Everything above this line is the vendor cursor-kit, unmodified.
    ============================================================ */
 
-/* Belt-and-suspenders: JS already gates activation on pointer type and
-   reduced-motion, but a stray JS-timing gap should never leave a leftover
-   cursor on screen. Reduced motion kills Blip in any mode; a coarse pointer
-   only kills the *cursor* incarnation — the touch companion (.bc-touch,
-   spawned by JS precisely for coarse pointers) is the one allowed there. */
+/* Blip is a creature living on the page, not the pointer any more: the
+   system cursor stays. Reduced motion = no Blip at all (JS never creates him;
+   this is the safety net). */
 @media (prefers-reduced-motion: reduce) {
   #blip-cursor { display: none !important; }
 }
-@media (pointer: coarse) {
-  #blip-cursor:not(.bc-touch) { display: none !important; }
+
+/* Under the site's fixed UI (header z 100 and its mobile menu, CTAs, modals)
+   while he roams; on top of everything while you hold him. */
+#blip-cursor.bc-pet { z-index: 99; }
+#blip-cursor.bc-grabbed { z-index: 2147483647; }
+/* Perched at rest: absolute, so he scrolls with his perch on the compositor
+   (blip-cursor.js dock()). */
+#blip-cursor.bc-docked { position: absolute; }
+
+/* The only part of him that takes the pointer: his body, not the empty
+   corners of the sprite box. Root origin = hotspot = viewBox (6,3). */
+#blip-cursor .bc-hit {
+  position: absolute;
+  left: calc(var(--bc-px) * -1px);
+  top: calc(var(--bc-px) * -1px);
+  width: calc(var(--bc-px) * 16px);
+  height: calc(var(--bc-px) * 26px);
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+html.bc-dragging,
+html.bc-dragging * {
+  cursor: grabbing !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
 }
 
-/* Touch companion: lands tip-on-tap like a real cursor (see onTouchPoint),
-   then fades out entirely once he's been snoozing long enough. */
-.bc.bc-touch { transition: opacity .45s ease; }
-.bc.bc-touch.bc-away { opacity: 0; }
+/* Shy: warm blush while your pointer is in his personal space. */
+#blip-cursor.bc-shy .bc-blush-warm { opacity: 1; }
+#blip-cursor.bc-shy .bc-blush { opacity: 0; }
 
-/* Discreet mode over native text fields: Blip stays on-screen (so the
-   pointer never "disappears") but fades back while the browser's own
-   caret/selection cursor does the actual work. */
-#blip-cursor.bc-native {
-  opacity: .32;
-  transition: opacity 150ms ease;
+/* Held: surprised (wide eyes, round mouth, paw up), lifted off the page. */
+#blip-cursor.bc-grabbed .bc-e-n,
+#blip-cursor.bc-grabbed .bc-m-smirk,
+#blip-cursor.bc-grabbed .bc-paw-dn { opacity: 0; }
+#blip-cursor.bc-grabbed .bc-e-wide,
+#blip-cursor.bc-grabbed .bc-m-o,
+#blip-cursor.bc-grabbed .bc-paw-up,
+#blip-cursor.bc-grabbed .bc-blush-warm { opacity: 1; }
+#blip-cursor.bc-grabbed .bc-svg {
+  filter: drop-shadow(0 0 calc(var(--bc-px) * .8px) var(--bc-glow)) drop-shadow(0 9px 6px rgba(0, 0, 0, .22));
 }
 
-/* Native cursor restored on top of the kit's `html.bc-active *{cursor:none}`
-   for elements where a real system cursor communicates better than Blip:
-   text fields get the caret, dropdowns get the default arrow. Higher
-   specificity than the kit's blanket rule wins regardless of link order. */
-html.bc-active input,
-html.bc-active textarea,
-html.bc-active [contenteditable]:not([contenteditable="false"]) {
-  cursor: text !important;
-}
-html.bc-active select {
-  cursor: default !important;
-}
-
-/* Neutralize the pre-existing per-theme cursors (terminal block cursor,
-   blueprint crosshair, retro90s custom SVG arrow) while Blip is driving.
-   Restored automatically the instant this class is removed on destroy(). */
+/* The legacy per-theme cursor decorations (terminal block, blueprint
+   crosshair) trailed the pointer with a lag too: they stay off. */
 body.blip-cursor-active .custom-cursor {
   display: none !important;
 }
@@ -100,3 +112,120 @@ body.blip-cursor-active .custom-cursor {
   82%{transform:rotate(1.03turn) scale(1.05,.95)}
   100%{transform:rotate(1turn) scale(1)}
 }
+
+/* ============================================================
+   BOOT INTRO — blip-swarm.js
+   One Blip splits into a swarm of cursors that draw the page, then fuse
+   back. Everything lives in one fixed layer above the loader.
+   ============================================================ */
+#loading-screen.bs-on .loading-spinner,
+#loading-screen.bs-on .loading-text { display: none; }
+
+/* The intro is the page's entrance: no whole-body fade on top of it (it
+   would fade the lone Blip and the loader canvas with it). */
+html.bs-intro body.loaded,
+html.bs-done body.loaded { animation: none !important; opacity: 1 !important; }
+
+/* Cathode waits for the fusion, then walks in as usual. */
+html.bs-intro #cathode-guide,
+html.bs-intro #cathode-fx { opacity: 0 !important; visibility: hidden !important; }
+
+#blip-swarm {
+  position: fixed;
+  inset: 0;
+  z-index: 2147482900;
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+}
+/* Scroll-time drawing (blip-draw.js): a document-space layer, so its cursors
+   scroll with the page on the compositor. Under the pet and the header. */
+#blip-draw {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  overflow: visible;
+  z-index: 98;
+  pointer-events: none;
+}
+
+/* While drawing, a click must not land on content you can't see yet
+   (it skips the intro instead). Wheel still scrolls the page. */
+#blip-swarm.bs-live { pointer-events: auto; cursor: progress; }
+
+.bs-layer .bs-c {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+.bs-layer .bs-s { transform-origin: 0 0; }
+.bs-layer .bs-art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, .28));
+}
+/* Kit Blips inside the swarm: positioned by their cursor wrapper. */
+.bs-layer .bs-bc { z-index: auto; will-change: auto; }
+
+/* Flash frames: white silhouette, then inverted. */
+.bs-layer .bs-white { filter: brightness(0) invert(1) !important; }
+.bs-layer .bs-invert { filter: invert(1) !important; }
+
+.bs-layer .bs-mark { position: absolute; left: 0; top: 0; pointer-events: none; }
+
+/* Arrow: rubber-band selection. */
+.bs-layer .bs-marquee {
+  border: 1px dashed var(--bs-accent);
+  background: color-mix(in srgb, var(--bs-accent) 9%, transparent);
+}
+/* Crosshair: measured box + live W×H tag. */
+.bs-layer .bs-measure {
+  border: 1px solid var(--bs-accent);
+  background: color-mix(in srgb, var(--bs-accent) 5%, transparent);
+}
+.bs-layer .bs-tag {
+  position: absolute;
+  right: -1px;
+  bottom: -19px;
+  padding: 1px 5px;
+  font: 500 10px/14px 'JetBrains Mono', 'Roboto Mono', ui-monospace, monospace;
+  color: #fff;
+  background: var(--bs-accent);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+body[data-theme="terminal"] .bs-layer .bs-tag,
+body[data-theme="blueprint"] .bs-layer .bs-tag,
+body[data-theme="fps"] .bs-layer .bs-tag { color: #0a0a0a; }
+
+/* Pencil: traced outline. */
+.bs-layer .bs-outline svg { display: block; overflow: visible; }
+.bs-layer .bs-outline rect {
+  fill: none;
+  stroke: var(--bs-accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+
+/* Hand: click ripple. Rings / bloom are sized by --r around their origin. */
+.bs-layer .bs-ripple,
+.bs-layer .bs-ring,
+.bs-layer .bs-bloom {
+  width: calc(var(--r, 0px) * 2);
+  height: calc(var(--r, 0px) * 2);
+  margin: calc(var(--r, 0px) * -1) 0 0 calc(var(--r, 0px) * -1);
+  border-radius: 50%;
+}
+.bs-layer .bs-ripple { border: 1.5px solid var(--bs-accent); }
+.bs-layer .bs-ring { border: var(--w, 1.5px) solid var(--bs-accent); }
+.bs-layer .bs-bloom { background: radial-gradient(circle, #fff 0%, rgba(255, 255, 255, .6) 35%, rgba(255, 255, 255, 0) 70%); }
+.bs-layer .bs-veil { position: absolute; inset: 0; width: 100%; height: 100%; background: #fff; opacity: 0; }
+/* Fusion aura: square ki sparks. */
+.bs-layer .bs-spark { width: 4px; height: 4px; margin: -2px 0 0 -2px; background: var(--bs-accent); opacity: 0; }

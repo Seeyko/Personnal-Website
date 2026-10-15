@@ -50,7 +50,7 @@
   <link id="theme-css" rel="stylesheet" href="" />
 
   <!-- Blip Cursor (mascot pointer, all themes) -->
-  <link rel="stylesheet" href="/css/blip-cursor.css" />
+  <link rel="stylesheet" href="/css/blip-cursor.css?v=2026-10-15" />
 
   <!-- Fonts — self-hosted (DM Sans, JetBrains Mono, VT323, Playfair Display,
        Architects Daughter, Roboto Mono). Served locally so the page has no
@@ -134,6 +134,22 @@
   <div class="loading-spinner"></div>
   <div class="loading-text" data-i18n="ui.loading">Loading...</div>
 </div>
+<script>
+  // Boot intro (blip-swarm.js) owns this loader: paint it in the theme's own
+  // background and drop the spinner right away, before the first frame, so a
+  // cream "Loading..." never flashes. Reduced motion keeps the classic loader.
+  (function () {
+    var bg = { 'default': '#f8f7f4', terminal: '#0a0a0a', blueprint: '#003366', retro90s: '#c0c0c0', fps: '#3a6896' };
+    var t = null;
+    try { t = new URLSearchParams(location.search).get('theme'); } catch (e) {}
+    if (!bg[t]) { try { t = localStorage.getItem('portfolio_theme'); } catch (e) { t = null; } }
+    if (!bg[t]) t = 'default';
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var l = document.getElementById('loading-screen');
+    l.className = 'bs-on';
+    l.style.background = bg[t];
+  })();
+</script>
 <!-- Theme Overlay (CRT/Blueprint grid - styled by theme CSS) -->
 <div id="theme-overlay" class="theme-overlay"></div>
 
@@ -627,9 +643,13 @@
 <script src="/js/core/effects/header-scroll.js"></script>
 <script src="/js/core/effects/mobile-menu.js"></script>
 <script src="/js/core/effects/konami.js"></script>
-<script src="/js/core/effects/sfx.js"></script>
-<script src="/js/core/effects/blip-cursor.js"></script>
-<script src="/js/core/effects/cathode-guide.js?v=2026-10-05"></script>
+<script src="/js/core/effects/sfx.js?v=2026-10-15"></script>
+<script src="/js/core/effects/blip-cursor.js?v=2026-10-15"></script>
+<script src="/js/core/effects/cursor-sprites.js?v=2026-10-15"></script>
+<script src="/js/core/effects/data-trail.js?v=2026-10-15"></script>
+<script src="/js/core/effects/blip-swarm.js?v=2026-10-15"></script>
+<script src="/js/core/effects/blip-draw.js?v=2026-10-15"></script>
+<script src="/js/core/effects/cathode-guide.js?v=2026-10-15"></script>
 <script>
   document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', CathodeGuide.init)
@@ -644,7 +664,7 @@
 <script src="/i18n/language-manager.js?v=2026-10-05"></script>
 
 <!-- Theme Manager (loads before language-switcher for correct order) -->
-<script src="/js/theme-manager.js?v=2026-10-05"></script>
+<script src="/js/theme-manager.js?v=2026-10-15"></script>
 
 <!-- Language Switcher UI -->
 <script src="/i18n/language-switcher.js?v=2026-10-05"></script>
@@ -678,6 +698,7 @@
 </script>
 <script>
   if (window.BlipCursor) BlipCursor.init();
+  if (window.BlipDraw) BlipDraw.init();
 </script>
 </body>
 </html>

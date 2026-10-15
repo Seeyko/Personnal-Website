@@ -24,6 +24,9 @@
   <!-- Blog Styles -->
   <link rel="stylesheet" href="/css/blog.css" />
 
+  <!-- Blip (the site's cursor agent: lives on the page, draws it as you scroll) -->
+  <link rel="stylesheet" href="/css/blip-cursor.css?v=2026-10-15" />
+
   <!-- Auth Modal Styles (for private articles) -->
   <link rel="stylesheet" href="/css/auth-modal.css" />
 
@@ -233,17 +236,27 @@
 <script src="/i18n/language-manager.js?v=2026-10-05"></script>
 
 <!-- Theme Manager (loads before language-switcher for correct order) -->
-<script src="/js/theme-manager.js?v=2026-10-05"></script>
+<script src="/js/theme-manager.js?v=2026-10-15"></script>
 
 <!-- Language Switcher UI -->
 <script src="/i18n/language-switcher.js?v=2026-10-05"></script>
+
+<!-- Blip: the cursor agent who draws the page (cursor sprites, Blip, scroll drawing) -->
+<script src="/js/core/effects/cursor-sprites.js?v=2026-10-15"></script>
+<script src="/js/core/effects/data-trail.js?v=2026-10-15"></script>
+<script src="/js/core/effects/blip-cursor.js?v=2026-10-15"></script>
+<script src="/js/core/effects/blip-draw.js?v=2026-10-15"></script>
+<script>
+  if (window.BlipCursor) BlipCursor.init();
+  if (window.BlipDraw) BlipDraw.init();
+</script>
 
 <!-- Blog Scripts -->
 <script>
 // Cache-busting for development
 (function() {
     const script = document.createElement('script');
-    const cacheBuster = window.location.hostname === 'localhost' ? '?v=' + Date.now() : '?v=2026-10-05';
+    const cacheBuster = window.location.hostname === 'localhost' ? '?v=' + Date.now() : '?v=2026-10-15';
     script.src = '/js/blog.js' + cacheBuster;
     document.body.appendChild(script);
 })();
