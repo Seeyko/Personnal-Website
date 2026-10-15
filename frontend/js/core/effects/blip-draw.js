@@ -51,6 +51,9 @@ const BlipDraw = (() => {
     // fixed UI, the mascots.
     const SKIP_SEL = '.hero, #site-footer, footer, .header, #cathode-guide, #cathode-fx, ' +
         '#blip-swarm, #blip-draw, #blip-cursor, .floating-cta, script, style, [hidden]';
+    // Footer bits Blip draws himself (the rest of the footer keeps its own
+    // entrance): the closing tagline and the e-mail pill.
+    const EXTRA_UNITS = '#site-footer .sf-headline, #site-footer .sf-pill';
     // ScrollEffects' generic GSAP reveals that we replace on the groups we draw.
     const GSAP_REVEALED = '.project-card, .blog-card, .about-card, .contact-card, .section-header';
 
@@ -177,11 +180,22 @@ const BlipDraw = (() => {
             c = c.filter(el => !c.some(o => o !== el && o.contains(el)));
             out.push(...c);
         });
+        document.querySelectorAll(EXTRA_UNITS).forEach(el => {
+            if (el.__bd) return;
+            const r = el.getBoundingClientRect();
+            if (r.width < 12 || r.height < 12) return;
+            if (includeVisible ? r.bottom > 0 : r.top >= vh - 1) {
+                // Out of the footer's blur-in choreography: Blip draws it.
+                el.removeAttribute('data-sf-reveal');
+                out.push(el);
+            }
+        });
         return out;
     }
 
     function toolFor(el, r) {
         const tag = el.tagName;
+        if (el.matches('.sf-pill')) return 'click'; // the e-mail pill pops in from his click
         if (el.matches('.section-header, p, h2, h3, h4, blockquote, pre')) return r.height < 220 ? 'type' : 'select';
         if (/^(IMG|CANVAS|VIDEO|FIGURE|SVG|svg)$/.test(tag)) return 'measure';
         if (el.matches('a, button, .btn') && r.width < 420 && r.height < 110) return 'click';
@@ -315,7 +329,7 @@ const BlipDraw = (() => {
         // The visitor is faster than us: never make them wait for content.
         while (queue.length > QUEUE_MAX) { const u = queue.pop(); u.queued = false; fadeIn(u); }
         for (let i = queue.length - 1; i >= 0; i--) {
-            if (t - queue[i].queuedAt > (isTimeline(queue[i].el) ? WAIT_MAX * 2 : WAIT_MAX)) {
+            if (t - queue[i].queuedAt > (isShowpiece(queue[i].el) ? WAIT_MAX * 2 : WAIT_MAX)) {
                 const u = queue.splice(i, 1)[0];
                 u.queued = false;
                 fadeIn(u);
@@ -341,11 +355,11 @@ const BlipDraw = (() => {
         if (!boss.busy && hireBoss()) {
             kind = 'boss';
         } else if (helpers < MAX_HELPERS) {
-            // Helpers take what's been waiting a while — never the timeline,
-            // that show is Blip's.
+            // Helpers take what's been waiting a while — never a showpiece
+            // (timeline, the closing tagline): those are Blip's.
             // A real backlog (a jump into the page): help comes sooner.
             const patience = queue.length >= 3 ? HELP_AFTER * 0.3 : HELP_AFTER;
-            u = queue.find(q => t - q.queuedAt > patience && !isTimeline(q.el));
+            u = queue.find(q => t - q.queuedAt > patience && !isShowpiece(q.el));
             if (u) kind = 'helper';
         }
         if (!kind) return;
@@ -371,12 +385,12 @@ const BlipDraw = (() => {
     function takeBatch() {
         const first = queue.shift();
         const out = [first];
-        if (isTimeline(first.el)) return out;
+        if (isShowpiece(first.el)) return out;
         const f = first.el.getBoundingClientRect();
         const sec = first.el.closest('section, article');
         while (queue.length && out.length < 3) {
             const n = queue[0];
-            if (isTimeline(n.el) || n.el.closest('section, article') !== sec) break;
+            if (isShowpiece(n.el) || n.el.closest('section, article') !== sec) break;
             const r = n.el.getBoundingClientRect();
             if (r.top - f.top > window.innerHeight * 0.45 || r.bottom - f.top > window.innerHeight * 0.8) break;
             out.push(queue.shift());
@@ -547,8 +561,7 @@ const BlipDraw = (() => {
         const sx = window.scrollX - originX, sy = window.scrollY - originY;
         const box = { l: r.left + sx, t: r.top + sy, r: r.right + sx, b: r.bottom + sy, w: r.width, h: r.height };
         u.box = box;
-        const timeline = isTimeline(u.el);
-        const tool = timeline ? 'timeline' : toolFor(u.el, r);
+        const tool = isTimeline(u.el) ? 'timeline' : isTagline(u.el) ? 'tagline' : toolFor(u.el, r);
 
         if (kind === 'boss') {
             const c = boss.c;
@@ -566,7 +579,7 @@ const BlipDraw = (() => {
         }
 
         const from = home(box);
-        const c = makeCursor(pickSprite(tool === 'timeline' ? 'paint' : tool), from.x, from.y);
+        const c = makeCursor(pickSprite(tool === 'timeline' ? 'paint' : tool === 'tagline' ? 'type' : tool), from.x, from.y);
         u.cursor = c;
         const full = c.inner.querySelector('.bs-bc') ? 0.75 : 1;
         if (from.blip) blipReact('click'); // the spit
@@ -581,6 +594,7 @@ const BlipDraw = (() => {
 
     function gesture(tool, c, u) {
         if (tool === 'timeline') return gTimeline(c, u);
+        if (tool === 'tagline') return gTagline(c, u);
         if (tool === 'type') return gType(c, u);
         if (tool === 'click') return gClick(c, u);
         if (tool === 'paint') return gPaint(c, u);
@@ -767,6 +781,91 @@ const BlipDraw = (() => {
         });
         c.vx = c.vy = 0;
         A(120, p => { c.press = 1 - p; }, outExpo);
+    }
+
+    /* ---------- The closing tagline: typed word by word ---------- */
+
+    function isTagline(el) { return !!(el.matches && el.matches('.sf-headline')); }
+    // Reserved for Blip himself (never a helper, never batched).
+    function isShowpiece(el) { return isTimeline(el) || isTagline(el) || !!(el.matches && el.matches('.sf-pill')); }
+
+    // Word boxes (element-relative) of every text node under el, in order.
+    function wordBoxes(el) {
+        const base = el.getBoundingClientRect();
+        const out = [];
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        const range = document.createRange();
+        let n, part = 0;
+        while ((n = walker.nextNode())) {
+            const text = n.nodeValue;
+            const re = /\S+/g;
+            let m;
+            while ((m = re.exec(text))) {
+                range.setStart(n, m.index);
+                range.setEnd(n, m.index + m[0].length);
+                const rects = range.getClientRects();
+                if (!rects.length) continue;
+                const rr = rects[rects.length - 1];
+                out.push({ right: rr.right - base.left, top: rr.top - base.top, bottom: rr.bottom - base.top, part });
+            }
+            part++;
+        }
+        return out;
+    }
+
+    // "Rethink work, don't just speed it up." then — a breath — "And
+    // rethink what AI can bring to each of us.": Blip types it one word at a
+    // time (the second line slower, it's the point), then a little hop of joy.
+    async function gTagline(c, u) {
+        const A = (ms, fn, ease) => animate(ms, fn, ease, c);
+        const words = wordBoxes(u.el);
+        if (!words.length) return gType(c, u);
+        const b = u.box;
+        const W = b.w;
+        // Lines = distinct word tops; revealing word i shows every line above
+        // it in full and its own line up to its right edge.
+        const clipTo = (i) => {
+            const w = words[i];
+            const y0 = Math.max(0, w.top - 2), y1 = w.bottom + 4;
+            setClip(u, 'polygon(0px 0px,' + W + 'px 0px,' + W + 'px ' + y0 + 'px,' + (w.right + 2) + 'px ' + y0 + 'px,' +
+                (w.right + 2) + 'px ' + y1 + 'px,0px ' + y1 + 'px)');
+        };
+        const first = words[0];
+        await travel(c, b.l, b.t + (first.top + first.bottom) / 2);
+        await A(140, p => { c.opacity = p < 0.5 ? 0.25 : 1; });
+        // One timed run over all the words (a slow frame never stretches
+        // it): each word has its slot, the second line's are longer, with a
+        // breath before it.
+        const slots = [];
+        let T = 0;
+        words.forEach((w, i) => {
+            if (i && w.part !== words[i - 1].part) T += 320;
+            const d = w.part > words[0].part ? 150 : 105;
+            slots.push({ start: T, end: T + d });
+            T += d;
+        });
+        const sx = c.x, sy = c.y;
+        let last = now(), shown = -1;
+        await A(T, (e, p) => {
+            const ms = p * T;
+            let i = 0;
+            while (i < slots.length - 1 && ms >= slots[i].end) i++;
+            const k = clamp((ms - slots[i].start) / (slots[i].end - slots[i].start), 0, 1);
+            const prev = i ? words[i - 1] : null;
+            const fx = prev ? b.l + prev.right + 3 : sx, fy = prev ? b.t + (prev.top + prev.bottom) / 2 : sy;
+            const w = words[i];
+            const q = outExpo(k);
+            const t = now();
+            place(c, lerp(fx, b.l + w.right + 3, q), lerp(fy, b.t + (w.top + w.bottom) / 2, q), (t - last) / 1000);
+            last = t;
+            const done = k >= 1 ? i : i - 1;
+            if (done > shown && done >= 0) { shown = done; clipTo(done); }
+        });
+        clipTo(words.length - 1);
+        c.vx = c.vy = 0;
+        restore(u);
+        if (c.boss) blipReact('joy');
+        await A(200, () => {});
     }
 
     /* ---------- The git timeline: Blip rides the trunk ---------- */
