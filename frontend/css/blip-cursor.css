@@ -50,6 +50,9 @@ html.bc-active,html.bc-active *{cursor:none!important}
    while he roams; on top of everything while you hold him. */
 #blip-cursor.bc-pet { z-index: 99; }
 #blip-cursor.bc-grabbed { z-index: 2147483647; }
+/* Perched at rest: absolute, so he scrolls with his perch on the compositor
+   (blip-cursor.js dock()). */
+#blip-cursor.bc-docked { position: absolute; }
 
 /* The only part of him that takes the pointer: his body, not the empty
    corners of the sprite box. Root origin = hotspot = viewBox (6,3). */
@@ -145,7 +148,6 @@ html.bs-intro #cathode-fx { opacity: 0 !important; visibility: hidden !important
   top: 0;
   width: 0;
   height: 0;
-  will-change: transform, opacity;
 }
 #blip-swarm .bs-s { transform-origin: 0 0; }
 #blip-swarm .bs-art svg {

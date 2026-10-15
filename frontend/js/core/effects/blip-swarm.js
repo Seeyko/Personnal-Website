@@ -233,11 +233,14 @@ const BlipSwarm = (() => {
             if (a > ACCEL) { ax *= ACCEL / a; ay *= ACCEL / a; }
             c.vx += ax * dt; c.vy += ay * dt;
             c.x += c.vx * dt; c.y += c.vy * dt;
+            // Parked: settle for good, so it costs no style writes at all.
+            if (d < 0.5 && Math.abs(c.vx) + Math.abs(c.vy) < 8) { c.x = c.tx; c.y = c.ty; c.vx = c.vy = 0; }
         }
         // Tilt follows horizontal speed on a soft spring, ±20°.
         const wantRot = clamp(c.vx * 0.02, -20, 20);
         c.rotV += ((wantRot - c.rot) * 300 - c.rotV * 20) * dt;
         c.rot += c.rotV * dt;
+        if (!wantRot && Math.abs(c.rot) < 0.05 && Math.abs(c.rotV) < 0.05) c.rot = c.rotV = 0;
         render(c, t);
     }
 
@@ -271,15 +274,19 @@ const BlipSwarm = (() => {
 
     function render(c, t) {
         let nx = 0, ny = 0;
-        if (c.mode === 'hover' || c.mode === 'park') {
+        if (c.mode === 'hover') {
             const n = drift(c, t);
             nx = n.x; ny = n.y;
         }
         const sc = c.scale * (1 - c.press * 0.12);
-        c.el.style.transform = 'translate3d(' + (c.x + nx).toFixed(1) + 'px,' + (c.y + ny).toFixed(1) + 'px,0)';
-        c.inner.style.transform = 'rotate(' + c.rot.toFixed(2) + 'deg) scale(' +
+        // Only touch the style when something actually changed: a resting
+        // swarm then costs no style recalc.
+        const a = 'translate3d(' + (c.x + nx).toFixed(1) + 'px,' + (c.y + ny).toFixed(1) + 'px,0)';
+        const b = 'rotate(' + c.rot.toFixed(2) + 'deg) scale(' +
             (sc * c.sx * c.flip).toFixed(3) + ',' + (sc * c.sy).toFixed(3) + ')';
-        c.el.style.opacity = c.opacity;
+        if (a !== c.wa) { c.el.style.transform = a; c.wa = a; }
+        if (b !== c.wb) { c.inner.style.transform = b; c.wb = b; }
+        if (c.opacity !== c.wo) { c.el.style.opacity = c.opacity; c.wo = c.opacity; }
     }
 
     // Travel to (x, y) on a timed cubic arc: it leaves with the cursor's
@@ -289,7 +296,7 @@ const BlipSwarm = (() => {
     function seek(c, x, y) {
         return new Promise(resolve => {
             if (skipping) { c.x = x; c.y = y; c.vx = c.vy = 0; c.mode = 'kin'; resolve(); return; }
-            if (c.mode === 'hover' || c.mode === 'park') {
+            if (c.mode === 'hover') {
                 // Bake the visible drift into the start point: no hop on departure.
                 const n = drift(c, now());
                 c.x += n.x; c.y += n.y;

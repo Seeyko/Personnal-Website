@@ -152,6 +152,15 @@ const BlipCursor = (() => {
 
     let lastTickAt = 0;
     let rafId = null;
+    let wakeTimer = null;
+    let lastTransform = '';
+    // Docked = perched and at rest: he's switched to position:absolute so he
+    // scrolls WITH the page on the compositor (pixel-locked to his perch, no
+    // JS at all while scrolling). (dockX, dockY) = his viewport position when
+    // docked, at scroll (dockSX, dockSY).
+    let docked = false, dockX = 0, dockY = 0, dockSX = 0, dockSY = 0;
+    let scrollEndTimer = null;
+    let seenScrollY = 0;           // scroll position he last looked around at
     let blinkTimer = null;
     let gagTimer = null;
     const oneShotTimers = new Set();
@@ -180,8 +189,15 @@ const BlipCursor = (() => {
         root.classList.add('bc-theme-' + currentTheme());
     }
 
-    function vw() { return document.documentElement.clientWidth || window.innerWidth; }
-    function vh() { return window.innerHeight; }
+    // Viewport size, cached: reading clientWidth inside the frame loop can
+    // force a synchronous layout. Refreshed on resize.
+    let VW = 0, VH = 0;
+    function measureViewport() {
+        VW = document.documentElement.clientWidth || window.innerWidth;
+        VH = window.innerHeight;
+    }
+    function vw() { return VW; }
+    function vh() { return VH; }
 
     // Clamp a hotspot position so the whole sprite stays on screen.
     function clampX(px) { return clamp(px, EDGE - BODY.l, vw() - EDGE - (BODY.l + BODY.w)); }
@@ -214,7 +230,8 @@ const BlipCursor = (() => {
         const still = Math.abs(vx) + Math.abs(vy) < 4;
         const tx = still ? Math.round(x) : x;
         const ty = still ? Math.round(y) : y;
-        root.style.transform = 'translate3d(' + tx + 'px,' + ty + 'px,0)';
+        const v = 'translate3d(' + tx + 'px,' + ty + 'px,0)';
+        if (v !== lastTransform) { root.style.transform = v; lastTransform = v; }
     }
 
     // He leans into his motion and stretches along it (volume kept), then
@@ -300,16 +317,16 @@ const BlipCursor = (() => {
 
     /* ---------- Where to go ---------- */
 
-    function anchorPoint(a) {
-        const r = a.el.getBoundingClientRect();
+    function anchorPoint(a, rect) {
+        const r = rect || a.el.getBoundingClientRect();
         return { x: r.left + Math.min(a.ox, Math.max(0, r.width - 8)), y: r.top - FEET };
     }
 
-    function anchorUsable(a) {
+    function anchorUsable(a, rect) {
         if (!a || !a.el || !a.el.isConnected) return false;
-        const r = a.el.getBoundingClientRect();
+        const r = rect || a.el.getBoundingClientRect();
         if (r.width < 40 || r.height < 12) return false;
-        const p = anchorPoint(a);
+        const p = anchorPoint(a, r);
         // Fully on screen (incl. the sprite) and not tucked under the fixed header.
         return p.y + BODY.t > 70 && p.y + BODY.t + BODY.h < vh() - 10 &&
             p.x + BODY.l > EDGE && p.x + BODY.l + BODY.w < vw() - EDGE;
@@ -339,13 +356,23 @@ const BlipCursor = (() => {
         return out;
     }
 
+    // A spot is "near the pointer" when he'd land inside his personal space.
+    function nearPointer(px, py) {
+        return finePointer && ptrInside && Math.hypot(px + CENTER.x - ptrX, py + CENTER.y - ptrY) < SHY_RADIUS * 1.8;
+    }
+
     function freeSpot() {
-        // The margins: left or right band, middle height.
+        // The margins: left or right band, middle height — away from the pointer.
         const w = vw(), h = vh();
-        const left = Math.random() < 0.5;
         const band = Math.max(60, w * 0.16);
-        const px = left ? rand(EDGE - BODY.l, band) : rand(w - band, w);
-        return { x: clampX(px), y: clampY(rand(h * 0.28, h * 0.86)) };
+        let spot = null;
+        for (let i = 0; i < 6; i++) {
+            const left = Math.random() < 0.5;
+            const px = left ? rand(EDGE - BODY.l, band) : rand(w - band, w);
+            spot = { x: clampX(px), y: clampY(rand(h * 0.28, h * 0.86)) };
+            if (!nearPointer(spot.x, spot.y)) break;
+        }
+        return spot;
     }
 
     function cathodeSpot() {
@@ -358,6 +385,7 @@ const BlipCursor = (() => {
     }
 
     function think() {
+        seenScrollY = window.scrollY;
         if (energy <= 0) { doze(); return; }
         energy--;
         const roll = Math.random();
@@ -366,7 +394,11 @@ const BlipCursor = (() => {
             if (c) { strollTo(null, c.x, c.y); return; }
         }
         if (roll < 0.72) {
-            const cands = perchCandidates().filter(a => !anchor || a.el !== anchor.el);
+            const cands = perchCandidates().filter(a => {
+                if (anchor && a.el === anchor.el) return false;
+                const p = anchorPoint(a);
+                return !nearPointer(p.x, p.y);
+            });
             if (cands.length) {
                 // Prefer nearby perches: a stroll, not a teleport across the page.
                 cands.sort((a, b) => dist2(anchorPoint(a)) - dist2(anchorPoint(b)));
@@ -385,6 +417,7 @@ const BlipCursor = (() => {
     // body follows its "carrot" on a critically damped spring so any
     // interruption (dodge, grab) blends without a jump.
     function strollTo(a, tx, ty, opts) {
+        undock();
         const o = opts || {};
         const dest = a ? anchorPoint(a) : { x: tx, y: ty };
         const d = Math.hypot(dest.x - x, dest.y - y);
@@ -397,6 +430,7 @@ const BlipCursor = (() => {
         };
         anchor = null;
         mode = 'move';
+        kick();
     }
 
     function tweenPoint(t) {
@@ -430,6 +464,7 @@ const BlipCursor = (() => {
     }
 
     function settleHere() {
+        undock();
         anchor = null;
         homeX = clampX(x);
         homeY = clampY(y);
@@ -507,6 +542,7 @@ const BlipCursor = (() => {
         e.preventDefault();
         e.stopPropagation();
         try { hitEl.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
+        undock();
         grabPointerId = e.pointerId;
         grabOffX = e.clientX - x;
         grabOffY = e.clientY - y;
@@ -522,6 +558,7 @@ const BlipCursor = (() => {
         setShy(false);
         root.classList.add('bc-grabbed');
         document.documentElement.classList.add('bc-dragging');
+        kick();
         if (window.SFX) window.SFX.play('blip:grab');
     }
 
@@ -574,13 +611,80 @@ const BlipCursor = (() => {
 
     /* ---------- Main loop ---------- */
 
-    function tick(t) {
+    function syncDocked() {
+        if (!docked) return;
+        x = dockX - (window.scrollX - dockSX);
+        y = dockY - (window.scrollY - dockSY);
+        carrotX = x; carrotY = y;
+    }
+
+    function dock() {
+        if (docked || !root) return;
+        docked = true;
+        dockX = x; dockY = y; dockSX = window.scrollX; dockSY = window.scrollY;
+        root.classList.add('bc-docked');
+        root.style.transform = 'translate3d(0,0,0)';
+        const o = root.getBoundingClientRect(); // where (0,0) lands in this containing block
+        lastTransform = 'translate3d(' + Math.round(x - o.left) + 'px,' + Math.round(y - o.top) + 'px,0)';
+        root.style.transform = lastTransform;
+    }
+
+    function undock() {
+        if (!docked) return;
+        syncDocked();
+        docked = false;
+        if (root) root.classList.remove('bc-docked');
+        lastTransform = '';
+        applyTransform();
+    }
+
+    // The loop only runs while something moves. At rest Blip costs nothing
+    // per frame: the loop sleeps and a timer (next stroll, nap end, cover
+    // check) or an event (scroll, resize, a pointer coming close, a grab)
+    // wakes it.
+    function kick() {
+        if (!isRunning || rafId) return;
+        if (wakeTimer) { clearTimeout(wakeTimer); wakeTimer = null; }
+        lastTickAt = 0;
         rafId = requestAnimationFrame(tick);
-        if (!lastTickAt) lastTickAt = t;
+    }
+
+    function canSleep() {
+        return mode === 'rest' && vx === 0 && vy === 0 && !shy && !motionEl.style.transform;
+    }
+
+    function onScrollEnd() {
+        if (scrollEndTimer) clearTimeout(scrollEndTimer);
+        scrollEndTimer = setTimeout(() => {
+            scrollEndTimer = null;
+            // New content scrolled in: he's curious and goes to have a look
+            // (unless he's asleep — then he just sleeps on).
+            const sy = window.scrollY;
+            if (Math.abs(sy - seenScrollY) > vh() * 0.45 && !dozing && mode === 'rest') {
+                nextThinkAt = Math.min(nextThinkAt, now() + rand(450, 1000));
+                energy = Math.max(energy, 1);
+            }
+            seenScrollY = sy;
+            kick();
+        }, 140);
+    }
+
+    function sleep(t) {
+        rafId = null;
+        let next = Math.min(nextGuardAt, dozing ? wakeAt : Math.max(nextThinkAt, holdUntil));
+        if (!dozing && Date.now() < busyUntil) next = Math.min(next, t + (busyUntil - Date.now()) + 20);
+        wakeTimer = setTimeout(() => { wakeTimer = null; kick(); }, Math.max(40, next - t));
+    }
+
+    function tick(t) {
+        rafId = null;
+        if (!isRunning) return;
+        if (!lastTickAt) lastTickAt = t - 16;
         let dt = (t - lastTickAt) / 1000;
         lastTickAt = t;
         if (dt > MAX_DT) dt = MAX_DT;
-        if (dt <= 0) return;
+        if (dt <= 0) { rafId = requestAnimationFrame(tick); return; }
+        syncDocked();
 
         updateShy(t);
 
@@ -599,16 +703,23 @@ const BlipCursor = (() => {
                 if (p.done && Math.hypot(carrotX - x, carrotY - y) < 3) arrive();
             } else {
                 if (anchor) {
-                    if (!anchorUsable(anchor)) {
+                    const ar = anchor.el.getBoundingClientRect();
+                    if (!anchorUsable(anchor, ar)) {
                         // His perch scrolled away: hop to a free spot in view.
-                        const cur = anchorPoint(anchor);
+                        undock();
+                        const cur = anchorPoint(anchor, ar);
                         x = clampX(cur.x); y = clampY(cur.y);
                         carrotX = x; carrotY = y;
                         anchor = null;
                         const f = freeSpot();
                         strollTo(null, f.x, f.y);
                     } else {
-                        const p = anchorPoint(anchor);
+                        const p = anchorPoint(anchor, ar);
+                        if (docked && (Math.abs(p.x - x) > 1 || Math.abs(p.y - y) > 1)) {
+                            // The perch moved on its own (layout, inner scroller): re-seat.
+                            undock();
+                            x = carrotX = p.x; y = carrotY = p.y;
+                        }
                         // Riding the scroll: stay glued, no spring lag.
                         if (Math.abs(p.y - carrotY) > 0.5 && Math.abs(vy) < 30) { y += p.y - carrotY; }
                         carrotX = p.x; carrotY = p.y;
@@ -619,7 +730,7 @@ const BlipCursor = (() => {
                 // Asleep, summoned or not: never stay parked on a link / button
                 // (the page may also have scrolled one under him).
                 if (t > nextGuardAt) {
-                    nextGuardAt = t + 500;
+                    nextGuardAt = t + 1000;
                     if (mode === 'rest' && coversInteractive()) {
                         wake(false);
                         holdUntil = 0;
@@ -629,7 +740,9 @@ const BlipCursor = (() => {
                 }
                 if (dozing) {
                     if (t > wakeAt) wake();
-                } else if (t > nextThinkAt && t > holdUntil && !shy && Date.now() > busyUntil) {
+                } else if (t > nextThinkAt && t > holdUntil && Date.now() > busyUntil &&
+                    (!shy || t - ptrT > 1500)) {
+                    // Shy next to a pointer that just sits there: he moves along.
                     think();
                 }
             }
@@ -642,8 +755,14 @@ const BlipCursor = (() => {
                 x = carrotX; y = carrotY; vx = vy = 0;
             }
         }
-        applyTransform();
+        if (!docked) applyTransform();
         applyBodyLanguage();
+        if (canSleep()) {
+            if (anchor && !docked) dock();
+            sleep(t);
+        } else {
+            rafId = requestAnimationFrame(tick);
+        }
     }
 
     // Element tops he can land on, read fresh at release.
@@ -728,7 +847,7 @@ const BlipCursor = (() => {
     // Is his body sitting over a link / button? Then he moves along.
     function coversInteractive() {
         if (!document.elementsFromPoint) return false;
-        const pts = [[x + CENTER.x, y + CENTER.y], [x + CENTER.x, y + BODY.t + 6], [x + CENTER.x, y + FEET - 4]];
+        const pts = [[x + CENTER.x, y + CENTER.y], [x + CENTER.x, y + FEET - 4]];
         for (let i = 0; i < pts.length; i++) {
             const stack = document.elementsFromPoint(pts[i][0], pts[i][1]);
             for (let j = 0; j < stack.length; j++) {
@@ -758,13 +877,25 @@ const BlipCursor = (() => {
         ptrY = e.clientY;
         ptrT = t;
         ptrInside = true;
+        // Only wake the loop when the pointer is anywhere near him.
+        syncDocked();
+        if (!rafId && (shy || Math.hypot(ptrX - x - CENTER.x, ptrY - y - CENTER.y) < SHY_RADIUS * 2)) kick();
     }
 
     function onPointerLeave(e) {
         if (!e.relatedTarget) ptrInside = false;
     }
 
+    // At rest (docked on a perch or fixed in a margin) nothing needs doing
+    // while the page scrolls: one check once it stops. If the loop is already
+    // running it picks the scroll up by itself.
+    function onScroll() {
+        if (!rafId) onScrollEnd();
+    }
+
     function onResize() {
+        measureViewport();
+        kick();
         homeX = clampX(homeX);
         homeY = clampY(homeY);
         x = clampX(x);
@@ -775,12 +906,14 @@ const BlipCursor = (() => {
         handlers.pointermove = onPointerMove;
         handlers.mouseout = onPointerLeave;
         handlers.resize = onResize;
+        handlers.scroll = onScroll;
         handlers.hitDown = onHitDown;
         handlers.hitMove = onHitMove;
         handlers.hitUp = onHitUp;
         document.addEventListener('pointermove', handlers.pointermove, { passive: true });
         document.addEventListener('mouseout', handlers.mouseout, { passive: true });
         window.addEventListener('resize', handlers.resize, { passive: true });
+        window.addEventListener('scroll', handlers.scroll, { passive: true, capture: true });
         hitEl.addEventListener('pointerdown', handlers.hitDown);
         hitEl.addEventListener('pointermove', handlers.hitMove, { passive: true });
         hitEl.addEventListener('pointerup', handlers.hitUp);
@@ -792,6 +925,7 @@ const BlipCursor = (() => {
         if (handlers.pointermove) document.removeEventListener('pointermove', handlers.pointermove);
         if (handlers.mouseout) document.removeEventListener('mouseout', handlers.mouseout);
         if (handlers.resize) window.removeEventListener('resize', handlers.resize);
+        if (handlers.scroll) window.removeEventListener('scroll', handlers.scroll, { capture: true });
         Object.keys(handlers).forEach(k => delete handlers[k]);
     }
 
@@ -812,6 +946,8 @@ const BlipCursor = (() => {
         lastGag = null;
         vx = vy = 0;
         lastTickAt = 0;
+        lastTransform = '';
+        measureViewport();
         x = homeX = carrotX = clampX(px);
         y = homeY = carrotY = clampY(py);
         createDom();
@@ -830,6 +966,10 @@ const BlipCursor = (() => {
         detachListeners();
         if (rafId) cancelAnimationFrame(rafId);
         rafId = null;
+        if (wakeTimer) clearTimeout(wakeTimer);
+        if (scrollEndTimer) clearTimeout(scrollEndTimer);
+        wakeTimer = scrollEndTimer = null;
+        docked = false;
         if (blinkTimer) clearTimeout(blinkTimer);
         if (gagTimer) clearTimeout(gagTimer);
         blinkTimer = gagTimer = null;
@@ -844,6 +984,7 @@ const BlipCursor = (() => {
     function spawnAlone() {
         const go = () => {
             if (isRunning || !isActive) return;
+            measureViewport();
             const f = freeSpot();
             start(f.x, f.y, 'bc-wake');
         };
@@ -930,6 +1071,7 @@ const BlipCursor = (() => {
     // Used by CathodeGuide to notice when the two mascots are close.
     function getPosition() {
         if (!isRunning || dozing || mode === 'thrown' || mode === 'grab') return null;
+        syncDocked();
         return { x, y, mode: 'pet' };
     }
 
