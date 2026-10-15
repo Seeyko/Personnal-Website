@@ -22,6 +22,20 @@
   let scrollReminderShown = false;
   let timeOnPage = 0;
 
+  // Scroll position as a % of the page. The page height is cached (reading
+  // scrollHeight in a scroll handler forces a layout on every frame) and
+  // refreshed at most twice a second, or on resize.
+  let docHeight = -1, docHeightAt = 0;
+  window.addEventListener('resize', () => { docHeight = -1; }, { passive: true });
+  function scrollPercent() {
+    const t = performance.now();
+    if (docHeight < 0 || t - docHeightAt > 500) {
+      docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      docHeightAt = t;
+    }
+    return docHeight > 0 ? Math.min(100, (window.scrollY / docHeight) * 100) : 0;
+  }
+
   // ─── Initialize ───
   function init() {
     // Check if already shown this session
@@ -44,11 +58,12 @@
     const progressBar = document.getElementById('scroll-progress');
     if (!progressBar) return;
 
+    // Read in the scroll event (layout is clean there, before the frame's
+    // animations write), never from a frame callback.
+    let shown = '';
     function updateProgress() {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      progressBar.style.width = progress + '%';
+      const v = 'scaleX(' + (scrollPercent() / 100).toFixed(4) + ')';
+      if (v !== shown) { progressBar.style.transform = v; shown = v; }
     }
 
     window.addEventListener('scroll', updateProgress, { passive: true });
@@ -169,11 +184,7 @@
     window.addEventListener('scroll', () => {
       if (scrollReminderShown) return;
 
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-
-      if (scrollPercent >= CRO_CONFIG.scrollTriggerPercent) {
+      if (scrollPercent() >= CRO_CONFIG.scrollTriggerPercent) {
         scrollReminderShown = true;
 
         // Pulse the floating CTA to grab attention
@@ -258,12 +269,10 @@
     const scrollMilestones = [25, 50, 75, 100];
 
     window.addEventListener('scroll', () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
+      const depth = Math.round(scrollPercent());
 
       scrollMilestones.forEach(milestone => {
-        if (scrollPercent >= milestone && maxScrollDepth < milestone) {
+        if (depth >= milestone && maxScrollDepth < milestone) {
           maxScrollDepth = milestone;
           trackConversion(`scroll_depth_${milestone}`);
         }

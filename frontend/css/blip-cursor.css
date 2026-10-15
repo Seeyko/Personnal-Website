@@ -179,20 +179,23 @@ html.bs-intro #cathode-fx { opacity: 0 !important; visibility: hidden !important
 
 .bs-layer .bs-mark { position: absolute; left: 0; top: 0; pointer-events: none; }
 
+/* Marks never resize while they grow (data-trail.js): full-size layers,
+   revealed by a clip mask, edges moved by transforms. No layout, no paint. */
 /* Arrow: rubber-band selection. */
-.bs-layer .bs-marquee {
-  border: 1px dashed var(--bs-accent);
-  background: color-mix(in srgb, var(--bs-accent) 9%, transparent);
-}
+.bs-layer .bs-sel-area { position: absolute; left: 0; top: 0; will-change: transform; }
+.bs-layer .bs-marquee .bs-sel-area { background: color-mix(in srgb, var(--bs-accent) 9%, transparent); }
+.bs-layer .bs-e { position: absolute; left: 0; top: 0; border: 0 dashed var(--bs-accent); }
+.bs-layer .bs-et, .bs-layer .bs-eb { width: 100%; height: 0; border-top-width: 1px; }
+.bs-layer .bs-el, .bs-layer .bs-er { width: 0; height: 100%; border-left-width: 1px; }
+.bs-layer .bs-er, .bs-layer .bs-eb { will-change: transform; }
 /* Crosshair: measured box + live W×H tag. */
-.bs-layer .bs-measure {
-  border: 1px solid var(--bs-accent);
-  background: color-mix(in srgb, var(--bs-accent) 5%, transparent);
-}
+.bs-layer .bs-measure .bs-sel-area { background: color-mix(in srgb, var(--bs-accent) 5%, transparent); }
+.bs-layer .bs-measure .bs-e { border-style: solid; }
 .bs-layer .bs-tag {
   position: absolute;
-  right: -1px;
-  bottom: -19px;
+  left: 0;
+  top: 0;
+  will-change: transform;
   padding: 1px 5px;
   font: 500 10px/14px 'JetBrains Mono', 'Roboto Mono', ui-monospace, monospace;
   color: #fff;
@@ -204,15 +207,8 @@ body[data-theme="terminal"] .bs-layer .bs-tag,
 body[data-theme="blueprint"] .bs-layer .bs-tag,
 body[data-theme="fps"] .bs-layer .bs-tag { color: #0a0a0a; }
 
-/* Pencil: traced outline. */
-.bs-layer .bs-outline svg { display: block; overflow: visible; }
-.bs-layer .bs-outline rect {
-  fill: none;
-  stroke: var(--bs-accent);
-  stroke-width: 1.5;
-  stroke-dasharray: 1 1;
-  stroke-dashoffset: 1;
-}
+/* Pencil: traced outline, four lines scaled in turn. */
+.bs-layer .bs-ln { position: absolute; left: 0; top: 0; background: var(--bs-accent); will-change: transform; }
 
 /* Hand: click ripple. Rings / bloom are sized by --r around their origin. */
 .bs-layer .bs-ripple,

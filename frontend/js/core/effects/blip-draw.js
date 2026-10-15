@@ -76,6 +76,12 @@ const BlipDraw = (() => {
     let started = false;
     let layer = null;
     let originX = 0, originY = 0;  // document position of the layer's (0,0)
+    // Page scroll, cached from the scroll event (it fires right before the
+    // frame callbacks, while layout is clean): Safari lays out the whole page
+    // on every scrollY read once it's scrolled — per frame, behind our own
+    // style writes, that's what froze the page on iPhone.
+    let SX = 0, SY = 0;
+    function readScroll() { SX = window.scrollX; SY = window.scrollY; }
     let io = null;
     let units = [];
     const queue = [];
@@ -129,7 +135,9 @@ const BlipDraw = (() => {
         lastT = t;
         schedule(t);
         frameCbs.forEach(cb => cb(t, dt));
-        if (frameCbs.size || queue.length || active) rafId = requestAnimationFrame(loop);
+        // Something above may already have woken the loop (wake() during
+        // this frame): never book a second frame, or the loops multiply.
+        if (!rafId && (frameCbs.size || queue.length || active)) rafId = requestAnimationFrame(loop);
     }
 
     // `c` (optional): the cursor doing it — once its group is aborted
@@ -207,7 +215,7 @@ const BlipDraw = (() => {
 
     function hide(u) {
         const s = u.el.style;
-        u.saved = { clip: s.clipPath, wclip: s.webkitClipPath, transition: s.transition, translate: s.translate };
+        u.saved = { clip: s.clipPath, wclip: s.webkitClipPath, transition: s.transition, translate: s.translate, willChange: s.willChange };
         s.transition = 'none';
         setClip(u, 'inset(0 0 100% 0)');
         u.el.setAttribute('data-bd-pending', '');
@@ -227,6 +235,7 @@ const BlipDraw = (() => {
         s.webkitClipPath = o.wclip || '';
         s.transition = o.transition || '';
         s.translate = o.translate || '';
+        s.willChange = o.willChange || '';
         u.el.removeAttribute('data-bd-pending');
         if (io) io.unobserve(u.el);
     }
@@ -258,6 +267,8 @@ const BlipDraw = (() => {
         if (u.queued || u.running || u.done) return;
         u.queued = true;
         u.queuedAt = now();
+        // Measured once here (it reads layout), never per frame.
+        u.show = isShowpiece(u.el);
         queue.push(u);
     }
 
@@ -286,6 +297,11 @@ const BlipDraw = (() => {
             } else if (r.bottom <= 0) {
                 dequeue(u);
                 restore(u);
+            } else if (leaving) {
+                // Already leaving through the top (the visitor jumped past
+                // it): not worth a gesture, show it and get to what they see.
+                dequeue(u);
+                fadeIn(u);
             } else if (inView) {
                 enqueue(u);
             } else {
@@ -313,7 +329,8 @@ const BlipDraw = (() => {
     function onScroll() {
         // Fast scrolling (a flick, a nav link's smooth scroll): nobody starts
         // a new drawing mid-flight; wait for the page to land.
-        const t = now(), y = window.scrollY;
+        readScroll();
+        const t = now(), y = SY;
         if (lastScrollAt && Math.abs(y - lastScrollY) / Math.max(1, t - lastScrollAt) > 1.2) flyingUntil = t + 160;
         lastScrollY = y; lastScrollAt = t;
         if (sweepTimer) clearTimeout(sweepTimer);
@@ -329,21 +346,10 @@ const BlipDraw = (() => {
         // The visitor is faster than us: never make them wait for content.
         while (queue.length > QUEUE_MAX) { const u = queue.pop(); u.queued = false; fadeIn(u); }
         for (let i = queue.length - 1; i >= 0; i--) {
-            if (t - queue[i].queuedAt > (isShowpiece(queue[i].el) ? WAIT_MAX * 2 : WAIT_MAX)) {
+            if (t - queue[i].queuedAt > (queue[i].show ? WAIT_MAX * 2 : WAIT_MAX)) {
                 const u = queue.splice(i, 1)[0];
                 u.queued = false;
                 fadeIn(u);
-            }
-        }
-        // A group already leaving through the top (the visitor jumped past
-        // it) isn't worth a gesture: show it and get to what they look at.
-        const vh = window.innerHeight;
-        for (let i = queue.length - 1; i >= 0; i--) {
-            const r = queue[i].el.getBoundingClientRect();
-            if (r.top < 0 && r.bottom < vh * 0.5) {
-                const g = queue.splice(i, 1)[0];
-                g.queued = false;
-                fadeIn(g);
             }
         }
         if (t < nextStartAt || t < flyingUntil || !queue.length) {
@@ -359,14 +365,16 @@ const BlipDraw = (() => {
             // (timeline, the closing tagline): those are Blip's.
             // A real backlog (a jump into the page): help comes sooner.
             const patience = queue.length >= 3 ? HELP_AFTER * 0.3 : HELP_AFTER;
-            u = queue.find(q => t - q.queuedAt > patience && !isShowpiece(q.el));
+            u = queue.find(q => t - q.queuedAt > patience && !q.show);
             if (u) kind = 'helper';
         }
         if (!kind) return;
         // Blip works smart: neighbours waiting right below get swept in the
         // same gesture (a title + its subtitle, two stacked cards).
         const batch = kind === 'boss' ? takeBatch() : [queue.splice(queue.indexOf(u), 1)[0]];
-        batch.forEach(b => { b.queued = false; b.running = true; });
+        // While it's drawn, a group gets its own layer: its reveal (a clip
+        // mask that changes every frame) then never repaints the page.
+        batch.forEach(b => { b.queued = false; b.running = true; b.el.style.willChange = 'transform'; });
         active++;
         if (kind === 'boss') boss.busy = true; else helpers++;
         stats[kind] += batch.length;
@@ -385,12 +393,12 @@ const BlipDraw = (() => {
     function takeBatch() {
         const first = queue.shift();
         const out = [first];
-        if (isShowpiece(first.el)) return out;
+        if (first.show) return out;
         const f = first.el.getBoundingClientRect();
         const sec = first.el.closest('section, article');
         while (queue.length && out.length < 3) {
             const n = queue[0];
-            if (isShowpiece(n.el) || n.el.closest('section, article') !== sec) break;
+            if (n.show || n.el.closest('section, article') !== sec) break;
             const r = n.el.getBoundingClientRect();
             if (r.top - f.top > window.innerHeight * 0.45 || r.bottom - f.top > window.innerHeight * 0.8) break;
             out.push(queue.shift());
@@ -408,7 +416,7 @@ const BlipDraw = (() => {
         if (!B.hire()) return false;
         const tip = B.tip;
         const c = {
-            x: tip.x + window.scrollX - originX, y: tip.y + window.scrollY - originY,
+            x: tip.x + SX - originX, y: tip.y + SY - originY,
             vx: 0, vy: 0, press: 0, pressed: false, opacity: 1, scale: 1, boss: true, abort: false
         };
         c.step = () => {
@@ -419,7 +427,7 @@ const BlipDraw = (() => {
                 syncBoss(c);
                 return;
             }
-            B.workAt(c.x - window.scrollX + originX, c.y - window.scrollY + originY, c.vx, c.vy);
+            B.workAt(c.x - SX + originX, c.y - SY + originY, c.vx, c.vy);
             if (c.press > 0.6 && !c.pressed) { c.pressed = true; B.react('click'); }
             else if (c.press < 0.2) c.pressed = false;
         };
@@ -433,8 +441,8 @@ const BlipDraw = (() => {
 
     function syncBoss(c) {
         const tip = window.BlipCursor.tip;
-        c.x = tip.x + window.scrollX - originX;
-        c.y = tip.y + window.scrollY - originY;
+        c.x = tip.x + SX - originX;
+        c.y = tip.y + SY - originY;
         c.vx = c.vy = 0;
     }
 
@@ -535,6 +543,15 @@ const BlipDraw = (() => {
         return m;
     }
 
+    // The tools' marks (data-trail.js); bare boxes if it isn't on the page.
+    const NO_MARK = { set() {} };
+    function selection(box, measure) {
+        return window.DataTrail ? window.DataTrail.selection(layer, box, measure) : { ...NO_MARK, el: mark('') };
+    }
+    function outline(box) {
+        return window.DataTrail ? window.DataTrail.outline(layer, box) : { ...NO_MARK, el: mark('') };
+    }
+
     function fadeMark(m, ms) {
         animate(ms, p => { m.style.opacity = 1 - p; }).then(() => m.remove());
     }
@@ -548,11 +565,11 @@ const BlipDraw = (() => {
         const p = B && B.isRunning ? (B.isWorking ? B.tip : B.getPosition && B.getPosition()) : null;
         const vw = document.documentElement.clientWidth, vh = window.innerHeight;
         if (p && p.x > 0 && p.y > 0 && p.x < vw && p.y < vh) {
-            return { x: p.x + BLIP_C.x + window.scrollX - originX, y: p.y + BLIP_C.y + window.scrollY - originY, blip: true };
+            return { x: p.x + BLIP_C.x + SX - originX, y: p.y + BLIP_C.y + SY - originY, blip: true };
         }
-        const cx = (box.l + box.r) / 2 - window.scrollX + originX;
+        const cx = (box.l + box.r) / 2 - SX + originX;
         const left = cx < vw / 2;
-        return { x: (left ? 14 : vw - 44) + window.scrollX - originX, y: clamp((box.t + box.b) / 2, box.t, box.t + vh * 0.6), blip: false };
+        return { x: (left ? 14 : vw - 44) + SX - originX, y: clamp((box.t + box.b) / 2, box.t, box.t + vh * 0.6), blip: false };
     }
 
     function blipReact(kind) {
@@ -565,7 +582,7 @@ const BlipDraw = (() => {
     async function draw(u, kind, batch) {
         const r = u.el.getBoundingClientRect();
         // The group's box in layer (document) coordinates.
-        const sx = window.scrollX - originX, sy = window.scrollY - originY;
+        const sx = SX - originX, sy = SY - originY;
         const box = { l: r.left + sx, t: r.top + sy, r: r.right + sx, b: r.bottom + sy, w: r.width, h: r.height };
         u.box = box;
         const tool = isTimeline(u.el) ? 'timeline' : isTagline(u.el) ? 'tagline' : toolFor(u.el, r);
@@ -628,7 +645,7 @@ const BlipDraw = (() => {
     // selection reaches it.
     async function gBatch(c, list) {
         const A = (ms, fn, ease) => animate(ms, fn, ease, c);
-        const sx = window.scrollX - originX, sy = window.scrollY - originY;
+        const sx = SX - originX, sy = SY - originY;
         list.forEach(u => {
             const r = u.el.getBoundingClientRect();
             u.box = { l: r.left + sx, t: r.top + sy, r: r.right + sx, b: r.bottom + sy, w: r.width, h: r.height };
@@ -638,8 +655,7 @@ const BlipDraw = (() => {
         const W = R - L, H = B - T;
         await travel(c, L, T);
         await A(90, p => { c.press = p; }, outExpo);
-        const m = mark('bs-marquee');
-        m.style.transform = 'translate(' + L + 'px,' + T + 'px)';
+        const sel = selection({ l: L, t: T, w: W, h: H }, false);
         let last = now();
         const tr = trailFor({ l: L, t: T, w: W, h: H });
         await A(clamp(420 + Math.sqrt(W * H) * 0.45, 520, 900), e => {
@@ -647,8 +663,7 @@ const BlipDraw = (() => {
             const x = L + W * e, y = T + H * e;
             place(c, x, y, (t - last) / 1000); last = t;
             tr.edge(x, y);
-            m.style.width = (W * e) + 'px';
-            m.style.height = (H * e) + 'px';
+            sel.set(e, e);
             list.forEach(u => {
                 const b = u.box;
                 const ri = clamp(b.r - x, 0, b.w), bi = clamp(b.b - y, 0, b.h);
@@ -659,7 +674,7 @@ const BlipDraw = (() => {
         list.forEach(restore);
         tr.settle();
         A(120, p => { c.press = 1 - p; }, outExpo);
-        fadeMark(m, 180);
+        fadeMark(sel.el, 180);
     }
 
     async function gRect(c, u, measure) {
@@ -667,10 +682,7 @@ const BlipDraw = (() => {
         const b = u.box;
         await travel(c, b.l, b.t);
         await A(90, p => { c.press = p; }, outExpo);
-        const m = mark(measure ? 'bs-measure' : 'bs-marquee');
-        const tag = measure ? document.createElement('span') : null;
-        if (tag) { tag.className = 'bs-tag'; m.appendChild(tag); }
-        m.style.transform = 'translate(' + b.l + 'px,' + b.t + 'px)';
+        const sel = selection(b, measure);
         let last = now();
         const dur = clamp(340 + Math.sqrt(b.w * b.h) * 0.4, 420, 650);
         const tr = trailFor(b);
@@ -679,9 +691,7 @@ const BlipDraw = (() => {
             const x = b.l + b.w * e, y = b.t + b.h * e;
             place(c, x, y, (t - last) / 1000); last = t;
             tr.edge(x, y);
-            m.style.width = (b.w * e) + 'px';
-            m.style.height = (b.h * e) + 'px';
-            if (tag) tag.textContent = Math.round(b.w * e) + ' × ' + Math.round(b.h * e);
+            sel.set(e, e);
             setClip(u, 'inset(0 ' + (b.w * (1 - e)).toFixed(1) + 'px ' + (b.h * (1 - e)).toFixed(1) + 'px 0)');
         }, inOutQuart);
         c.vx = c.vy = 0;
@@ -689,7 +699,7 @@ const BlipDraw = (() => {
         A(120, p => { c.press = 1 - p; }, outExpo);
         tr.settle();
         if (measure) await wait(140, c);
-        fadeMark(m, 160);
+        fadeMark(sel.el, 160);
     }
 
     async function gType(c, u) {
@@ -771,13 +781,7 @@ const BlipDraw = (() => {
         const A = (ms, fn, ease) => animate(ms, fn, ease, c);
         const b = u.box;
         await travel(c, b.l, b.t);
-        const m = mark('bs-outline');
-        m.style.transform = 'translate(' + b.l + 'px,' + b.t + 'px)';
-        m.style.width = b.w + 'px';
-        m.style.height = b.h + 'px';
-        m.innerHTML = '<svg width="' + b.w + '" height="' + b.h + '"><rect x=".75" y=".75" width="' + Math.max(0, b.w - 1.5) +
-            '" height="' + Math.max(0, b.h - 1.5) + '" pathLength="1"/></svg>';
-        const rect = m.querySelector('rect');
+        const line = outline(b);
         const per = 2 * (b.w + b.h);
         let last = now();
         await A(clamp(300 + per * 0.08, 380, 620), e => {
@@ -788,7 +792,7 @@ const BlipDraw = (() => {
             else { d -= b.w; x = b.l; y = b.b - d; }
             const t = now();
             place(c, x, y, (t - last) / 1000); last = t;
-            rect.style.strokeDashoffset = 1 - e;
+            line.set(e);
         }, inOutQuart);
         c.vx = c.vy = 0;
         await A(90, p => { c.press = p; }, outExpo);
@@ -799,7 +803,7 @@ const BlipDraw = (() => {
             tr.edge(b.r, b.t + b.h * e);
         }, outExpo);
         tr.settle();
-        fadeMark(m, 220);
+        fadeMark(line.el, 220);
     }
 
     async function gMove(c, u) {
@@ -927,7 +931,7 @@ const BlipDraw = (() => {
         const root = u.el;
         const svg = root.querySelector('.git-timeline-svg');
         const sr = svg.getBoundingClientRect();
-        const ox = sr.left + window.scrollX - originX, oy = sr.top + window.scrollY - originY;
+        const ox = sr.left + SX - originX, oy = sr.top + SY - originY;
         const trunk = svg.querySelector('.git-trunk');
         const x1 = +trunk.getAttribute('x1'), x2 = +trunk.getAttribute('x2'), ty = +trunk.getAttribute('y1');
         const tLen = Math.max(1, x2 - x1);
@@ -1048,9 +1052,10 @@ const BlipDraw = (() => {
         layer.style.setProperty('--cs-accent', DETAIL[theme]);
         layer.style.color = FILL[theme];
         document.body.appendChild(layer);
+        readScroll();
         const o = layer.getBoundingClientRect();
-        originX = o.left + window.scrollX;
-        originY = o.top + window.scrollY;
+        originX = o.left + SX;
+        originY = o.top + SY;
     }
 
     function ensureObservers() {

@@ -199,6 +199,13 @@ const BlipCursor = (() => {
     function vw() { return VW; }
     function vh() { return VH; }
 
+    // Page scroll, cached from the scroll event (it fires right before the
+    // frame callbacks, while layout is clean). Safari lays out the whole page
+    // on every scrollY read once it is scrolled; inside the frame loop, after
+    // the page's style writes, that's a layout per read.
+    let SX = 0, SY = 0;
+    function readScroll() { SX = window.scrollX; SY = window.scrollY; }
+
     // Clamp a hotspot position so the whole sprite stays on screen.
     function clampX(px) { return clamp(px, EDGE - BODY.l, vw() - EDGE - (BODY.l + BODY.w)); }
     function clampY(py) { return clamp(py, EDGE - BODY.t, vh() - EDGE - (BODY.t + BODY.h)); }
@@ -385,7 +392,7 @@ const BlipCursor = (() => {
     }
 
     function think() {
-        seenScrollY = window.scrollY;
+        seenScrollY = SY;
         if (energy <= 0) { doze(); return; }
         energy--;
         const roll = Math.random();
@@ -614,15 +621,15 @@ const BlipCursor = (() => {
 
     function syncDocked() {
         if (!docked) return;
-        x = dockX - (window.scrollX - dockSX);
-        y = dockY - (window.scrollY - dockSY);
+        x = dockX - (SX - dockSX);
+        y = dockY - (SY - dockSY);
         carrotX = x; carrotY = y;
     }
 
     function dock() {
         if (docked || !root) return;
         docked = true;
-        dockX = x; dockY = y; dockSX = window.scrollX; dockSY = window.scrollY;
+        dockX = x; dockY = y; dockSX = SX; dockSY = SY;
         root.classList.add('bc-docked');
         root.style.transform = 'translate3d(0,0,0)';
         const o = root.getBoundingClientRect(); // where (0,0) lands in this containing block
@@ -661,7 +668,7 @@ const BlipCursor = (() => {
             scrollEndTimer = null;
             // New content scrolled in: he's curious and goes to have a look
             // (unless he's asleep — then he just sleeps on).
-            const sy = window.scrollY;
+            const sy = SY;
             if (Math.abs(sy - seenScrollY) > vh() * 0.45 && !dozing && mode === 'rest') {
                 nextThinkAt = Math.min(nextThinkAt, now() + rand(450, 1000));
                 energy = Math.max(energy, 1);
@@ -687,7 +694,7 @@ const BlipCursor = (() => {
         if (dt > MAX_DT) dt = MAX_DT;
         if (dt <= 0) { rafId = requestAnimationFrame(tick); return; }
         syncDocked();
-        if (mode === 'work') { sleep(t); return; }
+        if (mode === 'work') { if (!rafId) sleep(t); return; }
 
         updateShy(t);
 
@@ -760,10 +767,12 @@ const BlipCursor = (() => {
         }
         if (!docked) applyTransform();
         applyBodyLanguage();
+        // A kick() during this tick (think → stroll) may already have booked
+        // the next frame: never book a second one, or the loops multiply.
         if (canSleep()) {
             if (anchor && !docked) dock();
-            sleep(t);
-        } else {
+            if (!rafId) sleep(t);
+        } else if (!rafId) {
             rafId = requestAnimationFrame(tick);
         }
     }
@@ -892,12 +901,14 @@ const BlipCursor = (() => {
     // At rest (docked on a perch or fixed in a margin) nothing needs doing
     // while the page scrolls: one check once it stops. If the loop is already
     // running it picks the scroll up by itself.
-    function onScroll() {
+    function onScroll(e) {
+        if (!e || e.target === document) readScroll();
         if (!rafId) onScrollEnd();
     }
 
     function onResize() {
         measureViewport();
+        readScroll();
         kick();
         homeX = clampX(homeX);
         homeY = clampY(homeY);
@@ -951,6 +962,7 @@ const BlipCursor = (() => {
         lastTickAt = 0;
         lastTransform = '';
         measureViewport();
+        readScroll();
         x = homeX = carrotX = clampX(px);
         y = homeY = carrotY = clampY(py);
         createDom();
