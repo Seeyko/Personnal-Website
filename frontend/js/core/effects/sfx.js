@@ -30,9 +30,9 @@
  *   card:reveal          a project/blog card scrolls into view ({step}: 0,1,2…
  *                        climbs while reveals cascade — pitch ladders welcome)
  *
- * Events emitted by blip-cursor.js (Blip, the cursor mascot):
+ * Events emitted by blip-cursor.js (Blip, the page pet):
  *   blip:click blip:blink blip:joy blip:listen blip:wave blip:wake
- *   blip:twirl blip:snooze
+ *   blip:twirl blip:snooze blip:grab blip:throw blip:bonk({speed})
  *
  * Events emitted by cathode-guide.js (Cathode, the guide mascot):
  *   cathode:boot cathode:enter cathode:speak({chars}) cathode:jump

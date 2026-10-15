@@ -35,6 +35,9 @@ const ThemeManager = (() => {
         if (loadingFallback) { clearTimeout(loadingFallback); loadingFallback = null; }
         if (loadingHidden) return;
         loadingHidden = true;
+        // The boot intro (blip-swarm.js) dissolves the loader itself, as its
+        // swarm of cursors draws the page.
+        if (window.BlipSwarm?.takeOver?.()) { document.body.classList.remove('loading'); return; }
         const el = document.getElementById('loading-screen');
         if (el) { el.classList.add('hidden'); setTimeout(() => el.remove(), 500); }
         document.body.classList.remove('loading');
