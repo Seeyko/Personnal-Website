@@ -488,7 +488,7 @@ const BlipCursor = (() => {
     }
 
     function updateShy(t) {
-        if (!finePointer || mode === 'grab' || mode === 'thrown') return;
+        if (!finePointer || mode === 'grab' || mode === 'thrown' || mode === 'work') return;
         const c = bodyCenter();
         const dx = c.x - ptrX, dy = c.y - ptrY;
         const d = Math.hypot(dx, dy);
@@ -543,6 +543,7 @@ const BlipCursor = (() => {
         e.stopPropagation();
         try { hitEl.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
         undock();
+        if (root) root.classList.remove('bc-working', 'bc-hover-link');
         grabPointerId = e.pointerId;
         grabOffX = e.clientX - x;
         grabOffY = e.clientY - y;
@@ -650,6 +651,7 @@ const BlipCursor = (() => {
     }
 
     function canSleep() {
+        if (mode === 'work') return true; // driven frame by frame by blip-draw.js
         return mode === 'rest' && vx === 0 && vy === 0 && !shy && !motionEl.style.transform;
     }
 
@@ -685,6 +687,7 @@ const BlipCursor = (() => {
         if (dt > MAX_DT) dt = MAX_DT;
         if (dt <= 0) { rafId = requestAnimationFrame(tick); return; }
         syncDocked();
+        if (mode === 'work') { sleep(t); return; }
 
         updateShy(t);
 
@@ -992,7 +995,7 @@ const BlipCursor = (() => {
             const mo = new MutationObserver(() => {
                 if (document.body.classList.contains('loading')) return;
                 mo.disconnect();
-                setTimeout(go, 600);
+                setTimeout(go, 250);
             });
             mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         } else {
@@ -1070,7 +1073,7 @@ const BlipCursor = (() => {
     // Where Blip's hotspot currently is, or null while he's hidden/asleep.
     // Used by CathodeGuide to notice when the two mascots are close.
     function getPosition() {
-        if (!isRunning || dozing || mode === 'thrown' || mode === 'grab') return null;
+        if (!isRunning || dozing || mode === 'thrown' || mode === 'grab' || mode === 'work') return null;
         syncDocked();
         return { x, y, mode: 'pet' };
     }
@@ -1096,10 +1099,57 @@ const BlipCursor = (() => {
         return true;
     }
 
+    /* ---------- Work: he draws the page (blip-draw.js drives him) ---------- */
+
+    // Put him to work. Drawing the site is his job: a nap is no excuse (he
+    // wakes up), only being held / in the air is. Returns false then.
+    function hire() {
+        if (!isRunning || !root || mode === 'grab' || mode === 'thrown') return false;
+        if (mode === 'work') return true;
+        undock();
+        if (dozing) wake();
+        setShy(false);
+        tween = null;
+        anchor = null;
+        vx = vy = 0;
+        mode = 'work';
+        // The kit's "leaning toward a target" pose: focused on the job.
+        root.classList.add('bc-working', 'bc-hover-link');
+        return true;
+    }
+
+    // Place his tip at (px, py) (viewport), moving at (pvx, pvy) px/s:
+    // drives his lean / stretch like any other motion.
+    function workAt(px, py, pvx, pvy) {
+        if (mode !== 'work') return false;
+        x = px; y = py; vx = pvx || 0; vy = pvy || 0;
+        applyTransform();
+        applyBodyLanguage();
+        return true;
+    }
+
+    // Job done: he stays where he finished, catches his breath, then gets on
+    // with his life (strolls off to a perch a bit later).
+    function fire() {
+        if (mode !== 'work') return;
+        root.classList.remove('bc-working', 'bc-hover-link');
+        vx = vy = 0;
+        applyBodyLanguage();
+        settleHere();
+        nextThinkAt = now() + rand(1400, 2600);
+        kick();
+    }
+
     return {
         init,
         destroy,
         appear,
+        hire,
+        workAt,
+        fire,
+        get isWorking() { return mode === 'work'; },
+        // His tip (viewport), whatever he's doing.
+        get tip() { syncDocked(); return { x, y }; },
         getPosition,
         react,
         summon,

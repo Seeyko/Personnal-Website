@@ -22,6 +22,7 @@ Blip ne remplace plus la souris (le suivi à ressort faisait cliquer à côté).
 - frontend/index.html
 - frontend/js/core/effects/blip-draw.js (nouveau : dessin au scroll, un curseur par groupe)
 - frontend/js/core/effects/sfx.js, cathode-guide.js (perf)
+- frontend/blog.html, frontend/js/blog.js (Blip + dessin au scroll sur le blog)
 
 ## Progress
 - [x] Recherche références (swarm-cursors, openstation.blog)
@@ -33,6 +34,7 @@ Blip ne remplace plus la souris (le suivi à ressort faisait cliquer à côté).
 - [x] Revue de code + critique motion, corrections
 - [x] Passe perf (boucle qui dort, perché docké au scroll, Cathode sans layout forcé)
 - [x] Dessin au scroll du reste de la page (blip-draw.js)
+- [x] Blip dessine lui-même (renforts seulement en cas de retard), timeline tracée trait par trait, blog
 
 ## Notes/Discoveries
 - `body.loaded` du thème default lance `elegantFadeIn` (opacité du body) : coupé
@@ -47,3 +49,6 @@ Blip ne remplace plus la souris (le suivi à ressort faisait cliquer à côté).
 - blip-draw : les groupes sous la ligne de flottaison démarrent masqués
   (`data-bd-pending`) ; un balayage à chaque passage de l'observer et à la fin
   de chaque scroll garantit qu'aucun groupe ne reste caché (sauts de nav, Fin).
+- Debug du dessin au scroll : `?bddebug` logue qui dessine quoi.
+- Test du blog en local : l'API d'articles n'existe qu'en prod ; les tests
+  Playwright simulent /config.js et /api/articles (scratchpad draw/blogmock).

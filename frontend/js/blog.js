@@ -110,7 +110,8 @@ function renderArticleList(articles) {
         container.appendChild(card);
     });
 
-    initListAnimations();
+    // Blip draws the cards in (blip-draw.js); without him, the GSAP fade-up.
+    if (!window.BlipDraw?.scan()) initListAnimations();
 }
 
 function renderPagination(pagination) {
@@ -182,6 +183,7 @@ function renderArticle(article) {
     }
 
     window.scrollTo({ top: 0, behavior: 'instant' });
+    window.BlipDraw?.scan();
 }
 
 function showAccessDenied(article) {
