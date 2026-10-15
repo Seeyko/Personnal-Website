@@ -605,6 +605,12 @@ const BlipSwarm = (() => {
 
     /* ---------- Actions ---------- */
 
+    // The data trail each cursor leaves while drawing (data-trail.js).
+    const NO_TRAIL = { write() {}, caughtUp() {}, edge() {}, ring() {}, settle() {} };
+    function trailFor(v) {
+        return window.DataTrail ? window.DataTrail.create(layer, { l: v.l, t: v.t, w: v.w, h: v.h }, { accent: ACCENT[theme] }) : NO_TRAIL;
+    }
+
     function mark(cls) {
         const m = document.createElement('div');
         m.className = 'bs-mark ' + cls;
@@ -627,10 +633,12 @@ const BlipSwarm = (() => {
         if (tag) { tag.className = 'bs-tag'; m.appendChild(tag); }
         let last = now();
         const dur = quick ? 300 : clamp(340 + Math.sqrt(v.w * v.h) * 0.4, 420, 600);
+        const tr = trailFor(v);
         await animate(dur, p => {
             const t = now();
             const x = v.l + v.w * p, y = v.t + v.h * p;
             place(c, x, y, (t - last) / 1000); last = t;
+            tr.edge(x, y);
             m.style.transform = 'translate(' + v.l + 'px,' + v.t + 'px)';
             m.style.width = (v.w * p) + 'px';
             m.style.height = (v.h * p) + 'px';
@@ -639,44 +647,56 @@ const BlipSwarm = (() => {
         }, inOutQuart);
         c.vx = c.vy = 0;
         restoreTask(task);
+        tr.settle();
         release(c);
         if (measure && !quick) await wait(120);
         fadeMark(m, 160);
     }
 
-    // I-beam / block caret: types the element line by line, stepped like
-    // keystrokes.
+    // I-beam / block caret: types the element word by word — each word laid
+    // down as data first, resolving into its letters right behind the caret.
     async function actType(c, task) {
-        const v = task.v;
-        const cs = getComputedStyle(task.el);
-        const fs = parseFloat(cs.fontSize) || 16;
-        let lh = parseFloat(cs.lineHeight);
-        if (!lh || isNaN(lh)) lh = fs * 1.25;
-        const lines = clamp(Math.round(v.h / lh), 1, 8);
-        const lineH = v.h / lines;
-        await seek(c, v.l, v.t + lineH / 2);
-        if (!quick) {
-            // One caret blink before typing.
-            await animate(140, p => { c.opacity = p < 0.5 ? 0.2 : 1; });
-        }
-        const per = quick ? 300 / lines : clamp(560 / lines, 90, 220);
-        const steps = clamp(Math.round(v.w / (fs * 0.55)), 6, 24);
-        let last = now();
-        for (let i = 0; i < lines; i++) {
-            const y0 = v.t + i * lineH, y1 = y0 + lineH;
-            await animate(per, (p) => {
-                const s = Math.floor(p * steps) / steps;
-                const x = v.l + v.w * s;
-                const t = now();
-                place(c, x, y0 + lineH / 2, (t - last) / 1000); last = t;
-                const r = task.r;
-                const X = x - r.left, Y0 = y0 - r.top, Y1 = y1 - r.top, W = r.width;
-                setClip(task, 'polygon(0px 0px,' + W + 'px 0px,' + W + 'px ' + Y0 + 'px,' + X + 'px ' + Y0 + 'px,' +
-                    X + 'px ' + Y1 + 'px,0px ' + Y1 + 'px)');
-            });
-        }
+        const v = task.v, r = task.r;
+        const words = window.DataTrail ? window.DataTrail.words(task.el) : [];
+        if (!words.length) return actRect(c, task, false);
+        const first = words[0];
+        await seek(c, r.left + Math.max(0, first.left - 2), r.top + (first.top + first.bottom) / 2);
+        if (!quick) await animate(140, p => { c.opacity = p < 0.5 ? 0.2 : 1; });
+        const per = Math.min(quick ? 60 : 95, (quick ? 350 : 1100) / words.length);
+        const T = per * words.length, RESOLVE = quick ? 80 : 150;
+        const W = r.width;
+        const clipTo = (i) => {
+            const w = words[i];
+            const y0 = Math.max(0, w.top - 2), y1 = w.bottom + 4;
+            setClip(task, 'polygon(0px 0px,' + W + 'px 0px,' + W + 'px ' + y0 + 'px,' + (w.right + 2) + 'px ' + y0 + 'px,' +
+                (w.right + 2) + 'px ' + y1 + 'px,0px ' + y1 + 'px)');
+        };
+        const tr = trailFor({ l: r.left, t: r.top, w: r.width, h: r.height });
+        const sx = c.x, sy = c.y;
+        let last = now(), shown = -1;
+        await animate(T + RESOLVE, (e, p) => {
+            const ms = p * (T + RESOLVE);
+            const i = Math.min(words.length - 1, Math.floor(ms / per));
+            const k = clamp((ms - i * per) / per, 0, 1);
+            const w = words[i], prev = i ? words[i - 1] : null;
+            const sameLine = prev && Math.abs(prev.top - w.top) < 4;
+            const fx = sameLine ? r.left + prev.right + 3 : (prev ? r.left + w.left - 2 : sx);
+            const fy = prev ? r.top + (w.top + w.bottom) / 2 : sy;
+            const q = outExpo(k);
+            const t = now();
+            place(c, lerp(fx, r.left + w.right + 3, q), lerp(fy, r.top + (w.top + w.bottom) / 2, q), (t - last) / 1000);
+            last = t;
+            tr.write(c.x, r.top + w.top, r.top + w.bottom);
+            const done = Math.min(words.length - 1, Math.floor((ms - RESOLVE) / per));
+            if (done > shown) {
+                shown = done;
+                clipTo(done);
+                tr.caughtUp(r.left + words[done].right + 3, r.top + words[done].top);
+            }
+        });
         c.vx = c.vy = 0;
         restoreTask(task);
+        tr.settle();
     }
 
     // Hand: dips, clicks, and the element pops in from the click point.
@@ -691,12 +711,15 @@ const BlipSwarm = (() => {
         const cx = px - r.left, cy = py - r.top;
         const far = Math.hypot(Math.max(cx, r.width - cx), Math.max(cy, r.height - cy)) * 1.05;
         release(c);
+        const tr = trailFor(v);
         await animate(quick ? 300 : 420, p => {
             setClip(task, 'circle(' + (far * p).toFixed(1) + 'px at ' + cx.toFixed(1) + 'px ' + cy.toFixed(1) + 'px)');
+            if (p < 0.85) tr.ring(px, py, far * p);
             ring.style.setProperty('--r', (6 + 30 * p) + 'px');
             ring.style.opacity = 1 - p;
         }, outExpo);
         restoreTask(task);
+        tr.settle();
         ring.remove();
     }
 
@@ -729,10 +752,13 @@ const BlipSwarm = (() => {
         c.vx = c.vy = 0;
         await press(c);
         release(c);
+        const tr = trailFor(v);
         await animate(quick ? 180 : 320, p => {
             setClip(task, insetFor(task, v.l, v.t, v.r, v.t + v.h * p));
+            tr.edge(v.r, v.t + v.h * p);
         }, outExpo);
         restoreTask(task);
+        tr.settle();
         fadeMark(m, 200);
     }
 

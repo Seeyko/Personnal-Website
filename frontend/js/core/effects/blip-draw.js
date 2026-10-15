@@ -521,6 +521,13 @@ const BlipDraw = (() => {
         }, linear, c).then(() => { c.x = x; c.y = y; c.vx = c.vy = 0; });
     }
 
+    // The data trail he leaves while drawing (data-trail.js); a no-op if the
+    // module isn't on the page.
+    const NO_TRAIL = { write() {}, caughtUp() {}, edge() {}, ring() {}, settle() { return Promise.resolve(); } };
+    function trailFor(box) {
+        return window.DataTrail ? window.DataTrail.create(layer, box, { accent: ACCENT[theme] }) : NO_TRAIL;
+    }
+
     function mark(cls) {
         const m = document.createElement('div');
         m.className = 'bs-mark ' + cls;
@@ -634,10 +641,12 @@ const BlipDraw = (() => {
         const m = mark('bs-marquee');
         m.style.transform = 'translate(' + L + 'px,' + T + 'px)';
         let last = now();
+        const tr = trailFor({ l: L, t: T, w: W, h: H });
         await A(clamp(420 + Math.sqrt(W * H) * 0.45, 520, 900), e => {
             const t = now();
             const x = L + W * e, y = T + H * e;
             place(c, x, y, (t - last) / 1000); last = t;
+            tr.edge(x, y);
             m.style.width = (W * e) + 'px';
             m.style.height = (H * e) + 'px';
             list.forEach(u => {
@@ -648,6 +657,7 @@ const BlipDraw = (() => {
         }, inOutQuart);
         c.vx = c.vy = 0;
         list.forEach(restore);
+        tr.settle();
         A(120, p => { c.press = 1 - p; }, outExpo);
         fadeMark(m, 180);
     }
@@ -663,10 +673,12 @@ const BlipDraw = (() => {
         m.style.transform = 'translate(' + b.l + 'px,' + b.t + 'px)';
         let last = now();
         const dur = clamp(340 + Math.sqrt(b.w * b.h) * 0.4, 420, 650);
+        const tr = trailFor(b);
         await A(dur, e => {
             const t = now();
             const x = b.l + b.w * e, y = b.t + b.h * e;
             place(c, x, y, (t - last) / 1000); last = t;
+            tr.edge(x, y);
             m.style.width = (b.w * e) + 'px';
             m.style.height = (b.h * e) + 'px';
             if (tag) tag.textContent = Math.round(b.w * e) + ' × ' + Math.round(b.h * e);
@@ -675,11 +687,22 @@ const BlipDraw = (() => {
         c.vx = c.vy = 0;
         restore(u);
         A(120, p => { c.press = 1 - p; }, outExpo);
+        tr.settle();
         if (measure) await wait(140, c);
         fadeMark(m, 160);
     }
 
     async function gType(c, u) {
+        const words = wordBoxes(u.el);
+        if (words.length) {
+            // Quick on a title, never more than ~1.3 s on a long paragraph.
+            return typeWords(c, u, words, { perWord: 95, maxTotal: 1300 });
+        }
+        return gSweep(c, u);
+    }
+
+    // Fallback typing (no text nodes found): a stepped sweep per line.
+    async function gSweep(c, u) {
         const A = (ms, fn, ease) => animate(ms, fn, ease, c);
         const b = u.box;
         const cs = getComputedStyle(u.el);
@@ -690,8 +713,14 @@ const BlipDraw = (() => {
         const lineH = b.h / lines;
         await travel(c, b.l, b.t + lineH / 2);
         await A(140, p => { c.opacity = p < 0.5 ? 0.25 : 1; });
-        const per = clamp(560 / lines, 90, 220);
+        const per = clamp(620 / lines, 110, 260);
         const steps = clamp(Math.round(b.w / (fs * 0.55)), 6, 24);
+        // The text appears a few characters behind him: in between, his data
+        // trail, which dissolves into the letters as the text catches up.
+        const LAG = clamp(fs * 2.6, 22, 64);
+        const tr = trailFor(b);
+        const clipLine = (y0, y1, X) => setClip(u, 'polygon(0px 0px,' + b.w + 'px 0px,' + b.w + 'px ' + y0 + 'px,' +
+            X + 'px ' + y0 + 'px,' + X + 'px ' + y1 + 'px,0px ' + y1 + 'px)');
         let last = now();
         for (let i = 0; i < lines; i++) {
             const y0 = i * lineH, y1 = y0 + lineH;
@@ -700,11 +729,20 @@ const BlipDraw = (() => {
                 const X = b.w * s;
                 const t = now();
                 place(c, b.l + X, b.t + y0 + lineH / 2, (t - last) / 1000); last = t;
-                setClip(u, 'polygon(0px 0px,' + b.w + 'px 0px,' + b.w + 'px ' + y0 + 'px,' + X + 'px ' + y0 + 'px,' +
-                    X + 'px ' + y1 + 'px,0px ' + y1 + 'px)');
+                tr.write(b.l + X, b.t + y0, b.t + y1);
+                const tx = Math.max(0, X - LAG);
+                tr.caughtUp(b.l + tx, b.t + y0);
+                clipLine(y0, y1, tx);
+            });
+            // End of line: the text catches up with the trail.
+            await A(110, e => {
+                const tx = lerp(Math.max(0, b.w - LAG), b.w, e);
+                tr.caughtUp(b.l + tx, b.t + y0);
+                clipLine(y0, y1, tx);
             });
         }
         c.vx = c.vy = 0;
+        tr.settle();
     }
 
     async function gClick(c, u) {
@@ -718,12 +756,15 @@ const BlipDraw = (() => {
         const cx = px - b.l, cy = py - b.t;
         const far = Math.hypot(Math.max(cx, b.w - cx), Math.max(cy, b.h - cy)) * 1.05;
         A(120, p => { c.press = 1 - p; }, outExpo);
+        const tr = trailFor(b);
         await A(420, (e, p) => {
             setClip(u, 'circle(' + (far * e).toFixed(1) + 'px at ' + cx.toFixed(1) + 'px ' + cy.toFixed(1) + 'px)');
+            if (p < 0.85) tr.ring(px, py, far * e);
             ring.style.setProperty('--r', (6 + 30 * e) + 'px');
             ring.style.opacity = 1 - p;
         }, outExpo);
         ring.remove();
+        tr.settle();
     }
 
     async function gPaint(c, u) {
@@ -752,9 +793,12 @@ const BlipDraw = (() => {
         c.vx = c.vy = 0;
         await A(90, p => { c.press = p; }, outExpo);
         A(120, p => { c.press = 1 - p; }, outExpo);
+        const tr = trailFor(b);
         await A(340, e => {
             setClip(u, 'inset(0 0 ' + (b.h * (1 - e)).toFixed(1) + 'px 0)');
+            tr.edge(b.r, b.t + b.h * e);
         }, outExpo);
+        tr.settle();
         fadeMark(m, 220);
     }
 
@@ -789,41 +833,19 @@ const BlipDraw = (() => {
     // Reserved for Blip himself (never a helper, never batched).
     function isShowpiece(el) { return isTimeline(el) || isTagline(el) || !!(el.matches && el.matches('.sf-pill')); }
 
-    // Word boxes (element-relative) of every text node under el, in order.
     function wordBoxes(el) {
-        const base = el.getBoundingClientRect();
-        const out = [];
-        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-        const range = document.createRange();
-        let n, part = 0;
-        while ((n = walker.nextNode())) {
-            const text = n.nodeValue;
-            const re = /\S+/g;
-            let m;
-            while ((m = re.exec(text))) {
-                range.setStart(n, m.index);
-                range.setEnd(n, m.index + m[0].length);
-                const rects = range.getClientRects();
-                if (!rects.length) continue;
-                const rr = rects[rects.length - 1];
-                out.push({ right: rr.right - base.left, top: rr.top - base.top, bottom: rr.bottom - base.top, part });
-            }
-            part++;
-        }
-        return out;
+        return window.DataTrail ? window.DataTrail.words(el) : [];
     }
 
-    // "Rethink work, don't just speed it up." then — a breath — "And
-    // rethink what AI can bring to each of us.": Blip types it one word at a
-    // time (the second line slower, it's the point), then a little hop of joy.
-    async function gTagline(c, u) {
+    // Typing, word by word, the way he writes: each word is first laid down
+    // as data (the trail), then resolves into its letters a beat after he
+    // has moved on. Only over real words — never across empty space.
+    // opts: perWord ms, slowAfterFirstPart (tagline: 2nd line slower, with
+    // a breath before it), maxTotal ms (long paragraphs speed up), joy.
+    async function typeWords(c, u, words, opts) {
         const A = (ms, fn, ease) => animate(ms, fn, ease, c);
-        const words = wordBoxes(u.el);
-        if (!words.length) return gType(c, u);
         const b = u.box;
         const W = b.w;
-        // Lines = distinct word tops; revealing word i shows every line above
-        // it in full and its own line up to its right edge.
         const clipTo = (i) => {
             const w = words[i];
             const y0 = Math.max(0, w.top - 2), y1 = w.bottom + 4;
@@ -831,41 +853,62 @@ const BlipDraw = (() => {
                 (w.right + 2) + 'px ' + y1 + 'px,0px ' + y1 + 'px)');
         };
         const first = words[0];
-        await travel(c, b.l, b.t + (first.top + first.bottom) / 2);
+        await travel(c, b.l + Math.max(0, first.left - 2), b.t + (first.top + first.bottom) / 2);
         await A(140, p => { c.opacity = p < 0.5 ? 0.25 : 1; });
-        // One timed run over all the words (a slow frame never stretches
-        // it): each word has its slot, the second line's are longer, with a
-        // breath before it.
         const slots = [];
         let T = 0;
+        const per = opts.maxTotal ? Math.min(opts.perWord, opts.maxTotal / words.length) : opts.perWord;
         words.forEach((w, i) => {
-            if (i && w.part !== words[i - 1].part) T += 320;
-            const d = w.part > words[0].part ? 150 : 105;
+            const newPart = i && w.part !== words[i - 1].part;
+            if (newPart && opts.slowAfterFirstPart) T += 320;
+            const d = opts.slowAfterFirstPart && w.part > words[0].part ? per * 1.45 : per;
             slots.push({ start: T, end: T + d });
             T += d;
         });
         const sx = c.x, sy = c.y;
         let last = now(), shown = -1;
-        await A(T, (e, p) => {
-            const ms = p * T;
+        const RESOLVE = 160;
+        const tr = trailFor(b);
+        await A(T + RESOLVE, (e, p) => {
+            const ms = p * (T + RESOLVE);
             let i = 0;
             while (i < slots.length - 1 && ms >= slots[i].end) i++;
             const k = clamp((ms - slots[i].start) / (slots[i].end - slots[i].start), 0, 1);
-            const prev = i ? words[i - 1] : null;
-            const fx = prev ? b.l + prev.right + 3 : sx, fy = prev ? b.t + (prev.top + prev.bottom) / 2 : sy;
             const w = words[i];
+            const prev = i ? words[i - 1] : null;
+            // A new line starts at its first word's left edge.
+            const sameLine = prev && Math.abs(prev.top - w.top) < 4;
+            const fx = sameLine ? b.l + prev.right + 3 : (prev ? b.l + w.left - 2 : sx);
+            const fy = sameLine || prev ? b.t + (w.top + w.bottom) / 2 : sy;
             const q = outExpo(k);
             const t = now();
             place(c, lerp(fx, b.l + w.right + 3, q), lerp(fy, b.t + (w.top + w.bottom) / 2, q), (t - last) / 1000);
             last = t;
-            const done = k >= 1 ? i : i - 1;
-            if (done > shown && done >= 0) { shown = done; clipTo(done); }
+            tr.write(c.x, b.t + w.top, b.t + w.bottom);
+            let done = -1;
+            while (done + 1 < slots.length && ms >= slots[done + 1].end + RESOLVE) done++;
+            if (done > shown) {
+                shown = done;
+                clipTo(done);
+                const d = words[done];
+                tr.caughtUp(b.l + d.right + 3, b.t + d.top);
+            }
         });
         clipTo(words.length - 1);
+        tr.settle();
         c.vx = c.vy = 0;
         restore(u);
-        if (c.boss) blipReact('joy');
-        await A(200, () => {});
+        if (opts.joy && c.boss) blipReact('joy');
+    }
+
+    // "Rethink work, don't just speed it up." then — a breath — "And
+    // rethink what AI can bring to each of us.", the second line slower:
+    // it's the point. Then a little hop of joy.
+    async function gTagline(c, u) {
+        const words = wordBoxes(u.el);
+        if (!words.length) return gRect(c, u, false);
+        await typeWords(c, u, words, { perWord: 105, slowAfterFirstPart: true, joy: true });
+        await animate(200, () => {}, linear, c);
     }
 
     /* ---------- The git timeline: Blip rides the trunk ---------- */
