@@ -591,6 +591,9 @@ const BlipSwarm = (() => {
         }
         const tool = c.tool === 'type' && task.tool !== 'type' ? 'select'
             : (c.tool === 'wait' ? 'select' : c.tool);
+        // Its own layer while it's drawn: the reveal mask changes every
+        // frame, the page around it is never repainted for it.
+        if (!task.done) task.el.style.willChange = 'transform';
         try {
             if (tool === 'type') await actType(c, task);
             else if (tool === 'click') await actClick(c, task);
@@ -628,9 +631,7 @@ const BlipSwarm = (() => {
         const v = task.v;
         await seek(c, v.l, v.t);
         await press(c);
-        const m = mark(measure ? 'bs-measure' : 'bs-marquee');
-        const tag = measure ? document.createElement('span') : null;
-        if (tag) { tag.className = 'bs-tag'; m.appendChild(tag); }
+        const sel = window.DataTrail ? window.DataTrail.selection(layer, v, measure) : { el: mark(''), set() {} };
         let last = now();
         const dur = quick ? 300 : clamp(340 + Math.sqrt(v.w * v.h) * 0.4, 420, 600);
         const tr = trailFor(v);
@@ -639,10 +640,7 @@ const BlipSwarm = (() => {
             const x = v.l + v.w * p, y = v.t + v.h * p;
             place(c, x, y, (t - last) / 1000); last = t;
             tr.edge(x, y);
-            m.style.transform = 'translate(' + v.l + 'px,' + v.t + 'px)';
-            m.style.width = (v.w * p) + 'px';
-            m.style.height = (v.h * p) + 'px';
-            if (tag) tag.textContent = Math.round(task.r.width * p) + ' × ' + Math.round(task.r.height * p);
+            sel.set(p, p);
             setClip(task, insetFor(task, v.l, v.t, x, y));
         }, inOutQuart);
         c.vx = c.vy = 0;
@@ -650,7 +648,7 @@ const BlipSwarm = (() => {
         tr.settle();
         release(c);
         if (measure && !quick) await wait(120);
-        fadeMark(m, 160);
+        fadeMark(sel.el, 160);
     }
 
     // I-beam / block caret: types the element word by word — each word laid
@@ -728,13 +726,7 @@ const BlipSwarm = (() => {
     async function actPaint(c, task) {
         const v = task.v;
         await seek(c, v.l, v.t);
-        const m = mark('bs-outline');
-        m.style.transform = 'translate(' + v.l + 'px,' + v.t + 'px)';
-        m.style.width = v.w + 'px';
-        m.style.height = v.h + 'px';
-        m.innerHTML = '<svg width="' + v.w + '" height="' + v.h + '"><rect x=".75" y=".75" width="' + Math.max(0, v.w - 1.5) +
-            '" height="' + Math.max(0, v.h - 1.5) + '" pathLength="1"/></svg>';
-        const rect = m.querySelector('rect');
+        const line = window.DataTrail ? window.DataTrail.outline(layer, v) : { el: mark(''), set() {} };
         const per = 2 * (v.w + v.h);
         let last = now();
         await animate(quick ? 200 : 380, p => {
@@ -747,7 +739,7 @@ const BlipSwarm = (() => {
             else { d -= v.w; x = v.l; y = v.b - d; }
             const t = now();
             place(c, x, y, (t - last) / 1000); last = t;
-            rect.style.strokeDashoffset = 1 - p;
+            line.set(p);
         }, inOutQuart);
         c.vx = c.vy = 0;
         await press(c);
@@ -759,7 +751,7 @@ const BlipSwarm = (() => {
         }, outExpo);
         restoreTask(task);
         tr.settle();
-        fadeMark(m, 200);
+        fadeMark(line.el, 200);
     }
 
     // Move: grabs the element 24 px off its spot and settles it in place

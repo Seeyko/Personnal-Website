@@ -623,10 +623,18 @@ void main() {
 
         // Reveal completes once most of the scene is on screen (some themes keep
         // fixed chrome over the page bottom, so it can't rely on the very end).
+        // The scene's place in the page is measured at most once a second (a
+        // measure every frame forces a layout behind the page's other effects).
+        let geo = null;
         function scrollProgress() {
-            const rect = scene.getBoundingClientRect();
+            const t = performance.now();
+            if (!geo || t - geo.at > 1000) {
+                const rect = scene.getBoundingClientRect();
+                geo = { top: rect.top + window.scrollY, h: rect.height, at: t };
+            }
+            const top = geo.top - window.scrollY;
             const vh = window.innerHeight || 1;
-            return Math.min(Math.max((vh - rect.top) / (rect.height * 0.75), 0), 1);
+            return Math.min(Math.max((vh - top) / (geo.h * 0.75), 0), 1);
         }
 
         function requestFrame() {
@@ -775,7 +783,7 @@ void main() {
             window.addEventListener('scroll', requestFrame, { passive: true });
         }
         io.observe(scene);
-        new ResizeObserver(() => { resize(); requestFrame(); }).observe(scene);
+        new ResizeObserver(() => { geo = null; resize(); requestFrame(); }).observe(scene);
         document.addEventListener('visibilitychange', syncPlayback);
     }
 

@@ -24,6 +24,12 @@
  * - the module never assumes a fixed page shape.
  */
 const CathodeGuide = (() => {
+    // Viewport size, cached (her frame loop reads it many times a frame, and
+    // a read after the page's style writes can force a layout). Registered
+    // first, so every other resize handler here already sees the new size.
+    let viewW = window.innerWidth, viewH = window.innerHeight;
+    window.addEventListener('resize', () => { viewW = window.innerWidth; viewH = window.innerHeight; }, { passive: true });
+
     const STORAGE_KEY = 'cathode-guide-off';
     const TOGGLE_BTN_ID = 'cathode-guide-toggle';
     const MOBILE_QUERY = '(max-width: 899px)';
@@ -323,7 +329,7 @@ const CathodeGuide = (() => {
                 if (entry.isIntersecting) { inBand.add(entry.target); entered = entry.target; }
                 else inBand.delete(entry.target);
             });
-            const line = window.innerHeight * READ_LINE;
+            const line = viewH * READ_LINE;
             let picked = null;
             inBand.forEach(el => {
                 const r = el.getBoundingClientRect();
@@ -588,7 +594,7 @@ const CathodeGuide = (() => {
     window.addEventListener('resize', () => { spriteW = 0; }, { passive: true });
 
     function lifeMaxX() {
-        return Math.max(LIFE.EDGE_PAD, window.innerWidth - spriteSize() - LIFE.CTA_CLEARANCE);
+        return Math.max(LIFE.EDGE_PAD, viewW - spriteSize() - LIFE.CTA_CLEARANCE);
     }
 
     // The floor line: the old docked insets (20px desktop / 12px mobile),
@@ -597,7 +603,7 @@ const CathodeGuide = (() => {
     function probeFloor(now) {
         if (now - floorProbeAt < 1000 && floorProbeAt >= 0) return;
         floorProbeAt = now;
-        let base = window.innerWidth < 900 ? 12 : 20;
+        let base = viewW < 900 ? 12 : 20;
         const bar = document.querySelector('.retro-status-bar, #fps-telemetry');
         if (bar && bar.offsetHeight) base = Math.max(base, bar.offsetHeight + 6);
         floorBase = base;
@@ -610,20 +616,31 @@ const CathodeGuide = (() => {
         const par = (currentTheme() === 'fps' && (fpsParX || fpsParY))
             ? ' translate(' + fpsParX.toFixed(1) + 'px,' + fpsParY.toFixed(1) + 'px)'
             : '';
-        root.style.transform = 'translate3d(' + px.toFixed(1) + 'px,' + (-currentYGap()).toFixed(1) + 'px,0)' + par;
-        root.style.setProperty('--cg-dir', dir < 0 ? '-1' : '1');
+        // Every write below invalidates style: only write what changed (this
+        // runs every frame, and mobile Safari pays dearly for no-op writes).
+        if (lifeWritten.root !== root) lifeWritten = { root };
+        const w = lifeWritten;
+        const tf = 'translate3d(' + px.toFixed(1) + 'px,' + (-currentYGap()).toFixed(1) + 'px,0)' + par;
+        if (tf !== w.tf) { root.style.transform = tf; w.tf = tf; }
+        const d = dir < 0 ? '-1' : '1';
+        if (d !== w.dir) { root.style.setProperty('--cg-dir', d); w.dir = d; }
         // One rotation channel: tumble rotation (full), the skip rock while
         // hopping across stones, or the standing lean (small) otherwise.
         let shown;
         if (lifeState === 'tumble' || lifeState === 'dizzy' || lifeState === 'rest') shown = rot;
         else if (lifeState === 'jump') shown = leanShown + jumpTilt;
         else shown = leanShown;
-        root.style.setProperty('--cg-rot', shown.toFixed(2) + 'deg');
+        const r = shown.toFixed(1) + 'deg';
+        if (r !== w.rot) { root.style.setProperty('--cg-rot', r); w.rot = r; }
         // Bubble opens toward the roomy side of the screen - and downward
         // when she's high up (resting on the ceiling, tall perches).
-        root.classList.toggle('cg-bub-right', px + spriteSize() / 2 > window.innerWidth / 2);
-        root.classList.toggle('cg-bub-below', window.innerHeight - currentYGap() - spriteSize() < 150);
+        const right = px + spriteSize() / 2 > viewW / 2;
+        if (right !== w.right) { root.classList.toggle('cg-bub-right', right); w.right = right; }
+        const below = viewH - currentYGap() - spriteSize() < 150;
+        if (below !== w.below) { root.classList.toggle('cg-bub-below', below); w.below = below; }
     }
+    let lifeWritten = {};
+    let perchRect = {};
 
     function setLifeState(s) {
         lifeState = s;
@@ -704,7 +721,7 @@ const CathodeGuide = (() => {
         const r = el.getBoundingClientRect();
         return {
             x: r.left + r.width / 2 - spriteSize() / 2,
-            y: (window.innerHeight - r.top) - floorBase - 3
+            y: (viewH - r.top) - floorBase - 3
         };
     }
 
@@ -718,9 +735,9 @@ const CathodeGuide = (() => {
             if (!r.width || r.width < 40 || !r.height) continue;
             // Reachable band: below the fixed header, high enough that she
             // (and her bubble) still fit above the perch.
-            if (r.top < 80 || r.top > window.innerHeight - 120) continue;
+            if (r.top < 80 || r.top > viewH - 120) continue;
             const cx = r.left + r.width / 2;
-            if (cx < 20 || cx > window.innerWidth - 20) continue;
+            if (cx < 20 || cx > viewW - 20) continue;
             out.push(el);
         }
         return out;
@@ -791,7 +808,7 @@ const CathodeGuide = (() => {
         };
         // She lives on the floor: on the vertical mobile list the nearest end
         // is the bottom one; on the desktop row it's whichever end her x is by.
-        const myPos = mobile ? window.innerHeight : px + spriteSize() / 2;
+        const myPos = mobile ? viewH : px + spriteSize() / 2;
         const nearFirst = Math.abs(axis(first) - myPos) <= Math.abs(axis(last) - myPos);
         return nearFirst ? { entry: first, dir: 1 } : { entry: last, dir: -1 };
     }
@@ -1023,7 +1040,7 @@ const CathodeGuide = (() => {
             velX += gv.x * GYRO.G * 0.62 * dt;
             velX -= velX * 2.2 * dt; // ground friction
             px += velX * dt;
-            const lo = 4, hi = window.innerWidth - spriteSize() - 4;
+            const lo = 4, hi = viewW - spriteSize() - 4;
             if (px <= lo || px >= hi) {
                 const impact = Math.abs(velX);
                 px = Math.max(lo, Math.min(hi, px));
@@ -1076,18 +1093,23 @@ const CathodeGuide = (() => {
                 py = 0;
                 setLifeState('stand');
             } else {
-                const r = perchEl.getBoundingClientRect();
+                // Measured ~7 times a second, not every frame (a read forces
+                // a layout behind the page's other animations).
+                if (perchRect.el !== perchEl || ts - perchRect.at > 150) {
+                    perchRect = { el: perchEl, at: ts, r: perchEl.getBoundingClientRect() };
+                }
+                const r = perchRect.r;
                 const cx = r.left + r.width / 2;
                 // Perches can move under her (page scroll is caught as user
                 // activity, but the timeline pans horizontally inside its own
                 // scroller): bail out before she gets carried off-screen.
-                if (!r.width || r.top < 60 || r.top > window.innerHeight - 60 ||
-                    cx < 30 || cx > window.innerWidth - 30) {
+                if (!r.width || r.top < 60 || r.top > viewH - 60 ||
+                    cx < 30 || cx > viewW - 30) {
                     hopDown(ts);
                 } else {
                     // Ride the perch (hover lifts, reveal animations...).
                     const tx = r.left + r.width / 2 - spriteSize() / 2;
-                    const ty = (window.innerHeight - r.top) - floorBase - 3;
+                    const ty = (viewH - r.top) - floorBase - 3;
                     px += (tx - px) * 0.3;
                     py += (ty - py) * 0.3;
                 }
@@ -1121,7 +1143,7 @@ const CathodeGuide = (() => {
     }
 
     function onLifeResize() {
-        px = Math.min(Math.max(LIFE.EDGE_PAD, px), Math.max(LIFE.EDGE_PAD, window.innerWidth - spriteSize() - LIFE.EDGE_PAD));
+        px = Math.min(Math.max(LIFE.EDGE_PAD, px), Math.max(LIFE.EDGE_PAD, viewW - spriteSize() - LIFE.EDGE_PAD));
         floorProbeAt = -1;
     }
 
@@ -1132,7 +1154,7 @@ const CathodeGuide = (() => {
     function startLife() {
         if (alive || !lifeAllowed() || !root) return;
         alive = true;
-        px = window.innerWidth < 900 ? 12 : 20;
+        px = viewW < 900 ? 12 : 20;
         py = 0;
         dir = 1;
         lastUserAct = performance.now();
@@ -1251,7 +1273,7 @@ const CathodeGuide = (() => {
 
     function spriteCenter() {
         const s = spriteSize();
-        return { x: px + s / 2, y: window.innerHeight - currentYGap() - s / 2 };
+        return { x: px + s / 2, y: viewH - currentYGap() - s / 2 };
     }
 
     /* ---------- Facial expressions (mimiques) ----------
@@ -1381,7 +1403,7 @@ const CathodeGuide = (() => {
 
     function currentYGap() {
         if (lifeState === 'tumble' || lifeState === 'dizzy' || lifeState === 'rest') {
-            return window.innerHeight - spriteSize() - pyTop;
+            return viewH - spriteSize() - pyTop;
         }
         return floorBase + py;
     }
@@ -1404,7 +1426,7 @@ const CathodeGuide = (() => {
             perchEl = null;
         }
         jumpArc = null;
-        pyTop = window.innerHeight - spriteSize() - currentYGapForFloor();
+        pyTop = viewH - spriteSize() - currentYGapForFloor();
         velX = (kickX != null ? kickX : velX);
         velY = (kickY != null ? kickY : 0);
         // A pinch of chaos so even a straight fall reads as a real tumble.
@@ -1431,8 +1453,8 @@ const CathodeGuide = (() => {
         px += velX * dt;
         pyTop += velY * dt;
 
-        const minX = 4, maxXw = window.innerWidth - s - 4;
-        const minY = 4, maxYw = window.innerHeight - s - Math.max(4, floorBase - 8);
+        const minX = 4, maxXw = viewW - s - 4;
+        const minY = 4, maxYw = viewH - s - Math.max(4, floorBase - 8);
         let bumpSpeed = 0, bumpAt = null, onEdge = null;
 
         if (px <= minX) { bumpSpeed = Math.max(bumpSpeed, -velX); px = minX; velX = -velX * GYRO.RESTITUTION; velY *= (1 - GYRO.FLOOR_DRAG * dt); onEdge = 'left'; bumpAt = { x: px + 2, y: pyTop + s / 2 }; }
@@ -1508,7 +1530,7 @@ const CathodeGuide = (() => {
     function leaveDizzy(ts) {
         setFace(null);
         if (restEdge === 'bottom') {
-            py = Math.max(0, window.innerHeight - spriteSize() - pyTop - floorBase);
+            py = Math.max(0, viewH - spriteSize() - pyTop - floorBase);
             rot = 0;
             setLifeState('stand');
             nextThinkAt = ts + 1200 + Math.random() * 1500;
@@ -1737,6 +1759,7 @@ const CathodeGuide = (() => {
             if (root) {
                 root.classList.remove('cg-alive');
                 root.style.transform = '';
+                lifeWritten = {};
             }
         }
     }
