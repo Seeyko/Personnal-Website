@@ -120,7 +120,8 @@ body.blip-cursor-active .custom-cursor {
 
 /* The intro is the page's entrance: no whole-body fade on top of it (it
    would fade the lone Blip and the loader canvas with it). */
-html.bs-intro body.loaded { animation: none !important; opacity: 1 !important; }
+html.bs-intro body.loaded,
+html.bs-done body.loaded { animation: none !important; opacity: 1 !important; }
 
 /* Cathode waits for the fusion, then walks in as usual. */
 html.bs-intro #cathode-guide,
@@ -212,4 +213,4 @@ body[data-theme="fps"] #blip-swarm .bs-tag { color: #0a0a0a; }
 #blip-swarm .bs-bloom { background: radial-gradient(circle, #fff 0%, rgba(255, 255, 255, .6) 35%, rgba(255, 255, 255, 0) 70%); }
 #blip-swarm .bs-veil { position: absolute; inset: 0; width: 100%; height: 100%; background: #fff; opacity: 0; }
 /* Fusion aura: square ki sparks. */
-#blip-swarm .bs-spark { width: 3px; height: 3px; margin: -1px 0 0 -1px; background: var(--bs-accent); opacity: 0; }
+#blip-swarm .bs-spark { width: 4px; height: 4px; margin: -2px 0 0 -2px; background: var(--bs-accent); opacity: 0; }

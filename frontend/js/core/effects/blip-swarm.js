@@ -57,14 +57,18 @@ const BlipSwarm = (() => {
     // (crisp pixel art on 1×, 1.5×, 2×, 3× screens).
     const DPR = window.devicePixelRatio || 1;
     const U = Math.max(1, Math.round((TOUCH ? 1.4 : 1.75) * DPR)) / DPR;
-    const SWARM = quick ? 6 : (TOUCH ? 14 : 24);
+    // Swarm size follows the page (a dozen elements doesn't need two dozen
+    // idle cursors), but stays a crowd: that's the point.
+    const swarmSize = n => quick ? 6 : TOUCH ? clamp(n + 4, 10, 14) : clamp(n + 8, 14, 24);
+    const MINI = 0.85;                           // swarm Blips vs. the pet's size
     const MAX_TARGETS = quick ? 6 : (TOUCH ? 10 : 15);
-    const MAX_ACTIVE = quick ? 6 : (TOUCH ? 4 : 8);
+    const MAX_ACTIVE = quick ? 6 : (TOUCH ? 4 : 7);
     const START_EVERY = quick ? 50 : 80;
-    const HARD_CAP = quick ? 2200 : 6500;        // ms after the split, whatever happens
+    const HURRY_AT = quick ? 1600 : 3600;        // ms after the split: no new tasks, the rest fades in
+    const HARD_CAP = quick ? 3500 : 8000;        // ms after the split: skip, whatever happens
 
-    // Waiting cursors (formation) steer softly (px, s)
-    const ORBIT_SPEED = 320, ACCEL = 8000, ARRIVE_R = 80;
+    // Waiting cursors steer softly to their spot (px, s)
+    const PARK_SPEED = 700, ACCEL = 8000, ARRIVE_R = 80;
 
     let theme = 'default';
     let layer = null;
@@ -82,8 +86,9 @@ const BlipSwarm = (() => {
     let nextStartAt = 0;
     let readyAt = 0;
     let buildOpen = false;
-    let slotCounter = 0;
     let gagDone = false;
+    let hurried = false;
+    let fusing = false;
     let center = { x: 0, y: 0 };
 
     const DEBUG = /[?&]bsdebug/.test(location.search);
@@ -131,7 +136,10 @@ const BlipSwarm = (() => {
         let dt = lastT ? (t - lastT) / 1000 : 0;
         lastT = t;
         if (dt > 1 / 30) dt = 1 / 30;
-        if (started && !finished && splitAt && t - splitAt > HARD_CAP) skip();
+        if (started && !finished && splitAt && !fusing) {
+            if (!hurried && t - splitAt > HURRY_AT) hurry();
+            if (t - splitAt > HARD_CAP) skip();
+        }
         schedule(t);
         frameCbs.forEach(cb => cb(t, dt));
         for (let i = 0; i < cursors.length; i++) stepCursor(cursors[i], dt, t);
@@ -185,7 +193,7 @@ const BlipSwarm = (() => {
             scale: spec.scale != null ? spec.scale : 1, sx: 1, sy: 1, flip: 1,
             opacity: 1, mode: 'hover', tx: spec.x, ty: spec.y,
             bias: Math.random() < 0.5 ? -1 : 1, seed: Math.random() * 100,
-            busy: false, press: 0, hidden: false, lockCenter: null, slot: slotCounter++
+            busy: false, press: 0, hidden: false, lockCenter: null
         };
         cursors.push(c);
         render(c, 0);
@@ -205,23 +213,13 @@ const BlipSwarm = (() => {
             c.y = c.lockCenter.y - BLIP.y * c.scale;
         }
         if (!dt) { render(c, t); return; }
-        if (c.mode === 'orbit' && lead) {
-            // Waiting for work: a slow, loose ring around the conductor — a
-            // formation, not a clump over the text.
-            const k = t / 1000;
-            const a = c.slot * 2.39996 + k * 0.32;
-            const R = (TOUCH ? 84 : 118) + (c.slot % 3) * (TOUCH ? 14 : 22);
-            const lc = lead.lockCenter || { x: lead.x + BLIP.x, y: lead.y + BLIP.y };
-            c.tx = lc.x + Math.cos(a) * R;
-            c.ty = lc.y + Math.sin(a) * R * 0.78;
-        }
         if (c.mode === 'path') {
             stepPath(c, t, dt);
-        } else if (c.mode === 'hover' || c.mode === 'orbit') {
+        } else if (c.mode === 'hover' || c.mode === 'park') {
             // Soft seek + arrive toward a drifting spot (waiting / formation).
             const dx = c.tx - c.x, dy = c.ty - c.y;
             const d = Math.hypot(dx, dy);
-            const max = c.mode === 'hover' ? 160 : ORBIT_SPEED;
+            const max = c.mode === 'hover' ? 160 : PARK_SPEED;
             let want = d > ARRIVE_R ? max : max * d / ARRIVE_R;
             let dvx = 0, dvy = 0;
             if (d > 0.01) {
@@ -245,6 +243,18 @@ const BlipSwarm = (() => {
 
     // Kinematic move (actions): the cursor is placed exactly; its velocity
     // is derived so tilt keeps working.
+    // Off duty: wait in the side gutter of your half of the screen, dimmed,
+    // so the stage (and the text) stays clear for the cursors at work.
+    function park(c) {
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const g = Math.max(18, Math.min(vw * 0.07, 90));
+        const left = c.x < vw / 2;
+        c.tx = left ? rand(14, g) : vw - rand(14, g) - 20;
+        c.ty = rand(vh * 0.16, vh * 0.86);
+        c.mode = 'park';
+        c.opacity = 0.6;
+    }
+
     function place(c, x, y, dt) {
         if (dt) { c.vx = (x - c.x) / dt; c.vy = (y - c.y) / dt; }
         c.x = x; c.y = y;
@@ -261,7 +271,7 @@ const BlipSwarm = (() => {
 
     function render(c, t) {
         let nx = 0, ny = 0;
-        if (c.mode === 'hover' || c.mode === 'orbit') {
+        if (c.mode === 'hover' || c.mode === 'park') {
             const n = drift(c, t);
             nx = n.x; ny = n.y;
         }
@@ -279,14 +289,14 @@ const BlipSwarm = (() => {
     function seek(c, x, y) {
         return new Promise(resolve => {
             if (skipping) { c.x = x; c.y = y; c.vx = c.vy = 0; c.mode = 'kin'; resolve(); return; }
-            if (c.mode === 'hover' || c.mode === 'orbit') {
+            if (c.mode === 'hover' || c.mode === 'park') {
                 // Bake the visible drift into the start point: no hop on departure.
                 const n = drift(c, now());
                 c.x += n.x; c.y += n.y;
             }
             const dx = x - c.x, dy = y - c.y;
             const d = Math.hypot(dx, dy);
-            const T = clamp(0.16 + Math.sqrt(d) * 0.024, 0.18, 0.75) * (quick ? 0.65 : 1);
+            const T = clamp(0.14 + Math.sqrt(d) * 0.02, 0.16, 0.6) * (quick ? 0.7 : 1);
             const bend = c.bias * Math.min(d, 500) * 0.12;
             const nx = d ? -dy / d : 0, ny = d ? dx / d : 0;
             c.path = {
@@ -523,7 +533,7 @@ const BlipSwarm = (() => {
     }
 
     function schedule(t) {
-        if (!buildOpen || !tasks.length || skipping || t < nextStartAt || activeTasks >= MAX_ACTIVE) return;
+        if (!buildOpen || hurried || !tasks.length || skipping || t < nextStartAt || activeTasks >= MAX_ACTIVE) return;
         const free = cursors.filter(c => !c.busy && c !== lead && c.tool !== 'wait' && !c.hidden);
         if (!free.length) return;
         const task = tasks.find(k => !k.claimed);
@@ -542,6 +552,7 @@ const BlipSwarm = (() => {
             best = free[0];
         }
         task.claimed = true;
+        best.opacity = 1;
         activeTasks++;
         nextStartAt = t + START_EVERY;
         best.busy = true;
@@ -549,7 +560,7 @@ const BlipSwarm = (() => {
         runTask(best, task).then(() => {
             activeTasks--;
             best.busy = false;
-            best.mode = 'orbit';
+            park(best);
             log('end', best.id);
         });
     }
@@ -567,7 +578,7 @@ const BlipSwarm = (() => {
     }
 
     async function runTask(c, task) {
-        if (c.id === 'not-allowed' && !gagDone && !quick) {
+        if (c.id === 'not-allowed' && !gagDone && !quick && now() - splitAt < 1600) {
             gagDone = true;
             return refuse(c, task);
         }
@@ -621,7 +632,7 @@ const BlipSwarm = (() => {
         }, inOutQuart);
         c.vx = c.vy = 0;
         restoreTask(task);
-        await release(c);
+        release(c);
         if (measure && !quick) await wait(120);
         fadeMark(m, 160);
     }
@@ -743,7 +754,7 @@ const BlipSwarm = (() => {
         });
         c.vx = c.vy = 0;
         restoreTask(task);
-        await release(c);
+        release(c);
     }
 
     /* ---------- The show ---------- */
@@ -840,22 +851,23 @@ const BlipSwarm = (() => {
         await wait(120);
         if (skipping) return;
         log('fuse');
+        fusing = true;
         if (quick) await quickFuse();
         else await fuse();
         if (!skipping) finish();
     }
 
     async function split() {
-        const list = roster(SWARM);
+        const list = roster(swarmSize(tasks.length));
         if (quick) {
             // One twirl, and out they come.
             await animate(240, p => { lead.rot = 360 * p; lead.scale = 2 - 0.6 * p; }, inOutQuart);
             lead.rot = 0;
         } else {
-            // Wind-up: squash 1.14 × 0.80 (ease in), shiver ±1 px the last 160 ms, eyes shut.
+            // Wind-up: squash 1.2 × 0.75 (ease in), shiver ±1 px the last 160 ms, eyes shut.
             kitPlay(lead, 'bc-blink', 240);
             await animate(260, (e, p) => {
-                lead.sx = 1 + 0.14 * e; lead.sy = 1 - 0.2 * e;
+                lead.sx = 1 + 0.2 * e; lead.sy = 1 - 0.25 * e;
                 const j = p > 0.38 ? 1 : 0;
                 lead.lockCenter = { x: center.x + j * (Math.random() < 0.5 ? -1 : 1), y: center.y + j * (Math.random() < 0.5 ? -1 : 1) };
             }, inQuart);
@@ -867,7 +879,7 @@ const BlipSwarm = (() => {
             lead.sx = 0.9; lead.sy = 1.1;
             animate(260, p => { lead.sx = lerp(0.9, 1, p); lead.sy = lerp(1.1, 1, p); }, outExpo);
         }
-        // Emission along a golden-angle spiral, 12 ms apart; he shrinks as
+        // Emission along a golden-angle spiral, 20 ms apart; he shrinks as
         // he loses mass (2× → 1×), each spit a tiny recoil.
         const GOLD = Math.PI * (3 - Math.sqrt(5));
         const a0 = rand(0, Math.PI * 2);
@@ -879,11 +891,13 @@ const BlipSwarm = (() => {
         for (let i = 0; i < list.length; i++) {
             const ang = a0 + i * GOLD;
             const sp = rand(600, 800) * (TOUCH ? 0.7 : 1);
-            const c = makeCursor(Object.assign({ x: cx, y: cy, scale: 0.3 }, list[i]));
-            if (c.blip) c.scale = 0.3 * 0.6;
+            // Born 14 px out along its heading, from behind him.
+            const c = makeCursor(Object.assign({ x: cx + Math.cos(ang) * 14, y: cy + Math.sin(ang) * 14, scale: 0.3 }, list[i]));
+            layer.insertBefore(c.el, lead.el);
+            if (c.blip) c.scale = 0.3 * MINI;
             c.mode = 'free';
             c.vx = Math.cos(ang) * sp; c.vy = Math.sin(ang) * sp;
-            const full = c.blip ? 0.6 : 1;
+            const full = c.blip ? MINI : 1;
             animate(160, p => { c.scale = lerp(0.3 * full, full, p); }, outExpo);
             const drag = t => {
                 if (c.mode !== 'free') { frameCbs.delete(drag); return; }
@@ -891,7 +905,7 @@ const BlipSwarm = (() => {
                 c.vx *= Math.exp(-5 * dt); c.vy *= Math.exp(-5 * dt);
                 c.x += c.vx * dt; c.y += c.vy * dt;
                 if (Math.hypot(c.vx, c.vy) < 60) {
-                    c.mode = 'orbit';
+                    park(c);
                     frameCbs.delete(drag);
                 }
             };
@@ -899,7 +913,7 @@ const BlipSwarm = (() => {
             lead.scale = lerp(quick ? 1.4 : 2, 1, (i + 1) / list.length);
             lead.press = 1;
             animate(70, p => { lead.press = 1 - p; });
-            if (!skipping) await wait(12);
+            if (!skipping) await wait(20);
         }
         // The conductor steps back: present, quieter, still blinking.
         lead.opacity = 0.55;
@@ -916,14 +930,16 @@ const BlipSwarm = (() => {
         const F = { x: vw / 2, y: vh / 2 };          // where the tips will touch
         const GAP = 32;
         // Leads: left = another skin, mirrored; right = the theme's own Blip.
-        const leftSkin = theme === 'default' ? 'terminal' : 'default';
-        let left = cursors.find(c => c.blip === leftSkin) || makeCursor({ blip: leftSkin, tool: 'lead', id: 'lead-l', x: F.x - 200, y: F.y, scale: 0.6 });
+        // Left lead: a skin that pops on this theme's background.
+        const leftSkin = { default: 'terminal', terminal: 'blueprint', blueprint: 'retro90s', retro90s: 'terminal', fps: 'retro90s' }[theme];
+        let left = cursors.find(c => c.blip === leftSkin) || makeCursor({ blip: leftSkin, tool: 'lead', id: 'lead-l', x: F.x - 200, y: F.y, scale: MINI });
         const right = lead;
         right.lockCenter = null;
         left.busy = right.busy = true;
         right.opacity = 1;
+        left.opacity = 1;
         left.flip = -1;
-        animate(400, p => { left.scale = lerp(0.6, 1, p); }, outExpo);
+        animate(400, p => { left.scale = lerp(MINI, 1, p); }, outExpo);
         await Promise.all([seek(left, F.x - GAP, F.y), seek(right, F.x + GAP, F.y)]);
         left.mode = right.mode = 'kin';
 
@@ -932,14 +948,15 @@ const BlipSwarm = (() => {
         const leftGroup = rest.filter(c => c.x < F.x).sort((a, b) => dist(b, F) - dist(a, F));
         const rightGroup = rest.filter(c => c.x >= F.x).sort((a, b) => dist(b, F) - dist(a, F));
         const absorb = (group, into, side) => Promise.all(group.map((c, i) => (async () => {
-            await wait(i * 15);
+            await wait(i * 25);
             c.mode = 'kin';
+            if (!c.blip) c.opacity = 0.6; // the two leads own the frame
             const sx = c.x, sy = c.y;
             const ex = into.x, ey = into.y + 6;
             // Mirrored bezier: bulge outward on its own side, then in.
-            const mx = lerp(sx, ex, 0.5) + side * 90, my = Math.min(sy, ey) - 60;
+            const mx = lerp(sx, ex, 0.5) + side * 120, my = lerp(sy, ey, 0.5);
             let last = now();
-            await animate(520, e => {
+            await animate(380, e => {
                 const u = 1 - e;
                 const x = u * u * sx + 2 * u * e * mx + e * e * ex;
                 const y = u * u * sy + 2 * u * e * my + e * e * ey;
@@ -968,6 +985,7 @@ const BlipSwarm = (() => {
 
         // Flash: 2 frames white silhouette, 1 frame inverted, bloom, +6 % light.
         left.inner.classList.add('bs-white'); right.inner.classList.add('bs-white');
+        shockwave(F.x, F.y);
         const bloom = mark('bs-bloom');
         bloom.style.transform = 'translate(' + F.x + 'px,' + F.y + 'px)';
         const veil = mark('bs-veil');
@@ -988,8 +1006,7 @@ const BlipSwarm = (() => {
         right.flip = 1;
         right.rot = 0; right.rotV = 0;
         right.lockCenter = F;
-        shockwave(F.x, F.y);
-        await settle(right, 1.3);
+        await settle(right, 1.55); // bigger than both leads, then springs down
         right.lockCenter = null;
         right.x = tipX; right.y = tipY;
     }
@@ -1005,7 +1022,7 @@ const BlipSwarm = (() => {
             let last = now();
             await animate(280, e => {
                 const t = now(); place(c, lerp(sx, ex, e), lerp(sy, ey, e), (t - last) / 1000); last = t;
-                c.scale = lerp(c.blip ? 0.6 : 1, 0.2, e);
+                c.scale = lerp(c.blip ? MINI : 1, 0.2, e);
             }, inQuart);
             removeCursor(c);
         })()));
@@ -1038,7 +1055,7 @@ const BlipSwarm = (() => {
     // outline flickering at 12 fps, and square sparks rising off him on hard
     // steps — both die out over 1.2 s.
     async function settle(c, from, ms) {
-        const dur = ms || 1200;
+        const dur = ms || 1000;
         c.scale = from;
         c.opacity = 1;
         let s = from, v = 0;
@@ -1046,9 +1063,10 @@ const BlipSwarm = (() => {
             'drop-shadow(0 1px 0 var(--bs-accent)) drop-shadow(0 -1px 0 var(--bs-accent))';
         const sparks = [];
         const lc = c.lockCenter || { x: c.x + BLIP.x, y: c.y + BLIP.y };
-        for (let i = 0; i < (ms ? 0 : 10); i++) {
+        for (let i = 0; i < (ms ? 0 : 8); i++) {
             const m = mark('bs-spark');
-            sparks.push({ m, x: lc.x + rand(-26, 26), y: lc.y + rand(-6, 26), born: i * 0.07 + rand(0, 0.05), rise: rand(34, 62) });
+            const side = i % 2 ? 1 : -1;
+            sparks.push({ m, x: lc.x + side * rand(24, 38), y: lc.y + rand(-4, 24), born: i * 0.08 + rand(0, 0.05), rise: rand(40, 64) });
         }
         await animate(dur, (e, p) => {
             const dt = 1 / 60;
@@ -1067,6 +1085,18 @@ const BlipSwarm = (() => {
         }, linear, true);
         c.inner.style.filter = '';
         sparks.forEach(sp => sp.m.remove());
+    }
+
+    // Running long (a dense page): whatever isn't claimed yet fades in, the
+    // cursors at work finish their gesture, then the fusion plays as usual.
+    function hurry() {
+        hurried = true;
+        log('hurry');
+        tasks.forEach(t => {
+            if (t.claimed || t.done) return;
+            restoreTask(t);
+            if (t.el.animate) t.el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' });
+        });
     }
 
     function skip() {
@@ -1097,7 +1127,7 @@ const BlipSwarm = (() => {
                 const sx = c.x, sy = c.y;
                 await animate(240, e => {
                     c.x = lerp(sx, ex, e); c.y = lerp(sy, ey, e);
-                    c.scale = lerp(c.blip ? 0.6 : 1, 0.2, e);
+                    c.scale = lerp(c.blip ? MINI : 1, 0.2, e);
                 }, bez(0.4, 0, 0.2, 1), true);
                 removeCursor(c);
             })()));
@@ -1114,7 +1144,11 @@ const BlipSwarm = (() => {
         tasks.forEach(restoreTask);
         if (loader.isConnected) dissolveLoader();
         try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (e) { /* private mode */ }
-        document.documentElement.classList.remove('bs-intro');
+        // bs-done keeps the theme's whole-body fade-in off for good (it would
+        // replay the page entrance on top of ours); Cathode (bs-intro) walks
+        // in a beat after Blip lands.
+        document.documentElement.classList.add('bs-done');
+        setTimeout(() => document.documentElement.classList.remove('bs-intro'), failed ? 0 : 600);
         if (boot.cleanup) boot.cleanup();
         const tip = lead && !failed ? { x: lead.x, y: lead.y } : null;
         // Hand the stage to the page pet, on the exact same pixel.
