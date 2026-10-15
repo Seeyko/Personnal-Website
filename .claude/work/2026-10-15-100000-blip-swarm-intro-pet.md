@@ -1,6 +1,6 @@
 # Blip : intro « swarm » + créature autonome
 
-**Status**: in_progress
+**Status**: completed
 **Branch**: `claude/friendly-ramanujan-goonvd`
 **Started**: 2026-10-15 10:00
 
@@ -28,7 +28,7 @@ Blip ne remplace plus la souris (le suivi à ressort faisait cliquer à côté).
 - [x] Créature autonome (errance/perchoirs, timidité, drag + lancer avec gravité)
 - [x] Intro swarm (split → build → fusion, variante rapide, skip)
 - [x] Tests navigateur 5 thèmes + mobile + reduced motion + skip
-- [ ] Revue de code + critique motion, corrections
+- [x] Revue de code + critique motion, corrections
 
 ## Notes/Discoveries
 - `body.loaded` du thème default lance `elegantFadeIn` (opacité du body) : coupé

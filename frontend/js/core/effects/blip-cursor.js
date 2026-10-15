@@ -616,9 +616,13 @@ const BlipCursor = (() => {
                 } else {
                     carrotX = homeX; carrotY = homeY;
                 }
-                if (t > nextGuardAt && !dozing && t > holdUntil) {
+                // Asleep, summoned or not: never stay parked on a link / button
+                // (the page may also have scrolled one under him).
+                if (t > nextGuardAt) {
                     nextGuardAt = t + 500;
                     if (mode === 'rest' && coversInteractive()) {
+                        wake(false);
+                        holdUntil = 0;
                         energy = Math.max(energy, 1);
                         think();
                     }

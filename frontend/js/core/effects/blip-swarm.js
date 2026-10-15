@@ -801,12 +801,33 @@ const BlipSwarm = (() => {
         const skipEvents = ['pointerdown', 'keydown', 'wheel', 'touchstart'];
         const onSkip = e => {
             if (!started || finished) return;
-            if (e.type === 'pointerdown') { e.preventDefault(); e.stopPropagation(); }
+            if (e.type === 'pointerdown' || e.type === 'touchstart') swallowClick();
             skip();
         };
         skipEvents.forEach(ev => window.addEventListener(ev, onSkip, { capture: true, passive: ev !== 'pointerdown' }));
-        document.addEventListener('visibilitychange', () => { if (document.hidden && started) skip(); });
-        boot.cleanup = () => skipEvents.forEach(ev => window.removeEventListener(ev, onSkip, { capture: true }));
+        const onHidden = () => { if (document.hidden && started) skip(); };
+        document.addEventListener('visibilitychange', onHidden);
+        boot.cleanup = () => {
+            skipEvents.forEach(ev => window.removeEventListener(ev, onSkip, { capture: true }));
+            document.removeEventListener('visibilitychange', onHidden);
+        };
+    }
+
+    // The press that skips must not also click what's under it (content
+    // that wasn't drawn yet). On touch the click target is picked after the
+    // tap, so the layer keeps catching until that click has been eaten.
+    let swallowing = false;
+    function swallowClick() {
+        if (swallowing || !layer) return;
+        swallowing = true;
+        const done = () => {
+            window.removeEventListener('click', eat, true);
+            clearTimeout(timer);
+            if (layer) layer.classList.remove('bs-live');
+        };
+        const eat = e => { e.preventDefault(); e.stopPropagation(); done(); };
+        window.addEventListener('click', eat, true);
+        const timer = setTimeout(done, 450);
     }
 
     // ThemeManager.hideLoading() lands here once content is on the page.
@@ -835,11 +856,13 @@ const BlipSwarm = (() => {
         const minAlone = quick ? 0 : 650;
         const elapsed = now() - bootAt;
         if (elapsed < minAlone) await wait(minAlone - elapsed);
+        if (skipping) return;
         lead.sy = 1;
         splitAt = now();
         log('split');
 
         await split();
+        if (skipping) return;
         // Build until every task is drawn.
         await new Promise(resolve => {
             const check = () => {
@@ -863,6 +886,7 @@ const BlipSwarm = (() => {
             // One twirl, and out they come.
             await animate(240, p => { lead.rot = 360 * p; lead.scale = 2 - 0.6 * p; }, inOutQuart);
             lead.rot = 0;
+            if (skipping) return;
         } else {
             // Wind-up: squash 1.2 × 0.75 (ease in), shiver ±1 px the last 160 ms, eyes shut.
             kitPlay(lead, 'bc-blink', 240);
@@ -872,6 +896,7 @@ const BlipSwarm = (() => {
                 lead.lockCenter = { x: center.x + j * (Math.random() < 0.5 ? -1 : 1), y: center.y + j * (Math.random() < 0.5 ? -1 : 1) };
             }, inQuart);
             lead.lockCenter = center;
+            if (skipping) return;
             // Two white silhouette frames: the "pop".
             lead.inner.classList.add('bs-white');
             await wait(34);
@@ -888,7 +913,7 @@ const BlipSwarm = (() => {
         // for their first element mid-burst.
         dissolveLoader();
         buildOpen = true;
-        for (let i = 0; i < list.length; i++) {
+        for (let i = 0; i < list.length && !skipping; i++) {
             const ang = a0 + i * GOLD;
             const sp = rand(600, 800) * (TOUCH ? 0.7 : 1);
             // Born 14 px out along its heading, from behind him.
@@ -1111,7 +1136,7 @@ const BlipSwarm = (() => {
         });
         tasks = [];
         if (loader.isConnected) dissolveLoader();
-        layer.classList.remove('bs-live');
+        if (!swallowing) layer.classList.remove('bs-live');
         (async () => {
             await wait(20, true);
             const target = lead;
@@ -1141,6 +1166,7 @@ const BlipSwarm = (() => {
     function finish(failed) {
         if (finished) return;
         finished = true;
+        if (layer && !swallowing) layer.classList.remove('bs-live'); // the page is live now
         tasks.forEach(restoreTask);
         if (loader.isConnected) dissolveLoader();
         try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (e) { /* private mode */ }

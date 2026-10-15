@@ -46,9 +46,9 @@ html.bc-active,html.bc-active *{cursor:none!important}
   #blip-cursor { display: none !important; }
 }
 
-/* Under the site's fixed UI (header, menus, modals) while he roams; on top of
-   everything while you hold him. */
-#blip-cursor.bc-pet { z-index: 900; }
+/* Under the site's fixed UI (header z 100 and its mobile menu, CTAs, modals)
+   while he roams; on top of everything while you hold him. */
+#blip-cursor.bc-pet { z-index: 99; }
 #blip-cursor.bc-grabbed { z-index: 2147483647; }
 
 /* The only part of him that takes the pointer: his body, not the empty
