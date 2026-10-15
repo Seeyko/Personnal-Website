@@ -134,6 +134,22 @@
   <div class="loading-spinner"></div>
   <div class="loading-text" data-i18n="ui.loading">Loading...</div>
 </div>
+<script>
+  // Boot intro (blip-swarm.js) owns this loader: paint it in the theme's own
+  // background and drop the spinner right away, before the first frame, so a
+  // cream "Loading..." never flashes. Reduced motion keeps the classic loader.
+  (function () {
+    var bg = { 'default': '#f8f7f4', terminal: '#0a0a0a', blueprint: '#003366', retro90s: '#c0c0c0', fps: '#3a6896' };
+    var t = null;
+    try { t = new URLSearchParams(location.search).get('theme'); } catch (e) {}
+    if (!bg[t]) { try { t = localStorage.getItem('portfolio_theme'); } catch (e) { t = null; } }
+    if (!bg[t]) t = 'default';
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var l = document.getElementById('loading-screen');
+    l.className = 'bs-on';
+    l.style.background = bg[t];
+  })();
+</script>
 <!-- Theme Overlay (CRT/Blueprint grid - styled by theme CSS) -->
 <div id="theme-overlay" class="theme-overlay"></div>
 
