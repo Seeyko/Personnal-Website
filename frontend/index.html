@@ -643,10 +643,11 @@
 <script src="/js/core/effects/header-scroll.js"></script>
 <script src="/js/core/effects/mobile-menu.js"></script>
 <script src="/js/core/effects/konami.js"></script>
-<script src="/js/core/effects/sfx.js"></script>
+<script src="/js/core/effects/sfx.js?v=2026-10-15"></script>
 <script src="/js/core/effects/blip-cursor.js?v=2026-10-15"></script>
 <script src="/js/core/effects/cursor-sprites.js?v=2026-10-15"></script>
 <script src="/js/core/effects/blip-swarm.js?v=2026-10-15"></script>
+<script src="/js/core/effects/blip-draw.js?v=2026-10-15"></script>
 <script src="/js/core/effects/cathode-guide.js?v=2026-10-15"></script>
 <script>
   document.readyState === 'loading'
@@ -696,6 +697,7 @@
 </script>
 <script>
   if (window.BlipCursor) BlipCursor.init();
+  if (window.BlipDraw) BlipDraw.init();
 </script>
 </body>
 </html>

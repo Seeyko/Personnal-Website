@@ -775,6 +775,7 @@ const BlipSwarm = (() => {
 
         layer = document.createElement('div');
         layer.id = 'blip-swarm';
+        layer.className = 'bs-layer';
         layer.setAttribute('aria-hidden', 'true');
         layer.style.setProperty('--bs-accent', ACCENT[theme]);
         layer.style.setProperty('--cs-ink', INK[theme]);
@@ -1187,6 +1188,8 @@ const BlipSwarm = (() => {
         // Hand the stage to the page pet, on the exact same pixel.
         window.BlipCursor.appear(tip ? tip.x : null, tip ? tip.y : null);
         if (tip) setTimeout(() => window.BlipCursor.react('joy'), 30);
+        // Below the fold, the page now draws itself as it scrolls in.
+        setTimeout(() => window.BlipDraw && window.BlipDraw.start(), 60);
         // Let the last ring finish, then tear down.
         setTimeout(() => {
             if (lead) removeCursor(lead);

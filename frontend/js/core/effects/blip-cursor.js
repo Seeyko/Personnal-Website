@@ -333,7 +333,7 @@ const BlipCursor = (() => {
     }
 
     function visible(el) {
-        if (el.closest('#blip-cursor, #blip-swarm, #cathode-guide, #loading-screen, [aria-hidden="true"]')) return false;
+        if (el.closest('#blip-cursor, #blip-swarm, #blip-draw, #cathode-guide, #loading-screen, [aria-hidden="true"], [data-bd-pending]')) return false;
         if (typeof el.checkVisibility === 'function' &&
             !el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) return false;
         return true;

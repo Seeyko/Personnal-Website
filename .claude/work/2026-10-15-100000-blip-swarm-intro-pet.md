@@ -20,6 +20,8 @@ Blip ne remplace plus la souris (le suivi à ressort faisait cliquer à côté).
 - frontend/css/blip-cursor.css (intégration site)
 - frontend/js/theme-manager.js (hideLoading délègue à l'intro)
 - frontend/index.html
+- frontend/js/core/effects/blip-draw.js (nouveau : dessin au scroll, un curseur par groupe)
+- frontend/js/core/effects/sfx.js, cathode-guide.js (perf)
 
 ## Progress
 - [x] Recherche références (swarm-cursors, openstation.blog)
@@ -29,6 +31,8 @@ Blip ne remplace plus la souris (le suivi à ressort faisait cliquer à côté).
 - [x] Intro swarm (split → build → fusion, variante rapide, skip)
 - [x] Tests navigateur 5 thèmes + mobile + reduced motion + skip
 - [x] Revue de code + critique motion, corrections
+- [x] Passe perf (boucle qui dort, perché docké au scroll, Cathode sans layout forcé)
+- [x] Dessin au scroll du reste de la page (blip-draw.js)
 
 ## Notes/Discoveries
 - `body.loaded` du thème default lance `elegantFadeIn` (opacité du body) : coupé
@@ -40,3 +44,6 @@ Blip ne remplace plus la souris (le suivi à ressort faisait cliquer à côté).
 - openstation.blog : la mascotte est un blob (Mio), pas un curseur ; on reprend
   le drag à ressort quasi critique ; le lancer, lui, a une gravité (il retombe
   sur le bas de l’écran ou sur le haut d’un titre / d’une carte).
+- blip-draw : les groupes sous la ligne de flottaison démarrent masqués
+  (`data-bd-pending`) ; un balayage à chaque passage de l'observer et à la fin
+  de chaque scroll garantit qu'aucun groupe ne reste caché (sauts de nav, Fin).
