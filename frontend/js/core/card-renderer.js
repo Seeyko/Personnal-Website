@@ -70,10 +70,14 @@ const CardRenderer = (() => {
             if (project.type) card.dataset.cardType = project.type;
         }
 
+        const isArchived = project.status === 'archived';
+        if (isArchived) card.classList.add('is-archived');
+
         if (cfg.animationDelay) card.style.animationDelay = `${index * 0.1}s`;
         if (cfg.tooltip) card.setAttribute('data-tooltip', cfg.tooltip.replace('{title}', project.title));
 
         const idx = formatIndex(index, cfg.indexPadding);
+        const archivedBadge = isArchived ? `<span class="project-status-badge">${window.LanguageManager?.t('ui.archived') || 'Archived'}</span>` : '';
         const media = createMediaContent(project, `carousel-${project.id}`);
         const tags = project.tags.map(tag => `<span class="tag">${cfg.tagWrapper.replace('{tag}', tag)}</span>`).join('');
 
@@ -89,6 +93,7 @@ const CardRenderer = (() => {
             <div class="project-media-container">${cfg.showIndex && cfg.indexInMedia ? `<span class="project-index">${cfg.indexPrefix}${idx}</span>` : ''}${media}</div>
             <div class="project-info">
                 ${cfg.showType && cfg.typeInInfo ? `<span class="project-type">${project.type}</span>` : ''}
+                ${archivedBadge}
                 <h3>${cfg.titlePrefix}${project.title}</h3>
                 <p>${project.description}</p>
                 <div class="tags">${tags}</div>

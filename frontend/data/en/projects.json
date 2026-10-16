@@ -52,7 +52,8 @@
     "title": "Teach Tools",
     "description": "A digital teaching assistant with innovative tools to simplify teachers' daily work. Generate exercises and images using AI.",
     "type": "AI TOOL",
-    "url": "https://teach-tools.com",
+    "url": "https://teach-tools.tomandrieu.com",
+    "status": "archived",
     "images": [
       "/assets/teach-tools-exercise-generation.png",
       "/assets/teach-tools-image-generation.png",

@@ -204,6 +204,23 @@ section,
   transition: filter 0.5s ease;
 }
 
+/* Badge for projects that are no longer maintained (status: "archived") */
+.project-status-badge {
+  display: inline-block;
+  align-self: flex-start;
+  width: fit-content;
+  margin-bottom: 0.4rem;
+  padding: 0.1em 0.6em;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1.6;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
 /* ─── Carousel Base ─── */
 .project-carousel {
   position: relative;
