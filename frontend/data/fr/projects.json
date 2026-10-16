@@ -52,7 +52,8 @@
     "title": "Teach Tools",
     "description": "Des outils pour les profs. Génère des exercices et des images grâce à l'IA. Simple et pratique pour le quotidien.",
     "type": "OUTIL IA",
-    "url": "https://teach-tools.com",
+    "url": "https://teach-tools.tomandrieu.com",
+    "status": "archived",
     "images": [
       "/assets/teach-tools-exercise-generation.png",
       "/assets/teach-tools-image-generation.png",

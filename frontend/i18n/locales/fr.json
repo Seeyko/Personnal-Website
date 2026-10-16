@@ -83,7 +83,8 @@
     "establishConnection": "CONNECTER",
     "systemStatus": "STATUT SYSTÈME",
     "availableNote": "disponible pour projets",
-    "loadMore": "Charger plus"
+    "loadMore": "Charger plus",
+    "archived": "Archivé"
   },
   "footer": {
     "sessionId": "SESSION: TOM-2026-PORTFOLIO",
