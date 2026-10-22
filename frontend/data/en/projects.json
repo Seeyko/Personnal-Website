@@ -34,7 +34,8 @@
     "title": "Skoolbook",
     "description": "Skoolbook is a platform I designed with my partner, a school teacher, to optimize school library management. It offers an intuitive interface for teachers, simplifies book loan tracking, and encourages student autonomy.",
     "type": "WEB APPLICATION",
-    "url": "https://skoolbook.fr",
+    "url": "https://skoolbook.tomandrieu.com",
+    "status": "archived",
     "images": [
       "/assets/skoolbook-landing-page.png",
       "/assets/skoolbook-class-books.png",

@@ -34,7 +34,8 @@
     "title": "Skoolbook",
     "description": "Skoolbook, c'est une appli que j'ai construite avec ma conjointe instit. L'idée : simplifier la gestion des bibliothèques de classe. Les profs peuvent suivre les emprunts facilement, et les élèves gèrent leurs livres en autonomie.",
     "type": "APPLICATION WEB",
-    "url": "https://skoolbook.fr",
+    "url": "https://skoolbook.tomandrieu.com",
+    "status": "archived",
     "images": [
       "/assets/skoolbook-landing-page.png",
       "/assets/skoolbook-class-books.png",
