@@ -116,7 +116,7 @@ async function voxelSprite(svg, w, h, hot, { depth = 2, faceBox = null } = {}) {
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const i = (y * w + x) * 4;
     if (data.data[i + 3] < 128) continue;
-    cells.push({ x, y, c: new THREE.Color(`rgb(${data.data[i]},${data.data[i + 1]},${data.data[i + 2]})`).convertSRGBToLinear() });
+    cells.push({ x, y, c: new THREE.Color(`rgb(${data.data[i]},${data.data[i + 1]},${data.data[i + 2]})`) }); // setStyle convertit déjà sRGB → linéaire (ColorManagement)
   }
   // couleurs du sprite à l'identique, faces ombrées par orientation (look voxel, pas de lumière qui ternit la marque)
   const mat = new THREE.MeshBasicMaterial();
@@ -179,11 +179,12 @@ const cardFrag = `
 uniform sampler2D map; uniform vec2 size;            // taille de la carte en px
 uniform vec2 click; uniform float fill;              // pot de peinture : cercle depuis le clic (px), rayon 0..1
 uniform vec4 media; uniform float paint;             // zone image (x,y,w,h px), part peinte
-uniform vec4 lines[5]; uniform float typed[5];       // lignes de texte, part tapée (par pas de caractère)
+uniform vec4 lines[5]; uniform float typed[5];       // lignes de texte, avancée 0..1 de leur entrée
 uniform vec4 badge; uniform float badgeOn;
 uniform vec3 tertiary; uniform vec3 white;
 varying vec2 vUv;
 bool inside(vec2 p, vec4 r){ return p.x>=r.x && p.y>=r.y && p.x<=r.x+r.z && p.y<=r.y+r.w; }
+float sfEase(float x){ return 1. - pow(1. - x, 4.5); }       // ≈ cubic-bezier(.22,1,.36,1)
 void main(){
   vec2 p = vec2(vUv.x, 1.-vUv.y) * size;
   float r = fill * length(size) * 1.05;
@@ -194,9 +195,25 @@ void main(){
     float edge = media.x + paint * (media.z + 40.) - 20. + 14. * sin(p.y * .09);
     if (p.x > edge) c.rgb = tertiary;
   }
+  // entrée du texte = celle de la grande phrase du footer (site-footer.css, [data-sf-reveal]) :
+  // opacité 0.9 s, montée de 1.4rem en 1.1 s, flou 6px → 0, courbe cubic-bezier(.22,1,.36,1)
+  vec3 col = c.rgb;
+  for (int i = 0; i < 5; i++) if (lines[i].z > 0. && inside(p, lines[i])) col = white;
   for (int i = 0; i < 5; i++) {
-    if (lines[i].z > 0. && inside(p, lines[i]) && p.x > lines[i].x + typed[i] * lines[i].z) c.rgb = white;
+    if (lines[i].z <= 0. || typed[i] <= 0.) continue;
+    float eT = sfEase(typed[i]), eO = sfEase(min(1., typed[i] * 1.22));
+    vec2 s = p - vec2(0., (1. - eT) * 22.4);
+    vec4 r = lines[i];
+    if (!inside(s, vec4(r.x - 8., r.y - 8., r.z + 16., r.w + 16.))) continue;
+    float rad = (1. - eO) * 6.;
+    vec3 acc = vec3(0.);
+    for (int dx = -2; dx <= 2; dx++) for (int dy = -2; dy <= 2; dy++) {
+      vec2 q = s + vec2(float(dx), float(dy)) * rad * .5;
+      acc += inside(q, r) ? texture2D(map, vec2(q.x / size.x, 1. - q.y / size.y)).rgb : white;
+    }
+    col *= mix(vec3(1.), acc / 25., eO);            // encre sur papier blanc : on multiplie
   }
+  c.rgb = col;
   if (badge.z > 0. && badgeOn < .5 && inside(p, badge)) c.rgb = white;
   gl_FragColor = c;
   #include <colorspace_fragment>
@@ -257,7 +274,7 @@ function outlinePoint(c, k) {                            // tête du crayon sur 
 
 // [début, durée, équipe]
 const BUILD = [[4.0, 4.0, 'A'], [8.2, 2.6, 'A'], [11.0, 2.4, 'A'], [11.0, 2.4, 'B']];
-const PH = { frame: [0, .2], fill: [.18, .3], paint: [.3, .55], badge: [.5, .58], line0: [.56, .7], line1: [.68, .86], line2: [.84, 1] };
+const PH = { frame: [0, .2], fill: [.18, .3], paint: [.3, .55], badge: [.5, .58], line0: [.5, .8], line1: [.6, .9], line2: [.7, 1] };
 function cardState(c, i, t, still) {
   const [s, D] = BUILD[i];
   const f = ph => still ? 1 : prog(t, s + PH[ph][0] * D, s + PH[ph][1] * D);
@@ -273,7 +290,7 @@ function cardState(c, i, t, still) {
   c.face.visible = kFill > 0;
   c.slab.visible = kFill >= 1;
   c.uni.paint.value = Math.floor(f('paint') * 10) / 10;            // le pinceau avance par coups
-  const typedOf = k => { const l = c.lines[k]; if (!l) return 0; const n = Math.max(8, Math.round(l.rect[2] / 9)); return Math.floor(k2(k) * n) / n; };
+  const typedOf = k => c.lines[k] ? k2(k) : 0;                     // fluide, comme le footer (pas de steps)
   const k2 = k => f('line' + Math.min(k, 2));
   c.uni.typed.value = [0, 1, 2, 3, 4].map(typedOf);
   const kb = f('badge');
@@ -342,7 +359,7 @@ async function buildActors() {
   ring.rotation.x = -Math.PI / 2;
   scene.add(ring);
   bits = new THREE.InstancedMesh(boxGeo, new THREE.MeshStandardMaterial({ roughness: .5 }), 40);
-  for (let i = 0; i < 40; i++) bits.setColorAt(i, new THREE.Color(BIT_COLORS[i % BIT_COLORS.length]).convertSRGBToLinear());
+  for (let i = 0; i < 40; i++) bits.setColorAt(i, new THREE.Color(BIT_COLORS[i % BIT_COLORS.length]));
   bits.castShadow = true;
   scene.add(bits);
 }
