@@ -2,20 +2,23 @@
 
 ## v4 (actuelle) — scène Three.js 3D : `scene3d.html`
 
-Blip et son essaim construisent les projets en 3D (18 s, 1920×1080, boucle, thème default).
+Blip et son essaim construisent les projets en 3D (22,5 s, 1920×1080, boucle, thème default).
 - `capture.mjs` photographie les VRAIES cartes du site (DOM, polices, badges, tags, captures) en 2×
-  avec la géométrie de chaque partie → `captures/<thème>/` (card*.png, card*-badge.png, meta.json).
+  avec la géométrie de chaque partie et la boîte de chaque mot → `captures/<thème>/` (card*.png,
+  card*-badge.png, meta.json).
 - `scene3d.html` (three@0.160.0, comme le site) : chaque carte est révélée par un shader (contour au
-  crayon, remplissage au pot depuis le clic, image au pinceau, texte tapé ligne par ligne, badge
-  tamponné). Blip et les curseurs = les vrais sprites (`blip-*.svg`, `CursorSprites`) extrudés en
+  crayon, remplissage au pot depuis le clic, image au pinceau, badge tamponné), UN outil à la fois.
+  Le texte est tapé mot par mot par l'I-beam : c'est `typeWords()` de `blip-draw.js` (le curseur file
+  au bout de chaque mot, glyphes de données de `data-trail.js` derrière lui, lettres résolues 160 ms
+  après), rejoué en fonction pure du temps — comme la grande phrase du footer. Blip et les curseurs = les vrais sprites (`blip-*.svg`, `CursorSprites`) extrudés en
   voxels pixel pour pixel, couleurs exactes (faces ombrées par orientation, sans éclairage qui ternit
   la marque), clignement contractuel. Sol = le papier du site et sa grille de points (cyclorama).
 - `render3d.mjs` capture image par image (WebGL SwiftShader dans le conteneur Playwright, ~0,5 s/image).
   Servir la racine du dépôt : `python3 -m http.server 8766`. `?t=` fige un instant.
-- og:image = dernière image rendue en 1200×630 (`?w=1200&h=630`, t = 17,9).
+- og:image = dernière image rendue en 1200×630 (`?w=1200&h=630`, t = 22,4).
 
 Encodage : `ffmpeg -framerate 24 -i frames/f%04d.png -vf "fade=t=in:st=0:d=0.3:color=0xf8f7f4,
-fade=t=out:st=17.6:d=0.4:color=0xf8f7f4,format=yuv420p" -c:v libx264 -preset slow -crf 19 og-motion.mp4`.
+fade=t=out:st=22.1:d=0.4:color=0xf8f7f4,format=yuv420p" -c:v libx264 -preset slow -crf 19 og-motion.mp4`.
 
 ## v3 — le site filmé : `rec.mjs`
 

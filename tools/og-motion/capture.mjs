@@ -20,7 +20,22 @@ for (let i = 0; i < cards.length; i++) {
   const info = await c.evaluate(el => {
     const r = el.getBoundingClientRect();
     const rel = s => { const e = el.querySelector(s); if (!e) return null; const q = e.getBoundingClientRect(); return [q.left - r.left, q.top - r.top, q.width, q.height]; };
-    const lines = [...el.querySelectorAll('.project-info > *')].map(e => { const q = e.getBoundingClientRect(); return { tag: e.tagName.toLowerCase(), cls: e.className, rect: [q.left - r.left, q.top - r.top, q.width, q.height] }; });
+    // boîtes de mots, comme DataTrail.words() : la scène tape le texte mot par mot, comme blip-draw.js
+    const words = e => {
+      const outW = [], walker = document.createTreeWalker(e, NodeFilter.SHOW_TEXT), range = document.createRange();
+      let n;
+      while ((n = walker.nextNode())) {
+        const re = /\S+/g; let m;
+        while ((m = re.exec(n.nodeValue))) {
+          range.setStart(n, m.index); range.setEnd(n, m.index + m[0].length);
+          const rs = range.getClientRects(); if (!rs.length) continue;
+          const a = rs[0], z = rs[rs.length - 1];
+          outW.push([Math.min(a.left, z.left) - r.left, a.top - r.top, Math.max(a.right, z.right) - r.left, z.bottom - r.top]);
+        }
+      }
+      return outW;
+    };
+    const lines = [...el.querySelectorAll('.project-info > *')].map(e => { const q = e.getBoundingClientRect(); return { tag: e.tagName.toLowerCase(), cls: e.className, rect: [q.left - r.left, q.top - r.top, q.width, q.height], words: words(e) }; });
     return { w: r.width, h: r.height, media: rel('.project-media-container'), title: rel('.project-title, h3'), badge: rel('.project-status-badge'), lines,
       name: (el.querySelector('.project-title, h3') || {}).textContent?.trim() };
   });

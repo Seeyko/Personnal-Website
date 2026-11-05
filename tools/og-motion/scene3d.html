@@ -33,7 +33,7 @@ const Q = new URLSearchParams(location.search);
 const W = +(Q.get('w') || 1920), H = +(Q.get('h') || 1080);
 const THEME = Q.get('theme') || 'default';
 const CAP = `/tools/og-motion/captures/${THEME}`;
-const DURATION = 18;
+const DURATION = 22.5;
 // palette du thème default (frontend/themes/default/default.css)
 const PAL = { paper: '#f8f7f4', card: '#ffffff', tertiary: '#f3f1ed', ink: '#2c2825', accent: '#3d7a73', soft: '#5a9d95', clay: '#b95c3a', ochre: '#a8822a' };
 
@@ -179,12 +179,12 @@ const cardFrag = `
 uniform sampler2D map; uniform vec2 size;            // taille de la carte en px
 uniform vec2 click; uniform float fill;              // pot de peinture : cercle depuis le clic (px), rayon 0..1
 uniform vec4 media; uniform float paint;             // zone image (x,y,w,h px), part peinte
-uniform vec4 lines[5]; uniform float typed[5];       // lignes de texte, avancée 0..1 de leur entrée
+uniform vec4 lines[5];                               // zones de texte (titre, paragraphe, tags)
+uniform vec3 rev;                                    // front du texte tapé : x, haut, bas de la ligne en cours (px)
 uniform vec4 badge; uniform float badgeOn;
 uniform vec3 tertiary; uniform vec3 white;
 varying vec2 vUv;
 bool inside(vec2 p, vec4 r){ return p.x>=r.x && p.y>=r.y && p.x<=r.x+r.z && p.y<=r.y+r.w; }
-float sfEase(float x){ return 1. - pow(1. - x, 4.5); }       // ≈ cubic-bezier(.22,1,.36,1)
 void main(){
   vec2 p = vec2(vUv.x, 1.-vUv.y) * size;
   float r = fill * length(size) * 1.05;
@@ -195,25 +195,10 @@ void main(){
     float edge = media.x + paint * (media.z + 40.) - 20. + 14. * sin(p.y * .09);
     if (p.x > edge) c.rgb = tertiary;
   }
-  // entrée du texte = celle de la grande phrase du footer (site-footer.css, [data-sf-reveal]) :
-  // opacité 0.9 s, montée de 1.4rem en 1.1 s, flou 6px → 0, courbe cubic-bezier(.22,1,.36,1)
-  vec3 col = c.rgb;
-  for (int i = 0; i < 5; i++) if (lines[i].z > 0. && inside(p, lines[i])) col = white;
-  for (int i = 0; i < 5; i++) {
-    if (lines[i].z <= 0. || typed[i] <= 0.) continue;
-    float eT = sfEase(typed[i]), eO = sfEase(min(1., typed[i] * 1.22));
-    vec2 s = p - vec2(0., (1. - eT) * 22.4);
-    vec4 r = lines[i];
-    if (!inside(s, vec4(r.x - 8., r.y - 8., r.z + 16., r.w + 16.))) continue;
-    float rad = (1. - eO) * 6.;
-    vec3 acc = vec3(0.);
-    for (int dx = -2; dx <= 2; dx++) for (int dy = -2; dy <= 2; dy++) {
-      vec2 q = s + vec2(float(dx), float(dy)) * rad * .5;
-      acc += inside(q, r) ? texture2D(map, vec2(q.x / size.x, 1. - q.y / size.y)).rgb : white;
-    }
-    col *= mix(vec3(1.), acc / 25., eO);            // encre sur papier blanc : on multiplie
-  }
-  c.rgb = col;
+  // le texte apparaît mot par mot derrière le curseur, comme le clip polygonal de typeWords()
+  // (blip-draw.js) : les lignes au-dessus sont écrites, la ligne en cours jusqu'au dernier mot résolu
+  bool written = p.y < rev.y || (p.y <= rev.z && p.x <= rev.x);
+  for (int i = 0; i < 5; i++) if (lines[i].z > 0. && inside(p, lines[i]) && !written) c.rgb = white;
   if (badge.z > 0. && badgeOn < .5 && inside(p, badge)) c.rgb = white;
   gl_FragColor = c;
   #include <colorspace_fragment>
@@ -230,7 +215,7 @@ async function buildCards(meta) {
     const uni = {
       map: { value: tex }, size: { value: new THREE.Vector2(w, h) }, click: { value: new THREE.Vector2(w * .7, h * .62) }, fill: { value: 0 },
       media: { value: new THREE.Vector4(...m.media) }, paint: { value: 0 },
-      lines: { value: lines.map(r => new THREE.Vector4(...r)) }, typed: { value: [0, 0, 0, 0, 0] },
+      lines: { value: lines.map(r => new THREE.Vector4(r[0] - 2, r[1] - 2, r[2] + 6, r[3] + 6)) }, rev: { value: new THREE.Vector3(-1e4, -1e4, -1e4) },
       badge: { value: new THREE.Vector4(...(m.badge || [0, 0, 0, 0])) }, badgeOn: { value: 0 },
       tertiary: { value: new THREE.Color(PAL.tertiary) }, white: { value: new THREE.Color('#ffffff') }
     };
@@ -254,10 +239,65 @@ async function buildCards(meta) {
       badgeMesh.position.set((m.badge[0] + m.badge[2] / 2) * PX - w * PX / 2, h * PX / 2 - (m.badge[1] + m.badge[3] / 2) * PX, .01);
       g.add(badgeMesh);
     }
+    // la traînée de données (data-trail.js) : un canevas transparent juste devant la carte
+    const gc = document.createElement('canvas'); gc.width = Math.ceil(w * 2); gc.height = Math.ceil(h * 2);
+    const gtex = new THREE.CanvasTexture(gc); gtex.colorSpace = THREE.SRGBColorSpace; gtex.anisotropy = 8;
+    const glyphs = new THREE.Mesh(new THREE.PlaneGeometry(w * PX, h * PX), new THREE.MeshBasicMaterial({ map: gtex, transparent: true, depthWrite: false }));
+    glyphs.position.z = .006; glyphs.renderOrder = 2;
+    g.add(glyphs);
     scene.add(g);
-    cards.push({ m, g, face, slab, outline, uni, badgeMesh, w, h, lines: m.lines.filter(l => l.tag !== 'span') });
+    const textLines = m.lines.filter(l => l.tag !== 'span');
+    const words = textLines.flatMap((l, part) => l.words.map(([l0, t0, r0, b0]) => ({ left: l0, top: t0, right: r0, bottom: b0, part })));
+    cards.push({ m, g, face, slab, outline, uni, badgeMesh, w, h, lines: textLines, words, glyphs, gc, gctx: gc.getContext('2d'), gtex });
   }
 }
+// ── la frappe : typeWords() de blip-draw.js, rejouée en fonction pure du temps ──
+// chaque mot : le curseur file du mot précédent au bout de celui-ci (outExpo), laisse derrière lui
+// des glyphes de données (0 1 { } < > #…, data-trail.js), et 160 ms après son passage le mot
+// se résout en lettres ; ses glyphes s'effacent en 140 ms.
+const GLYPHS = '01{}<>/\\[]#$%&*+=?:;01AFX10';
+const RESOLVE = .16, FADE = .14;
+const outExpo = k => k >= 1 ? 1 : 1 - Math.pow(2, -10 * k);
+const hash = (a, b) => { const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); };
+function typing(c, t, a, b) {
+  const ws = c.words, n = ws.length;
+  const per = (b - a - RESOLVE) / n;
+  const ms = t - a;
+  if (ms < 0) return { tip: null, rev: [-1e4, -1e4, -1e4], cells: [] };
+  if (t >= b) { const l = ws[n - 1]; return { tip: [l.right + 3, (l.top + l.bottom) / 2], rev: [1e4, 1e4, 1e4], cells: [] }; }
+  const i = Math.min(n - 1, Math.floor(ms / per));
+  const k = clamp((ms - i * per) / per);
+  const from = j => { const w = ws[j], pv = j ? ws[j - 1] : null; return pv && Math.abs(pv.top - w.top) < 4 ? pv.right + 3 : w.left - 2; };
+  const w = ws[i];
+  const tip = [lerp(from(i), w.right + 3, outExpo(k)), (w.top + w.bottom) / 2];
+  const done = Math.floor((ms - RESOLVE) / per + 1e-6) - 1;      // dernier mot résolu
+  const d = done >= 0 ? ws[Math.min(done, n - 1)] : null;
+  const rev = d ? [d.right + 2, Math.max(0, d.top - 2), d.bottom + 4] : [-1e4, -1e4, -1e4];
+  const cells = [];
+  for (let j = Math.max(0, i - 3); j <= i; j++) {
+    const wj = ws[j], h = Math.max(8, wj.bottom - wj.top), fs = Math.min(30, Math.max(9, h * .5)), cw = fs * .62;
+    const x0 = from(j), x1 = j < i ? wj.right + 3 : tip[0];
+    const gone = (j + 1) * per + RESOLVE;                          // ses lettres sont là : il se dissout
+    const alpha = ms < gone ? .75 : .75 * (1 - (ms - gone) / FADE);
+    if (alpha <= 0) continue;
+    for (let x = x0, q = 0; x + cw <= x1 + .5; x += cw, q++)
+      cells.push({ x, y: wj.top + (h - fs) / 2, fs, a: alpha, g: GLYPHS[Math.floor(hash(j * 31 + q, Math.floor(t * 14)) * GLYPHS.length)] });
+  }
+  return { tip, rev, cells };
+}
+function drawGlyphs(c, cells) {
+  const g = c.gctx;
+  if (!cells.length && !c.gdirty) { c.glyphs.visible = false; return; }
+  g.setTransform(2, 0, 0, 2, 0, 0);
+  g.clearRect(0, 0, c.w, c.h);
+  g.fillStyle = PAL.accent; g.textBaseline = 'top';
+  for (const k of cells) { g.globalAlpha = k.a; g.font = `400 ${k.fs.toFixed(1)}px "JetBrains Mono", monospace`; g.fillText(k.g, k.x, k.y); }
+  g.globalAlpha = 1;
+  c.gdirty = cells.length > 0;
+  c.glyphs.visible = true;
+  c.gtex.needsUpdate = true;
+}
+
 // disposition : un arc doux face à la caméra finale
 const LAYOUT = [[-7.9, 3.15, -.6, .30], [-2.65, 3.15, .55, .10], [2.65, 3.15, .55, -.10], [7.9, 3.15, -.6, -.30]];
 // carte → point local (px) en monde
@@ -272,27 +312,26 @@ function outlinePoint(c, k) {                            // tête du crayon sur 
   return [0, c.h - d];
 }
 
-// [début, durée, équipe]
-const BUILD = [[4.0, 4.0, 'A'], [8.2, 2.6, 'A'], [11.0, 2.4, 'A'], [11.0, 2.4, 'B']];
-const PH = { frame: [0, .2], fill: [.18, .3], paint: [.3, .55], badge: [.5, .58], line0: [.5, .8], line1: [.6, .9], line2: [.7, 1] };
+// un outil à la fois, dans l'ordre : crayon (contour) → pot (remplissage) → pinceau (image) → main (badge) → I-beam (texte)
+const PH_LONG = { frame: [0, .13], fill: [.13, .2], paint: [.2, .36], badge: [.36, .4], text: [.4, 1] };
+const PH_SHORT = { frame: [0, .13], fill: [.13, .21], paint: [.21, .38], badge: [.38, .46], text: [.46, 1] };
+// [début, durée, équipe, phases]
+const BUILD = [[4.2, 6.0, 'A', PH_LONG], [10.6, 4.0, 'A', PH_SHORT], [14.8, 4.0, 'A', PH_SHORT], [14.8, 4.0, 'B', PH_SHORT]];
 function cardState(c, i, t, still) {
-  const [s, D] = BUILD[i];
-  const f = ph => still ? 1 : prog(t, s + PH[ph][0] * D, s + PH[ph][1] * D);
+  const [s, D, , PH] = BUILD[i];
   const at = ph => [s + PH[ph][0] * D, s + PH[ph][1] * D];
+  const f = ph => still ? 1 : prog(t, ...at(ph));
   const kFrame = ease(f('frame'));
   // tracé du contour par la longueur de la géométrie (drawRange sur l'index du tube)
   const idx = c.outline.geometry.index.count;
   c.outline.geometry.setDrawRange(0, Math.floor(idx * kFrame / 6) * 6);
   c.outline.visible = kFrame > 0 && f('fill') < 1;
   const kFill = f('fill');
-  c.uni.fill.value = kFill <= 0 ? 0 : step(kFill * 1) ;
   c.uni.fill.value = kFill;
   c.face.visible = kFill > 0;
   c.slab.visible = kFill >= 1;
-  c.uni.paint.value = Math.floor(f('paint') * 10) / 10;            // le pinceau avance par coups
-  const typedOf = k => c.lines[k] ? k2(k) : 0;                     // fluide, comme le footer (pas de steps)
-  const k2 = k => f('line' + Math.min(k, 2));
-  c.uni.typed.value = [0, 1, 2, 3, 4].map(typedOf);
+  const kp = f('paint');
+  c.uni.paint.value = Math.floor(kp * 10) / 10;                  // le pinceau avance par coups
   const kb = f('badge');
   c.uni.badgeOn.value = kb >= 1 ? 1 : 0;
   if (c.badgeMesh) {
@@ -301,37 +340,56 @@ function cardState(c, i, t, still) {
     c.badgeMesh.scale.setScalar(sc);
     c.badgeMesh.position.z = .01 + (kb < 1 ? .25 * (1 - kb) : 0);
   }
+  const ty = still ? typing(c, 1e9, 0, 1) : typing(c, t, ...at('text'));
+  c.uni.rev.value.set(...ty.rev);
+  drawGlyphs(c, ty.cells);
   // où sont les outils (monde)
   const head = outlinePoint(c, kFrame);
-  const kp = f('paint');
   const zig = Math.floor(kp * 10) % 2 ? .8 : .2;
-  const lineEnd = k => { const l = c.lines[k]; if (!l) return [0, 0]; return [l.rect[0] + typedOf(k) * l.rect[2], l.rect[1] + l.rect[3] * .55]; };
+  const first = c.words[0];
+  const tip = ty.tip || [first.left - 2, (first.top + first.bottom) / 2];
   return {
     at,
     pencil: cardPoint(c, head[0], head[1], .02),
     bucket: cardPoint(c, c.w * .7, c.h * .62, .05 + (t >= at('fill')[0] && t < at('fill')[0] + .15 ? -.04 : .1)),
     brush: cardPoint(c, c.m.media[0] + kp * c.m.media[2], c.m.media[1] + zig * c.m.media[3], .03),
-    point: c.m.badge ? cardPoint(c, c.m.badge[0] + 30, c.m.badge[1] + 14, kb > 0 && kb < .5 ? .02 : .2) : cardPoint(c, 40, 330, .2),
-    ibeam: cardPoint(c, ...lineEnd(0), .03),
-    caret: cardPoint(c, ...lineEnd(Math.min(c.lines.length - 1, t < at('line2')[0] ? 1 : 2)), .03)
+    point: c.m.badge ? cardPoint(c, c.m.badge[0] + 30, c.m.badge[1] + 14, kb > 0 && kb < .5 ? .02 : .2) : null,
+    ibeam: cardPoint(c, tip[0], tip[1], .03)
   };
 }
 
 // ── caméra ─────────────────────────────────────────────────────────
 // [t, px, py, pz, cible x, y, z]
-const CAMK = [
-  [0.0, 3.4, 2.4, 11.8, 0, 1.9, 4.4],
-  [2.6, -2.6, 2.6, 12.2, 0, 2.0, 4.4],                   // travelling circulaire autour de Blip
-  [3.9, 0, 4.6, 15.5, 0, 2.6, 0],                         // l'essaim s'éparpille : on recule et on monte
-  [4.6, -4.6, 3.4, 6.2, -7.6, 3.0, -.4],                  // Ride My Park, trois-quarts
-  [8.0, -9.6, 3.0, 5.4, -7.8, 3.1, -.5],                  // lent travelling latéral
-  [8.8, -1.0, 3.3, 7.4, -2.5, 3.1, .4],                   // Skoolbook
-  [10.8, -4.0, 3.0, 6.8, -2.6, 3.1, .4],
-  [11.6, 5.3, 2.0, 9.2, 5.2, 3.0, 0],                     // plan à deux, contre-plongée
-  [13.4, 4.2, 2.4, 9.8, 5.2, 3.1, 0],
-  [15.0, 0, 6.0, 22.6, 0, 2.6, 0],                        // grue arrière : la galerie entière
-  [18.0, 0, 4.9, 20.8, 0, 2.45, 0]
-];
+let CAMK = [];                                           // [t, px, py, pz, cible x, y, z] — cameraKeys(), une fois les cartes posées
+// plan sur une carte : la caméra dans l'axe de la carte, à `dist`, décalée de `side` (m) et `up`
+function shot(ci, px, py, dist, side = 0, up = 0) {
+  const c = cards[ci], tg = cardPoint(c, px, py, 0), ry = c.g.rotation.y;
+  const pos = tg.clone().addScaledVector(V(Math.sin(ry), 0, Math.cos(ry)), dist).addScaledVector(V(Math.cos(ry), 0, -Math.sin(ry)), side);
+  pos.y += up;
+  return [...pos.toArray(), ...tg.toArray()];
+}
+function cameraKeys() {
+  const mid = ci => { const ws = cards[ci].words; return (ws[0].top + ws[ws.length - 1].bottom) / 2; };
+  const cx = ci => cards[ci].w / 2, cy = ci => cards[ci].h / 2;
+  return [
+    [0.0, 3.4, 2.4, 11.8, 0, 1.9, 4.4],
+    [2.6, -2.6, 2.6, 12.2, 0, 2.0, 4.4],                 // travelling circulaire autour de Blip
+    [3.9, 0, 4.6, 15.5, 0, 2.6, 0],                       // l'essaim s'éparpille : on recule et on monte
+    [4.7, ...shot(0, cx(0), cy(0), 9.4, -2.6, .9)],        // Ride My Park : contour, remplissage, image
+    [6.3, ...shot(0, cx(0), cy(0) * .95, 8.2, -1.4, .6)],
+    [7.0, ...shot(0, cx(0), mid(0), 5.0, -.7, .25)],       // gros plan : l'I-beam tape le texte
+    [10.2, ...shot(0, cx(0), mid(0), 4.5, .5, .15)],
+    [11.0, ...shot(1, cx(1), cy(1), 9.0, -1.6, .7)],       // Skoolbook
+    [12.3, ...shot(1, cx(1), cy(1), 8.2, .7, .5)],
+    [12.9, ...shot(1, cx(1), mid(1), 5.3, -.4, .2)],
+    [14.5, ...shot(1, cx(1), mid(1), 4.8, .4, .15)],
+    [15.3, 5.25, 3.9, 12.4, 5.25, 2.7, .1],                // Teach Tools + GyroDex : deux chantiers côte à côte
+    [16.6, 5.25, 2.7, 10.9, 5.25, 1.95, .1],               // on descend sur les deux textes qui s'écrivent
+    [18.8, 5.25, 2.5, 10.2, 5.25, 1.85, .1],
+    [19.8, 0, 6.0, 22.6, 0, 2.6, 0],                      // grue arrière : la galerie entière
+    [22.5, 0, 4.9, 20.8, 0, 2.45, 0]
+  ];
+}
 function camAt(T) {
   const [px, py, pz, tx, ty, tz] = track(T, CAMK);
   camera.position.set(px, py, pz);
@@ -346,11 +404,12 @@ async function buildActors() {
   lead = await blipVoxels('blip-default', 2.2);          // le Blip héros (intro et final)
   scene.add(lead);
   const crewA = [['pencil', 'pencil', PAL.ochre], ['bucket', 'bucket', PAL.clay], ['brush', 'brush', PAL.accent],
-                 ['ibeam', 'ibeam', PAL.ink, '#f8f7f4'], ['point', 'hand-point', '#ffffff'], ['caret', 'caret-block', PAL.accent]];
-  for (const [k, id, fill, ink] of crewA) { actors[k] = await cursorVoxels(id, fill, ink || '#111', .62); scene.add(actors[k]); }
+                 ['ibeam', 'ibeam', PAL.ink, '#f8f7f4'], ['point', 'hand-point', '#ffffff']];
+  // à l'échelle du texte qu'ils écrivent (un I-beam ≈ deux lignes de paragraphe), pas des géants
+  for (const [k, id, fill, ink] of crewA) { actors[k] = await cursorVoxels(id, fill, ink || '#111', .42); scene.add(actors[k]); }
   // équipe B : les Blip des autres thèmes, plus les curseurs qui ne font que suivre (la foule de l'essaim)
   for (const [k, name] of [['blue', 'blip-blueprint'], ['retro', 'blip-retro90s'], ['term', 'blip-terminal'], ['fps', 'blip-fps']]) {
-    actors[k] = await blipVoxels(name, .62); scene.add(actors[k]);
+    actors[k] = await blipVoxels(name, .5); scene.add(actors[k]);
   }
   for (const [k, id, fill] of [['x1', 'crosshair', '#ffffff'], ['x2', 'move', '#ffffff'], ['x3', 'zoom', '#ffffff'], ['x4', 'arrow-mac', '#ffffff'], ['x5', 'wait', '#ffffff'], ['x6', 'copy', '#ffffff']]) {
     actors[k] = await cursorVoxels(id, fill, '#111', .75); scene.add(actors[k]);
@@ -364,12 +423,13 @@ async function buildActors() {
   scene.add(bits);
 }
 const HOME = V(0, 0, 4.4);                               // Blip au sol, devant la galerie
-const SPLIT = 2.7, FUSE = 15.4;
+const SPLIT = 2.7, FUSE = 19.9;
 // position d'attente de chaque curseur autour d'une carte (px de la carte, z)
-const PARK = { pencil: [-60, -40, .5], bucket: [560, 120, .6], brush: [560, 300, .5], ibeam: [-70, 360, .5], point: [120, 600, .6], caret: [330, 600, .5],
-               blue: [560, -40, .6], retro: [560, 260, .6], term: [-80, 400, .6], fps: [200, 620, .6] };
-const CREW_B_ROLE = { blue: 'pencil', retro: 'brush', term: 'ibeam', fps: 'point' };
-const ROLE_PHASE = { pencil: 'frame', bucket: 'fill', brush: 'paint', ibeam: 'line0', point: 'badge', caret: 'line1' };
+// (au repos : sur les bords, hors du texte ; seul celui qui travaille est sur la carte)
+const PARK = { pencil: [-70, -50, .5], bucket: [580, 90, .6], brush: [580, 260, .5], ibeam: [-75, 330, .4], point: [560, 440, .6],
+               blue: [580, -40, .6], fps: [580, 160, .6], retro: [580, 300, .6], term: [-85, 330, .5] };
+const CREW_B_ROLE = { blue: 'pencil', fps: 'bucket', retro: 'brush', term: 'ibeam' };
+const ROLE_PHASE = { pencil: 'frame', bucket: 'fill', brush: 'paint', point: 'badge', ibeam: 'text' };
 
 function spiral(i, n, r) {                               // spirale d'or, comme l'essaim du site
   const a = i * 2.39996, rr = r * Math.sqrt((i + 1) / n);
@@ -388,7 +448,7 @@ function placeActor(o, p, t, k) {
 let STILL = false;
 function render(T) {
   const t = step(T);
-  camAt(STILL ? 18 : T);
+  camAt(STILL ? DURATION : T);
   const states = cards.map((c, i) => cardState(c, i, t, STILL));
 
   // Blip héros : seul en gros plan, clignote, se tasse, se divise ; revient à la fusion
@@ -433,6 +493,7 @@ function render(T) {
   // l'essaim
   const live = !STILL && t >= SPLIT && t < FUSE;
   const names = Object.keys(actors);
+  let dirty = false;
   names.forEach((k, i) => {
     const o = actors[k];
     if (!live) { o.visible = false; return; }
@@ -445,25 +506,34 @@ function render(T) {
       const cx = lerp(LAYOUT[Math.floor(focus)][0], LAYOUT[Math.ceil(focus)][0], focus % 1);
       // une nuée au-dessus du chantier, derrière les cartes : jamais entre la caméra et le travail
       const a = step(t) * .5 + i * 1.05;
-      p = V(cx + Math.cos(a) * 3.0, 6.6 + Math.sin(a * 1.7) * .5, -1.6 + Math.sin(a) * .8);
+      p = V(cx + Math.cos(a) * 3.0, 11 + Math.sin(a * 1.7) * .5, -3 + Math.sin(a) * .8);   // ils s'envolent hors champ : un seul outil travaille à la fois
     } else {
       const role = crewB || k;
       const list = crewB ? [3] : [0, 1, 2];
       const ph = ROLE_PHASE[role];
-      let work = null;
-      for (const ci of list) { const [a, b] = states[ci].at(ph); if (t >= a - .1 && t < b + .05) work = states[ci][role]; }
-      if (work) p = work;
-      else {
-        const keys = [];
-        list.forEach(ci => {
-          const pk = PARK[k]; const pp = cardPoint(cards[ci], pk[0], pk[1], pk[2]);
-          const [, b] = states[ci].at(ph);
-          keys.push([ci === list[0] ? SPLIT + .9 : BUILD[ci][0] - .3, pp.x, pp.y, pp.z], [b + .3, pp.x, pp.y, pp.z]);
-        });
-        const last = keys[keys.length - 1];
-        keys.push([FUSE - 1.2, last[1], last[2], last[3]], [FUSE, 0, 1.4, 3.2]);
-        p = V(...track(t, keys));
+      // au repos : d'une carte à la suivante
+      const keys = [];
+      list.forEach(ci => {
+        // Teach Tools a GyroDex à sa droite : l'équipe A y attend à gauche, pour ne pas gêner l'équipe B
+        const pk = PARK[k], px = !crewB && ci === 2 && pk[0] > cards[ci].w ? cards[ci].w - pk[0] : pk[0];
+        const pp = cardPoint(cards[ci], px, pk[1], pk[2]);
+        const [, b] = states[ci].at(ph);
+        let t0 = ci === list[0] ? SPLIT + .9 : BUILD[ci][0] - .6;
+        if (keys.length && t0 <= keys[keys.length - 1][0]) t0 = keys[keys.length - 1][0] + .05;
+        keys.push([t0, pp.x, pp.y, pp.z], [Math.max(t0 + .05, b + .5), pp.x, pp.y, pp.z]);
+      });
+      const last = keys[keys.length - 1];
+      keys.push([FUSE - 1.2, last[1], last[2], last[3]], [FUSE, 0, 1.4, 3.2]);
+      p = V(...track(t, keys));
+      // au travail : il quitte sa place, fait son geste, y retourne
+      for (const ci of list) {
+        const [a, b] = states[ci].at(ph);
+        if (!states[ci][role]) continue;
+        if (t >= a - .45 && t < a) p = p.clone().lerp(cardState(cards[ci], ci, a, false)[role], out(prog(t, a - .45, a - .05)));
+        else if (t >= a && t < b) p = states[ci][role];
+        else if (t >= b && t < b + .45) p = cardState(cards[ci], ci, b, false)[role].lerp(p, out(prog(t, b + .05, b + .45)));
       }
+      dirty = true;
     }
     // éclatement depuis Blip : sauts en spirale
     const k0 = prog(t, SPLIT, SPLIT + .9);
@@ -483,12 +553,15 @@ function render(T) {
     placeActor(o, p, t, i);
     if (o.blink) o.blink(blinkAt(t, i * .37));
   });
+  if (dirty) cards.forEach((c, i) => cardState(c, i, t, STILL));   // les poses « à l'instant a/b » ont touché aux cartes
   renderer.render(scene, camera);
 }
 const blinkAt = (t, phase = 0) => ((t + phase) % 1.06) < 1 / 12;
 
 // ── montage ────────────────────────────────────────────────────────
 window.ready = (async () => {
+  const font = new FontFace('JetBrains Mono', 'url(/frontend/assets/fonts/tDbV2o-flEEny0FZhsfKu5WU4xD7OwE.woff2)', { weight: '400' });
+  document.fonts.add(await font.load());
   const meta = await (await fetch(`${CAP}/meta.json`)).json();
   await buildCards(meta);
   cards.forEach((c, i) => {
@@ -497,6 +570,7 @@ window.ready = (async () => {
     c.g.rotation.y = ry;
     c.g.updateMatrixWorld(true);
   });
+  CAMK = cameraKeys();
   await buildActors();
   window.DURATION = DURATION;
   window.render = render;
