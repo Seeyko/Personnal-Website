@@ -33,7 +33,7 @@ const Q = new URLSearchParams(location.search);
 const W = +(Q.get('w') || 1920), H = +(Q.get('h') || 1080);
 const THEME = Q.get('theme') || 'default';
 const CAP = `/tools/og-motion/captures/${THEME}`;
-const DURATION = 22.5;
+const DURATION = 21.5;
 // palette du thème default (frontend/themes/default/default.css)
 const PAL = { paper: '#f8f7f4', card: '#ffffff', tertiary: '#f3f1ed', ink: '#2c2825', accent: '#3d7a73', soft: '#5a9d95', clay: '#b95c3a', ochre: '#a8822a' };
 
@@ -91,7 +91,7 @@ const dotTex = (() => {
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.MeshBasicMaterial({ map: dotTex }));
 floor.rotation.x = -Math.PI / 2;
 scene.add(floor);
-const shade = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.ShadowMaterial({ color: '#5c5650', opacity: .16 }));
+const shade = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.ShadowMaterial({ color: '#5c5650', opacity: .24 }));
 shade.rotation.x = -Math.PI / 2; shade.position.y = .002; shade.receiveShadow = true;
 scene.add(shade);
 
@@ -110,7 +110,7 @@ function rasterSvg(svg, w, h) {
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   });
 }
-async function voxelSprite(svg, w, h, hot, { depth = 2, faceBox = null } = {}) {
+async function voxelSprite(svg, w, h, hot, { depth = 2, faceBox = null, bodyAt = [8, 13] } = {}) {
   const data = await rasterSvg(svg, w, h);
   const cells = [];
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -142,7 +142,7 @@ async function voxelSprite(svg, w, h, hot, { depth = 2, faceBox = null } = {}) {
   group.add(mesh);
   // clignement : les pixels du visage prennent la couleur du corps (BRANDING.md : visage éteint = curseur bloc)
   if (faceBox) {
-    const body = cells.find(c => c.x === 8 && c.y === 13)?.c;
+    const body = cells.find(c => c.x === bodyAt[0] && c.y === bodyAt[1])?.c;
     const face = [];
     cells.forEach((c, ci) => {
       if (c.x >= faceBox[0] && c.x <= faceBox[1] && c.y >= faceBox[2] && c.y <= faceBox[3] && body && !c.c.equals(body))
@@ -164,6 +164,14 @@ async function blipVoxels(name, scale = 1) {
   g.scale.setScalar(scale);
   return g;
 }
+// Cathode, la compagne CRT (BRANDING.md) : un moniteur, donc profond ; elle cligne de ses yeux-pixels
+async function cathodeVoxels(scale = 1) {
+  const svg = await (await fetch('/frontend/assets/brand/cathode-default.svg')).text();
+  const g = await voxelSprite(svg, 24, 24, [11, 22], { depth: 6, faceBox: [7, 14, 10, 14], bodyAt: [9, 12] });
+  g.children[0].position.z = 3 * VOX;                    // centrée sur sa profondeur
+  g.scale.setScalar(scale);
+  return g;
+}
 async function cursorVoxels(id, fill, ink = '#111', scale = 1) {
   const s = CursorSprites.get(id);
   const svg = s.markup.replaceAll('currentColor', fill).replace(/var\(--cs-ink,[^)]*\)/g, ink).replace(/var\(--cs-paper,[^)]*\)/g, '#fff').replace(/var\(--cs-accent,[^)]*\)/g, PAL.accent);
@@ -174,7 +182,8 @@ async function cursorVoxels(id, fill, ink = '#111', scale = 1) {
 
 // ── les cartes : vraies captures, révélées partie par partie ──────
 const PX = 0.01;                                         // 1 px CSS de carte = 0,01 unité
-const cardVert = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }`;
+const cardVert = `varying vec2 vUv; varying float vDist;
+void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(position,1.); vDist = -mv.z; gl_Position = projectionMatrix * mv; }`;
 const cardFrag = `
 uniform sampler2D map; uniform vec2 size;            // taille de la carte en px
 uniform vec2 click; uniform float fill;              // pot de peinture : cercle depuis le clic (px), rayon 0..1
@@ -183,7 +192,8 @@ uniform vec4 lines[5];                               // zones de texte (titre, p
 uniform vec3 rev;                                    // front du texte tapé : x, haut, bas de la ligne en cours (px)
 uniform vec4 badge; uniform float badgeOn;
 uniform vec3 tertiary; uniform vec3 white;
-varying vec2 vUv;
+varying vec2 vUv; varying float vDist;
+uniform vec3 paper;
 bool inside(vec2 p, vec4 r){ return p.x>=r.x && p.y>=r.y && p.x<=r.x+r.z && p.y<=r.y+r.w; }
 void main(){
   vec2 p = vec2(vUv.x, 1.-vUv.y) * size;
@@ -200,6 +210,8 @@ void main(){
   bool written = p.y < rev.y || (p.y <= rev.z && p.x <= rev.x);
   for (int i = 0; i < 5; i++) if (lines[i].z > 0. && inside(p, lines[i]) && !written) c.rgb = white;
   if (badge.z > 0. && badgeOn < .5 && inside(p, badge)) c.rgb = white;
+  // perspective aérienne : une carte au loin se fond un peu dans le papier (on lit la profondeur)
+  c.rgb = mix(c.rgb, paper, smoothstep(6., 24., vDist) * .38);
   gl_FragColor = c;
   #include <colorspace_fragment>
 }`;
@@ -217,14 +229,17 @@ async function buildCards(meta) {
       media: { value: new THREE.Vector4(...m.media) }, paint: { value: 0 },
       lines: { value: lines.map(r => new THREE.Vector4(r[0] - 2, r[1] - 2, r[2] + 6, r[3] + 6)) }, rev: { value: new THREE.Vector3(-1e4, -1e4, -1e4) },
       badge: { value: new THREE.Vector4(...(m.badge || [0, 0, 0, 0])) }, badgeOn: { value: 0 },
-      tertiary: { value: new THREE.Color(PAL.tertiary) }, white: { value: new THREE.Color('#ffffff') }
+      tertiary: { value: new THREE.Color(PAL.tertiary) }, paper: { value: new THREE.Color(PAL.paper) }, white: { value: new THREE.Color('#ffffff') }
     };
     const face = new THREE.Mesh(new THREE.PlaneGeometry(w * PX, h * PX), new THREE.ShaderMaterial({ uniforms: uni, vertexShader: cardVert, fragmentShader: cardFrag, transparent: false }));
     const g = new THREE.Group();
     g.add(face);
     // l'épaisseur de la carte et son ombre portée : une plaque blanche juste derrière, qui grandit avec le remplissage
-    const slab = new THREE.Mesh(new THREE.BoxGeometry(w * PX, h * PX, .05), new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: .9 }));
-    slab.position.z = -.026; slab.castShadow = true;
+    // une vraie épaisseur (14 px) aux tranches ombrées par orientation, comme les voxels : la carte est un objet
+    const edge = col => new THREE.MeshBasicMaterial({ color: col });
+    const slab = new THREE.Mesh(new THREE.BoxGeometry(w * PX, h * PX, .14),
+      [edge('#d2cbbf'), edge('#d2cbbf'), edge('#ebe6dd'), edge('#b9b0a2'), edge('#ffffff'), edge('#e9e4db')]);
+    slab.position.z = -.071; slab.castShadow = true;
     g.add(slab);
     // le trait du crayon : contour qui se trace
     const pts = [[0, 0], [w, 0], [w, h], [0, h], [0, 0]].map(([x, y]) => V(x * PX - w * PX / 2, h * PX / 2 - y * PX, .004));
@@ -299,7 +314,7 @@ function drawGlyphs(c, cells) {
 }
 
 // disposition : un arc doux face à la caméra finale
-const LAYOUT = [[-7.9, 3.15, -.6, .30], [-2.65, 3.15, .55, .10], [2.65, 3.15, .55, -.10], [7.9, 3.15, -.6, -.30]];
+const LAYOUT = [[-8.1, 3.15, -1.5, .38], [-2.65, 3.15, .7, .10], [2.65, 3.15, .7, -.10], [8.1, 3.15, -1.5, -.38]];
 // carte → point local (px) en monde
 function cardPoint(c, px, py, z = 0) {
   return c.g.localToWorld(V(px * PX - c.w * PX / 2, c.h * PX / 2 - py * PX, z));
@@ -313,10 +328,10 @@ function outlinePoint(c, k) {                            // tête du crayon sur 
 }
 
 // un outil à la fois, dans l'ordre : crayon (contour) → pot (remplissage) → pinceau (image) → main (badge) → I-beam (texte)
-const PH_LONG = { frame: [0, .13], fill: [.13, .2], paint: [.2, .36], badge: [.36, .4], text: [.4, 1] };
+const PH_LONG = { frame: [0, .16], fill: [.16, .25], paint: [.25, .45], badge: [.45, .5], text: [.5, 1] };
 const PH_SHORT = { frame: [0, .13], fill: [.13, .21], paint: [.21, .38], badge: [.38, .46], text: [.46, 1] };
 // [début, durée, équipe, phases]
-const BUILD = [[4.2, 6.0, 'A', PH_LONG], [10.6, 4.0, 'A', PH_SHORT], [14.8, 4.0, 'A', PH_SHORT], [14.8, 4.0, 'B', PH_SHORT]];
+const BUILD = [[4.2, 4.8, 'A', PH_LONG], [9.4, 4.0, 'A', PH_SHORT], [13.6, 4.0, 'A', PH_SHORT], [13.6, 4.0, 'B', PH_SHORT]];
 function cardState(c, i, t, still) {
   const [s, D, , PH] = BUILD[i];
   const at = ph => [s + PH[ph][0] * D, s + PH[ph][1] * D];
@@ -376,18 +391,18 @@ function cameraKeys() {
     [2.6, -2.6, 2.6, 12.2, 0, 2.0, 4.4],                 // travelling circulaire autour de Blip
     [3.9, 0, 4.6, 15.5, 0, 2.6, 0],                       // l'essaim s'éparpille : on recule et on monte
     [4.7, ...shot(0, cx(0), cy(0), 9.4, -2.6, .9)],        // Ride My Park : contour, remplissage, image
-    [6.3, ...shot(0, cx(0), cy(0) * .95, 8.2, -1.4, .6)],
-    [7.0, ...shot(0, cx(0), mid(0), 5.0, -.7, .25)],       // gros plan : l'I-beam tape le texte
-    [10.2, ...shot(0, cx(0), mid(0), 4.5, .5, .15)],
-    [11.0, ...shot(1, cx(1), cy(1), 9.0, -1.6, .7)],       // Skoolbook
-    [12.3, ...shot(1, cx(1), cy(1), 8.2, .7, .5)],
-    [12.9, ...shot(1, cx(1), mid(1), 5.3, -.4, .2)],
-    [14.5, ...shot(1, cx(1), mid(1), 4.8, .4, .15)],
-    [15.3, 5.25, 3.9, 12.4, 5.25, 2.7, .1],                // Teach Tools + GyroDex : deux chantiers côte à côte
-    [16.6, 5.25, 2.7, 10.9, 5.25, 1.95, .1],               // on descend sur les deux textes qui s'écrivent
-    [18.8, 5.25, 2.5, 10.2, 5.25, 1.85, .1],
-    [19.8, 0, 6.0, 22.6, 0, 2.6, 0],                      // grue arrière : la galerie entière
-    [22.5, 0, 4.9, 20.8, 0, 2.45, 0]
+    [6.0, ...shot(0, cx(0), cy(0) * .95, 8.2, -1.4, .6)],
+    [6.7, ...shot(0, cx(0), mid(0), 5.0, -.7, .25)],       // gros plan : l'I-beam tape le texte
+    [9.0, ...shot(0, cx(0), mid(0), 4.6, .4, .15)],
+    [9.9, ...shot(1, cx(1), cy(1), 9.6, -3.4, .9)],        // Skoolbook, de trois-quarts : Ride My Park derrière elle
+    [11.0, ...shot(1, cx(1), cy(1), 8.4, -1.2, .5)],
+    [11.7, ...shot(1, cx(1), mid(1), 5.3, -.5, .2)],
+    [13.3, ...shot(1, cx(1), mid(1), 4.8, .4, .15)],
+    [14.1, 5.25, 3.9, 12.6, 5.25, 2.7, .1],                // Teach Tools + GyroDex : deux chantiers côte à côte
+    [15.4, 5.25, 2.7, 11.1, 5.25, 1.95, .1],               // on descend sur les deux textes qui s'écrivent
+    [17.6, 5.25, 2.5, 10.4, 5.25, 1.85, .1],
+    [18.8, 0, 6.0, 22.6, 0, 2.6, 0],                      // grue arrière : la galerie entière
+    [21.5, 0, 4.9, 20.8, 0, 2.45, 0]
   ];
 }
 function camAt(T) {
@@ -398,11 +413,13 @@ function camAt(T) {
 
 // ── acteurs ────────────────────────────────────────────────────────
 const actors = {};
-let lead, hero, ring, bits;
+let lead, hero, ring, bits, cathode;
 const BIT_COLORS = [PAL.accent, PAL.clay, PAL.ochre, PAL.ink, '#63a89b', '#289bd2'];
 async function buildActors() {
   lead = await blipVoxels('blip-default', 2.2);          // le Blip héros (intro et final)
   scene.add(lead);
+  cathode = await cathodeVoxels(1.05);
+  scene.add(cathode);
   const crewA = [['pencil', 'pencil', PAL.ochre], ['bucket', 'bucket', PAL.clay], ['brush', 'brush', PAL.accent],
                  ['ibeam', 'ibeam', PAL.ink, '#f8f7f4'], ['point', 'hand-point', '#ffffff']];
   // à l'échelle du texte qu'ils écrivent (un I-beam ≈ deux lignes de paragraphe), pas des géants
@@ -423,7 +440,7 @@ async function buildActors() {
   scene.add(bits);
 }
 const HOME = V(0, 0, 4.4);                               // Blip au sol, devant la galerie
-const SPLIT = 2.7, FUSE = 19.9;
+const SPLIT = 2.7, FUSE = 18.9;
 // position d'attente de chaque curseur autour d'une carte (px de la carte, z)
 // (au repos : sur les bords, hors du texte ; seul celui qui travaille est sur la carte)
 const PARK = { pencil: [-70, -50, .5], bucket: [580, 90, .6], brush: [580, 260, .5], ibeam: [-75, 330, .4], point: [560, 440, .6],
@@ -470,6 +487,34 @@ function render(T) {
     lead.scale.set(sc, sc * sy, sc);
     lead.position.y = HOME.y + 22 * VOX * sc * sy + y;
     lead.rotation.set(0, STILL ? .12 : Math.sin(step(t) * .8) * .2, 0);
+  }
+
+  // Cathode : elle regarde le chantier depuis le sol, saute de joie à chaque projet fini,
+  // puis rejoint Blip pour la photo de fin (tout par pas de 1/12 s)
+  {
+    const show = STILL || t >= SPLIT + .5;
+    cathode.visible = show;
+    if (show) {
+      // perchée sur la tranche de Skoolbook, comme sur le site où elle grimpe sur les cartes :
+      // elle voit tout le chantier et ne passe jamais devant un texte qu'on filme ; saut final vers Blip
+      const c1 = cards[1], perch = cardPoint(c1, c1.w * .72, 0, -.07);
+      const keys = [[SPLIT + .5, perch.x, perch.y + .07, perch.z], [FUSE - .7, perch.x, perch.y + .07, perch.z], [FUSE + .1, 2.35, 0, 4.7]];
+      const [x, y0, z] = STILL ? [2.35, 0, 4.7] : track(t, keys, k => Math.floor(k * 10) / 10);
+      const arc = STILL ? 0 : Math.sin(Math.PI * Math.floor(prog(t, FUSE - .7, FUSE + .1) * 10) / 10) * 1.6;
+      const doneAt = BUILD.map(([s0, D, , PH]) => s0 + PH.text[1] * D);
+      const hopT = STILL ? -1 : Math.max(...doneAt.filter(d => t >= d && t < d + .5).map(d => t - d), -1);
+      const hop = hopT >= 0 ? [[0, .82], [.45, 1.12], [.6, 1.05], [.2, 1], [0, .9], [0, 1]][Math.min(5, Math.floor(hopT / .5 * 6))] : [0, 1];
+      const sc = 1.05;
+      const drop = STILL ? 0 : 3 * (1 - out(Math.floor(prog(t, SPLIT + .5, SPLIT + .9) * 5) / 5));   // elle tombe de l'essaim
+      cathode.position.set(x, y0 + hop[0] + arc + drop, z);               // origine = ses pieds (hot [11,22])
+      cathode.scale.set(sc, sc * hop[1], sc);
+      // elle tourne la tête vers la carte en construction, de face pour la photo de fin
+      const focus = t < 9.4 ? 0 : t < 13.6 ? 1 : 2.5;
+      const fx = lerp(LAYOUT[Math.floor(focus)][0], LAYOUT[Math.ceil(focus)][0], focus % 1);
+      const look = STILL || t > FUSE ? -.25 : clamp(Math.atan2(fx - x, -3) * .5, -.7, .7);
+      cathode.rotation.set(0, Math.round(look * 8) / 8, 0);
+      cathode.blink(!STILL && blinkAt(t, .53));
+    }
   }
 
   // anneau de choc + éclats (division et fusion)
