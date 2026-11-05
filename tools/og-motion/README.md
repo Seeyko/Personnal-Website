@@ -1,5 +1,24 @@
 # og-motion
 
+## v4 (actuelle) — scène Three.js 3D : `scene3d.html`
+
+Blip et son essaim construisent les projets en 3D (18 s, 1920×1080, boucle, thème default).
+- `capture.mjs` photographie les VRAIES cartes du site (DOM, polices, badges, tags, captures) en 2×
+  avec la géométrie de chaque partie → `captures/<thème>/` (card*.png, card*-badge.png, meta.json).
+- `scene3d.html` (three@0.160.0, comme le site) : chaque carte est révélée par un shader (contour au
+  crayon, remplissage au pot depuis le clic, image au pinceau, texte tapé ligne par ligne, badge
+  tamponné). Blip et les curseurs = les vrais sprites (`blip-*.svg`, `CursorSprites`) extrudés en
+  voxels pixel pour pixel, couleurs exactes (faces ombrées par orientation, sans éclairage qui ternit
+  la marque), clignement contractuel. Sol = le papier du site et sa grille de points (cyclorama).
+- `render3d.mjs` capture image par image (WebGL SwiftShader dans le conteneur Playwright, ~0,5 s/image).
+  Servir la racine du dépôt : `python3 -m http.server 8766`. `?t=` fige un instant.
+- og:image = dernière image rendue en 1200×630 (`?w=1200&h=630`, t = 17,9).
+
+Encodage : `ffmpeg -framerate 24 -i frames/f%04d.png -vf "fade=t=in:st=0:d=0.3:color=0xf8f7f4,
+fade=t=out:st=17.6:d=0.4:color=0xf8f7f4,format=yuv420p" -c:v libx264 -preset slow -crf 19 og-motion.mp4`.
+
+## v3 — le site filmé : `rec.mjs`
+
 La vidéo « l'atelier se construit » (16 s, 1920×1080, boucle, thème default) et l'og:image.
 Ce n'est PAS une maquette : c'est le vrai site filmé. L'intro (`blip-swarm.js`) construit
 l'accueil, puis la caméra descend sur Work où `blip-draw.js` dessine chaque projet, et remonte.

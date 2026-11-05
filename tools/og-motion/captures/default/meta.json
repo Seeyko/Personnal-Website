@@ -1,0 +1,384 @@
+{
+ "cards": [
+  {
+   "i": 0,
+   "w": 485.921875,
+   "h": 561.984375,
+   "media": [
+    1,
+    1,
+    483.921875,
+    302.4375
+   ],
+   "title": [
+    25,
+    325.4375,
+    435.921875,
+    24.6875
+   ],
+   "badge": null,
+   "lines": [
+    {
+     "tag": "h3",
+     "cls": "",
+     "rect": [
+      25,
+      325.4375,
+      435.921875,
+      24.6875
+     ]
+    },
+    {
+     "tag": "p",
+     "cls": "",
+     "rect": [
+      25,
+      358.125,
+      435.921875,
+      49.5
+     ]
+    },
+    {
+     "tag": "div",
+     "cls": "tags",
+     "rect": [
+      25,
+      425.625,
+      435.921875,
+      26.796875
+     ]
+    }
+   ],
+   "name": "Ride My Park"
+  },
+  {
+   "i": 1,
+   "w": 485.921875,
+   "h": 561.984375,
+   "media": [
+    1,
+    1,
+    483.921875,
+    302.4375
+   ],
+   "title": [
+    25,
+    358.5,
+    435.921875,
+    24.6875
+   ],
+   "badge": [
+    25,
+    331.40625,
+    65.296875,
+    20.703125
+   ],
+   "lines": [
+    {
+     "tag": "span",
+     "cls": "project-status-badge",
+     "rect": [
+      25,
+      331.40625,
+      65.296875,
+      20.703125
+     ]
+    },
+    {
+     "tag": "h3",
+     "cls": "",
+     "rect": [
+      25,
+      358.5,
+      435.921875,
+      24.6875
+     ]
+    },
+    {
+     "tag": "p",
+     "cls": "",
+     "rect": [
+      25,
+      391.1875,
+      435.921875,
+      99
+     ]
+    },
+    {
+     "tag": "div",
+     "cls": "tags",
+     "rect": [
+      25,
+      508.1875,
+      435.921875,
+      26.796875
+     ]
+    }
+   ],
+   "name": "Skoolbook"
+  },
+  {
+   "i": 2,
+   "w": 485.921875,
+   "h": 528.921875,
+   "media": [
+    1,
+    1,
+    483.921875,
+    302.4375
+   ],
+   "title": [
+    25,
+    358.5,
+    435.921875,
+    24.6875
+   ],
+   "badge": [
+    25,
+    331.40625,
+    65.296875,
+    20.703125
+   ],
+   "lines": [
+    {
+     "tag": "span",
+     "cls": "project-status-badge",
+     "rect": [
+      25,
+      331.40625,
+      65.296875,
+      20.703125
+     ]
+    },
+    {
+     "tag": "h3",
+     "cls": "",
+     "rect": [
+      25,
+      358.5,
+      435.921875,
+      24.6875
+     ]
+    },
+    {
+     "tag": "p",
+     "cls": "",
+     "rect": [
+      25,
+      391.1875,
+      435.921875,
+      49.5
+     ]
+    },
+    {
+     "tag": "div",
+     "cls": "tags",
+     "rect": [
+      25,
+      458.6875,
+      435.921875,
+      26.796875
+     ]
+    }
+   ],
+   "name": "Teach Tools"
+  },
+  {
+   "i": 3,
+   "w": 485.921875,
+   "h": 528.921875,
+   "media": [
+    1,
+    1,
+    483.921875,
+    302.4375
+   ],
+   "title": [
+    25,
+    325.4375,
+    435.921875,
+    24.6875
+   ],
+   "badge": null,
+   "lines": [
+    {
+     "tag": "h3",
+     "cls": "",
+     "rect": [
+      25,
+      325.4375,
+      435.921875,
+      24.6875
+     ]
+    },
+    {
+     "tag": "p",
+     "cls": "",
+     "rect": [
+      25,
+      358.125,
+      435.921875,
+      99
+     ]
+    },
+    {
+     "tag": "div",
+     "cls": "tags",
+     "rect": [
+      25,
+      475.125,
+      435.921875,
+      26.796875
+     ]
+    }
+   ],
+   "name": "GyroDex"
+  }
+ ],
+ "hero": {
+  "w": 1080,
+  "h": 792,
+  "kids": [
+   {
+    "tag": "P",
+    "cls": "output-line",
+    "text": "[OK] Loading modules...",
+    "rect": [
+     -100,
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "tag": "SPAN",
+    "cls": "status-ok",
+    "text": "OK",
+    "rect": [
+     -100,
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "tag": "P",
+    "cls": "output-line",
+    "text": "[OK] Product builder initialized",
+    "rect": [
+     -100,
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "tag": "SPAN",
+    "cls": "status-ok",
+    "text": "OK",
+    "rect": [
+     -100,
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "tag": "P",
+    "cls": "output-line",
+    "text": "[OK] AI transformer online",
+    "rect": [
+     -100,
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "tag": "SPAN",
+    "cls": "status-ok",
+    "text": "OK",
+    "rect": [
+     -100,
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "tag": "H1",
+    "cls": "hero-title hero-title-greeting",
+    "text": "SALUT",
+    "rect": [
+     -100,
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "tag": "P",
+    "cls": "hero-quote-paragraph",
+    "text": "Je construis des produits depuis 8 ans. Ce qui m'anime aujou",
+    "rect": [
+     220,
+     239.15625,
+     640,
+     141.40625
+    ]
+   },
+   {
+    "tag": "P",
+    "cls": "hero-signature",
+    "text": "— Tom",
+    "rect": [
+     220,
+     392.5625,
+     640,
+     25.078125
+    ]
+   },
+   {
+    "tag": "DIV",
+    "cls": "hero-stats",
+    "text": "CREATIVITY\n          [████████████████████] 100%\n        \n  ",
+    "rect": [
+     -100,
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "tag": "DIV",
+    "cls": "stat-bar",
+    "text": "CREATIVITY\n          [████████████████████] 100%",
+    "rect": [
+     -100,
+     0,
+     0,
+     0
+    ]
+   },
+   {
+    "tag": "SPAN",
+    "cls": "stat-label",
+    "text": "CREATIVITY",
+    "rect": [
+     -100,
+     0,
+     0,
+     0
+    ]
+   }
+  ]
+ },
+ "css": {
+  "--bg-primary": "#f8f7f4",
+  "--bg-secondary": "#ffffff",
+  "--text-primary": "#2c2825",
+  "--accent": "#3d7a73",
+  "--border-light": "rgba(0, 0, 0, 0.06)",
+  "--font-sans": "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+ }
+}
