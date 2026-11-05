@@ -17,8 +17,14 @@ Blip et son essaim construisent les projets en 3D (21,5 s, 1920×1080, boucle, t
   Servir la racine du dépôt : `python3 -m http.server 8766`. `?t=` fige un instant.
 - og:image = dernière image rendue en 1200×630 (`?w=1200&h=630`, t = 21,4).
 
-Encodage : `ffmpeg -framerate 24 -i frames/f%04d.png -vf "fade=t=in:st=0:d=0.3:color=0xf8f7f4,
-fade=t=out:st=21.1:d=0.4:color=0xf8f7f4,format=yuv420p" -c:v libx264 -preset slow -crf 19 og-motion.mp4`.
+Encodage — la vidéo s'ouvre ET finit sur le plan final (c'est la 1re image que montrent Discord,
+LinkedIn… pour un og:video ; une ouverture en fondu = vignette vide) : 1,2 s du plan final, fondu
+de 0,5 s vers l'intro, puis toute la scène sans fondu de sortie → boucle sans coupure.
+```
+FC="[0:v]loop=loop=-1:size=1,trim=duration=1.2,setpts=PTS-STARTPTS,fps=24,format=yuv420p[a];[1:v]fps=24,format=yuv420p[b];[a][b]xfade=transition=fade:duration=0.5:offset=0.7,format=yuv420p[v]"
+ffmpeg -i frames/f0515.png -framerate 24 -i frames/f%04d.png -filter_complex "$FC" -map "[v]" \
+  -c:v libx264 -preset slow -crf 19 -movflags +faststart og-motion.mp4   # idem libvpx-vp9 -crf 36 -b:v 0 → .webm
+```
 
 ## v3 — le site filmé : `rec.mjs`
 
