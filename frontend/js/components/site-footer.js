@@ -6,13 +6,11 @@
  * - Hands the floating "Let's talk" button off while the footer is on screen
  *   (the footer carries its own contact pill, and the button would sit on the scene).
  * - Home scene: Tom's painted home, keyed so its sky is transparent and the page
- *   shows through: an RGBA still, then a looping video, one per theme. Safari
- *   can't play VP9 alpha, so the video is a plain file with the colour on top and
- *   the alpha matte below ("stacked alpha"), and a small WebGL pass recombines
- *   them. On top of that: a watercolour wash reveal as the scene scrolls in and a
- *   depth parallax on scroll (the garden rises over the sky).
- *   prefers-reduced-motion keeps the loop but drops the entrance and the parallax;
- *   Save-Data and no WebGL keep the <img> poster.
+ *   shows through: one RGBA still per theme, drawn by a small WebGL pass that adds
+ *   an entrance reveal as the scene scrolls in and a depth parallax on scroll (the
+ *   garden rises over the sky).
+ *   prefers-reduced-motion drops the entrance and the parallax; no WebGL keeps the
+ *   <img> poster.
  *
  * One scene per theme: add an entry to SCENES keyed by the theme id; themes
  * without one fall back to `default`.
@@ -145,38 +143,34 @@
     // Home scene — WebGL compositor
     // ═══════════════════════════════════════════════════════════════
 
-    // One painting per theme, a looping video keyed out of its magenta backdrop.
-    // `aspect` is the painting's real aspect, `style` picks the entrance in the
-    // shader, `revealMs` its length. `poster` is the RGBA still (first frame).
-    // The video is in the stacked layout: colour block (w × colorH) on top, alpha
-    // block below it (w × alphaH) covering the colour rows [0, alphaH); rows under
-    // it are opaque. A source without a `name` would stay on its still. Numbers
-    // printed by tools/footer-scene/key_exact.py.
+    // One painting per theme, keyed out of its magenta backdrop. `aspect` is the
+    // painting's real aspect, `style` picks the entrance in the shader, `revealMs`
+    // its length. `poster` is the RGBA still, in two sizes.
     const SCENES = {
         default: {
             aspect: 16 / 9, style: 0, revealMs: 1800,
-            hd: { name: 'home-scene-1920', poster: 'home-scene-poster-1792.webp', colorH: 1088, alphaH: 768, totalH: 1856 },
-            sd: { name: 'home-scene-1280', poster: 'home-scene-poster-960.webp', colorH: 720, alphaH: 512, totalH: 1232 }
+            hd: { poster: 'home-scene-poster-1792.webp' },
+            sd: { poster: 'home-scene-poster-960.webp' }
         },
         terminal: {
             aspect: 16 / 9, style: 1, revealMs: 2000,
-            hd: { name: 'home-scene-terminal-1920', poster: 'home-scene-terminal-poster-1792.webp', colorH: 1088, alphaH: 752, totalH: 1840 },
-            sd: { name: 'home-scene-terminal-1280', poster: 'home-scene-terminal-poster-960.webp', colorH: 720, alphaH: 496, totalH: 1216 }
+            hd: { poster: 'home-scene-terminal-poster-1792.webp' },
+            sd: { poster: 'home-scene-terminal-poster-960.webp' }
         },
         blueprint: {
             aspect: 16 / 9, style: 2, revealMs: 2200,
-            hd: { name: 'home-scene-blueprint-1920', poster: 'home-scene-blueprint-poster-1792.webp', colorH: 1088, alphaH: 736, totalH: 1824 },
-            sd: { name: 'home-scene-blueprint-1280', poster: 'home-scene-blueprint-poster-960.webp', colorH: 720, alphaH: 496, totalH: 1216 }
+            hd: { poster: 'home-scene-blueprint-poster-1792.webp' },
+            sd: { poster: 'home-scene-blueprint-poster-960.webp' }
         },
         retro90s: {
             aspect: 16 / 9, style: 3, revealMs: 2400,
-            hd: { name: 'home-scene-retro90s-1920', poster: 'home-scene-retro90s-poster-1792.webp', colorH: 1088, alphaH: 720, totalH: 1808 },
-            sd: { name: 'home-scene-retro90s-1280', poster: 'home-scene-retro90s-poster-960.webp', colorH: 720, alphaH: 480, totalH: 1200 }
+            hd: { poster: 'home-scene-retro90s-poster-1792.webp' },
+            sd: { poster: 'home-scene-retro90s-poster-960.webp' }
         },
         fps: {
             aspect: 16 / 9, style: 4, revealMs: 1800,
-            hd: { name: 'home-scene-fps-1920', poster: 'home-scene-fps-poster-1792.webp', colorH: 1088, alphaH: 720, totalH: 1808 },
-            sd: { name: 'home-scene-fps-1280', poster: 'home-scene-fps-poster-960.webp', colorH: 720, alphaH: 480, totalH: 1200 }
+            hd: { poster: 'home-scene-fps-poster-1792.webp' },
+            sd: { poster: 'home-scene-fps-poster-960.webp' }
         }
     };
 
@@ -186,15 +180,6 @@
     const ASSET_DIR = '/assets/footer/';
     // A new painting keeps its file names: bump this so a cached one is never reused.
     const ASSET_VERSION = '20261005-0100';
-
-    // H.264 first (Safari/iOS, hardware decode everywhere); VP9 for builds shipped
-    // without proprietary codecs. Both files carry the same stacked layout.
-    function videoUrl(source) {
-        const probe = document.createElement('video');
-        const mp4 = probe.canPlayType('video/mp4; codecs="avc1.64002A"');
-        const webm = probe.canPlayType('video/webm; codecs="vp9"');
-        return `${ASSET_DIR}${source.name}.${mp4 || !webm ? 'mp4' : 'webm'}?v=${ASSET_VERSION}`;
-    }
 
     const VERT = `
 attribute vec2 a_pos;
@@ -212,14 +197,9 @@ precision mediump float;
 #endif
 varying vec2 v_uv;
 
-uniform sampler2D u_tex;    // stacked colour/alpha video frame
 uniform sampler2D u_poster; // RGBA still
-uniform float u_mix;        // 0: still only, 1: video only (crossfade in between)
 uniform vec2  u_res;        // canvas size, device px
 uniform vec4  u_crop;       // visible scene rect (x, y, w, h), scene uv
-uniform float u_colorFrac;  // colour block height / texture height
-uniform float u_alphaCover; // alpha block height / colour block height
-uniform float u_texel;      // half a texel, texture height
 uniform float u_reveal;     // 0..1 watercolour wash
 uniform float u_rise;       // 0..1 scroll parallax (1 = settled)
 uniform vec2  u_fade;       // top dissolve depth, fraction of canvas height (x: tree side, y: sky side)
@@ -258,27 +238,8 @@ float bayer4(vec2 p) {
 // Near things sit low in a landscape: depth grows from the horizon to the grass.
 float depthAt(float v) { return smoothstep(0.5, 1.0, v); }
 
-vec4 sampleVideo(vec2 s) {
-    vec3 rgb = texture2D(u_tex, vec2(s.x, min(s.y * u_colorFrac, u_colorFrac - u_texel))).rgb;
-    float a = 1.0;
-    if (s.y < u_alphaCover) {
-        float av = max(u_colorFrac + s.y * u_colorFrac, u_colorFrac + u_texel);
-        a = clamp((texture2D(u_tex, vec2(s.x, av)).g - 0.03) / 0.94, 0.0, 1.0);
-    }
-    return vec4(rgb, a);
-}
-
 vec4 sampleScene(vec2 s) {
-    s = clamp(s, vec2(0.0), vec2(1.0));
-    if (u_mix <= 0.0) return texture2D(u_poster, s);
-    vec4 v = sampleVideo(s);
-    if (u_mix >= 1.0) return v;
-    // The still and the video's first frame differ a little (compression):
-    // blend them, weighted by alpha, instead of cutting from one to the other.
-    vec4 p = texture2D(u_poster, s);
-    float a = mix(p.a, v.a, u_mix);
-    vec3 rgb = (p.rgb * p.a * (1.0 - u_mix) + v.rgb * v.a * u_mix) / max(a, 1e-4);
-    return vec4(rgb, a);
+    return texture2D(u_poster, clamp(s, vec2(0.0), vec2(1.0)));
 }
 
 vec2 sceneUV(vec2 uv) {
@@ -391,19 +352,9 @@ void main() {
 
         const config = sceneFor(document.body.dataset.theme || 'default');
         const still = reduceMotion.matches;
-        const MIX_MS = 450;           // still → video crossfade
 
         const state = {
-            source: null,             // video source being played
-            texSource: null,          // source of the frame in the video texture
-            video: null,
-            usingVideo: false,
             hasPoster: false,         // the still is in its texture
-            mix: 0,                   // 0 still … 1 video
-            mixStart: 0,
-            frameDirty: true,
-            lastVideoTime: -1,
-            lastFrameCallback: 0,
             visible: false,
             raf: 0,
             lastTime: 0,
@@ -412,8 +363,6 @@ void main() {
             rise: still ? 1 : 0,
             crop: [0, 0, 1, 1],
             fade: [0.1, 0.06],
-            videoRequested: false,
-            awaitingGesture: false,
             dirty: true
         };
 
@@ -429,7 +378,7 @@ void main() {
             return tex;
         }
 
-        let program, loc, videoTex, posterTex;
+        let program, loc, posterTex;
         function setupGL() {
             program = gl.createProgram();
             gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, VERT));
@@ -445,15 +394,12 @@ void main() {
             gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
             loc = {};
-            ['u_tex', 'u_poster', 'u_mix', 'u_res', 'u_crop', 'u_colorFrac', 'u_alphaCover', 'u_texel',
-             'u_reveal', 'u_rise', 'u_fade', 'u_style']
+            ['u_poster', 'u_res', 'u_crop', 'u_reveal', 'u_rise', 'u_fade', 'u_style']
                 .forEach(name => { loc[name] = gl.getUniformLocation(program, name); });
 
             gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-            videoTex = makeTexture(gl.TEXTURE0);
-            posterTex = makeTexture(gl.TEXTURE1);
-            gl.uniform1i(loc.u_tex, 0);
-            gl.uniform1i(loc.u_poster, 1);
+            posterTex = makeTexture(gl.TEXTURE0);
+            gl.uniform1i(loc.u_poster, 0);
             gl.clearColor(0, 0, 0, 0);
         }
 
@@ -490,20 +436,12 @@ void main() {
             if (resized && program && !gl.isContextLost()) draw();
         }
 
-        function pickSource() {
-            const conn = navigator.connection || {};
-            const slow = conn.saveData || /(^|-)2g$|^3g$/.test(conn.effectiveType || '');
-            const rect = scene.getBoundingClientRect();
-            const need = rect.width * Math.min(window.devicePixelRatio || 1, 2) / (state.crop[2] || 1);
-            return slow || need < 1400 ? 'sd' : 'hd';
-        }
-
         // The still is the page's own <img> poster (srcset picks its size), so it is
-        // downloaded once and serves both the no-WebGL fallback and the first frame.
+        // downloaded once and serves both the no-WebGL fallback and the canvas.
         // With WebGL the <img> itself stays hidden (.is-gl): only the canvas paints.
-        function uploadPoster(force) {
-            if ((state.usingVideo && !force) || !img || !img.complete || !img.naturalWidth || gl.isContextLost()) return false;
-            gl.activeTexture(gl.TEXTURE1);
+        function uploadPoster() {
+            if (!img || !img.complete || !img.naturalWidth || gl.isContextLost()) return false;
+            gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, posterTex);
             gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
@@ -516,109 +454,6 @@ void main() {
             if (!img) return;
             if (uploadPoster()) requestFrame();
             else img.addEventListener('load', () => { if (uploadPoster()) requestFrame(); }, { once: true });
-        }
-
-        function uploadVideoFrame(video) {
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, videoTex);
-            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-            try {
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
-            } catch {
-                return false;
-            }
-            state.texSource = state.source;
-            state.frameDirty = false;
-            state.lastVideoTime = video.currentTime;
-            state.dirty = true;
-            return true;
-        }
-
-        // Once the video plays, the still's texture is no longer needed.
-        function releasePoster() {
-            gl.activeTexture(gl.TEXTURE1);
-            gl.bindTexture(gl.TEXTURE_2D, posterTex);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
-            state.hasPoster = false;
-        }
-
-        function loadVideo(key) {
-            const source = config[key];
-            const video = document.createElement('video');
-            video.muted = true;
-            video.defaultMuted = true;
-            video.autoplay = true;
-            video.loop = true;
-            video.playsInline = true;
-            video.setAttribute('muted', '');
-            video.setAttribute('playsinline', '');
-            video.setAttribute('aria-hidden', 'true');
-            video.preload = 'auto';
-            video.disablePictureInPicture = true;
-            video.setAttribute('webkit-playsinline', '');
-            // Kept in the DOM and inside the visible part of the scene (bottom centre):
-            // WebKit pauses, or stops presenting frames of, media it deems off screen.
-            video.style.cssText = 'position:absolute;left:50%;bottom:2px;width:2px;height:2px;opacity:0.01;pointer-events:none;';
-            video.addEventListener('error', () => {
-                if (state.video !== video) return;
-                video.remove();
-                state.video = null;
-                state.usingVideo = false;
-                if (key === 'hd') loadVideo('sd');
-            }, { once: true });
-            video.addEventListener('loadeddata', () => {
-                if (state.video !== video) return;
-                if (!state.usingVideo) {
-                    // Crossfade from the still if it is showing, else cut straight in.
-                    state.mix = state.hasPoster ? 0 : 1;
-                    state.mixStart = 0;
-                }
-                state.usingVideo = true;
-                state.frameDirty = true;
-                requestFrame();
-            });
-            // Wake the loop back up whenever playback (re)starts: after the seek
-            // back to the start at each loop, a stall, or a refused autoplay.
-            ['playing', 'seeked', 'timeupdate'].forEach(ev => video.addEventListener(ev, requestFrame));
-            if ('requestVideoFrameCallback' in video) {
-                const onFrame = () => {
-                    state.frameDirty = true;
-                    state.lastFrameCallback = performance.now();
-                    requestFrame();
-                    if (state.video === video) video.requestVideoFrameCallback(onFrame);
-                };
-                video.requestVideoFrameCallback(onFrame);
-            }
-            video.src = videoUrl(source);
-            scene.appendChild(video);
-            state.video = video;
-            state.source = source;
-            syncPlayback();
-        }
-
-        // Autoplay while on screen; stopped off screen and in background tabs.
-        const GESTURES = ['pointerdown', 'keydown', 'touchend'];
-        function retryOnGesture() {
-            state.awaitingGesture = false;
-            GESTURES.forEach(ev => window.removeEventListener(ev, retryOnGesture, true));
-            syncPlayback();
-        }
-
-        function syncPlayback() {
-            const video = state.video;
-            if (!video) return;
-            const shouldPlay = state.visible && !document.hidden;
-            if (shouldPlay && video.paused) {
-                video.play().catch(() => {
-                    // Autoplay refused (iOS low-power mode…): the first frame stays on
-                    // screen and the loop starts on the visitor's first tap or key.
-                    if (state.awaitingGesture) return;
-                    state.awaitingGesture = true;
-                    GESTURES.forEach(ev => window.addEventListener(ev, retryOnGesture, { capture: true, passive: true }));
-                });
-            } else if (!shouldPlay && !video.paused) {
-                video.pause();
-            }
         }
 
         // Reveal completes once most of the scene is on screen (some themes keep
@@ -641,8 +476,8 @@ void main() {
             if (!state.raf && state.visible) state.raf = requestAnimationFrame(frame);
         }
 
-        // Redraws only when something changed (a new video frame, the entrance, the
-        // parallax); the loop itself keeps running as long as the video plays.
+        // Redraws only when something changed (the entrance, the parallax); the loop
+        // sleeps once both have settled.
         function frame(now) {
             state.raf = 0;
             if (!state.visible || gl.isContextLost()) return;
@@ -655,8 +490,7 @@ void main() {
                 // The entrance plays once (config.revealMs) from the moment the scene's top
                 // edge shows, and only once there is a picture to reveal; the depth
                 // parallax keeps following the scroll both ways.
-                const ready = state.hasPoster || state.usingVideo;
-                if (!state.washStart && ready && target > 0.02) state.washStart = now;
+                if (!state.washStart && state.hasPoster && target > 0.02) state.washStart = now;
                 if (state.washStart && state.reveal < 1) {
                     const k = Math.min((now - state.washStart) / config.revealMs, 1);
                     state.reveal = 1 - Math.pow(1 - k, 3);
@@ -664,28 +498,6 @@ void main() {
                 }
                 if (Math.abs(target - state.rise) > 1e-3) {
                     state.rise += (target - state.rise) * (1 - Math.exp(-dt * 5));
-                    state.dirty = busy = true;
-                }
-            }
-
-            const video = state.video;
-            if (state.usingVideo && video) {
-                if (!video.paused && !video.ended) busy = true;
-                // No upload while seeking (the jump back to the start of the loop) or
-                // without a decoded frame: the last good frame stays on screen.
-                // requestVideoFrameCallback says when a new frame is up; Safari stops
-                // firing it for a video it doesn't paint (ours is a 2 px proxy), so
-                // when it goes quiet the time is polled instead (about twice per frame).
-                if (video.readyState >= 2 && !video.seeking) {
-                    const quiet = now - state.lastFrameCallback > 250;
-                    const moved = Math.abs(video.currentTime - state.lastVideoTime) >= 0.02;
-                    if ((state.frameDirty || (quiet && moved)) && uploadVideoFrame(video) && state.mix < 1 && !state.mixStart) {
-                        state.mixStart = now;
-                    }
-                }
-                if (state.mixStart && state.mix < 1) {
-                    state.mix = still ? 1 : Math.min((now - state.mixStart) / MIX_MS, 1);
-                    if (state.mix >= 1) releasePoster();
                     state.dirty = busy = true;
                 }
             }
@@ -698,17 +510,10 @@ void main() {
         }
 
         function draw() {
-            const s = state.texSource;
             gl.viewport(0, 0, canvas.width, canvas.height);
             gl.clear(gl.COLOR_BUFFER_BIT);
             gl.uniform2f(loc.u_res, canvas.width, canvas.height);
             gl.uniform4f(loc.u_crop, state.crop[0], state.crop[1], state.crop[2], state.crop[3]);
-            gl.uniform1f(loc.u_mix, s ? state.mix : 0);
-            if (s) {
-                gl.uniform1f(loc.u_colorFrac, s.colorH / s.totalH);
-                gl.uniform1f(loc.u_alphaCover, s.alphaH / s.colorH);
-                gl.uniform1f(loc.u_texel, 0.5 / s.totalH);
-            }
             gl.uniform1f(loc.u_reveal, state.reveal);
             gl.uniform1f(loc.u_rise, state.rise);
             gl.uniform2f(loc.u_fade, state.fade[0], state.fade[1]);
@@ -716,18 +521,8 @@ void main() {
             gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
 
-        // Lazy: the video only starts downloading when the scene is about to show
-        // (never with Save-Data, where the still is enough; not every theme has one).
-        const conn = navigator.connection || {};
-        const wantsVideo = !conn.saveData && !!config.hd.name;
-
         const io = new IntersectionObserver(([entry]) => {
             state.visible = entry.isIntersecting;
-            if (state.visible && wantsVideo && !state.videoRequested) {
-                state.videoRequested = true;
-                loadVideo(pickSource());
-            }
-            syncPlayback();
             if (state.visible) {
                 state.lastTime = 0;
                 state.dirty = true;
@@ -751,19 +546,8 @@ void main() {
                 return;
             }
             state.hasPoster = false;
-            state.texSource = null;
             resize();
-            const video = state.video;
-            if (state.usingVideo && video && video.readyState >= 2 && uploadVideoFrame(video)) {
-                state.mix = 1;
-            } else {
-                // No frame to grab right now: back on the still, and the next video
-                // frame crossfades in as on the first load.
-                state.mix = 0;
-                state.mixStart = 0;
-                state.frameDirty = true;
-                uploadPoster(true);
-            }
+            uploadPoster();
             draw();
             state.dirty = false;
             scene.classList.add('is-gl');
@@ -784,7 +568,6 @@ void main() {
         }
         io.observe(scene);
         new ResizeObserver(() => { geo = null; resize(); requestFrame(); }).observe(scene);
-        document.addEventListener('visibilitychange', syncPlayback);
     }
 
     // ─── Boot ───
@@ -800,9 +583,8 @@ void main() {
         initReveal(root);
         initCtaHandoff(root);
 
-        // Nothing of the scene downloads up front. The still and WebGL wake up when
-        // the footer is getting close; the video itself waits until the scene is
-        // about to show (see createScene).
+        // Nothing of the scene downloads up front: the still and WebGL wake up when
+        // the footer is getting close.
         const scene = root.querySelector('.sf-scene');
         if (!scene) return;
 

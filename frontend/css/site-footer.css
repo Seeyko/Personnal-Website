@@ -4,7 +4,7 @@
    scene in FRONT of it: the card sinks behind the tree, the house and the
    sea, so the footer lives inside the painting (Bloom-style). The scene's
    sky is keyed out, so the page and the card show straight through it.
-   js/components/site-footer.js draws the still (or the video) in WebGL.
+   js/components/site-footer.js draws the still in WebGL.
    ═══════════════════════════════════════════════════════════════ */
 
 .site-footer {
@@ -27,7 +27,7 @@
   --sf-gutter: clamp(1.25rem, 4vw, 3rem);
   --sf-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* Scene: the 16:9 painting (a looping video), read by the shader. Where the
+  /* Scene: the 16:9 painting (a still), read by the shader. Where the
      top edge of the frame cuts into it, it dissolves over a thin, leafy band. */
   --sf-scene-ar: 1.7778;
   --sf-scene-focus-x: 56%;

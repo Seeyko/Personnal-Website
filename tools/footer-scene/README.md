@@ -1,6 +1,13 @@
 # Footer « home scene » : de l'image à la vidéo détourée
 
-> **État au 5 oct. 2026** : les cinq thèmes affichent une vidéo détourée.
+> **État au 5 nov. 2026** : le footer n'affiche plus de vidéo, seulement l'image fixe détourée
+> de chaque thème (`home-scene[-<theme>]-poster-{1792,960}.webp`), à la demande de Tom. Les
+> vidéos et leur lecture ont été retirées du site ; `key_exact.py` produit encore les posters.
+> Pour remettre une vidéo, repartir de la PR #106 (lecture « stacked alpha » dans
+> `site-footer.js`) : `key_exact.py` affiche une entrée `SCENES` avec des champs que le
+> composant ne lit plus.
+>
+> **État au 5 oct. 2026** (historique) : les cinq thèmes affichaient une vidéo détourée.
 >
 > Vidéo sur fond magenta plat (une seule couleur exacte) :
 >
