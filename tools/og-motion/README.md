@@ -1,16 +1,18 @@
 # og-motion
 
-La vidéo « l'atelier se construit » (10 s, boucle) et l'og:image, qui est sa dernière image.
+La vidéo « l'atelier se construit » (16 s, boucle, thème default) et l'og:image, qui est sa
+dernière image.
 
-Un Blip se divise en essaim de curseurs (les vrais sprites de `CursorSprites` et les Blip
-de thème) ; chacun construit un morceau de la page avec le geste de son outil (crayon :
-le cadre, pot : la barre de titre, I-beam et Blip terminal : les titres, Blip blueprint : la
-cote de marge, main : les puces, pinceau : le soulignement ambre, Blip retro90s : la devise).
-Ils refusionnent en Blip sur son skate, ollie, puis extinction CRT : la boucle repart du noir.
+Plan par plan : sur le papier, un curseur bloc ouvre les yeux et devient Blip, puis se divise en
+essaim. La caméra suit la construction des projets : Ride My Park en gros plan (cadre au crayon,
+fond au pot, capture au pinceau, titre à l'I-beam, badge tamponné, compteur 0 → 30K spots),
+Skoolbook, puis Teach Tools et GyroDex en plan à deux (GyroDex, « pour le fun », est construit
+par les Blip de thème). Recul sur la page entière, la tagline se tape, l'essaim fusionne en Blip
+sur son skate (pixel-art d'après `skate3d` de Ride My Park : kicktails, grip, chant d'érable,
+dessous bleu, trucks alu, roues crème), ollie, fermeture à l'iris : la boucle repart du papier.
 
-Tout est une fonction pure du temps, `render(t)` dans `scene.html`, en pas de 1/12 s
-(pixel-art, BRANDING.md « tout est animé en steps() »). Aucune animation CSS : le rendu
-image par image est exact.
+Tout est une fonction pure du temps, `render(t)` dans `scene.html`. Les sprites avancent par pas
+de 1/12 s (BRANDING.md : tout est en steps()) ; seule la caméra glisse. Rendu image par image exact.
 
 ## Rendu
 

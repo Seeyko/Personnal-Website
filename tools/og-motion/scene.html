@@ -1,17 +1,24 @@
 <!doctype html>
 <!--
-  og-motion — la vidéo « l'atelier se construit » et l'og:image (sa dernière image).
+  og-motion — « l'atelier se construit » : la vidéo cinématique et l'og:image (sa dernière image).
 
   Une seule fonction pure du temps : render(t), t en secondes dans [0, DURATION).
-  render.mjs capture chaque image (24 i/s) puis ffmpeg encode. Rien n'est animé
-  par le navigateur lui-même : pas de CSS animation, pas de requestAnimationFrame,
-  donc deux rendus du même t donnent la même image.
+  render.mjs capture chaque image (24 i/s) puis ffmpeg encode. Le navigateur n'anime rien
+  lui-même (ni animation CSS, ni requestAnimationFrame) : deux rendus du même t sont identiques.
+
+  Mise en scène : la caméra (translation + zoom sur un « monde » de 1200×630, qui est aussi le
+  cadre final) passe de projet en projet pendant que l'essaim de curseurs les construit ; puis
+  elle recule et révèle la page entière. Les curseurs vivent en coordonnées ÉCRAN (taille fixe,
+  pixels nets) et suivent des points du monde. Le mouvement des sprites avance par pas de 1/12 s
+  (BRANDING.md : tout est en steps()) ; seule la caméra glisse, comme une vraie caméra.
+
+  Thème : default (papier, encre, teal). ?theme= prévu pour la déclinaison par thème.
 
   Servi par tools/og-motion/serve.ts : /og-motion/* vient d'ici, le reste de frontend/
-  (polices, Blip, CursorSprites : les vrais assets du site).
+  (polices, Blip, CursorSprites, captures des projets : les vrais assets du site).
 
-  ?t=8.9      fige la scène à cet instant (aperçu dans un navigateur)
-  ?still=1    image finale sans curseurs (= og-image.png)
+  ?t=8.9    fige la scène à cet instant (aperçu)
+  ?still=1  image finale sans curseurs (= og-image.png)
 -->
 <html lang="fr">
 <head>
@@ -20,102 +27,87 @@
 <link rel="stylesheet" href="/assets/fonts/fonts.css">
 <style>
   :root {
-    --crt: #0a0a0a;
-    --ink: #12120f;
-    --phosphore: #33ff00;
-    --ambre: #ffb000;
-    --cyan: #00ffff;
-    --magenta: #ff00ff;
-    --texte: #ececec;
-    --gris: #7a7a7a;
-    --trait: #3a3a3a;
+    --papier: #f8f7f4;
+    --carte: #ffffff;
+    --encre: #2c2825;
+    --encre-2: #5c5650;
+    --encre-3: #756d64;
+    --muet: #b5aea5;
+    --trait: #e5e0d8;
+    --teal: #3d7a73;
+    --teal-ink: #2f6b64;
+    --teal-soft: #e3efed;
+    --ocre: #a8822a;
+    --argile: #b95c3a;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { width: 1200px; height: 630px; overflow: hidden; background: #000; }
-  body { font-family: 'JetBrains Mono', monospace; -webkit-font-smoothing: antialiased; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; background: var(--papier); }
+  body { font-family: 'JetBrains Mono', monospace; -webkit-font-smoothing: antialiased; color: var(--encre); }
 
-  #stage { position: absolute; inset: 0; background: var(--crt); overflow: hidden; transform-origin: 50% 50%; }
+  #stage { position: absolute; inset: 0; overflow: hidden; background: var(--papier); }
+  #world { position: absolute; left: 0; top: 0; width: 1200px; height: 630px; transform-origin: 0 0;
+           background-image: radial-gradient(circle, #e6e0d6 1.1px, transparent 1.4px); background-size: 24px 24px; background-position: 12px 12px; }
   .abs { position: absolute; }
   .px { image-rendering: pixelated; }
   svg { display: block; overflow: visible; }
-
-  /* fenêtre de navigateur que les curseurs construisent */
-  .edge { position: absolute; background: var(--trait); }
-  #titlebar { left: 40px; top: 34px; width: 1120px; height: 34px; background: #151515; }
-  .dot { position: absolute; top: 12px; width: 10px; height: 10px; }
-  #url { position: absolute; left: 50%; top: 7px; transform: translateX(-50%); height: 20px; padding: 0 14px;
-         background: #0d0d0d; color: var(--gris); font-size: 12px; line-height: 20px; white-space: pre; }
-  #url b { color: var(--ambre); font-weight: 500; }
-
   .line { position: absolute; white-space: pre; }
-  #brand { left: 84px; top: 88px; font-size: 20px; font-weight: 700; letter-spacing: .08em; color: var(--texte); }
-  #nav { top: 92px; font-size: 14px; color: var(--gris); }
-  #divider { left: 84px; top: 132px; height: 1px; background: #222; }
-  #prompt { left: 84px; top: 160px; font-size: 18px; color: #1fae00; }
-  #prompt .u { color: var(--ambre); } #prompt .s { color: #3d7a3d; }
-  .h { left: 84px; font-size: 46px; line-height: 58px; font-weight: 700; color: var(--texte); }
-  .h.g { color: var(--phosphore); }
-  .caret { display: inline-block; width: .55em; height: .9em; background: var(--phosphore); vertical-align: -.08em; margin-left: .12em; }
-  #brand .caret { width: .6em; height: .82em; margin-left: .18em; }
-  #underline { left: 84px; top: 304px; height: 6px; background: var(--ambre); }
 
-  .chip { position: absolute; top: 452px; height: 38px; padding: 0 16px; border: 1px solid #2c2c2c; background: #101010;
-          color: #cfcfcf; font-size: 15px; line-height: 36px; white-space: pre; }
-  .chip .ok { color: var(--phosphore); }
-  #motto { left: 84px; top: 540px; font-size: 15px; color: #5f5f5f; }
+  #brand { left: 64px; top: 38px; font-size: 18px; font-weight: 700; letter-spacing: .08em; }
+  #nav { top: 41px; font-size: 13px; color: var(--encre-3); }
+  #divider { left: 64px; top: 78px; height: 1px; background: var(--trait); }
+  .h { left: 64px; font-size: 40px; line-height: 50px; font-weight: 700; }
+  #h3 { font-size: 24px; line-height: 30px; font-weight: 500; color: var(--teal); }
+  .caret { display: inline-block; width: .56em; height: .86em; background: var(--teal); vertical-align: -.06em; margin-left: .14em; }
 
-  /* cote de mesure (Blip blueprint) */
-  .dim { position: absolute; background: var(--cyan); }
-  #dimlabel { position: absolute; font-size: 12px; color: var(--cyan); white-space: pre; }
+  .card { position: absolute; top: 372px; width: 256px; height: 222px; }
+  .card .edge { position: absolute; background: var(--encre); }
+  .card .bg { position: absolute; inset: 0; background: var(--carte); box-shadow: 0 6px 18px rgba(44,40,37,.08); }
+  .card .shot { position: absolute; left: 10px; top: 10px; width: 236px; height: 120px; overflow: hidden; background: var(--teal-soft); }
+  .card .shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card .title { left: 12px; top: 140px; font-size: 16px; font-weight: 700; }
+  .card .badge { position: absolute; left: 12px; top: 166px; height: 20px; padding: 0 7px; font-size: 11px; line-height: 18px;
+                 font-weight: 700; border: 1px solid; white-space: pre; transform-origin: 30% 50%; }
+  .badge.prod { color: var(--teal-ink); background: var(--teal-soft); border-color: var(--teal); }
+  .badge.arch { color: var(--encre-3); background: #f3f1ed; border-color: var(--muet); }
+  .badge.fun  { color: #8a6a1f; background: #f6eedb; border-color: var(--ocre); }
+  .card .meta { left: 12px; top: 194px; font-size: 12px; color: var(--encre-2); }
 
-  #skate { left: 818px; top: 150px; width: 276px; height: 276px; }
-  #skate svg { width: 100%; height: 100%; }
+  #rider { position: absolute; left: 0; top: 0; }
+  #rider .board, #rider .blip { position: absolute; }
 
-  .actor { position: absolute; left: 0; top: 0; will-change: transform; }
+  .actor { position: absolute; left: 0; top: 0; }
   .actor svg { width: 100%; height: 100%; }
   .bit { position: absolute; width: 8px; height: 8px; }
-
-  #scan { position: absolute; inset: 0; pointer-events: none;
-          background: repeating-linear-gradient(to bottom, rgba(255,255,255,.022) 0 1px, transparent 1px 3px); }
-  #vignette { position: absolute; inset: 0; pointer-events: none;
-              background: radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(0,0,0,.55) 100%); }
   #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  #vignette { position: absolute; inset: 0; pointer-events: none;
+              background: radial-gradient(ellipse at 50% 50%, transparent 62%, rgba(92,86,80,.16) 100%); }
+  #iris { position: absolute; inset: 0; background: var(--papier); pointer-events: none; }
 </style>
 </head>
 <body>
 <div id="stage">
-  <div id="frame"></div>
-  <div id="titlebar" class="abs"><div id="url"><b>https://</b>tomandrieu.com</div></div>
-
-  <div id="brand" class="line"></div>
-  <div id="nav" class="line"></div>
-  <div id="divider" class="abs"></div>
-  <div id="prompt" class="line"></div>
-  <div id="h1" class="line h" style="top:196px"></div>
-  <div id="h2" class="line h" style="top:254px"></div>
-  <div id="h3" class="line h g" style="top:312px"></div>
-  <div id="h4" class="line h g" style="top:370px"></div>
-  <div id="underline" class="abs"></div>
-  <div id="chip1" class="chip"><span class="ok">[EN PROD]</span> Ride My Park · 30K+ riders</div>
-  <div id="chip2" class="chip">MVP en 3 semaines</div>
-  <div id="motto" class="line"></div>
-
-  <div id="dims"></div>
-  <div id="skate" class="abs px"></div>
-
+  <div id="world">
+    <div id="brand" class="line"></div>
+    <div id="nav" class="line"></div>
+    <div id="divider" class="abs"></div>
+    <div id="h1" class="line h" style="top:100px"></div>
+    <div id="h2" class="line h" style="top:150px"></div>
+    <div id="h3" class="line h" style="top:214px"></div>
+    <div id="cards"></div>
+    <div id="rider"><div class="board px"></div><div class="blip px"></div></div>
+  </div>
   <div id="bits"></div>
   <div id="actors"></div>
   <div id="flash"></div>
-  <div id="scan"></div>
   <div id="vignette"></div>
+  <div id="iris"></div>
 </div>
 
 <script src="/js/core/effects/cursor-sprites.js"></script>
 <script>
 'use strict';
-const DURATION = 10;
-const FPS_STEP = 12;                        // le mouvement avance en pas de 1/12 s (pixel-art, jamais lisse)
-const W = { x: 40, y: 34, w: 1120, h: 562 };
+const DURATION = 16;
+const FPS_STEP = 12;
 const $ = id => document.getElementById(id);
 
 // ── temps ──────────────────────────────────────────────────────────
@@ -125,9 +117,8 @@ const prog = (t, a, b) => clamp((t - a) / (b - a));
 const ease = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
 const out = k => 1 - Math.pow(1 - k, 3);
 const lerp = (a, b, k) => a + (b - a) * k;
-
-// Trajet par points clés [t, x, y] : maintien avant/après, ease par segment.
-function path(t, keys) {
+const typed = (s, t, a, b) => s.slice(0, Math.round(s.length * prog(t, a, b)));
+function path(t, keys) {                              // [t, x, y] : maintien hors bornes, ease par segment
   if (t <= keys[0][0]) return [keys[0][1], keys[0][2]];
   for (let i = 1; i < keys.length; i++) {
     const [t1, x1, y1] = keys[i], [t0, x0, y0] = keys[i - 1];
@@ -137,15 +128,34 @@ function path(t, keys) {
   return [l[1], l[2]];
 }
 
-// ── texte tapé ─────────────────────────────────────────────────────
-const typed = (s, t, a, b) => s.slice(0, Math.round(s.length * prog(t, a, b)));
-const CW = { brand: 20 * .68, prompt: 18 * .6, h: 46 * .6, motto: 15 * .6 };   // JetBrains Mono : 600/1000 em
-
-// ── Blip : SVG inline + clignement (visage éteint = curseur bloc) ──
-const SVG = {};
-async function loadSvg(name) {
-  SVG[name] = await (await fetch(`/assets/brand/${name}.svg`)).text();
+// ── caméra : [t, cx, cy, zoom] — centre du monde visé et grossissement ──
+const CAM = [
+  [0.0, 192, 483, 2.25],
+  [5.2, 192, 483, 2.5],                               // lente poussée pendant Ride My Park
+  [5.9, 464, 483, 2.45],
+  [7.9, 464, 483, 2.6],
+  [8.5, 872, 483, 1.95],                              // plan à deux : Teach Tools + GyroDex
+  [10.3, 872, 483, 2.05],
+  [11.4, 600, 315, 1],                                // recul : la page entière
+];
+function camera(T) {                                 // la caméra glisse (temps continu, pas de pas)
+  if (T <= CAM[0][0]) return CAM[0].slice(1);
+  for (let i = 1; i < CAM.length; i++) {
+    if (T <= CAM[i][0]) {
+      const a = CAM[i - 1], b = CAM[i], k = ease(prog(T, a[0], b[0]));
+      // zoom interpolé en log : un recul de ×2 à ×1 se lit à vitesse constante
+      const z = Math.exp(lerp(Math.log(a[3]), Math.log(b[3]), k));
+      return [lerp(a[1], b[1], k), lerp(a[2], b[2], k), z];
+    }
+  }
+  return CAM[CAM.length - 1].slice(1);
 }
+let cam = [600, 315, 1];
+const toScreen = (x, y) => [(x - cam[0]) * cam[2] + 600, (y - cam[1]) * cam[2] + 315];
+
+// ── Blip (SVG inline) + clignement : visage éteint = curseur bloc ──
+const SVG = {};
+async function loadSvg(name) { SVG[name] = await (await fetch(`/assets/brand/${name}.svg`)).text(); }
 function mountSvg(host, name) {
   host.innerHTML = SVG[name];
   const rects = [...host.querySelectorAll('rect')];
@@ -159,19 +169,146 @@ function mountSvg(host, name) {
   host._blink = shut => face.forEach(r => r.setAttribute('fill', shut ? body : r.dataset.fill));
   return host;
 }
-// cadence contractuelle : une image éteinte toutes les ~1.06 s
 const blinkAt = (t, phase = 0) => ((t + phase) % 1.06) < 1 / 12;
 
-// ── acteurs (l'essaim) ─────────────────────────────────────────────
+// ── le skate (pixel-art, d'après skate3d de Ride My Park) ──────────
+// Profil latéral : kicktails en smoothstep comme deckSurfaceY, grip #17191d, chant à plis
+// (érable + pli bleu #289bd2), trucks alu #b3b9c2 sur embase #8d949e, roues uréthane crème
+// #f0e9d9. Le contour encre est poussé autour des pixels peints (comme CursorSprites).
+const SK = { U: 5, W: 48, H: 20 };
+function skateSvg(spin = 0) {
+  const g = Array.from({ length: SK.H }, () => Array(SK.W).fill(null));
+  const set = (x, y, c) => { if (x >= 0 && x < SK.W && y >= 0 && y < SK.H) g[y][x] = c; };
+  const mid = 23.5;
+  for (let x = 1; x <= 46; x++) {
+    const d = Math.abs(x + .5 - mid - .5);
+    const s = clamp((d - 13) / 9.5);
+    const top = 5 - Math.round(3 * s * s * (3 - 2 * s));
+    set(x, top, x % 7 === 3 ? '#2b2e33' : '#17191d');  // grip (grain discret)
+    set(x, top + 1, x % 5 === 1 ? '#d2b385' : '#e7d0a7'); // chant d'érable
+    set(x, top + 2, '#289bd2');                          // dessous peint bleu marque
+  }
+  [13, 34].forEach(cx => {
+    for (let x = cx - 3; x <= cx + 3; x++) set(x, 8, '#8d949e');            // embase
+    for (let x = cx - 2; x <= cx + 2; x++) set(x, 9, x < cx ? '#d5dade' : '#b3b9c2'); // hanger, reflet à gauche
+    const wheel = ['..WWW..', '.WWWWW.', 'WWWWWWS', 'WWWBWSS', 'WWWWSSS', '.WWSSS.', '..SSS..'];
+    wheel.forEach((row, j) => [...row].forEach((c, i) => {
+      if (c === '.') return;
+      set(cx - 3 + i, 10 + j, c === 'W' ? '#f0e9d9' : c === 'S' ? '#d9cfb8' : '#2e3238');
+    }));
+    const rim = [[-1, -2], [2, -1], [1, 2], [-2, 1]][spin % 4];               // reflet qui tourne : la roue roule
+    set(cx + rim[0], 13 + rim[1], '#fffaf0');
+  });
+  const ink = g.map(r => r.slice());
+  for (let y = 0; y < SK.H; y++) for (let x = 0; x < SK.W; x++) {
+    if (g[y][x]) continue;
+    if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => g[y + dy] && g[y + dy][x + dx])) ink[y][x] = '#12120f';
+  }
+  let rects = '';
+  ink.forEach((row, y) => row.forEach((c, x) => { if (c) rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`; }));
+  return `<svg viewBox="0 0 ${SK.W} ${SK.H}" width="${SK.W * SK.U}" height="${SK.H * SK.U}" shape-rendering="crispEdges">${rects}</svg>`;
+}
+
+// ── les projets ────────────────────────────────────────────────────
+const CARDS = [
+  { id: 'rmp', x: 64, title: 'Ride My Park', img: '/assets/ridemypark-explore.png', pos: '30% 50%', badge: 'EN PROD', kind: 'prod', meta: '30K spots · React + Go' },
+  { id: 'skoolbook', x: 336, title: 'Skoolbook', img: '/assets/skoolbook-landing-page.png', pos: '30% 40%', badge: 'ARCHIVÉ', kind: 'arch', meta: 'bibliothèques de classe' },
+  { id: 'teach', x: 608, title: 'Teach Tools', img: '/assets/teach-tools-exercise-generation.png', pos: '60% 30%', badge: 'ARCHIVÉ', kind: 'arch', meta: 'exercices générés par IA' },
+  { id: 'gyrodex', x: 880, title: 'GyroDex', img: '/assets/girodex-gyroide-collection.png', pos: '50% 40%', badge: 'POUR LE FUN', kind: 'fun', meta: 'full vibe coding' },
+];
+const CY = 372, CWD = 256, CHT = 222;
+// [début, durée, équipe] : A = les curseurs d'OS, B = les Blip de thème (GyroDex, le projet « pour le fun »)
+const BUILD = { rmp: [2.0, 3.3, 'A'], skoolbook: [5.9, 2.0, 'A'], teach: [8.4, 1.9, 'A'], gyrodex: [8.4, 1.9, 'B'] };
+// phases (fractions de la durée) : cadre, fond, capture, titre, badge, ligne
+const PH = { frame: [0, .26], fill: [.22, .34], paint: [.34, .62], title: [.58, .78], badge: [.76, .86], meta: [.82, 1] };
+
+function buildCards() {
+  CARDS.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.style.left = c.x + 'px';
+    el.innerHTML = `<div class="bg"></div><div class="shot"><img src="${c.img}" style="object-position:${c.pos}"></div>
+      <div class="line title"></div><div class="badge ${c.kind}">${c.badge}</div><div class="line meta"></div>
+      <div class="edge"></div><div class="edge"></div><div class="edge"></div><div class="edge"></div>`;
+    $('cards').appendChild(el);
+    c.el = el;
+  });
+}
+function perimeter(k, w, h) {                         // tête du trait sur le cadre (sens horaire) + longueurs par côté
+  const P = 2 * (w + h);
+  let len = k * P;
+  const parts = [w, h, w, h].map(s => { const v = clamp(len, 0, s); len -= v; return v; });
+  const d = k * P;
+  const head = d <= w ? [d, 0] : d <= w + h ? [w, d - w] : d <= 2 * w + h ? [w - (d - w - h), h] : [0, h - (d - 2 * w - h)];
+  return { parts, head };
+}
+const fmt = n => n >= 1000 ? Math.floor(n).toLocaleString('fr-FR').replace(/ | /g, ' ') : String(Math.floor(n));
+
+// État d'une carte à t, et où chaque outil de l'équipe doit être (coordonnées monde).
+function cardState(c, t, still) {
+  const [s, D] = BUILD[c.id];
+  const f = ph => still ? 1 : prog(t, s + PH[ph][0] * D, s + PH[ph][1] * D);
+  const el = c.el, x0 = c.x, y0 = CY;
+  const kFrame = ease(f('frame'));
+  const { parts, head } = perimeter(kFrame, CWD, CHT);
+  const [top, right, bottom, left] = [...el.querySelectorAll('.edge')];
+  const show = kFrame > 0 && kFrame < 1;              // le trait du crayon ; une fois fermé, la carte a son ombre
+  Object.assign(top.style, { left: '0px', top: '0px', width: parts[0] + 'px', height: '2px', display: show ? 'block' : 'none' });
+  Object.assign(right.style, { left: CWD - 2 + 'px', top: '0px', width: '2px', height: parts[1] + 'px', display: show ? 'block' : 'none' });
+  Object.assign(bottom.style, { left: CWD - parts[2] + 'px', top: CHT - 2 + 'px', width: parts[2] + 'px', height: '2px', display: show ? 'block' : 'none' });
+  Object.assign(left.style, { left: '0px', top: CHT - parts[3] + 'px', width: '2px', height: parts[3] + 'px', display: show ? 'block' : 'none' });
+
+  const kFill = f('fill');
+  const click = [CWD * .7, CHT * .55];
+  const bg = el.querySelector('.bg');
+  bg.style.display = kFill > 0 ? 'block' : 'none';
+  bg.style.clipPath = kFill >= 1 ? 'none' : `circle(${Math.round(kFill * 360)}px at ${click[0]}px ${click[1]}px)`;
+  bg.style.outline = kFill >= 1 ? '1px solid #e5e0d8' : 'none';
+
+  const kPaint = f('paint');
+  const shot = el.querySelector('.shot');
+  shot.style.display = kPaint > 0 ? 'block' : 'none';
+  shot.style.clipPath = `inset(0 ${Math.round((1 - kPaint) * 100)}% 0 0)`;
+  const zig = Math.floor(kPaint * 9) % 2 ? 108 : 22;    // le pinceau balaie la hauteur en zigzag
+
+  const kTitle = f('title');
+  const title = el.querySelector('.title');
+  title.textContent = c.title.slice(0, Math.round(c.title.length * kTitle));
+
+  const kBadge = f('badge');
+  const badge = el.querySelector('.badge');
+  badge.style.display = kBadge > 0 ? 'block' : 'none';
+  badge.style.transform = `scale(${kBadge >= 1 ? 1 : [.4, .9, 1.3, 1.1][Math.min(3, Math.floor(kBadge * 4))]})`;
+
+  const kMeta = f('meta');
+  const meta = el.querySelector('.meta');
+  let mt = c.meta.slice(0, Math.round(c.meta.length * kMeta));
+  if (c.id === 'rmp' && kMeta > 0 && kMeta < 1) mt = `${fmt(30000 * out(kMeta))} spots`;   // le compteur monte
+  meta.textContent = mt;
+
+  const cw = 16 * .6, mw = 12 * .62;
+  return {
+    s, D,
+    pencil: [x0 + head[0], y0 + head[1]],
+    bucket: [x0 + click[0], y0 + click[1]],
+    brush: [x0 + 10 + 236 * kPaint, y0 + 10 + zig],
+    ibeam: [x0 + 12 + title.textContent.length * cw + 2, y0 + 150],
+    point: [x0 + 40, y0 + 176],
+    caret: [x0 + 14 + mt.length * mw, y0 + 201],
+    at: ph => [s + PH[ph][0] * D, s + PH[ph][1] * D]
+  };
+}
+
+// ── acteurs ────────────────────────────────────────────────────────
 const actors = {};
-function sprite(id, { color = '#f2f2f2', scale = 3 } = {}) {
+function sprite(id, color, ink = '#2c2825', scale = 3) {
   const s = CursorSprites.get(id);
   const el = document.createElement('div');
   el.className = 'actor px';
   el.style.width = s.w * scale + 'px';
   el.style.height = s.h * scale + 'px';
   el.style.color = color;
-  el.style.setProperty('--cs-ink', '#111');
+  el.style.setProperty('--cs-ink', ink);
   el.style.setProperty('--cs-paper', '#fff');
   el.innerHTML = s.markup;
   el._hot = [s.hotX * scale, s.hotY * scale];
@@ -183,285 +320,207 @@ function blipActor(name, size = 66) {
   el.className = 'actor px';
   el.style.width = el.style.height = size + 'px';
   mountSvg(el, name);
-  el._hot = [6 * size / 24, 1 * size / 24];          // la pointe du curseur
+  el._hot = [6 * size / 24, 1 * size / 24];
   $('actors').appendChild(el);
   return el;
 }
-function place(el, x, y, { show = true, rot = 0, sc = 1 } = {}) {
+function place(el, sx, sy, { show = true, rot = 0, sc = 1 } = {}) {
   el.style.display = show ? 'block' : 'none';
   if (!show) return;
-  el.style.transform = `translate(${Math.round(x - el._hot[0])}px, ${Math.round(y - el._hot[1])}px) rotate(${rot}deg) scale(${sc})`;
   el.style.transformOrigin = `${el._hot[0]}px ${el._hot[1]}px`;
+  el.style.transform = `translate(${Math.round(sx - el._hot[0])}px, ${Math.round(sy - el._hot[1])}px) rotate(${rot}deg) scale(${sc})`;
 }
 
-// éclats de pixels (split et fusion)
-const BITS = 14, bitEls = [];
-const BIT_COLORS = ['#33ff00', '#00ffff', '#ff00ff', '#ffb000', '#ffffff', '#3d7a73'];
-function burst(t, t0, cx, cy, reach) {
+const BITS = 16, bitEls = [];
+const BIT_COLORS = ['#3d7a73', '#b95c3a', '#a8822a', '#2c2825', '#63a89b', '#289bd2'];
+function burst(t, t0, sx, sy, reach) {
   const k = prog(t, t0, t0 + .5);
   bitEls.forEach((b, i) => {
     const on = k > 0 && k < 1;
     b.style.display = on ? 'block' : 'none';
     if (!on) return;
-    const a = i / BITS * Math.PI * 2 + .3;
-    const r = reach * out(k);
-    b.style.transform = `translate(${Math.round(cx + Math.cos(a) * r - 4)}px, ${Math.round(cy + Math.sin(a) * r - 4)}px)`;
-    b.style.opacity = k < .7 ? 1 : (1 - k) / .3 > .5 ? 1 : 0;   // s'éteint en un pas, pas en fondu
+    const a = i / BITS * Math.PI * 2 + .3, r = reach * out(k);
+    b.style.transform = `translate(${Math.round(sx + Math.cos(a) * r - 4)}px, ${Math.round(sy + Math.sin(a) * r - 4)}px)`;
   });
 }
 
-// ── la fenêtre ─────────────────────────────────────────────────────
-const edges = [0, 1, 2, 3].map(() => { const e = document.createElement('div'); e.className = 'edge'; $('frame').appendChild(e); return e; });
-function drawFrame(k) {                              // k : part du périmètre tracée (sens horaire depuis le coin haut-gauche)
-  const P = 2 * (W.w + W.h);
-  let len = k * P;
-  const seg = [W.w, W.h, W.w, W.h];
-  const parts = seg.map(s => { const v = clamp(len, 0, s); len -= v; return v; });
-  const [top, right, bottom, left] = edges;
-  Object.assign(top.style, { left: W.x + 'px', top: W.y + 'px', width: parts[0] + 'px', height: '2px' });
-  Object.assign(right.style, { left: W.x + W.w - 2 + 'px', top: W.y + 'px', width: '2px', height: parts[1] + 'px' });
-  Object.assign(bottom.style, { left: W.x + W.w - parts[2] + 'px', top: W.y + W.h - 2 + 'px', width: parts[2] + 'px', height: '2px' });
-  Object.assign(left.style, { left: W.x + 'px', top: W.y + W.h - parts[3] + 'px', width: '2px', height: parts[3] + 'px' });
-  const d = k * P;                                   // tête du trait, pour le crayon
-  if (d <= W.w) return [W.x + d, W.y];
-  if (d <= W.w + W.h) return [W.x + W.w, W.y + d - W.w];
-  if (d <= 2 * W.w + W.h) return [W.x + W.w - (d - W.w - W.h), W.y + W.h];
-  return [W.x, W.y + W.h - (d - 2 * W.w - W.h)];
-}
-
-const NAV = 'projets   blog   contact';
-const NAV_X = W.x + W.w - 44 - NAV.length * 14 * .6;
+// ── textes de la page ─────────────────────────────────────────────
 const BRAND = 'TOM ANDRIEU';
-const PROMPT = ['tom@dev', ':~$ ', 'cat manifesto.txt'];
-const H = ['Je construis des produits', "avec l'IA.", "J'aide les équipes", 'à faire pareil.'];
-const MOTTO = '// fait main, à vitesse machine.';
-const SK = { x: 818 + 138, y: 150 + 150 };          // centre de la pose skate (point de fusion)
-const CENTER = [600, 315];
+const NAV = 'projets   blog   contact';
+const NAV_X = 1136 - NAV.length * 13 * .6;
+const H = ['Je construis des produits', "avec l'IA.", "J'aide les équipes à faire pareil."];
+const HCW = [40 * .6, 40 * .6, 24 * .6];
+const RIDER = { x: 975, deckTop: 288 };                 // centre du skate, haut du grip (monde)
+const FUSE = 12.6, SPLIT = 1.4, IRIS = 15.2;
 
 // ── render(t) ──────────────────────────────────────────────────────
 let still = false;
 function render(T) {
   const t = step(T);
-  const stage = $('stage');
+  cam = still ? [600, 315, 1] : camera(T);
+  $('world').style.transform = `translate(${600 - cam[0] * cam[2]}px, ${315 - cam[1] * cam[2]}px) scale(${cam[2]})`;
   const caretOn = (t % 1.06) < .53;
 
-  // 0 · allumage : le curseur bloc seul, puis Blip ouvre les yeux
-  // 9.4 · extinction CRT (la boucle repart du noir)
-  const off = prog(t, 9.4, 9.9);
-  if (off > 0) {
-    const sy = off < .5 ? lerp(1, .006, out(off * 2)) : .006;
-    const sx = off < .5 ? 1 : lerp(1, 0, out((off - .5) * 2));
-    stage.style.transform = `scale(${sx}, ${sy})`;
-    stage.style.filter = `brightness(${1 + off * 2})`;
-  } else { stage.style.transform = ''; stage.style.filter = ''; }
-
-  // le cadre au crayon
-  const frameK = still ? 1 : ease(prog(t, 1.35, 2.35));
-  const tip = drawFrame(frameK);
-
-  // barre de titre : remplie au pot de peinture, en cercle qui s'étend par pas
-  const fillK = still ? 1 : prog(t, 2.55, 2.9);
-  const tb = $('titlebar');
-  tb.style.display = fillK > 0 ? 'block' : 'none';
-  tb.style.clipPath = `circle(${Math.round(fillK * 1200)}px at 560px 17px)`;
-
-  // en-tête
-  const brandTxt = still ? BRAND : typed(BRAND, t, 2.45, 3.0);
-  $('brand').innerHTML = brandTxt + (brandTxt.length === BRAND.length && (still || caretOn) ? '<span class="caret"></span>' : '');
-  const navParts = NAV.split('   ');
-  const navN = still ? 3 : [3.0, 3.18, 3.36].filter(x => t >= x).length;
+  // en-tête et tagline, tapés après le recul
+  const bT = still ? BRAND : typed(BRAND, t, 10.9, 11.3);
+  $('brand').innerHTML = bT + (bT.length === BRAND.length && (still || caretOn) ? '<span class="caret"></span>' : '');
   $('nav').style.left = NAV_X + 'px';
-  $('nav').textContent = navParts.slice(0, navN).join('   ');
-  const divK = still ? 1 : out(prog(t, 3.0, 3.5));
-  $('divider').style.width = Math.round(divK * (W.w - 88)) + 'px';
+  $('nav').textContent = still || t >= 11.3 ? NAV : '';
+  $('divider').style.width = Math.round((still ? 1 : out(prog(t, 11.2, 11.6))) * 1072) + 'px';
+  const hWin = [[11.3, 11.95], [11.95, 12.25], [11.7, 12.5]];
+  const hT = H.map((s, i) => still ? s : typed(s, t, ...hWin[i]));
+  hT.forEach((s, i) => { $('h' + (i + 1)).textContent = s; });
+  if (hT[2].length === H[2].length && (still || caretOn)) $('h3').innerHTML += '<span class="caret"></span>';
 
-  // prompt
-  const pFull = PROMPT.join('');
-  const pTxt = still ? pFull : typed(pFull, t, 3.05, 3.6);
-  const a = PROMPT[0].length, b = a + PROMPT[1].length;
-  $('prompt').innerHTML = `<span class="u">${pTxt.slice(0, a)}</span><span class="s">${pTxt.slice(a, b)}</span>${pTxt.slice(b)}`;
+  // cartes
+  const states = {};
+  CARDS.forEach(c => { states[c.id] = cardState(c, t, still); });
 
-  // titres : I-beam pour le blanc, Blip terminal pour le vert
-  const hT = [[3.4, 4.2], [4.2, 4.55], [4.55, 5.1], [5.1, 5.55]];
-  const hTxt = H.map((s, i) => still ? s : typed(s, t, ...hT[i]));
-  hTxt.forEach((s, i) => { $('h' + (i + 1)).textContent = s; });
-  if (hTxt[3].length === H[3].length && (still || caretOn || t > 9.2)) $('h4').innerHTML += '<span class="caret"></span>';
+  // le rider : Blip sur son skate après la fusion
+  const rider = $('rider'), board = rider.querySelector('.board'), rblip = rider.querySelector('.blip');
+  if (still || t >= FUSE) {
+    rider.style.display = 'block';
+    const pop = still ? 1 : prog(t, FUSE, FUSE + .25);
+    const sc = pop < 1 ? [.3, .75, 1.15, 1][Math.min(3, Math.floor(pop * 4))] : 1;
+    // ollie (pas de 1/12 s) : [dy planche, rotation planche, dy Blip]
+    const OL = [[0, 0, 0], [0, -9, -4], [-12, -15, -24], [-28, -10, -42], [-36, -4, -50], [-38, 0, -52],
+                [-31, 4, -44], [-18, 6, -28], [-5, 2, -9], [0, 0, 3], [0, 0, 0]];
+    const ol = still ? 0 : prog(t, 13.4, 13.4 + OL.length / 12);
+    const [bdy, brot, pdy] = ol > 0 && ol < 1 ? OL[Math.min(OL.length - 1, Math.floor(ol * OL.length))] : [0, 0, 0];
+    board.innerHTML = skateSvg(still ? 0 : Math.floor(t * 12));
+    const bw = SK.W * SK.U, bh = SK.H * SK.U;
+    board.style.left = RIDER.x - bw / 2 + 'px';
+    board.style.top = RIDER.deckTop - 5 * SK.U + bdy + 'px';
+    board.style.transform = `rotate(${brot}deg)`;
+    board.style.transformOrigin = '30% 40%';
+    const bs = 24 * SK.U;                             // Blip à la même échelle de pixel que la planche
+    rblip.style.width = rblip.style.height = bs + 'px';
+    rblip.style.left = RIDER.x - 12 * SK.U + 'px';
+    rblip.style.top = RIDER.deckTop - 23 * SK.U + pdy + 'px';  // pattes posées sur le contour du grip
+    rblip._blink(!still && blinkAt(t, .3) && t > FUSE + .6);
+    rider.style.transform = `scale(${sc})`;
+    rider.style.transformOrigin = `${RIDER.x}px ${RIDER.deckTop}px`;
+  } else rider.style.display = 'none';
 
-  // le pinceau souligne « l'IA »
-  const ulK = still ? 1 : prog(t, 5.6, 6.0);
-  const ulX0 = 84 + 5 * CW.h, ulW = 4 * CW.h;
-  $('underline').style.left = ulX0 + 'px';
-  $('underline').style.width = Math.round(ulK * ulW) + 'px';
-
-  // chips glissées à la main
-  const c1 = still ? 1 : out(prog(t, 4.75, 5.3)), c2 = still ? 1 : out(prog(t, 5.25, 5.8));
-  const chip1 = $('chip1'), chip2 = $('chip2');
-  chip1.style.left = '84px'; chip2.style.left = 84 + 356 + 14 + 'px';
-  chip1.style.top = Math.round(lerp(700, 452, c1)) + 'px';
-  chip2.style.top = Math.round(lerp(700, 452, c2)) + 'px';
-  chip1.style.display = c1 > 0 ? 'block' : 'none';
-  chip2.style.display = c2 > 0 ? 'block' : 'none';
-
-  const mTxt = still ? MOTTO : typed(MOTTO, t, 5.7, 6.4);
-  $('motto').textContent = mTxt;
-
-  // cote de mesure (Blip blueprint mesure la marge gauche) — visible le temps de la mesure
-  const dimOn = !still && t >= 3.75 && t < 4.75;
-  const dimK = out(prog(t, 3.75, 4.15));
-  const dims = $('dims');
-  dims.innerHTML = '';
-  if (dimOn) {
-    const y = 226, x0 = W.x + 2, x1 = lerp(x0, 84, dimK);
-    dims.innerHTML = `<div class="dim" style="left:${x0}px;top:${y}px;width:${Math.round(x1 - x0)}px;height:2px"></div>
-      <div class="dim" style="left:${x0}px;top:${y - 8}px;width:2px;height:18px"></div>
-      ${dimK >= 1 ? `<div class="dim" style="left:83px;top:${y - 8}px;width:2px;height:18px"></div>
-      <div id="dimlabel" style="left:${x0 + 4}px;top:${y + 8}px">44px</div>` : ''}`;
-  }
-
-  // ── Blip : seul au début, puis en skate après la fusion ──
+  // Blip d'ouverture (écran) : curseur bloc → yeux ouverts → squash → division
   const lead = actors.lead;
-  const skate = $('skate');
-  const fuseAt = 6.75;
-  if (still || t >= fuseAt) {
-    skate.style.display = 'block';
-    const pop = still ? 1 : prog(t, fuseAt, fuseAt + .25);
-    const sc = pop < 1 ? [.4, .8, 1.15, 1][Math.min(3, Math.floor(pop * 4))] : 1;
-    // ollie : translateY −13 px (unités de la pose) + rotate −9° vers 76 %, retombée avec micro-rebond
-    const ol = still ? 0 : prog(t, 7.7, 8.5);
-    let dy = 0, rot = 0;
-    if (ol > 0 && ol < 1) {
-      const frames = [[0, 0], [-14, -3], [-30, -7], [-36, -9], [-22, -5], [0, 0], [-4, 0], [0, 0]];
-      [dy, rot] = frames[Math.min(frames.length - 1, Math.floor(ol * frames.length))];
-    }
-    skate.style.transform = `translateY(${dy}px) rotate(${rot}deg) scale(${sc})`;
-    skate.style.transformOrigin = '50% 75%';
-    skate._blink(!still && blinkAt(t, .4) && t > fuseAt + .6);
-  } else skate.style.display = 'none';
-
-  // Blip d'ouverture : curseur bloc → yeux ouverts → division
-  if (!still && t < 1.0) {
+  if (!still && t < SPLIT) {
     const block = t < .5;
-    lead.style.display = 'block';
-    place(lead, CENTER[0] - 30, CENTER[1] - 46, { sc: 1 });
-    lead._blink(block || (t >= .8 && t < .8 + 1 / 12));
-    lead.style.opacity = block && !((t % .5) < .25) ? 0 : 1;
-    const squash = t >= .85 ? .82 : 1;
-    lead.style.transform += ` scaleY(${squash})`;
+    place(lead, 600 - 25 + 15, 315 - 60, { sc: t >= 1.2 ? 1.08 : 1 });
+    if (t >= 1.2) lead.style.transform += ' scaleY(.82)';
+    lead._blink(block || (t >= .95 && t < .95 + 1 / 12));
+    lead.style.opacity = block && (t % .5) >= .25 ? 0 : 1;
   } else lead.style.display = 'none';
+  burst(t, SPLIT, 600, 315, 140);
 
-  burst(t, 1.0, CENTER[0], CENTER[1], 120);
-  if (t >= fuseAt - .05 && t < fuseAt + .5) burst(t, fuseAt, SK.x, SK.y, 150);
+  // fusion : tous au-dessus du skate, éclair, Blip réapparaît dessus
+  const fuseScreen = toScreen(RIDER.x, RIDER.deckTop - 60);
+  if (t >= FUSE - .05 && t < FUSE + .55) burst(t, FUSE, ...fuseScreen, 160);
+  $('flash').style.opacity = still ? 0 : t >= FUSE && t < FUSE + 1 / 12 ? .35 : t >= FUSE + 1 / 12 && t < FUSE + 2 / 12 ? .12 : 0;
 
-  // flash de fusion : une image blanche, une à moitié
-  $('flash').style.opacity = still ? 0 : t >= fuseAt && t < fuseAt + 1 / 12 ? .55 : t >= fuseAt + 1 / 12 && t < fuseAt + 2 / 12 ? .2 : 0;
+  // fermeture à l'iris sur Blip : le papier recouvre tout HORS d'un cercle qui se resserre
+  const ir = still ? 0 : prog(t, IRIS, IRIS + .7);
+  const iris = $('iris');
+  iris.style.display = ir > 0 ? 'block' : 'none';
+  if (ir > 0) {
+    const rs = toScreen(RIDER.x, RIDER.deckTop - 50);
+    const r = Math.round(lerp(760, 0, out(ir)));
+    iris.style.background = `radial-gradient(circle at ${rs[0]}px ${rs[1]}px, transparent ${r}px, #f8f7f4 ${r + 1}px)`;
+  }
 
   // ── l'essaim ──
-  const live = !still && t >= 1.0 && t < fuseAt;
-  // départ de tous depuis le centre (division), retour au point de fusion
-  const C = CENTER, F = [SK.x, SK.y];
-  const fuse = (keys, tEnd = 6.2) => keys.concat([[tEnd, keys[keys.length - 1][1], keys[keys.length - 1][2]], [fuseAt, F[0], F[1]]]);
+  const live = !still && t >= SPLIT && t < FUSE;
+  const C0 = [600, 315];
+  const toFuse = (k, keys) => keys.concat([[FUSE, RIDER.x - 40 + k * 12, RIDER.deckTop - 70 - (k % 3) * 18]]);
 
-  const cast = {
-    pencil: () => t < 1.35 ? path(t, [[1.0, ...C], [1.35, W.x, W.y]]) : t < 2.35 ? tip : path(t, fuse([[2.35, ...tip], [2.6, 260, 556]])),
-    bucket: () => path(t, fuse([[1.0, ...C], [1.4, 1000, 560], [2.3, 1000, 560], [2.55, 600, 51], [2.9, 600, 51], [3.3, 1110, 560]])),
-    ibeam: () => {
-      if (t < 2.45) return path(t, [[1.0, ...C], [1.45, 300, 120], [2.45, 84, 100]]);
-      if (t < 3.0) return [84 + brandTxt.length * CW.brand, 100];
-      if (t < 3.4) return path(t, [[3.0, 84 + BRAND.length * CW.brand, 100], [3.4, 84, 222]]);
-      if (t < 4.55) {
-        const line = t < 4.2 ? 0 : 1;
-        return [84 + hTxt[line].length * CW.h, 222 + line * 58];
-      }
-      return path(t, fuse([[4.55, 84 + H[1].length * CW.h, 280], [4.9, 560, 556]]));
-    },
-    point: () => {
-      const navX = i => NAV_X + (navParts.slice(0, i).join('   ').length + (i ? 3 : 0) + 2) * 14 * .6;
-      const keys = [[1.0, ...C], [1.5, 1100, 200], [2.85, 1100, 200], [3.0, navX(0), 102], [3.18, navX(1), 102], [3.36, navX(2), 102], [3.7, 1150, 300]];
-      return path(t, fuse(keys));
-    },
-    caret: () => {
-      if (t < 3.05) return path(t, [[1.0, ...C], [1.5, 60, 330], [2.7, 60, 330], [3.05, 84, 172]]);
-      if (t < 3.6) return [84 + pTxt.length * CW.prompt + 4, 166];
-      return path(t, fuse([[3.6, 84 + pFull.length * CW.prompt + 4, 166], [3.95, 980, 556]]));
-    },
-    term: () => {
-      if (t < 4.55) return path(t, [[1.0, ...C], [1.55, 700, 552], [4.15, 700, 552], [4.55, 84, 316]]);
-      if (t < 5.55) {
-        const line = t < 5.1 ? 2 : 3;
-        return [84 + hTxt[line].length * CW.h, 316 + (line - 2) * 58];
-      }
-      return path(t, fuse([[5.55, 84 + H[3].length * CW.h + 30, 374], [5.85, 760, 360]]));
-    },
-    blue: () => path(t, fuse([[1.0, ...C], [1.5, 160, 470], [3.5, 160, 470], [3.75, W.x + 4, 226], [4.15, 84, 226], [4.6, 84, 226], [4.95, 690, 150]])),
-    grab: () => {
-      if (t < 4.75) return path(t, [[1.0, ...C], [1.55, 380, 556], [4.4, 380, 556], [4.75, 240, 640]]);
-      if (t < 5.3) return [240, chip1.offsetTop + 18];
-      if (t < 5.4) return path(t, [[5.3, 240, 470], [5.4, 600, 640]]);
-      if (t < 5.8) return [600, chip2.offsetTop + 18];
-      return path(t, fuse([[5.8, 600, 470], [6.1, 700, 520]]));
-    },
-    brush: () => path(t, fuse([[1.0, ...C], [1.5, 1120, 470], [5.3, 1120, 470], [5.6, ulX0, 302], [6.0, ulX0 + ulW, 302], [6.2, ulX0 + ulW + 40, 290]], 6.25)),
-    retro: () => {
-      if (t < 5.7) return path(t, [[1.0, ...C], [1.55, 1060, 536], [5.3, 1060, 536], [5.7, 84, 548]]);
-      if (t < 6.4) return [84 + mTxt.length * CW.motto, 548];
-      return path(t, [[6.4, 84 + MOTTO.length * CW.motto, 548], [fuseAt, ...F]]);
+  // parcs autour de chaque carte (monde), d'où chaque outil attend son tour
+  const park = (c, dx, dy) => [c.x + dx, CY + dy];
+  const R = CARDS[0], S = CARDS[1], Tt = CARDS[2], G = CARDS[3];
+  // trajet d'un outil d'OS : vole vers son parc sur chaque carte, travaille pendant sa phase
+  function crewA(name, ph, parkXY, k) {
+    const seq = [R, S, Tt];
+    for (const c of seq) {                            // en plein travail : collé à l'outil
+      const [a, b] = states[c.id].at(ph);
+      if (t >= a - .12 && t < b + .02) return states[c.id][name];
     }
-  };
-
-  for (const [k, fn] of Object.entries(cast)) {
-    const el = actors[k];
-    if (!live) { place(el, 0, 0, { show: false }); continue; }
-    let [x, y] = fn();
-    // à la sortie du centre, l'éclatement : petits sauts en arc
-    const k0 = prog(t, 1.0, 1.15);
-    const sc = k0 < 1 ? [.5, .8][Math.min(1, Math.floor(k0 * 2))] : 1;
-    const rot = (k === 'grab' && ((t >= 4.75 && t < 5.3) || (t >= 5.4 && t < 5.8))) ? -6 : 0;
-    place(el, x, y, { sc, rot });
-    if (el._blink) el._blink(blinkAt(t, Object.keys(cast).indexOf(k) * .37));
+    const keys = [];
+    seq.forEach((c, i) => {
+      const p = park(c, ...parkXY), [, b] = states[c.id].at(ph);
+      keys.push([i === 0 ? SPLIT + .6 : BUILD[c.id][0] - .2, ...p], [b + .25, ...p]);
+    });
+    keys.push([12.05, ...park(Tt, ...parkXY)]);
+    return path(t, toFuse(k, keys));
   }
-  // le pot clique : petit enfoncement au moment du remplissage
-  if (live && t >= 2.55 && t < 2.65) actors.bucket.style.transform += ' translateY(3px)';
-  ['point'].forEach(k => {
-    if (live && [3.0, 3.18, 3.36].some(x => t >= x && t < x + 1 / 12)) actors[k].style.transform += ' scale(.85)';
+  const W = (x, y) => toScreen(x, y);
+  const pos = {
+    pencil: crewA('pencil', 'frame', [-28, -30], 0),
+    bucket: crewA('bucket', 'fill', [CWD + 30, 60], 1),
+    brush: crewA('brush', 'paint', [CWD + 34, 150], 2),
+    ibeam: crewA('ibeam', 'title', [-30, 120], 3),
+    point: crewA('point', 'badge', [60, CHT + 34], 4),
+    caret: crewA('caret', 'meta', [180, CHT + 34], 5),
+  };
+  // équipe B : les Blip de thème construisent GyroDex
+  const g = states.gyrodex;
+  const crewB = (role, ph, parkXY, k, from) => {
+    const [a, b] = g.at(ph), p = park(G, ...parkXY);
+    if (t >= a - .12 && t < b + .02) return g[role];
+    return path(t, toFuse(k, [[SPLIT, ...from], [SPLIT + .7, ...p], [a - .12, ...p], [b + .25, ...p], [12.05, ...p]]));
+  };
+  pos.blue = crewB('pencil', 'frame', [CWD + 30, -30], 6, [900, 200]);
+  pos.retro = crewB('brush', 'paint', [CWD + 36, 120], 7, [1100, 300]);
+  pos.term = crewB('ibeam', 'title', [-36, 150], 8, [800, 650]);
+  pos.fps = crewB('point', 'badge', [120, CHT + 40], 9, [1150, 650]);
+
+  const order = Object.keys(pos);
+  order.forEach((k, i) => {
+    const el = actors[k];
+    if (!live) { place(el, 0, 0, { show: false }); return; }
+    let [sx, sy] = W(...pos[k]);
+    // éclatement : chacun part du centre de l'écran, en petits sauts
+    const k0 = prog(t, SPLIT, SPLIT + .45);
+    if (k0 < 1) {
+      const e = out(Math.floor(k0 * 6) / 6);
+      sx = lerp(C0[0], sx, e); sy = lerp(C0[1], sy, e) - Math.sin(e * Math.PI) * 60;
+    }
+    const press = (k === 'point' || k === 'fps' || k === 'bucket') && CARDS.some(c => {
+      const st = states[c.id]; const at = k === 'bucket' ? st.at('fill')[0] : st.at('badge')[0] + .08;
+      return t >= at && t < at + 1 / 12 && ((k === 'fps') === (c.id === 'gyrodex'));
+    });
+    place(el, sx, sy + (press ? 3 : 0), { sc: press ? .88 : 1 });
+    if (el._blink) el._blink(blinkAt(t, i * .37));
   });
 }
 
 // ── montage ────────────────────────────────────────────────────────
 window.ready = (async () => {
-  await Promise.all(['blip', 'blip-skate', 'blip-terminal', 'blip-blueprint', 'blip-retro90s'].map(loadSvg));
-  await document.fonts.load('700 46px "JetBrains Mono"');
-  await document.fonts.load('400 18px "JetBrains Mono"');
-  await document.fonts.load('500 12px "JetBrains Mono"');
-
-  // les points de la barre de titre : gris, gris, phosphore (le rouge est réservé aux incidents)
-  ['#3a3a3a', '#3a3a3a', '#33ff00'].forEach((c, i) => {
-    const d = document.createElement('div'); d.className = 'dot'; d.style.left = 16 + i * 18 + 'px'; d.style.background = c;
-    $('titlebar').appendChild(d);
-  });
-  mountSvg($('skate'), 'blip-skate');
+  await Promise.all(['blip-default', 'blip-terminal', 'blip-blueprint', 'blip-retro90s', 'blip-fps'].map(loadSvg));
+  await Promise.all(['700 40px "JetBrains Mono"', '500 24px "JetBrains Mono"', '400 12px "JetBrains Mono"'].map(f => document.fonts.load(f)));
+  buildCards();
+  await Promise.all([...document.images].map(img => img.decode().catch(() => {})));
+  mountSvg($('rider').querySelector('.blip'), 'blip-default');
   for (let i = 0; i < BITS; i++) {
     const b = document.createElement('div'); b.className = 'bit'; b.style.background = BIT_COLORS[i % BIT_COLORS.length];
     $('bits').appendChild(b); bitEls.push(b);
   }
-
-  actors.lead = blipActor('blip', 120);
-  actors.pencil = sprite('pencil', { color: '#ffb000' });
-  actors.bucket = sprite('bucket', { color: '#ffb000' });
-  actors.ibeam = sprite('ibeam', { color: '#f2f2f2', scale: 3.4 });
-  actors.point = sprite('hand-point', { color: '#f2f2f2' });
-  actors.caret = sprite('caret-block', { color: '#33ff00' });
-  actors.term = blipActor('blip-terminal', 66);
-  actors.blue = blipActor('blip-blueprint', 66);
-  actors.grab = sprite('hand-grab', { color: '#f2f2f2' });
-  actors.brush = sprite('brush', { color: '#ff00ff' });
-  actors.retro = blipActor('blip-retro90s', 66);
+  actors.lead = blipActor('blip-default', 120);
+  actors.pencil = sprite('pencil', '#a8822a');
+  actors.bucket = sprite('bucket', '#b95c3a');
+  actors.brush = sprite('brush', '#3d7a73');
+  actors.ibeam = sprite('ibeam', '#2c2825', '#f8f7f4', 3.4);
+  actors.point = sprite('hand-point', '#ffffff');
+  actors.caret = sprite('caret-block', '#3d7a73');
+  actors.blue = blipActor('blip-blueprint');
+  actors.retro = blipActor('blip-retro90s');
+  actors.term = blipActor('blip-terminal');
+  actors.fps = blipActor('blip-fps');
 
   const q = new URLSearchParams(location.search);
   still = q.has('still');
   window.DURATION = DURATION;
   window.render = render;
   window.setStill = v => { still = v; };
-  render(q.has('t') ? +q.get('t') : 8.9);
+  render(q.has('t') ? +q.get('t') : 14.8);
 })();
 </script>
 </body>
