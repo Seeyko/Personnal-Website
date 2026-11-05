@@ -1,0 +1,468 @@
+<!doctype html>
+<!--
+  og-motion — la vidéo « l'atelier se construit » et l'og:image (sa dernière image).
+
+  Une seule fonction pure du temps : render(t), t en secondes dans [0, DURATION).
+  render.mjs capture chaque image (24 i/s) puis ffmpeg encode. Rien n'est animé
+  par le navigateur lui-même : pas de CSS animation, pas de requestAnimationFrame,
+  donc deux rendus du même t donnent la même image.
+
+  Servi par tools/og-motion/serve.ts : /og-motion/* vient d'ici, le reste de frontend/
+  (polices, Blip, CursorSprites : les vrais assets du site).
+
+  ?t=8.9      fige la scène à cet instant (aperçu dans un navigateur)
+  ?still=1    image finale sans curseurs (= og-image.png)
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>og-motion</title>
+<link rel="stylesheet" href="/assets/fonts/fonts.css">
+<style>
+  :root {
+    --crt: #0a0a0a;
+    --ink: #12120f;
+    --phosphore: #33ff00;
+    --ambre: #ffb000;
+    --cyan: #00ffff;
+    --magenta: #ff00ff;
+    --texte: #ececec;
+    --gris: #7a7a7a;
+    --trait: #3a3a3a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; background: #000; }
+  body { font-family: 'JetBrains Mono', monospace; -webkit-font-smoothing: antialiased; }
+
+  #stage { position: absolute; inset: 0; background: var(--crt); overflow: hidden; transform-origin: 50% 50%; }
+  .abs { position: absolute; }
+  .px { image-rendering: pixelated; }
+  svg { display: block; overflow: visible; }
+
+  /* fenêtre de navigateur que les curseurs construisent */
+  .edge { position: absolute; background: var(--trait); }
+  #titlebar { left: 40px; top: 34px; width: 1120px; height: 34px; background: #151515; }
+  .dot { position: absolute; top: 12px; width: 10px; height: 10px; }
+  #url { position: absolute; left: 50%; top: 7px; transform: translateX(-50%); height: 20px; padding: 0 14px;
+         background: #0d0d0d; color: var(--gris); font-size: 12px; line-height: 20px; white-space: pre; }
+  #url b { color: var(--ambre); font-weight: 500; }
+
+  .line { position: absolute; white-space: pre; }
+  #brand { left: 84px; top: 88px; font-size: 20px; font-weight: 700; letter-spacing: .08em; color: var(--texte); }
+  #nav { top: 92px; font-size: 14px; color: var(--gris); }
+  #divider { left: 84px; top: 132px; height: 1px; background: #222; }
+  #prompt { left: 84px; top: 160px; font-size: 18px; color: #1fae00; }
+  #prompt .u { color: var(--ambre); } #prompt .s { color: #3d7a3d; }
+  .h { left: 84px; font-size: 46px; line-height: 58px; font-weight: 700; color: var(--texte); }
+  .h.g { color: var(--phosphore); }
+  .caret { display: inline-block; width: .55em; height: .9em; background: var(--phosphore); vertical-align: -.08em; margin-left: .12em; }
+  #brand .caret { width: .6em; height: .82em; margin-left: .18em; }
+  #underline { left: 84px; top: 304px; height: 6px; background: var(--ambre); }
+
+  .chip { position: absolute; top: 452px; height: 38px; padding: 0 16px; border: 1px solid #2c2c2c; background: #101010;
+          color: #cfcfcf; font-size: 15px; line-height: 36px; white-space: pre; }
+  .chip .ok { color: var(--phosphore); }
+  #motto { left: 84px; top: 540px; font-size: 15px; color: #5f5f5f; }
+
+  /* cote de mesure (Blip blueprint) */
+  .dim { position: absolute; background: var(--cyan); }
+  #dimlabel { position: absolute; font-size: 12px; color: var(--cyan); white-space: pre; }
+
+  #skate { left: 818px; top: 150px; width: 276px; height: 276px; }
+  #skate svg { width: 100%; height: 100%; }
+
+  .actor { position: absolute; left: 0; top: 0; will-change: transform; }
+  .actor svg { width: 100%; height: 100%; }
+  .bit { position: absolute; width: 8px; height: 8px; }
+
+  #scan { position: absolute; inset: 0; pointer-events: none;
+          background: repeating-linear-gradient(to bottom, rgba(255,255,255,.022) 0 1px, transparent 1px 3px); }
+  #vignette { position: absolute; inset: 0; pointer-events: none;
+              background: radial-gradient(ellipse at 50% 50%, transparent 58%, rgba(0,0,0,.55) 100%); }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="frame"></div>
+  <div id="titlebar" class="abs"><div id="url"><b>https://</b>tomandrieu.com</div></div>
+
+  <div id="brand" class="line"></div>
+  <div id="nav" class="line"></div>
+  <div id="divider" class="abs"></div>
+  <div id="prompt" class="line"></div>
+  <div id="h1" class="line h" style="top:196px"></div>
+  <div id="h2" class="line h" style="top:254px"></div>
+  <div id="h3" class="line h g" style="top:312px"></div>
+  <div id="h4" class="line h g" style="top:370px"></div>
+  <div id="underline" class="abs"></div>
+  <div id="chip1" class="chip"><span class="ok">[EN PROD]</span> Ride My Park · 30K+ riders</div>
+  <div id="chip2" class="chip">MVP en 3 semaines</div>
+  <div id="motto" class="line"></div>
+
+  <div id="dims"></div>
+  <div id="skate" class="abs px"></div>
+
+  <div id="bits"></div>
+  <div id="actors"></div>
+  <div id="flash"></div>
+  <div id="scan"></div>
+  <div id="vignette"></div>
+</div>
+
+<script src="/js/core/effects/cursor-sprites.js"></script>
+<script>
+'use strict';
+const DURATION = 10;
+const FPS_STEP = 12;                        // le mouvement avance en pas de 1/12 s (pixel-art, jamais lisse)
+const W = { x: 40, y: 34, w: 1120, h: 562 };
+const $ = id => document.getElementById(id);
+
+// ── temps ──────────────────────────────────────────────────────────
+const step = t => Math.floor(t * FPS_STEP + 1e-6) / FPS_STEP;
+const clamp = (v, a = 0, b = 1) => Math.min(Math.max(v, a), b);
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const ease = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const out = k => 1 - Math.pow(1 - k, 3);
+const lerp = (a, b, k) => a + (b - a) * k;
+
+// Trajet par points clés [t, x, y] : maintien avant/après, ease par segment.
+function path(t, keys) {
+  if (t <= keys[0][0]) return [keys[0][1], keys[0][2]];
+  for (let i = 1; i < keys.length; i++) {
+    const [t1, x1, y1] = keys[i], [t0, x0, y0] = keys[i - 1];
+    if (t <= t1) { const k = ease(prog(t, t0, t1)); return [lerp(x0, x1, k), lerp(y0, y1, k)]; }
+  }
+  const l = keys[keys.length - 1];
+  return [l[1], l[2]];
+}
+
+// ── texte tapé ─────────────────────────────────────────────────────
+const typed = (s, t, a, b) => s.slice(0, Math.round(s.length * prog(t, a, b)));
+const CW = { brand: 20 * .68, prompt: 18 * .6, h: 46 * .6, motto: 15 * .6 };   // JetBrains Mono : 600/1000 em
+
+// ── Blip : SVG inline + clignement (visage éteint = curseur bloc) ──
+const SVG = {};
+async function loadSvg(name) {
+  SVG[name] = await (await fetch(`/assets/brand/${name}.svg`)).text();
+}
+function mountSvg(host, name) {
+  host.innerHTML = SVG[name];
+  const rects = [...host.querySelectorAll('rect')];
+  const at = (x, y) => rects.find(r => +r.getAttribute('x') === x && +r.getAttribute('y') === y);
+  const body = (at(8, 13) || at(9, 13)).getAttribute('fill');
+  const face = rects.filter(r => {
+    const x = +r.getAttribute('x'), y = +r.getAttribute('y');
+    return x >= 8 && x <= 15 && y >= 11 && y <= 16 && r.getAttribute('fill') !== body;
+  });
+  face.forEach(r => { r.dataset.fill = r.getAttribute('fill'); });
+  host._blink = shut => face.forEach(r => r.setAttribute('fill', shut ? body : r.dataset.fill));
+  return host;
+}
+// cadence contractuelle : une image éteinte toutes les ~1.06 s
+const blinkAt = (t, phase = 0) => ((t + phase) % 1.06) < 1 / 12;
+
+// ── acteurs (l'essaim) ─────────────────────────────────────────────
+const actors = {};
+function sprite(id, { color = '#f2f2f2', scale = 3 } = {}) {
+  const s = CursorSprites.get(id);
+  const el = document.createElement('div');
+  el.className = 'actor px';
+  el.style.width = s.w * scale + 'px';
+  el.style.height = s.h * scale + 'px';
+  el.style.color = color;
+  el.style.setProperty('--cs-ink', '#111');
+  el.style.setProperty('--cs-paper', '#fff');
+  el.innerHTML = s.markup;
+  el._hot = [s.hotX * scale, s.hotY * scale];
+  $('actors').appendChild(el);
+  return el;
+}
+function blipActor(name, size = 66) {
+  const el = document.createElement('div');
+  el.className = 'actor px';
+  el.style.width = el.style.height = size + 'px';
+  mountSvg(el, name);
+  el._hot = [6 * size / 24, 1 * size / 24];          // la pointe du curseur
+  $('actors').appendChild(el);
+  return el;
+}
+function place(el, x, y, { show = true, rot = 0, sc = 1 } = {}) {
+  el.style.display = show ? 'block' : 'none';
+  if (!show) return;
+  el.style.transform = `translate(${Math.round(x - el._hot[0])}px, ${Math.round(y - el._hot[1])}px) rotate(${rot}deg) scale(${sc})`;
+  el.style.transformOrigin = `${el._hot[0]}px ${el._hot[1]}px`;
+}
+
+// éclats de pixels (split et fusion)
+const BITS = 14, bitEls = [];
+const BIT_COLORS = ['#33ff00', '#00ffff', '#ff00ff', '#ffb000', '#ffffff', '#3d7a73'];
+function burst(t, t0, cx, cy, reach) {
+  const k = prog(t, t0, t0 + .5);
+  bitEls.forEach((b, i) => {
+    const on = k > 0 && k < 1;
+    b.style.display = on ? 'block' : 'none';
+    if (!on) return;
+    const a = i / BITS * Math.PI * 2 + .3;
+    const r = reach * out(k);
+    b.style.transform = `translate(${Math.round(cx + Math.cos(a) * r - 4)}px, ${Math.round(cy + Math.sin(a) * r - 4)}px)`;
+    b.style.opacity = k < .7 ? 1 : (1 - k) / .3 > .5 ? 1 : 0;   // s'éteint en un pas, pas en fondu
+  });
+}
+
+// ── la fenêtre ─────────────────────────────────────────────────────
+const edges = [0, 1, 2, 3].map(() => { const e = document.createElement('div'); e.className = 'edge'; $('frame').appendChild(e); return e; });
+function drawFrame(k) {                              // k : part du périmètre tracée (sens horaire depuis le coin haut-gauche)
+  const P = 2 * (W.w + W.h);
+  let len = k * P;
+  const seg = [W.w, W.h, W.w, W.h];
+  const parts = seg.map(s => { const v = clamp(len, 0, s); len -= v; return v; });
+  const [top, right, bottom, left] = edges;
+  Object.assign(top.style, { left: W.x + 'px', top: W.y + 'px', width: parts[0] + 'px', height: '2px' });
+  Object.assign(right.style, { left: W.x + W.w - 2 + 'px', top: W.y + 'px', width: '2px', height: parts[1] + 'px' });
+  Object.assign(bottom.style, { left: W.x + W.w - parts[2] + 'px', top: W.y + W.h - 2 + 'px', width: parts[2] + 'px', height: '2px' });
+  Object.assign(left.style, { left: W.x + 'px', top: W.y + W.h - parts[3] + 'px', width: '2px', height: parts[3] + 'px' });
+  const d = k * P;                                   // tête du trait, pour le crayon
+  if (d <= W.w) return [W.x + d, W.y];
+  if (d <= W.w + W.h) return [W.x + W.w, W.y + d - W.w];
+  if (d <= 2 * W.w + W.h) return [W.x + W.w - (d - W.w - W.h), W.y + W.h];
+  return [W.x, W.y + W.h - (d - 2 * W.w - W.h)];
+}
+
+const NAV = 'projets   blog   contact';
+const NAV_X = W.x + W.w - 44 - NAV.length * 14 * .6;
+const BRAND = 'TOM ANDRIEU';
+const PROMPT = ['tom@dev', ':~$ ', 'cat manifesto.txt'];
+const H = ['Je construis des produits', "avec l'IA.", "J'aide les équipes", 'à faire pareil.'];
+const MOTTO = '// fait main, à vitesse machine.';
+const SK = { x: 818 + 138, y: 150 + 150 };          // centre de la pose skate (point de fusion)
+const CENTER = [600, 315];
+
+// ── render(t) ──────────────────────────────────────────────────────
+let still = false;
+function render(T) {
+  const t = step(T);
+  const stage = $('stage');
+  const caretOn = (t % 1.06) < .53;
+
+  // 0 · allumage : le curseur bloc seul, puis Blip ouvre les yeux
+  // 9.4 · extinction CRT (la boucle repart du noir)
+  const off = prog(t, 9.4, 9.9);
+  if (off > 0) {
+    const sy = off < .5 ? lerp(1, .006, out(off * 2)) : .006;
+    const sx = off < .5 ? 1 : lerp(1, 0, out((off - .5) * 2));
+    stage.style.transform = `scale(${sx}, ${sy})`;
+    stage.style.filter = `brightness(${1 + off * 2})`;
+  } else { stage.style.transform = ''; stage.style.filter = ''; }
+
+  // le cadre au crayon
+  const frameK = still ? 1 : ease(prog(t, 1.35, 2.35));
+  const tip = drawFrame(frameK);
+
+  // barre de titre : remplie au pot de peinture, en cercle qui s'étend par pas
+  const fillK = still ? 1 : prog(t, 2.55, 2.9);
+  const tb = $('titlebar');
+  tb.style.display = fillK > 0 ? 'block' : 'none';
+  tb.style.clipPath = `circle(${Math.round(fillK * 1200)}px at 560px 17px)`;
+
+  // en-tête
+  const brandTxt = still ? BRAND : typed(BRAND, t, 2.45, 3.0);
+  $('brand').innerHTML = brandTxt + (brandTxt.length === BRAND.length && (still || caretOn) ? '<span class="caret"></span>' : '');
+  const navParts = NAV.split('   ');
+  const navN = still ? 3 : [3.0, 3.18, 3.36].filter(x => t >= x).length;
+  $('nav').style.left = NAV_X + 'px';
+  $('nav').textContent = navParts.slice(0, navN).join('   ');
+  const divK = still ? 1 : out(prog(t, 3.0, 3.5));
+  $('divider').style.width = Math.round(divK * (W.w - 88)) + 'px';
+
+  // prompt
+  const pFull = PROMPT.join('');
+  const pTxt = still ? pFull : typed(pFull, t, 3.05, 3.6);
+  const a = PROMPT[0].length, b = a + PROMPT[1].length;
+  $('prompt').innerHTML = `<span class="u">${pTxt.slice(0, a)}</span><span class="s">${pTxt.slice(a, b)}</span>${pTxt.slice(b)}`;
+
+  // titres : I-beam pour le blanc, Blip terminal pour le vert
+  const hT = [[3.4, 4.2], [4.2, 4.55], [4.55, 5.1], [5.1, 5.55]];
+  const hTxt = H.map((s, i) => still ? s : typed(s, t, ...hT[i]));
+  hTxt.forEach((s, i) => { $('h' + (i + 1)).textContent = s; });
+  if (hTxt[3].length === H[3].length && (still || caretOn || t > 9.2)) $('h4').innerHTML += '<span class="caret"></span>';
+
+  // le pinceau souligne « l'IA »
+  const ulK = still ? 1 : prog(t, 5.6, 6.0);
+  const ulX0 = 84 + 5 * CW.h, ulW = 4 * CW.h;
+  $('underline').style.left = ulX0 + 'px';
+  $('underline').style.width = Math.round(ulK * ulW) + 'px';
+
+  // chips glissées à la main
+  const c1 = still ? 1 : out(prog(t, 4.75, 5.3)), c2 = still ? 1 : out(prog(t, 5.25, 5.8));
+  const chip1 = $('chip1'), chip2 = $('chip2');
+  chip1.style.left = '84px'; chip2.style.left = 84 + 356 + 14 + 'px';
+  chip1.style.top = Math.round(lerp(700, 452, c1)) + 'px';
+  chip2.style.top = Math.round(lerp(700, 452, c2)) + 'px';
+  chip1.style.display = c1 > 0 ? 'block' : 'none';
+  chip2.style.display = c2 > 0 ? 'block' : 'none';
+
+  const mTxt = still ? MOTTO : typed(MOTTO, t, 5.7, 6.4);
+  $('motto').textContent = mTxt;
+
+  // cote de mesure (Blip blueprint mesure la marge gauche) — visible le temps de la mesure
+  const dimOn = !still && t >= 3.75 && t < 4.75;
+  const dimK = out(prog(t, 3.75, 4.15));
+  const dims = $('dims');
+  dims.innerHTML = '';
+  if (dimOn) {
+    const y = 226, x0 = W.x + 2, x1 = lerp(x0, 84, dimK);
+    dims.innerHTML = `<div class="dim" style="left:${x0}px;top:${y}px;width:${Math.round(x1 - x0)}px;height:2px"></div>
+      <div class="dim" style="left:${x0}px;top:${y - 8}px;width:2px;height:18px"></div>
+      ${dimK >= 1 ? `<div class="dim" style="left:83px;top:${y - 8}px;width:2px;height:18px"></div>
+      <div id="dimlabel" style="left:${x0 + 4}px;top:${y + 8}px">44px</div>` : ''}`;
+  }
+
+  // ── Blip : seul au début, puis en skate après la fusion ──
+  const lead = actors.lead;
+  const skate = $('skate');
+  const fuseAt = 6.75;
+  if (still || t >= fuseAt) {
+    skate.style.display = 'block';
+    const pop = still ? 1 : prog(t, fuseAt, fuseAt + .25);
+    const sc = pop < 1 ? [.4, .8, 1.15, 1][Math.min(3, Math.floor(pop * 4))] : 1;
+    // ollie : translateY −13 px (unités de la pose) + rotate −9° vers 76 %, retombée avec micro-rebond
+    const ol = still ? 0 : prog(t, 7.7, 8.5);
+    let dy = 0, rot = 0;
+    if (ol > 0 && ol < 1) {
+      const frames = [[0, 0], [-14, -3], [-30, -7], [-36, -9], [-22, -5], [0, 0], [-4, 0], [0, 0]];
+      [dy, rot] = frames[Math.min(frames.length - 1, Math.floor(ol * frames.length))];
+    }
+    skate.style.transform = `translateY(${dy}px) rotate(${rot}deg) scale(${sc})`;
+    skate.style.transformOrigin = '50% 75%';
+    skate._blink(!still && blinkAt(t, .4) && t > fuseAt + .6);
+  } else skate.style.display = 'none';
+
+  // Blip d'ouverture : curseur bloc → yeux ouverts → division
+  if (!still && t < 1.0) {
+    const block = t < .5;
+    lead.style.display = 'block';
+    place(lead, CENTER[0] - 30, CENTER[1] - 46, { sc: 1 });
+    lead._blink(block || (t >= .8 && t < .8 + 1 / 12));
+    lead.style.opacity = block && !((t % .5) < .25) ? 0 : 1;
+    const squash = t >= .85 ? .82 : 1;
+    lead.style.transform += ` scaleY(${squash})`;
+  } else lead.style.display = 'none';
+
+  burst(t, 1.0, CENTER[0], CENTER[1], 120);
+  if (t >= fuseAt - .05 && t < fuseAt + .5) burst(t, fuseAt, SK.x, SK.y, 150);
+
+  // flash de fusion : une image blanche, une à moitié
+  $('flash').style.opacity = still ? 0 : t >= fuseAt && t < fuseAt + 1 / 12 ? .55 : t >= fuseAt + 1 / 12 && t < fuseAt + 2 / 12 ? .2 : 0;
+
+  // ── l'essaim ──
+  const live = !still && t >= 1.0 && t < fuseAt;
+  // départ de tous depuis le centre (division), retour au point de fusion
+  const C = CENTER, F = [SK.x, SK.y];
+  const fuse = (keys, tEnd = 6.2) => keys.concat([[tEnd, keys[keys.length - 1][1], keys[keys.length - 1][2]], [fuseAt, F[0], F[1]]]);
+
+  const cast = {
+    pencil: () => t < 1.35 ? path(t, [[1.0, ...C], [1.35, W.x, W.y]]) : t < 2.35 ? tip : path(t, fuse([[2.35, ...tip], [2.6, 260, 556]])),
+    bucket: () => path(t, fuse([[1.0, ...C], [1.4, 1000, 560], [2.3, 1000, 560], [2.55, 600, 51], [2.9, 600, 51], [3.3, 1110, 560]])),
+    ibeam: () => {
+      if (t < 2.45) return path(t, [[1.0, ...C], [1.45, 300, 120], [2.45, 84, 100]]);
+      if (t < 3.0) return [84 + brandTxt.length * CW.brand, 100];
+      if (t < 3.4) return path(t, [[3.0, 84 + BRAND.length * CW.brand, 100], [3.4, 84, 222]]);
+      if (t < 4.55) {
+        const line = t < 4.2 ? 0 : 1;
+        return [84 + hTxt[line].length * CW.h, 222 + line * 58];
+      }
+      return path(t, fuse([[4.55, 84 + H[1].length * CW.h, 280], [4.9, 560, 556]]));
+    },
+    point: () => {
+      const navX = i => NAV_X + (navParts.slice(0, i).join('   ').length + (i ? 3 : 0) + 2) * 14 * .6;
+      const keys = [[1.0, ...C], [1.5, 1100, 200], [2.85, 1100, 200], [3.0, navX(0), 102], [3.18, navX(1), 102], [3.36, navX(2), 102], [3.7, 1150, 300]];
+      return path(t, fuse(keys));
+    },
+    caret: () => {
+      if (t < 3.05) return path(t, [[1.0, ...C], [1.5, 60, 330], [2.7, 60, 330], [3.05, 84, 172]]);
+      if (t < 3.6) return [84 + pTxt.length * CW.prompt + 4, 166];
+      return path(t, fuse([[3.6, 84 + pFull.length * CW.prompt + 4, 166], [3.95, 980, 556]]));
+    },
+    term: () => {
+      if (t < 4.55) return path(t, [[1.0, ...C], [1.55, 700, 552], [4.15, 700, 552], [4.55, 84, 316]]);
+      if (t < 5.55) {
+        const line = t < 5.1 ? 2 : 3;
+        return [84 + hTxt[line].length * CW.h, 316 + (line - 2) * 58];
+      }
+      return path(t, fuse([[5.55, 84 + H[3].length * CW.h + 30, 374], [5.85, 760, 360]]));
+    },
+    blue: () => path(t, fuse([[1.0, ...C], [1.5, 160, 470], [3.5, 160, 470], [3.75, W.x + 4, 226], [4.15, 84, 226], [4.6, 84, 226], [4.95, 690, 150]])),
+    grab: () => {
+      if (t < 4.75) return path(t, [[1.0, ...C], [1.55, 380, 556], [4.4, 380, 556], [4.75, 240, 640]]);
+      if (t < 5.3) return [240, chip1.offsetTop + 18];
+      if (t < 5.4) return path(t, [[5.3, 240, 470], [5.4, 600, 640]]);
+      if (t < 5.8) return [600, chip2.offsetTop + 18];
+      return path(t, fuse([[5.8, 600, 470], [6.1, 700, 520]]));
+    },
+    brush: () => path(t, fuse([[1.0, ...C], [1.5, 1120, 470], [5.3, 1120, 470], [5.6, ulX0, 302], [6.0, ulX0 + ulW, 302], [6.2, ulX0 + ulW + 40, 290]], 6.25)),
+    retro: () => {
+      if (t < 5.7) return path(t, [[1.0, ...C], [1.55, 1060, 536], [5.3, 1060, 536], [5.7, 84, 548]]);
+      if (t < 6.4) return [84 + mTxt.length * CW.motto, 548];
+      return path(t, [[6.4, 84 + MOTTO.length * CW.motto, 548], [fuseAt, ...F]]);
+    }
+  };
+
+  for (const [k, fn] of Object.entries(cast)) {
+    const el = actors[k];
+    if (!live) { place(el, 0, 0, { show: false }); continue; }
+    let [x, y] = fn();
+    // à la sortie du centre, l'éclatement : petits sauts en arc
+    const k0 = prog(t, 1.0, 1.15);
+    const sc = k0 < 1 ? [.5, .8][Math.min(1, Math.floor(k0 * 2))] : 1;
+    const rot = (k === 'grab' && ((t >= 4.75 && t < 5.3) || (t >= 5.4 && t < 5.8))) ? -6 : 0;
+    place(el, x, y, { sc, rot });
+    if (el._blink) el._blink(blinkAt(t, Object.keys(cast).indexOf(k) * .37));
+  }
+  // le pot clique : petit enfoncement au moment du remplissage
+  if (live && t >= 2.55 && t < 2.65) actors.bucket.style.transform += ' translateY(3px)';
+  ['point'].forEach(k => {
+    if (live && [3.0, 3.18, 3.36].some(x => t >= x && t < x + 1 / 12)) actors[k].style.transform += ' scale(.85)';
+  });
+}
+
+// ── montage ────────────────────────────────────────────────────────
+window.ready = (async () => {
+  await Promise.all(['blip', 'blip-skate', 'blip-terminal', 'blip-blueprint', 'blip-retro90s'].map(loadSvg));
+  await document.fonts.load('700 46px "JetBrains Mono"');
+  await document.fonts.load('400 18px "JetBrains Mono"');
+  await document.fonts.load('500 12px "JetBrains Mono"');
+
+  // les points de la barre de titre : gris, gris, phosphore (le rouge est réservé aux incidents)
+  ['#3a3a3a', '#3a3a3a', '#33ff00'].forEach((c, i) => {
+    const d = document.createElement('div'); d.className = 'dot'; d.style.left = 16 + i * 18 + 'px'; d.style.background = c;
+    $('titlebar').appendChild(d);
+  });
+  mountSvg($('skate'), 'blip-skate');
+  for (let i = 0; i < BITS; i++) {
+    const b = document.createElement('div'); b.className = 'bit'; b.style.background = BIT_COLORS[i % BIT_COLORS.length];
+    $('bits').appendChild(b); bitEls.push(b);
+  }
+
+  actors.lead = blipActor('blip', 120);
+  actors.pencil = sprite('pencil', { color: '#ffb000' });
+  actors.bucket = sprite('bucket', { color: '#ffb000' });
+  actors.ibeam = sprite('ibeam', { color: '#f2f2f2', scale: 3.4 });
+  actors.point = sprite('hand-point', { color: '#f2f2f2' });
+  actors.caret = sprite('caret-block', { color: '#33ff00' });
+  actors.term = blipActor('blip-terminal', 66);
+  actors.blue = blipActor('blip-blueprint', 66);
+  actors.grab = sprite('hand-grab', { color: '#f2f2f2' });
+  actors.brush = sprite('brush', { color: '#ff00ff' });
+  actors.retro = blipActor('blip-retro90s', 66);
+
+  const q = new URLSearchParams(location.search);
+  still = q.has('still');
+  window.DURATION = DURATION;
+  window.render = render;
+  window.setStill = v => { still = v; };
+  render(q.has('t') ? +q.get('t') : 8.9);
+})();
+</script>
+</body>
+</html>
