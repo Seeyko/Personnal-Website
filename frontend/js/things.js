@@ -50,7 +50,7 @@
 
     function visual(item) {
         return item.image
-            ? `<img src="${esc(item.image)}" alt="" loading="lazy" decoding="async">`
+            ? `<span class="thing-sticker" style="--st-img: url('${esc(item.image)}')"><img src="${esc(item.image)}" alt="" loading="lazy" decoding="async"></span>`
             : `<span class="thing-mono" aria-hidden="true">${esc(item.mono || monogram(item.name))}</span>`;
     }
 

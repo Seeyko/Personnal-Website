@@ -8,9 +8,29 @@
       "hint": "Machines, desk, smart home"
     },
     {
+      "id": "audio",
+      "label": "Audio",
+      "hint": "Headphones and earbuds"
+    },
+    {
+      "id": "outils",
+      "label": "Tools",
+      "hint": "The workshop: what makes things"
+    },
+    {
+      "id": "ia",
+      "label": "AI",
+      "hint": "The models and services I pay for to build"
+    },
+    {
       "id": "dev",
       "label": "Dev",
       "hint": "The stack and the build tools"
+    },
+    {
+      "id": "apps",
+      "label": "Apps",
+      "hint": "What runs every day"
     },
     {
       "id": "gaming",
@@ -23,30 +43,45 @@
       "hint": "Ways to move without leaving home"
     },
     {
+      "id": "skate",
+      "label": "Ride",
+      "hint": "Skate, surf, snow: things that slide"
+    },
+    {
       "id": "photo",
       "label": "Photo",
       "hint": "What takes the pictures"
     },
     {
+      "id": "books",
+      "label": "Reading",
+      "hint": "Books that mattered"
+    },
+    {
       "id": "objets",
       "label": "Objects",
       "hint": "The ones with a story"
+    },
+    {
+      "id": "maison",
+      "label": "Home",
+      "hint": "The appliances humming in the background"
     }
   ],
   "items": [
     {
       "id": "mac-mini",
-      "name": "Mac mini",
+      "name": "Mac mini M1",
       "brand": "Apple",
       "category": "setup",
-      "note": "The build machine: agents, local servers, and everything that has to run without me."
+      "note": "16GB. The build server: 8 GitHub Actions runners, the agents and everything that has to run without me."
     },
     {
       "id": "pc-windows",
       "name": "Desktop PC",
       "brand": "Windows",
       "category": "setup",
-      "note": "The tower: gaming, editing, and the heavy lifting."
+      "note": "The MSI tower: i5-12400F, RTX 4060, 2TB NVMe. Gaming, editing and heavy lifting."
     },
     {
       "id": "cpod",
@@ -90,13 +125,257 @@
       "mono": "DJ"
     },
     {
+      "id": "iphone-15-pro",
+      "name": "iPhone 15 Pro",
+      "brand": "Apple",
+      "category": "setup",
+      "note": "Black titanium, refurbished from Back Market with a new battery. Always in my pocket.",
+      "since": "2026"
+    },
+    {
+      "id": "chaise-gamer",
+      "name": "Gaming chair",
+      "brand": "Songmics",
+      "category": "setup",
+      "note": "Retired: replaced by the CPOD chair.",
+      "since": "2017",
+      "retired": true
+    },
+    {
+      "id": "philips-499p9",
+      "name": "Philips 499P9H",
+      "brand": "Philips",
+      "category": "setup",
+      "note": "49-inch super-ultrawide: two screens in one, no bezel in the middle.",
+      "mono": "49\""
+    },
+    {
+      "id": "logitech-g610",
+      "name": "G610 keyboard",
+      "brand": "Logitech",
+      "category": "setup",
+      "note": "The PC's mechanical keyboard."
+    },
+    {
+      "id": "logitech-mx-vertical",
+      "name": "MX Vertical mouse",
+      "brand": "Logitech",
+      "category": "setup",
+      "note": "Vertical: the wrist stays on its side, even after ten hours.",
+      "since": "2024",
+      "mono": "MX"
+    },
+    {
+      "id": "logitech-g512",
+      "name": "G512 keyboard",
+      "brand": "Logitech",
+      "category": "setup",
+      "note": "Mechanical, for the gaming PC.",
+      "mono": "G512"
+    },
+    {
+      "id": "logitech-g602",
+      "name": "G602 mouse",
+      "brand": "Logitech",
+      "category": "setup",
+      "note": "Wireless, years of service.",
+      "mono": "G602"
+    },
+    {
+      "id": "arctis-nova-pro",
+      "name": "Arctis Nova Pro Wireless",
+      "brand": "SteelSeries",
+      "category": "audio",
+      "note": "The PC headset: calls, games and music.",
+      "mono": "NP"
+    },
+    {
+      "id": "airpods",
+      "name": "AirPods",
+      "brand": "Apple",
+      "category": "audio",
+      "note": "For everything away from the desk."
+    },
+    {
+      "id": "bosch-gks-85-g",
+      "name": "GKS 85 G",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "The circular saw, guide-rail ready: straight cuts for furniture.",
+      "since": "2026"
+    },
+    {
+      "id": "bosch-gsb-18v",
+      "name": "GSB 18V-55 hammer drill",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "The workshop's base tool, on the 18V platform.",
+      "since": "2021",
+      "mono": "GSB"
+    },
+    {
+      "id": "bosch-gws-18v-10-p",
+      "name": "GWS 18V-10 PC grinder",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "Cutting, deburring, sanding metal.",
+      "since": "2021",
+      "mono": "GWS"
+    },
+    {
+      "id": "bosch-gss-18v-10",
+      "name": "GSS 18V-10 sander",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "The finish before the oil.",
+      "since": "2021",
+      "mono": "GSS"
+    },
+    {
+      "id": "bosch-gst-160-ce",
+      "name": "GST 160 CE jigsaw",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "Curves and inside cuts.",
+      "mono": "GST"
+    },
+    {
+      "id": "bosch-fsn-1600",
+      "name": "FSN 1100 + 1600 guide rails",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "With the GKS 85 G: straight cuts, short or long.",
+      "since": "2026",
+      "mono": "FSN"
+    },
+    {
+      "id": "bosch-visseuse-chocs",
+      "name": "18V impact driver",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "For long screws and stubborn bolts.",
+      "mono": "GDR"
+    },
+    {
+      "id": "bosch-marteau",
+      "name": "1600A0116BT hammer",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "The one tool with no battery that never lets me down.",
+      "mono": "HAM"
+    },
+    {
+      "id": "bosch-niveau-25",
+      "name": "25 cm magnetic level",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "Small, magnetic underneath, always in a pocket.",
+      "mono": "LVL"
+    },
+    {
+      "id": "tajima-scie-japonaise",
+      "name": "265 mm Japanese saw",
+      "brand": "Tajima",
+      "category": "outils",
+      "note": "Cuts on the pull: precise and thin, for joinery.",
+      "url": "https://www.castorama.fr/scie-japonaise-tajima-265-mm-outifrance/4975364019356_CAFR.prd",
+      "mono": "鋸"
+    },
+    {
+      "id": "bosch-gms-120",
+      "name": "GMS 120 detector",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "Before drilling a wall: cables, pipes, studs.",
+      "mono": "GMS"
+    },
+    {
+      "id": "stanley-fatmax-etabli",
+      "name": "FATMAX Express folding workbench",
+      "brand": "STANLEY",
+      "category": "outils",
+      "note": "The workshop that folds against the wall.",
+      "mono": "FM"
+    },
+    {
+      "id": "stanley-etau",
+      "name": "Swivel vise",
+      "brand": "STANLEY",
+      "category": "outils",
+      "note": "Holds the piece at any angle.",
+      "mono": "ÉTAU"
+    },
+    {
+      "id": "stanley-presse-cadre",
+      "name": "Frame clamp",
+      "brand": "STANLEY",
+      "category": "outils",
+      "note": "For gluing frames perfectly square.",
+      "mono": "90°"
+    },
+    {
+      "id": "stanley-scie-chantourner",
+      "name": "Coping saw",
+      "brand": "STANLEY",
+      "category": "outils",
+      "note": "The curves the machines can't do.",
+      "mono": "S"
+    },
+    {
+      "id": "claude-ultra",
+      "name": "Claude Ultra",
+      "brand": "Anthropic",
+      "category": "ia",
+      "note": "My personal plan to grind on RideMyPark and all my other projects.",
+      "url": "https://claude.ai",
+      "favorite": true,
+      "mono": "CU"
+    },
+    {
+      "id": "claude-team",
+      "name": "Claude Team",
+      "brand": "Anthropic",
+      "category": "ia",
+      "note": "For the RideMyPark team: the Discord bot, the published MCP, working together.",
+      "url": "https://claude.ai",
+      "mono": "CT"
+    },
+    {
+      "id": "chatgpt",
+      "name": "ChatGPT",
+      "brand": "OpenAI",
+      "category": "ia",
+      "note": "The personal assistant on the Discord I share with Valentine, plus images.",
+      "url": "https://chatgpt.com",
+      "mono": "GPT"
+    },
+    {
+      "id": "elevenlabs",
+      "name": "ElevenLabs",
+      "brand": "ElevenLabs",
+      "category": "ia",
+      "note": "The voices behind RideMyPark reels.",
+      "url": "https://elevenlabs.io",
+      "mono": "11"
+    },
+    {
+      "id": "fal-ai",
+      "name": "fal.ai",
+      "brand": "fal",
+      "category": "ia",
+      "note": "Generated images and video when needed.",
+      "url": "https://fal.ai",
+      "mono": "fal"
+    },
+    {
       "id": "claude-code",
       "name": "Claude Code",
       "brand": "Anthropic",
       "category": "dev",
       "note": "My pair. I spec, it builds, I review.",
       "url": "https://claude.com/claude-code",
-      "favorite": true
+      "favorite": true,
+      "image": "/assets/things/claude-code.webp"
     },
     {
       "id": "go",
@@ -104,14 +383,16 @@
       "brand": "Google",
       "category": "dev",
       "note": "The backend of this site and my APIs: simple, fast, boring in the good way.",
-      "url": "https://go.dev"
+      "url": "https://go.dev",
+      "image": "/assets/things/go.webp"
     },
     {
       "id": "vanilla-js",
       "name": "Vanilla JavaScript",
       "brand": "The web",
       "category": "dev",
-      "note": "This site runs with no framework and no build step. Tools you understand."
+      "note": "This site runs with no framework and no build step. Tools you understand.",
+      "image": "/assets/things/vanilla-js.webp"
     },
     {
       "id": "gsap",
@@ -119,7 +400,52 @@
       "brand": "GreenSock",
       "category": "dev",
       "note": "Every scroll animation on this site.",
-      "url": "https://gsap.com"
+      "url": "https://gsap.com",
+      "image": "/assets/things/gsap.webp"
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "brand": "Docker",
+      "category": "dev",
+      "note": "Everything local runs in a container.",
+      "url": "https://www.docker.com",
+      "image": "/assets/things/docker.webp"
+    },
+    {
+      "id": "xcode",
+      "name": "Xcode",
+      "brand": "Apple",
+      "category": "dev",
+      "note": "For iOS apps, on the Mac mini.",
+      "mono": "XC",
+      "image": "/assets/things/xcode.webp"
+    },
+    {
+      "id": "tailscale",
+      "name": "Tailscale",
+      "brand": "Tailscale",
+      "category": "apps",
+      "note": "The PC and the Mac mini on one network, wherever I am.",
+      "url": "https://tailscale.com",
+      "image": "/assets/things/tailscale.webp"
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "brand": "Spotify",
+      "category": "apps",
+      "note": "Always open.",
+      "url": "https://spotify.com",
+      "image": "/assets/things/spotify.webp"
+    },
+    {
+      "id": "moonjar",
+      "name": "Moonjar",
+      "brand": "Moonjar",
+      "category": "apps",
+      "note": "Screenshots and videos of my apps.",
+      "mono": "MJ"
     },
     {
       "id": "ps5-manette",
@@ -189,12 +515,135 @@
       "retired": true
     },
     {
+      "id": "theragun-pro",
+      "name": "Theragun Pro",
+      "brand": "Therabody",
+      "category": "sport",
+      "note": "Recovery after training."
+    },
+    {
+      "id": "tente-forclaz-mt900",
+      "name": "MT900 tent + MH500 cook set",
+      "brand": "Forclaz",
+      "category": "sport",
+      "note": "Two-person, for trekking trips.",
+      "mono": "⛺"
+    },
+    {
+      "id": "primitive-whis",
+      "name": "JB Gillet Whis deck 8.38\"",
+      "brand": "Primitive x Dragon Ball Super",
+      "category": "skate",
+      "note": "JB Gillet's pro model. Too pretty for grip tape: it stays on the wall.",
+      "url": "https://www.ebay.de/itm/305559355131",
+      "mono": "ウイス"
+    },
+    {
+      "id": "powell-anderson-heron",
+      "name": "Andy Anderson Heron Skull",
+      "brand": "Powell Peralta",
+      "category": "skate",
+      "note": "The current board, set up with soft green wheels.",
+      "url": "https://www.blue-tomato.com/fr-FR/product/Powell+Peralta-Andy+Anderson+Heron+Skull+8+45+Skateboard+Deck-727122",
+      "favorite": true,
+      "mono": "AA"
+    },
+    {
+      "id": "enjoi-panda",
+      "name": "Enjoi Panda complete",
+      "brand": "Enjoi",
+      "category": "skate",
+      "note": "Blue and red pandas, still almost new.",
+      "mono": "🐼"
+    },
+    {
+      "id": "decks-uses",
+      "name": "The worn-out decks",
+      "brand": "Element, Cliché & co",
+      "category": "skate",
+      "note": "Element, Cliché and the rest: scraped to the wood, kept on the rack.",
+      "retired": true,
+      "mono": "×6"
+    },
+    {
+      "id": "etnies-joslin-2",
+      "name": "Etnies Joslin 2",
+      "brand": "Etnies",
+      "category": "skate",
+      "note": "The skate shoes.",
+      "mono": "ET"
+    },
+    {
+      "id": "bones-reds",
+      "name": "Bones Reds bearings",
+      "brand": "Bones",
+      "category": "skate",
+      "note": "The classic, no surprises.",
+      "mono": "RED"
+    },
+    {
+      "id": "olaian-sws500",
+      "name": "SWS500 wetsuit",
+      "brand": "Olaian",
+      "category": "skate",
+      "note": "Bought in Hendaye, for the October ocean.",
+      "mono": "SURF"
+    },
+    {
+      "id": "burton-mission",
+      "name": "Burton Mission bindings",
+      "brand": "Burton",
+      "category": "skate",
+      "note": "Found on Leboncoin for winter.",
+      "mono": "SNOW"
+    },
+    {
       "id": "sony-a6000",
       "name": "Alpha 6000",
       "brand": "Sony",
       "category": "photo",
       "note": "The white body, with the SELP1650 (16-50mm f/3.5-5.6).",
       "mono": "α6"
+    },
+    {
+      "id": "berserk",
+      "name": "Berserk",
+      "brand": "Kentaro Miura",
+      "category": "books",
+      "note": "The complete collection, mostly hunted down on Leboncoin.",
+      "mono": "BK"
+    },
+    {
+      "id": "univers-troy",
+      "name": "Lanfeust, Trolls de Troy, Namibia",
+      "brand": "Arleston, Tarquin & co",
+      "category": "books",
+      "note": "Every series by these authors, complete.",
+      "mono": "LT"
+    },
+    {
+      "id": "leo-aldebaran",
+      "name": "Survivants, Retour sur Aldébaran",
+      "brand": "Leo",
+      "category": "books",
+      "note": "More of Leo's worlds, after Namibia.",
+      "mono": "ALD"
+    },
+    {
+      "id": "livres-sagesse",
+      "name": "Tao Te Ching, In the Buddha's Words, Atomic Habits",
+      "brand": "Lao Tseu, Bouddha, James Clear",
+      "category": "books",
+      "note": "The three bedside books.",
+      "mono": "道"
+    },
+    {
+      "id": "livre-menuiserie",
+      "name": "Le grand livre de la menuiserie",
+      "brand": "Book",
+      "category": "books",
+      "note": "The bible before every piece of furniture.",
+      "mono": "GL"
     },
     {
       "id": "daruma",
@@ -205,12 +654,62 @@
       "url": "https://daruma.com"
     },
     {
+      "id": "airtags",
+      "name": "AirTags ×4",
+      "brand": "Apple",
+      "category": "objets",
+      "note": "On the keys, the bag and whatever goes missing.",
+      "mono": "×4"
+    },
+    {
       "id": "limitless",
       "name": "Limitless pendant",
       "brand": "Limitless",
       "category": "objets",
       "note": "Retired: the product was discontinued. RIP.",
       "retired": true
+    },
+    {
+      "id": "bosch-lave-vaisselle",
+      "name": "SMV6ECX93E dishwasher",
+      "brand": "Bosch",
+      "category": "maison",
+      "note": "Serie 6, fully integrated, Home Connect, 13 place settings.",
+      "mono": "S6"
+    },
+    {
+      "id": "haier-lave-linge",
+      "name": "HW100-B14367U washer",
+      "brand": "Haier",
+      "category": "maison",
+      "note": "10 kg, direct-drive motor, connected. Brand new.",
+      "since": "2026",
+      "mono": "HW"
+    },
+    {
+      "id": "haier-seche-linge",
+      "name": "HD100-C367U1 dryer",
+      "brand": "Haier",
+      "category": "maison",
+      "note": "Heat pump, 10 kg, quiet. Came with the washer.",
+      "since": "2026",
+      "mono": "HD"
+    },
+    {
+      "id": "ecovacs-t50",
+      "name": "T50 Omni robot vacuum",
+      "brand": "Ecovacs",
+      "category": "maison",
+      "note": "It cleans while I code.",
+      "mono": "T50"
+    },
+    {
+      "id": "matelas-emma",
+      "name": "Emma mattress",
+      "brand": "Emma",
+      "category": "maison",
+      "note": "The best purchase per hour of use.",
+      "mono": "Zz"
     }
   ]
 }

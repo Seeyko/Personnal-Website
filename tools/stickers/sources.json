@@ -1,0 +1,229 @@
+{
+  "_doc": "item id -> sticker source. See README.md. source: https URL, local path (relative to this folder) or iconify:<set>:<name>. matte: auto|alpha|white|rembg|none. Optional: crop [x0,y0,x1,y1] fractions, rotate (deg), scale (default 1), dx/dy (px), keep (all|largest), erode (px), fill_holes, tol (white key). page = where the source was found.",
+  "items": {
+    "claude-code": {
+      "source": "iconify:logos:claude-code",
+      "matte": "alpha",
+      "scale": 0.9,
+      "page": "https://www.npmjs.com/package/@iconify-json/logos",
+      "note": "Clawd, the Claude Code mascot"
+    },
+    "go": {
+      "source": "iconify:logos:gopher",
+      "matte": "alpha",
+      "page": "https://www.npmjs.com/package/@iconify-json/logos"
+    },
+    "vanilla-js": {
+      "source": "iconify:logos:javascript",
+      "matte": "alpha",
+      "scale": 0.82,
+      "page": "https://www.npmjs.com/package/@iconify-json/logos"
+    },
+    "gsap": {
+      "source": "iconify:logos:gsap",
+      "matte": "alpha",
+      "color": "#0AE448",
+      "page": "https://www.npmjs.com/package/@iconify-json/logos",
+      "note": "GSAP wordmark in brand green (#0AE448, simple-icons)"
+    },
+    "docker": {
+      "source": "iconify:logos:docker-icon",
+      "matte": "alpha",
+      "page": "https://www.npmjs.com/package/@iconify-json/logos"
+    },
+    "xcode": {
+      "source": "iconify:logos:xcode",
+      "matte": "alpha",
+      "scale": 0.85,
+      "page": "https://www.npmjs.com/package/@iconify-json/logos"
+    },
+    "tailscale": {
+      "source": "iconify:logos:tailscale",
+      "matte": "alpha",
+      "scale": 0.82,
+      "page": "https://www.npmjs.com/package/@iconify-json/logos"
+    },
+    "spotify": {
+      "source": "iconify:logos:spotify-icon",
+      "matte": "alpha",
+      "scale": 0.82,
+      "page": "https://www.npmjs.com/package/@iconify-json/logos"
+    },
+    "cpod": {
+      "source": "https://equilibre-france-ergonomie.fr/wp-content/uploads/2021/07/Produit-Equilibre-5-48.png",
+      "matte": "rembg",
+      "page": "https://equilibre-france-ergonomie.fr/produits/siege-tms-cpod/"
+    },
+    "iphone-15-pro": {
+      "source": "https://www.apple.com/v/iphone/compare/am/images/overview/compare_iphone15_pro_natural_titanium__scqfo7q20n2i_large_2x.jpg",
+      "matte": "rembg",
+      "page": "https://www.apple.com/fr/iphone/compare/",
+      "note": "natural titanium"
+    },
+    "airpods": {
+      "source": "https://www.apple.com/v/airpods-5/a/images/overview/contrast/explore_airpods_5_out__elly16h5teie_xlarge_2x.jpg",
+      "matte": "white",
+      "page": "https://www.apple.com/fr/airpods-4/",
+      "tol": 6
+    },
+    "ikea-ampoules": {
+      "source": "https://www.ikea.com/fr/fr/images/products/kajplats-ampoule-led-e27-1055-lumen-connecte-spectre-blanc-globe-blanc-opaque__1452572_pe991091_s5.jpg?f=xl",
+      "matte": "rembg",
+      "page": "https://www.ikea.com/fr/fr/p/kajplats-ampoule-led-e27-1055-lumen-connecte-spectre-blanc-globe-blanc-opaque-20608592/"
+    },
+    "game-boy-color": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Game-Boy-Color-Purple.png/960px-Game-Boy-Color-Purple.png",
+      "matte": "alpha",
+      "page": "https://commons.wikimedia.org/wiki/File:Game-Boy-Color-Purple.png",
+      "note": "Atomic Purple, Evan-Amos (public domain)"
+    },
+    "xbox-360": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Xbox-360-Pro-wController.jpg/960px-Xbox-360-Pro-wController.jpg",
+      "matte": "rembg",
+      "page": "https://commons.wikimedia.org/wiki/File:Xbox-360-Pro-wController.jpg",
+      "note": "Evan-Amos (public domain)"
+    },
+    "ps4": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/PS4-Console-wDS4.png/960px-PS4-Console-wDS4.png",
+      "matte": "alpha",
+      "page": "https://commons.wikimedia.org/wiki/File:PS4-Console-wDS4.png",
+      "note": "Evan-Amos (public domain)"
+    },
+    "ps5-manette": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Playstation_DualSense_Controller.png/960px-Playstation_DualSense_Controller.png",
+      "matte": "rembg",
+      "page": "https://commons.wikimedia.org/wiki/File:Playstation_DualSense_Controller.png"
+    },
+    "sony-a6000": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Sony_Alpha_ILCE-6000_-_13.JPG/960px-Sony_Alpha_ILCE-6000_-_13.JPG",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://commons.wikimedia.org/wiki/File:Sony_Alpha_ILCE-6000_-_13.JPG",
+      "note": "silver/white body with the 16-50 kit lens"
+    },
+    "switch-animal-crossing": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Switch_avec_manettes_sp%C3%A9ciales_animal_crossing_sur_son_dock.jpg/960px-Switch_avec_manettes_sp%C3%A9ciales_animal_crossing_sur_son_dock.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://commons.wikimedia.org/wiki/File:Switch_avec_manettes_spéciales_animal_crossing_sur_son_dock.jpg",
+      "note": "Animal Crossing edition Joy-Cons on the dock"
+    },
+    "claude-ultra": {
+      "source": "iconify:logos:claude-icon",
+      "matte": "alpha",
+      "scale": 0.82,
+      "page": "https://www.npmjs.com/package/@iconify-json/logos"
+    },
+    "claude-team": {
+      "source": "iconify:logos:claude-icon",
+      "matte": "alpha",
+      "scale": 0.82,
+      "page": "https://www.npmjs.com/package/@iconify-json/logos"
+    },
+    "chatgpt": {
+      "source": "iconify:logos:openai-icon",
+      "matte": "alpha",
+      "scale": 0.82,
+      "page": "https://www.npmjs.com/package/@iconify-json/logos"
+    },
+    "elevenlabs": {
+      "source": "iconify:logos:elevenlabs-icon",
+      "matte": "alpha",
+      "scale": 0.82,
+      "page": "https://www.npmjs.com/package/@iconify-json/logos"
+    },
+    "fal-ai": {
+      "source": "https://avatars.githubusercontent.com/fal-ai?s=800",
+      "matte": "none",
+      "scale": 0.82,
+      "page": "https://github.com/fal-ai"
+    },
+    "raspberry-pi-3": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Raspberry_Pi_3_Model_B_official_case_closed_%2829095116840%29.jpg/960px-Raspberry_Pi_3_Model_B_official_case_closed_%2829095116840%29.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://commons.wikimedia.org/wiki/File:Raspberry_Pi_3_Model_B_official_case_closed_(29095116840).jpg",
+      "note": "official red/white case"
+    },
+    "kettlebells": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Cast_Iron_Russian_kettlebell.jpg/960px-Cast_Iron_Russian_kettlebell.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://commons.wikimedia.org/wiki/File:Cast_Iron_Russian_kettlebell.jpg",
+      "note": "generic cast-iron kettlebell (Decathlon site blocked by Cloudflare)"
+    },
+    "mac-mini": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Mac_Mini_fifth_generation_M1.png",
+      "matte": "auto",
+      "page": "https://commons.wikimedia.org/wiki/File:Mac_Mini_fifth_generation_M1.png",
+      "note": "M1 (2020) silver design; source is small (382 px)"
+    },
+    "primitive-whis": {
+      "source": "local/skate/b0968866-photo.jpeg",
+      "quad": [
+        [
+          0.356,
+          0.0
+        ],
+        [
+          0.768,
+          0.0
+        ],
+        [
+          0.69,
+          0.88
+        ],
+        [
+          0.458,
+          0.88
+        ]
+      ],
+      "quad_aspect": 3.4,
+      "matte": "deck",
+      "rotate": 90,
+      "page": "Tom's photo (project share things/photos-skate/b0968866-photo.jpeg)",
+      "note": "eBay listing unreachable (ebay.com / i.ebayimg.com blocked); perspective-corrected from Tom's photo, nose re-rounded"
+    },
+    "enjoi-panda": {
+      "source": "local/skate/473473db-IMG_1709.jpeg",
+      "crop": [
+        0.23,
+        0.48,
+        0.83,
+        0.76
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "Tom's photo (things/photos-skate/473473db-IMG_1709.jpeg)"
+    },
+    "powell-anderson-heron": {
+      "source": "local/skate/e56bdcfb-IMG_1706.jpeg",
+      "crop": [
+        0.28,
+        0.17,
+        0.76,
+        0.42
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "Tom's photo (things/photos-skate/e56bdcfb-IMG_1706.jpeg)",
+      "note": "blue-tomato.com, longboardsusa.com, rollersnakes.co.uk blocked; Tom's own complete"
+    },
+    "decks-uses": {
+      "source": "local/skate/d846fa84-IMG_1707.jpeg",
+      "crop": [
+        0.25,
+        0.1,
+        0.98,
+        0.88
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "Tom's photo (things/photos-skate/d846fa84-IMG_1707.jpeg)"
+    },
+    "airtags": {
+      "source": null,
+      "note": "pending"
+    }
+  }
+}

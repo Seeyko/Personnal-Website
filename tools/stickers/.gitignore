@@ -1,0 +1,5 @@
+# downloads, rembg model weights (~180 MB), npm logo packs
+.cache/
+# Tom's own photos used as sources (kept out of git; originals in the project share)
+local/*
+!local/.gitkeep
