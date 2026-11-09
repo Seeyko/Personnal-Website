@@ -330,7 +330,7 @@ def paper_layer(cut: np.ndarray, inside: np.ndarray, seed: int) -> np.ndarray:
     return np.clip(rgb, 0, 255) / 255.0
 
 
-def warp_quad(rgba: np.ndarray, quad, aspect: float) -> np.ndarray:
+def warp_quad(rgba: np.ndarray, quad, aspect: float, border: int = cv2.BORDER_REPLICATE) -> np.ndarray:
     """Perspective-correct 4 corners (fractions: TL, TR, BR, BL) into an upright rectangle."""
     hh, ww = rgba.shape[:2]
     src = np.float32([[x * ww, y * hh] for x, y in quad])
@@ -338,7 +338,7 @@ def warp_quad(rgba: np.ndarray, quad, aspect: float) -> np.ndarray:
     qh = int(qw * float(aspect))
     dst = np.float32([[0, 0], [qw, 0], [qw, qh], [0, qh]])
     m = cv2.getPerspectiveTransform(src, dst)
-    out = cv2.warpPerspective(rgba, m, (qw, qh), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+    out = cv2.warpPerspective(rgba, m, (qw, qh), flags=cv2.INTER_CUBIC, borderMode=border)
     return np.clip(out, 0, 1)
 
 
@@ -505,6 +505,13 @@ def render(spec: dict, img: Image.Image, cache: Path, item_id: str) -> Image.Ima
         for cx, cy, rx, ry in spec["add_ellipses"]:
             cv2.ellipse(m, (round(cx * ww * ss), round(cy * hh * ss)), (round(rx * ww * ss), round(ry * hh * ss)), 0, 0, 360, 255, -1)
         alpha = np.maximum(alpha, cv2.resize(m.astype(np.float32) / 255, (ww, hh), interpolation=cv2.INTER_AREA))
+    if "cut_polys" in spec:  # background bits the matte kept (polygons, fractions), removed from the alpha
+        hh, ww = alpha.shape
+        ss = 4
+        m = np.zeros((hh * ss, ww * ss), np.uint8)
+        for poly in spec["cut_polys"]:
+            cv2.fillPoly(m, [np.int32([[x * ww * ss, y * hh * ss] for x, y in poly])], 255, lineType=cv2.LINE_AA)
+        alpha = alpha * (1 - cv2.resize(m.astype(np.float32) / 255, (ww, hh), interpolation=cv2.INTER_AREA))
     alpha = clean_alpha(alpha, spec.get("keep", "all"), int(spec.get("erode", 1 if mode == "rembg" else 0)),
                         bool(spec.get("fill_holes", False)), int(spec.get("open", 0)))
     if spec.get("shape") == "ellipse":  # round objects: replace a ragged matte by its fitted ellipse
@@ -521,6 +528,8 @@ def render(spec: dict, img: Image.Image, cache: Path, item_id: str) -> Image.Ima
     rgba[..., 3] = alpha
     if spec.get("book"):  # front cover -> book: page block peeking out right and bottom, soft spine shade
         rgba = book_depth(rgba, float(spec["book"]) if not isinstance(spec["book"], bool) else 0.03)
+    if "quad_post" in spec:  # like quad, but after matting (when rembg struggles on the warped photo)
+        rgba = warp_quad(rgba, spec["quad_post"], spec.get("quad_aspect", 1.0), border=cv2.BORDER_CONSTANT)
     if spec.get("rotate"):  # after matting, so the turned corners stay transparent
         pm = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
         pm = pm.rotate(float(spec["rotate"]), resample=Image.BICUBIC, expand=True)

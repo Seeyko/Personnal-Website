@@ -323,7 +323,8 @@
       "brand": "STANLEY",
       "category": "outils",
       "note": "L'atelier qui se replie contre le mur.",
-      "mono": "FM"
+      "mono": "FM",
+      "image": "/assets/things/stanley-fatmax-etabli.webp"
     },
     {
       "id": "stanley-etau",
@@ -331,7 +332,8 @@
       "brand": "STANLEY",
       "category": "outils",
       "note": "Il tient la pièce dans n'importe quel angle.",
-      "mono": "ÉTAU"
+      "mono": "ÉTAU",
+      "image": "/assets/things/stanley-etau.webp"
     },
     {
       "id": "stanley-presse-cadre",
@@ -347,7 +349,8 @@
       "brand": "STANLEY",
       "category": "outils",
       "note": "Les courbes que les machines ne font pas.",
-      "mono": "S"
+      "mono": "S",
+      "image": "/assets/things/stanley-scie-chantourner.webp"
     },
     {
       "id": "ps5-manette",
@@ -494,7 +497,8 @@
       "brand": "Etnies",
       "category": "skate",
       "note": "Les chaussures de skate.",
-      "mono": "ET"
+      "mono": "ET",
+      "image": "/assets/things/etnies-joslin-2.webp"
     },
     {
       "id": "bones-reds",
@@ -520,7 +524,8 @@
       "category": "skate",
       "note": "La planche de snow, version 2017-2018.",
       "url": "https://sidelineswap.com/gear/snowboarding/snowboards/12556576-burton-custom-flying-v-158-snowboard-2017-2018-new-read",
-      "mono": "158"
+      "mono": "158",
+      "image": "/assets/things/burton-custom-flying-v.webp"
     },
     {
       "id": "burton-mission",
@@ -591,7 +596,8 @@
       "brand": "Leo",
       "category": "books",
       "note": "Aldébaran, Bételgeuse, Antarès, Survivants et Retour sur Aldébaran, plus Neptune et Bellatrix. Et les trois séries Kenya, Namibia et Amazonie.",
-      "mono": "ALD"
+      "mono": "ALD",
+      "image": "/assets/things/leo-aldebaran.webp"
     },
     {
       "id": "vent-des-dieux",
@@ -608,7 +614,8 @@
       "brand": "Enki Bilal",
       "category": "books",
       "note": "La trilogie Nikopol (La foire aux immortels, La femme piège, Froid équateur), Le sommeil du monstre, 32 décembre, Partie de chasse, La ville qui n'existait pas.",
-      "mono": "EB"
+      "mono": "EB",
+      "image": "/assets/things/bilal.webp"
     },
     {
       "id": "tintin",
@@ -751,7 +758,8 @@
       "category": "maison",
       "note": "10 kg, moteur direct drive, connecté. Tout neuf.",
       "since": "2026",
-      "mono": "HW"
+      "mono": "HW",
+      "image": "/assets/things/haier-lave-linge.webp"
     },
     {
       "id": "haier-seche-linge",
@@ -760,7 +768,8 @@
       "category": "maison",
       "note": "Pompe à chaleur, 10 kg, silencieux. Arrivé avec le lave-linge.",
       "since": "2026",
-      "mono": "HD"
+      "mono": "HD",
+      "image": "/assets/things/haier-seche-linge.webp"
     },
     {
       "id": "ecovacs-t50",
@@ -768,7 +777,8 @@
       "brand": "Ecovacs",
       "category": "maison",
       "note": "Il passe pendant que je code.",
-      "mono": "T50"
+      "mono": "T50",
+      "image": "/assets/things/ecovacs-t50.webp"
     },
     {
       "id": "matelas-emma",

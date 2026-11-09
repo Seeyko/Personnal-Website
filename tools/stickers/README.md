@@ -59,8 +59,10 @@ python3 -m venv .venv && .venv/bin/pip install -r tools/stickers/requirements.tx
 | `open` | px : ouverture morphologique, coupe les fines excroissances (ombre, câble) |
 | `fill_holes` | bouche les trous du masque |
 | `add_polys`, `add_ellipses` | ajoute au masque des parties oubliées par le détourage (`[cx, cy, rx, ry]` pour les ellipses) |
+| `cut_polys` | retire du masque des morceaux de fond gardés par le détourage (polygones, fractions) |
 | `shape: ellipse`, `shape_shrink` | remplace un masque irrégulier par l'ellipse ajustée (objets ronds) |
 | `flatten` | nettoie les taches d'un tissu clair : `{min_v, max_s, sigma, keep, detail}` |
+| `quad_post` | comme `quad`, mais appliqué après le détourage (quand rembg échoue sur la photo redressée) |
 | `book` | couverture → livre : tranche de pages et plat arrière (valeur = épaisseur relative, ex. `0.03`) ; à combiner avec `rotate` |
 | `compose` | assemble plusieurs images déjà détourées en une seule source : `{"size": [W, H], "layers": [{"source", "crop"?, "box": [x0, y0, x1, y1]}]}`, chaque calque rogné à son alpha, ajusté dans sa boîte (fractions du canevas, calé en bas) puis empilé dans l'ordre ; `source` reste requis (premier calque) |
 | `page` | page où la source a été trouvée (traçabilité) |

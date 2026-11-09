@@ -1,54 +1,6 @@
 {
   "_doc": "item id -> sticker source. See README.md. source: https URL, local path (relative to this folder) or iconify:<set>:<name>. matte: auto|alpha|white|rembg|none. Optional: crop [x0,y0,x1,y1] fractions, rotate (deg), scale (default 1), dx/dy (px), keep (all|largest), erode (px), fill_holes, tol (white key). page = where the source was found.",
   "items": {
-    "claude-code": {
-      "source": "iconify:logos:claude-code",
-      "matte": "alpha",
-      "scale": 0.9,
-      "page": "https://www.npmjs.com/package/@iconify-json/logos",
-      "note": "Clawd, the Claude Code mascot"
-    },
-    "go": {
-      "source": "iconify:logos:gopher",
-      "matte": "alpha",
-      "page": "https://www.npmjs.com/package/@iconify-json/logos"
-    },
-    "vanilla-js": {
-      "source": "iconify:logos:javascript",
-      "matte": "alpha",
-      "scale": 0.82,
-      "page": "https://www.npmjs.com/package/@iconify-json/logos"
-    },
-    "gsap": {
-      "source": "iconify:logos:gsap",
-      "matte": "alpha",
-      "color": "#0AE448",
-      "page": "https://www.npmjs.com/package/@iconify-json/logos",
-      "note": "GSAP wordmark in brand green (#0AE448, simple-icons)"
-    },
-    "docker": {
-      "source": "iconify:logos:docker-icon",
-      "matte": "alpha",
-      "page": "https://www.npmjs.com/package/@iconify-json/logos"
-    },
-    "xcode": {
-      "source": "iconify:logos:xcode",
-      "matte": "alpha",
-      "scale": 0.85,
-      "page": "https://www.npmjs.com/package/@iconify-json/logos"
-    },
-    "tailscale": {
-      "source": "iconify:logos:tailscale",
-      "matte": "alpha",
-      "scale": 0.82,
-      "page": "https://www.npmjs.com/package/@iconify-json/logos"
-    },
-    "spotify": {
-      "source": "iconify:logos:spotify-icon",
-      "matte": "alpha",
-      "scale": 0.82,
-      "page": "https://www.npmjs.com/package/@iconify-json/logos"
-    },
     "cpod": {
       "source": "https://equilibre-france-ergonomie.fr/wp-content/uploads/2021/07/Produit-Equilibre-5-48.png",
       "matte": "rembg",
@@ -153,36 +105,6 @@
       "keep": "largest",
       "page": "https://sellout.woot.com/offers/nintendo-switch-animal-crossing-edition-1",
       "note": "Switch (full size) Animal Crossing: New Horizons edition, pastel green + blue Joy-Con. No clean shot of the AC dock was reachable."
-    },
-    "claude-ultra": {
-      "source": "iconify:logos:claude-icon",
-      "matte": "alpha",
-      "scale": 0.82,
-      "page": "https://www.npmjs.com/package/@iconify-json/logos"
-    },
-    "claude-team": {
-      "source": "iconify:logos:claude-icon",
-      "matte": "alpha",
-      "scale": 0.82,
-      "page": "https://www.npmjs.com/package/@iconify-json/logos"
-    },
-    "chatgpt": {
-      "source": "iconify:logos:openai-icon",
-      "matte": "alpha",
-      "scale": 0.82,
-      "page": "https://www.npmjs.com/package/@iconify-json/logos"
-    },
-    "elevenlabs": {
-      "source": "iconify:logos:elevenlabs-icon",
-      "matte": "alpha",
-      "scale": 0.82,
-      "page": "https://www.npmjs.com/package/@iconify-json/logos"
-    },
-    "fal-ai": {
-      "source": "https://avatars.githubusercontent.com/fal-ai?s=800",
-      "matte": "none",
-      "scale": 0.82,
-      "page": "https://github.com/fal-ai"
     },
     "raspberry-pi-3": {
       "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Raspberry_Pi_3_Model_B_official_case_closed_%2829095116840%29.jpg/960px-Raspberry_Pi_3_Model_B_official_case_closed_%2829095116840%29.jpg",
@@ -403,11 +325,6 @@
       "matte": "auto",
       "keep": "largest",
       "page": "https://www.philips.fr/c-p/499P9H_00/"
-    },
-    "logitech-g512": {
-      "source": "https://resource.logitechg.com/c_fill,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/gaming/en/non-braid/flying-v-mx-g512/g512-keyboard_gallery-1-2x-nb.png",
-      "matte": "alpha",
-      "page": "https://www.logitechg.com/fr-fr/shop/p/g512-mechanical-gaming-keyboard"
     },
     "bosch-marteau": {
       "source": "https://www.bosch-professional.com/binary/ocsmedia/optimized/full/o586317v82_1600A016BT_bo_pro_u_f_1.png",
@@ -723,6 +640,120 @@
       "keep": "largest",
       "page": "https://www.ebay.com/p/1294764929",
       "note": "Seller photo of the retail box (no clean stock shot reachable)."
+    },
+    "ecovacs-t50": {
+      "source": "https://site-static.ecovacs.com/upload/fr/image/product/2025/09/10/055809_2483$id-t50-omni-black-920x920.png",
+      "matte": "alpha",
+      "alpha_min": 0.35,
+      "keep": "largest",
+      "page": "https://www.ecovacs.com/fr/deebot-robotic-vacuum-cleaner/deebot-t50-omni"
+    },
+    "haier-lave-linge": {
+      "source": "https://cdn.shopify.com/s/files/1/0684/9776/8534/files/640-28_31020833_09_02_l_hw100-b14367u-fr-M.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "fill_holes": true,
+      "page": "https://www.haier-europe.com/fr_FR/products/31020833-hw100-b14367u-fr"
+    },
+    "haier-seche-linge": {
+      "source": "https://www.haier-europe.com/h-image/haier-product/2025/7/17516250/640-28_31102958_11_03_l_hd100-c367u1-s-M.jpg?w=1600&h=1600&q=90",
+      "matte": "rembg",
+      "keep": "largest",
+      "fill_holes": true,
+      "page": "https://www.haier-europe.com/fr_CH/seche-linge/31102958/hd100-c367u1-s/",
+      "_note": "Swiss -S variant of the same HD100-C367U1 (identical design; no fr_FR page found)"
+    },
+    "burton-custom-flying-v": {
+      "source": "https://edge.images.sidelineswap.com/production/096/214/697/d05b605726429068_original.jpeg?height=1600",
+      "quad_aspect": 8.0,
+      "matte": "rembg",
+      "keep": "largest",
+      "fill_holes": true,
+      "rotate": -66,
+      "page": "https://sidelineswap.com/gear/snowboarding/snowboards/12556576-burton-custom-flying-v-158-snowboard-2017-2018-new-read",
+      "_note": "listing photo of the exact board (topsheet), perspective straightened",
+      "quad_post": [
+        [
+          0.131,
+          0.0
+        ],
+        [
+          0.792,
+          0.0
+        ],
+        [
+          0.661,
+          1.0
+        ],
+        [
+          0.325,
+          1.0
+        ]
+      ]
+    },
+    "etnies-joslin-2": {
+      "source": "https://cdn.shopify.com/s/files/1/0513/0174/4799/files/03.27.20-Joslin2-BlogCarousel-3-1170x530.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://etnies.com/blogs/news/etnies-introduces-the-joslin-2",
+      "_note": "launch photo from etnies' own blog (Joslin 2 is no longer sold on etnies.com); blue colourway",
+      "cut_polys": [
+        [
+          [
+            0.542,
+            0.745
+          ],
+          [
+            0.76,
+            0.7
+          ],
+          [
+            0.76,
+            0.97
+          ],
+          [
+            0.542,
+            0.97
+          ]
+        ]
+      ]
+    },
+    "leo-aldebaran": {
+      "source": "https://m.media-amazon.com/images/P/2205087177.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2205087177",
+      "note": "Cover (Dargaud 2020, Aldébaran tome 1 : La catastrophe), Amazon cover image by ISBN."
+    },
+    "bilal": {
+      "source": "https://m.media-amazon.com/images/P/220315845X.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/220315845X",
+      "note": "Cover (Casterman, Nikopol, la trilogie), Amazon cover image by ISBN."
+    },
+    "stanley-fatmax-etabli": {
+      "source": "https://i.ebayimg.com/images/g/pNUAAOSwyudge2O2/s-l1600.png",
+      "matte": "auto",
+      "keep": "largest",
+      "page": "https://ebay.co.uk/p/10007412109",
+      "note": "Stanley FMST1-75672 stock photo via the eBay catalogue (assets.stanleyoutillage.fr is blocked)."
+    },
+    "stanley-etau": {
+      "source": "https://i.ebayimg.com/images/g/q5UAAOSwwK5g9taW/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.de/p/1605475805",
+      "note": "Stanley 1-83-069 multi-angle vice (étau d établi sur rotule), eBay catalogue stock photo."
+    },
+    "stanley-scie-chantourner": {
+      "source": "https://i.ebayimg.com/images/g/dzQAAOSwIpxiuvZe/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "all",
+      "page": "https://www.ebay.co.uk/p/1005104210",
+      "note": "Stanley FatMax 0-15-106 coping saw, eBay catalogue photo."
     }
   }
 }
