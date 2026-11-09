@@ -363,6 +363,8 @@
         const res = await fetch(`/data/${lang()}/things.json`);
         if (!res.ok) throw new Error(`things.json: ${res.status}`);
         data = await res.json();
+        // Only things with a photo are shown; the others wait in the JSON for one.
+        data.items = data.items.filter(i => i.image);
         const wanted = new URLSearchParams(location.search).get('c');
         active = wanted && data.categories.some(c => c.id === wanted) ? wanted : 'all';
         renderHeader();
