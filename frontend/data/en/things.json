@@ -713,6 +713,24 @@
       "image": "/assets/things/airtags.webp"
     },
     {
+      "id": "henson-al13",
+      "name": "AL13 razor in copper",
+      "brand": "Henson Shaving",
+      "category": "objets",
+      "note": "Machined from aerospace aluminium, copper finish. One blade, zero plastic.",
+      "url": "https://hensonshaving.com/products/henson-al13-in-copper",
+      "mono": "AL13"
+    },
+    {
+      "id": "henson-stand",
+      "name": "Razor stand",
+      "brand": "Henson Shaving",
+      "category": "objets",
+      "note": "The matching stand, next to the sink.",
+      "url": "https://hensonshaving.com/products/henson-razor-stand",
+      "mono": "H"
+    },
+    {
       "id": "limitless",
       "name": "Limitless pendant",
       "brand": "Limitless",

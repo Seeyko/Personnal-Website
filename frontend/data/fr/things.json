@@ -713,6 +713,24 @@
       "image": "/assets/things/airtags.webp"
     },
     {
+      "id": "henson-al13",
+      "name": "Rasoir AL13 cuivre",
+      "brand": "Henson Shaving",
+      "category": "objets",
+      "note": "Usiné dans l'aluminium aéronautique, finition cuivre. Une lame, zéro plastique.",
+      "url": "https://hensonshaving.com/products/henson-al13-in-copper",
+      "mono": "AL13"
+    },
+    {
+      "id": "henson-stand",
+      "name": "Support de rasoir",
+      "brand": "Henson Shaving",
+      "category": "objets",
+      "note": "Le socle assorti, posé à côté du lavabo.",
+      "url": "https://hensonshaving.com/products/henson-razor-stand",
+      "mono": "H"
+    },
+    {
       "id": "limitless",
       "name": "Pendentif Limitless",
       "brand": "Limitless",
