@@ -621,6 +621,15 @@
       "mono": "SURF"
     },
     {
+      "id": "burton-custom-flying-v",
+      "name": "Burton Custom Flying V 158",
+      "brand": "Burton",
+      "category": "skate",
+      "note": "La planche de snow, version 2017-2018.",
+      "url": "https://sidelineswap.com/gear/snowboarding/snowboards/12556576-burton-custom-flying-v-158-snowboard-2017-2018-new-read",
+      "mono": "158"
+    },
+    {
       "id": "burton-mission",
       "name": "Fixations Burton Mission",
       "brand": "Burton",
@@ -636,6 +645,15 @@
       "note": "Le boîtier blanc, avec le SELP1650 (16-50 mm f/3.5-5.6).",
       "mono": "α6",
       "image": "/assets/things/sony-a6000.webp"
+    },
+    {
+      "id": "dakine-low-roller",
+      "name": "Housse Low Roller",
+      "brand": "Dakine",
+      "category": "skate",
+      "note": "La housse à roulettes pour emmener le snow.",
+      "url": "https://eu.dakine.com/fr-fr/products/low-roller-snowboard-bag-black-w26",
+      "mono": "BAG"
     },
     {
       "id": "berserk",

@@ -621,6 +621,15 @@
       "mono": "SURF"
     },
     {
+      "id": "burton-custom-flying-v",
+      "name": "Burton Custom Flying V 158",
+      "brand": "Burton",
+      "category": "skate",
+      "note": "The snowboard, 2017-2018 model.",
+      "url": "https://sidelineswap.com/gear/snowboarding/snowboards/12556576-burton-custom-flying-v-158-snowboard-2017-2018-new-read",
+      "mono": "158"
+    },
+    {
       "id": "burton-mission",
       "name": "Burton Mission bindings",
       "brand": "Burton",
@@ -636,6 +645,15 @@
       "note": "The white body, with the SELP1650 (16-50mm f/3.5-5.6).",
       "mono": "α6",
       "image": "/assets/things/sony-a6000.webp"
+    },
+    {
+      "id": "dakine-low-roller",
+      "name": "Low Roller bag",
+      "brand": "Dakine",
+      "category": "skate",
+      "note": "The wheeled bag that carries the board.",
+      "url": "https://eu.dakine.com/fr-fr/products/low-roller-snowboard-bag-black-w26",
+      "mono": "BAG"
     },
     {
       "id": "berserk",
