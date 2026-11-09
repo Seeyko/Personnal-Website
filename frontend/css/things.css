@@ -474,24 +474,7 @@ html.things-sheet-open { overflow: hidden; }
   color: var(--t-dim);
 }
 
-.things-sheet-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 1.4rem;
-  padding: 0.7rem 1.1rem;
-  border-radius: var(--t-radius-sm);
-  background: var(--t-ink);
-  color: var(--t-card);
-  font: 600 0.875rem/1 var(--t-font);
-  text-decoration: none;
-  transition: transform 0.25s cubic-bezier(.2, .8, .2, 1), opacity 0.2s ease;
-}
 
-.things-sheet-link[hidden] { display: none; }
-.things-sheet-link:hover { transform: translateY(-2px); }
-.things-sheet-link span { transition: transform 0.25s ease; }
-.things-sheet-link:hover span { transform: translate(2px, -2px); }
 
 .things-sheet-close {
   position: absolute;
@@ -615,7 +598,6 @@ body[data-theme="terminal"] .things-filter[aria-selected="true"] { color: #0a0a0
 body[data-theme="terminal"] .thing-mono { text-shadow: 0 0 14px rgba(51, 255, 0, 0.55); }
 body[data-theme="terminal"] .thing-name::before { content: '> '; color: #ffb000; }
 body[data-theme="terminal"] .things-empty-tag { color: #ffb000; }
-body[data-theme="terminal"] .things-sheet-link { color: #0a0a0a; }
 
 /* ─── blueprint: white ink on drafting blue, dashed construction lines ─── */
 body[data-theme="blueprint"] .things-page,
@@ -660,7 +642,6 @@ body[data-theme="blueprint"] .things-filter-indicator { background: #ffffff; }
 body[data-theme="blueprint"] .things-filter[aria-selected="true"] { color: #003366; }
 body[data-theme="blueprint"] .things-empty-tag { color: #ffd700; }
 body[data-theme="blueprint"] .things-sheet-card { background: #002a55; }
-body[data-theme="blueprint"] .things-sheet-link { color: #003366; }
 
 /* ─── retro90s: grey bevelled windows, Tahoma, primary colours ─── */
 body[data-theme="retro90s"] .things-page,
@@ -707,7 +688,6 @@ body[data-theme="retro90s"] .things-filter-indicator { background: #000080; }
 body[data-theme="retro90s"] .things-filter[aria-selected="true"] { color: #ffffff; }
 body[data-theme="retro90s"] .thing-visual { border: 2px inset #808080; }
 body[data-theme="retro90s"] .things-sheet-card { box-shadow: var(--t-shadow), 8px 8px 0 #000080; }
-body[data-theme="retro90s"] .things-sheet-link { background: #000080; color: #fff; }
 body[data-theme="retro90s"] .things-updated { color: #000; }
 
 /* ─── fps: warm glass HUD panels, condensed caps ─── */
@@ -752,7 +732,6 @@ body[data-theme="fps"] .things-filter-indicator { background: #e8a33d; }
 body[data-theme="fps"] .things-filter[aria-selected="true"] { color: #2a1c0e; }
 body[data-theme="fps"] .thing-hit { backdrop-filter: blur(10px); }
 body[data-theme="fps"] .things-empty-tag { color: #ffc965; }
-body[data-theme="fps"] .things-sheet-link { background: #4f9a2a; color: #fff; }
 
 /* Hero sits on the open sky: ink on light, like the blog's title */
 body[data-theme="fps"] .things-title {

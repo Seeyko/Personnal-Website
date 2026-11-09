@@ -2,7 +2,7 @@
  * Things — the gear Tom actually uses.
  *
  * Data: /data/{lang}/things.json ({ intro, updated, categories[], items[] }).
- * An item: { id, name, brand, category, note, url?, image?, anim?, animFrames?, model?, since?, favorite?, retired?, mono? }.
+ * An item: { id, name, brand, category, note, image?, anim?, animFrames?, model?, since?, favorite?, retired?, mono? }.
  * anim: horizontal sprite strip of animFrames 4:3 frames (frame 0 = image): played forward on hover,
  * back on leave, and looped (with a pause at each end) while the thing is open in the detail.
  * mono overrides the auto monogram (two first letters).
@@ -278,12 +278,6 @@
             .filter(Boolean).join(' · ');
         $('#things-sheet-name').textContent = item.name;
         $('#things-sheet-note').textContent = item.note || '';
-        const link = $('#things-sheet-link');
-        link.hidden = !item.url;
-        if (item.url) {
-            link.href = item.url;
-            link.innerHTML = `${esc(tr('visit', 'Voir le site'))} <span aria-hidden="true">↗</span>`;
-        }
         sheet.querySelector('.things-sheet-close').setAttribute('aria-label', tr('close', 'Fermer'));
         setParam('o', item.id);   // the open thing lives in the URL: /things?o=mac-mini
         const sheetAnim = $('#things-sheet-visual .thing-anim');
