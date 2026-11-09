@@ -691,33 +691,6 @@
         ]
       ]
     },
-    "etnies-joslin-2": {
-      "source": "https://cdn.shopify.com/s/files/1/0513/0174/4799/files/03.27.20-Joslin2-BlogCarousel-3-1170x530.jpg",
-      "matte": "rembg",
-      "keep": "largest",
-      "page": "https://etnies.com/blogs/news/etnies-introduces-the-joslin-2",
-      "_note": "launch photo from etnies' own blog (Joslin 2 is no longer sold on etnies.com); blue colourway",
-      "cut_polys": [
-        [
-          [
-            0.542,
-            0.745
-          ],
-          [
-            0.76,
-            0.7
-          ],
-          [
-            0.76,
-            0.97
-          ],
-          [
-            0.542,
-            0.97
-          ]
-        ]
-      ]
-    },
     "leo-aldebaran": {
       "source": "https://m.media-amazon.com/images/P/2205087177.01._SCRM_.jpg",
       "matte": "none",
@@ -754,6 +727,14 @@
       "keep": "all",
       "page": "https://www.ebay.co.uk/p/1005104210",
       "note": "Stanley FatMax 0-15-106 coping saw, eBay catalogue photo."
+    },
+    "ezechiel": {
+      "source": "local/books/ezechiel.png",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -2,
+      "page": "",
+      "note": "Cover photo sent by Tom (Delcourt, Rodolphe / Ramón Marcos / Dimitri Fogolin)."
     }
   }
 }

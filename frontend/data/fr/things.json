@@ -492,15 +492,6 @@
       "image": "/assets/things/decks-uses.webp"
     },
     {
-      "id": "etnies-joslin-2",
-      "name": "Etnies Joslin 2",
-      "brand": "Etnies",
-      "category": "skate",
-      "note": "Les chaussures de skate.",
-      "mono": "ET",
-      "image": "/assets/things/etnies-joslin-2.webp"
-    },
-    {
       "id": "bones-reds",
       "name": "Roulements Bones Reds",
       "brand": "Bones",
@@ -674,10 +665,11 @@
     {
       "id": "ezechiel",
       "name": "Ezechiel",
-      "brand": "Le pays de la nuit",
+      "brand": "Rodolphe, Ramón Marcos, Dimitri Fogolin",
       "category": "books",
-      "note": "Lui aussi est sur l'étagère, même s'il n'est pas dans le carnet.",
-      "mono": "EZ"
+      "note": "Le tome 1, Le pays de la nuit, chez Delcourt.",
+      "mono": "EZ",
+      "image": "/assets/things/ezechiel.webp"
     },
     {
       "id": "carnet-bd",
