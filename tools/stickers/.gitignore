@@ -3,3 +3,4 @@
 # Tom's own photos used as sources (kept out of git; originals in the project share)
 local/*
 !local/.gitkeep
+__pycache__/

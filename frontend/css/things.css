@@ -943,3 +943,13 @@ body[data-theme="fps"] .things-sheet {
   .things-sheet-visual .thing-sticker::after { animation: none; }
   .things-sheet-visual .thing-sticker::after { opacity: 0; }
 }
+
+/* ─── 3D model in the sheet ─────────────────────────────────── */
+.things-sheet-visual .things-model {
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  background: transparent;
+  cursor: grab;
+}
+.things-sheet-visual .things-model:active { cursor: grabbing; }

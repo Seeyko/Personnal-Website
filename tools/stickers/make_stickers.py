@@ -166,7 +166,7 @@ def matte_white(img: Image.Image, tol: float) -> np.ndarray:
     return alpha
 
 
-def clean_alpha(alpha: np.ndarray, keep: str, erode: int, fill_holes: bool) -> np.ndarray:
+def clean_alpha(alpha: np.ndarray, keep: str, erode: int, fill_holes: bool, opening: int = 0) -> np.ndarray:
     hard = (alpha > 0.5).astype(np.uint8)
     n, lab, stats, _ = cv2.connectedComponentsWithStats(hard, connectivity=8)
     if n > 1:
@@ -182,6 +182,9 @@ def clean_alpha(alpha: np.ndarray, keep: str, erode: int, fill_holes: bool) -> n
         alpha = alpha * keepmask
     if fill_holes:
         alpha = np.maximum(alpha, holes(alpha > 0.5).astype(np.float32))
+    if opening > 0:  # cut thin spurs (shadow drips, cables) off the silhouette
+        k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * opening + 1, 2 * opening + 1))
+        alpha = np.minimum(alpha, cv2.dilate(cv2.erode(alpha, k), k))
     if erode > 0:
         k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * erode + 1, 2 * erode + 1))
         alpha = cv2.erode(alpha, k)
@@ -297,6 +300,51 @@ def paper_layer(cut: np.ndarray, inside: np.ndarray, seed: int) -> np.ndarray:
     return np.clip(rgb, 0, 255) / 255.0
 
 
+def warp_quad(rgba: np.ndarray, quad, aspect: float) -> np.ndarray:
+    """Perspective-correct 4 corners (fractions: TL, TR, BR, BL) into an upright rectangle."""
+    hh, ww = rgba.shape[:2]
+    src = np.float32([[x * ww, y * hh] for x, y in quad])
+    qw = int(max(np.linalg.norm(src[1] - src[0]), np.linalg.norm(src[2] - src[3])))
+    qh = int(qw * float(aspect))
+    dst = np.float32([[0, 0], [qw, 0], [qw, qh], [0, qh]])
+    m = cv2.getPerspectiveTransform(src, dst)
+    out = cv2.warpPerspective(rgba, m, (qw, qh), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+    return np.clip(out, 0, 1)
+
+
+def deck_mask(hh: int, ww: int) -> np.ndarray:
+    """Skateboard deck seen flat (vertical): rectangle with round nose and tail, anti-aliased."""
+    ss = 4
+    m = np.zeros((hh * ss, ww * ss), np.uint8)
+    r = ww * ss // 2
+    cv2.rectangle(m, (0, r), (ww * ss - 1, hh * ss - 1 - r), 255, -1)
+    cv2.ellipse(m, (ww * ss // 2, r), (ww * ss // 2, r), 0, 180, 360, 255, -1)
+    cv2.ellipse(m, (ww * ss // 2, hh * ss - 1 - r), (ww * ss // 2, r), 0, 0, 180, 255, -1)
+    return cv2.resize(m.astype(np.float32) / 255, (ww, hh), interpolation=cv2.INTER_AREA)
+
+
+def deck_fan(rgba: np.ndarray, parts: list) -> np.ndarray:
+    """Cut several decks out of one photo and lay them side by side, slightly fanned."""
+    decks = []
+    for part in parts:
+        d = warp_quad(rgba, part["quad"], part.get("aspect", 3.9))
+        d[..., 3] = deck_mask(*d.shape[:2])
+        h0 = 1400
+        d = cv2.resize(d, (round(d.shape[1] * h0 / d.shape[0]), h0), interpolation=cv2.INTER_AREA)
+        im = Image.fromarray((np.clip(d, 0, 1) * 255).astype(np.uint8), "RGBA")
+        im = im.rotate(float(part.get("tilt", 0)), resample=Image.BICUBIC, expand=True)
+        decks.append(im)
+    gap = -int(decks[0].width * 0.08)
+    W_ = sum(d.width for d in decks) + gap * (len(decks) - 1)
+    H_ = max(d.height for d in decks)
+    canvas = Image.new("RGBA", (W_, H_), (0, 0, 0, 0))
+    x = 0
+    for d in decks:
+        canvas.alpha_composite(d, (x, (H_ - d.height) // 2))
+        x += d.width + gap
+    return np.asarray(canvas, np.float32) / 255.0
+
+
 def render(spec: dict, img: Image.Image, cache: Path, item_id: str) -> Image.Image:
     rgba = np.asarray(img, np.float32) / 255.0
     if "crop" in spec:  # fractions [x0, y0, x1, y1]
@@ -305,14 +353,10 @@ def render(spec: dict, img: Image.Image, cache: Path, item_id: str) -> Image.Ima
         rgba = rgba[round(y0 * hh):round(y1 * hh), round(x0 * ww):round(x1 * ww)]
         img = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
     if "quad" in spec:  # perspective fix: 4 corners (fractions) TL, TR, BR, BL -> upright rectangle
-        hh, ww = rgba.shape[:2]
-        src = np.float32([[x * ww, y * hh] for x, y in spec["quad"]])
-        qw = int(max(np.linalg.norm(src[1] - src[0]), np.linalg.norm(src[2] - src[3])))
-        qh = int(qw * float(spec.get("quad_aspect", 1.0)))
-        dst = np.float32([[0, 0], [qw, 0], [qw, qh], [0, qh]])
-        m = cv2.getPerspectiveTransform(src, dst)
-        rgba = cv2.warpPerspective(rgba, m, (qw, qh), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-        rgba = np.clip(rgba, 0, 1)
+        rgba = warp_quad(rgba, spec["quad"], spec.get("quad_aspect", 1.0))
+        img = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
+    if "decks" in spec:  # several decks from one photo, composed as a small fan
+        rgba = deck_fan(rgba, spec["decks"])
         img = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
 
     mode = spec.get("matte", "auto")
@@ -326,22 +370,13 @@ def render(spec: dict, img: Image.Image, cache: Path, item_id: str) -> Image.Ima
     elif mode == "rembg":
         alpha = matte_rembg(img, spec.get("model", "isnet-general-use"), cache)
     elif mode == "deck":  # skateboard deck seen flat: rectangle with round nose and tail
-        hh, ww = rgba.shape[:2]
-        ss = 4
-        m = np.zeros((hh * ss, ww * ss), np.uint8)
-        r = min(hh, ww) * ss // 2
-        cv2.rectangle(m, (0, r), (ww * ss - 1, hh * ss - 1 - r), 255, -1) if hh >= ww else \
-            cv2.rectangle(m, (r, 0), (ww * ss - 1 - r, hh * ss - 1), 255, -1)
-        if hh >= ww:
-            cv2.ellipse(m, (ww * ss // 2, r), (ww * ss // 2, r), 0, 180, 360, 255, -1)
-            cv2.ellipse(m, (ww * ss // 2, hh * ss - 1 - r), (ww * ss // 2, r), 0, 0, 180, 255, -1)
-        alpha = cv2.resize(m.astype(np.float32) / 255, (ww, hh), interpolation=cv2.INTER_AREA)
+        alpha = deck_mask(*rgba.shape[:2])
     elif mode == "none":
         alpha = np.ones(rgba.shape[:2], np.float32)
     else:
         raise ValueError(f"unknown matte mode {mode}")
     alpha = clean_alpha(alpha, spec.get("keep", "all"), int(spec.get("erode", 1 if mode == "rembg" else 0)),
-                        bool(spec.get("fill_holes", False)))
+                        bool(spec.get("fill_holes", False)), int(spec.get("open", 0)))
     rgba = rgba.copy()
     rgba[..., 3] = alpha
     if spec.get("rotate"):  # after matting, so the turned corners stay transparent

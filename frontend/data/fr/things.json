@@ -530,6 +530,17 @@
       "mono": "⛺"
     },
     {
+      "id": "meuble-skate",
+      "name": "Meuble à skate",
+      "brand": "Fait main",
+      "category": "skate",
+      "note": "Construit et peint à la main : deux panneaux de pin découpés en vagues, huit encoches de chaque côté pour ranger les planches.",
+      "image": "/assets/things/meuble-skate.webp",
+      "model": "/assets/things/models/meuble-skate.glb",
+      "favorite": true,
+      "mono": "≋"
+    },
+    {
       "id": "primitive-whis",
       "name": "Deck Whis JB Gillet 8.38\"",
       "brand": "Primitive x Dragon Ball Super",

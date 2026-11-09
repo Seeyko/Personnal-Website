@@ -530,6 +530,17 @@
       "mono": "⛺"
     },
     {
+      "id": "meuble-skate",
+      "name": "Skateboard rack",
+      "brand": "Handmade",
+      "category": "skate",
+      "note": "Built and hand-painted: two pine panels cut into waves, eight slots on each side to hang the decks.",
+      "image": "/assets/things/meuble-skate.webp",
+      "model": "/assets/things/models/meuble-skate.glb",
+      "favorite": true,
+      "mono": "≋"
+    },
+    {
       "id": "primitive-whis",
       "name": "JB Gillet Whis deck 8.38\"",
       "brand": "Primitive x Dragon Ball Super",

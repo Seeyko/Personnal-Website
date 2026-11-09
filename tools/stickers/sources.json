@@ -162,23 +162,23 @@
       "source": "local/skate/b0968866-photo.jpeg",
       "quad": [
         [
-          0.356,
+          0.358,
           0.0
         ],
         [
-          0.768,
+          0.764,
           0.0
         ],
         [
-          0.69,
-          0.88
+          0.682,
+          0.84
         ],
         [
-          0.458,
-          0.88
+          0.462,
+          0.84
         ]
       ],
-      "quad_aspect": 3.4,
+      "quad_aspect": 3.2,
       "matte": "deck",
       "rotate": 90,
       "page": "Tom's photo (project share things/photos-skate/b0968866-photo.jpeg)",
@@ -194,7 +194,8 @@
       ],
       "matte": "rembg",
       "keep": "largest",
-      "page": "Tom's photo (things/photos-skate/473473db-IMG_1709.jpeg)"
+      "page": "Tom's photo (things/photos-skate/473473db-IMG_1709.jpeg)",
+      "open": 9
     },
     "powell-anderson-heron": {
       "source": "local/skate/e56bdcfb-IMG_1706.jpeg",
@@ -211,15 +212,74 @@
     },
     "decks-uses": {
       "source": "local/skate/d846fa84-IMG_1707.jpeg",
-      "crop": [
-        0.25,
-        0.1,
-        0.98,
-        0.88
+      "decks": [
+        {
+          "quad": [
+            [
+              0.272,
+              0.15
+            ],
+            [
+              0.465,
+              0.15
+            ],
+            [
+              0.452,
+              0.685
+            ],
+            [
+              0.27,
+              0.685
+            ]
+          ],
+          "tilt": 7
+        },
+        {
+          "quad": [
+            [
+              0.468,
+              0.128
+            ],
+            [
+              0.665,
+              0.128
+            ],
+            [
+              0.645,
+              0.652
+            ],
+            [
+              0.455,
+              0.652
+            ]
+          ],
+          "tilt": 0
+        },
+        {
+          "quad": [
+            [
+              0.668,
+              0.118
+            ],
+            [
+              0.84,
+              0.118
+            ],
+            [
+              0.79,
+              0.588
+            ],
+            [
+              0.64,
+              0.588
+            ]
+          ],
+          "tilt": -7
+        }
       ],
-      "matte": "rembg",
-      "keep": "largest",
-      "page": "Tom's photo (things/photos-skate/d846fa84-IMG_1707.jpeg)"
+      "matte": "alpha",
+      "page": "Tom's photo (things/photos-skate/d846fa84-IMG_1707.jpeg)",
+      "note": "three worn decks, perspective-corrected and fanned"
     },
     "airtags": {
       "source": null,

@@ -2,7 +2,7 @@
  * Things — the objects, apps and tools Tom actually uses.
  *
  * Data: /data/{lang}/things.json ({ intro, updated, categories[], items[] }).
- * An item: { id, name, brand, category, note, url?, image?, since?, favorite?, retired?, mono? }.
+ * An item: { id, name, brand, category, note, url?, image?, model?, since?, favorite?, retired?, mono? }.
  * mono overrides the auto monogram (two first letters).
  * Retired items (no longer used) are listed last, desaturated.
  * No image → a monogram tile, tinted by its category.
@@ -256,12 +256,28 @@
 
     // ─── Detail sheet ────────────────────────────────────────────
 
+    // 3D model in the sheet (model-viewer is loaded on first use only)
+    const MODEL_VIEWER = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js';
+    function modelViewer(item) {
+        if (!document.querySelector('script[data-model-viewer]')) {
+            const s = document.createElement('script');
+            s.type = 'module';
+            s.src = MODEL_VIEWER;
+            s.dataset.modelViewer = '';
+            document.head.appendChild(s);
+        }
+        return `<model-viewer class="things-model" src="${esc(item.model)}" alt="${esc(item.name)}"
+            ${item.image ? `poster="${esc(item.image)}"` : ''} camera-controls touch-action="pan-y"
+            ${reduced() ? '' : 'auto-rotate'} rotation-per-second="18deg" camera-target="0m 0.68m 0m"
+            shadow-intensity="1" exposure="1.05" interaction-prompt="none"></model-viewer>`;
+    }
+
     function openSheet(card) {
         const item = data.items.find(i => i.id === card.dataset.id);
         if (!item) return;
         const sheet = els.sheet;
         sheet.style.setProperty('--hue', hueFor(item.category));
-        $('#things-sheet-visual').innerHTML = visual(item);
+        $('#things-sheet-visual').innerHTML = item.model ? modelViewer(item) : visual(item);
         $('#things-sheet-meta').textContent = [item.brand, catLabel(item.category), item.since,
             item.retired && tr('retired', 'Plus utilisé')]
             .filter(Boolean).join(' · ');
