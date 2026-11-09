@@ -914,6 +914,20 @@
       "keep": "largest",
       "page": "https://www.ebay.com/shop/corsair-4000d-airflow",
       "note": "Corsair 4000D Airflow black, eBay listing photo (same case as Tom's 2024 rebuild)."
+    },
+    "yamaha-clp-320": {
+      "source": "local/rc/yamaha-clp-320.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://en.audiofanzine.com/digital-piano/yamaha/clavinova-clp-320/",
+      "note": "Clavinova CLP-320, Audiofanzine product photo."
+    },
+    "switch-ethernet": {
+      "source": "local/rc/tp-link-sg1005d.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.tp-link.com/fr/home-networking/soho-switch/tl-sg1005d/",
+      "note": "Generic black 5-port switch (TP-Link TL-SG1005D) — Tom: \"n'importe lequel, un ultra classique noir\"."
     }
   }
 }

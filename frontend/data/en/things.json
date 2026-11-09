@@ -81,7 +81,8 @@
       "brand": "",
       "category": "setup",
       "note": "Under the desk, wiring the Mac mini, the PC and the Raspberry. A Christmas gift from Victor.",
-      "mono": "ETH"
+      "mono": "ETH",
+      "image": "/assets/things/switch-ethernet.webp"
     },
     {
       "id": "pc-windows",
@@ -112,7 +113,7 @@
     {
       "id": "tapis-de-marche",
       "name": "Walking pad",
-      "brand": "Amazon",
+      "brand": "homeTro",
       "category": "setup",
       "note": "Under the desk: walking through calls.",
       "url": "https://www.amazon.fr/dp/B0FY35MDNY",
@@ -223,7 +224,8 @@
       "brand": "Yamaha",
       "category": "musique",
       "note": "Digital piano, 88 weighted keys. The furniture that plays.",
-      "mono": "CLP"
+      "mono": "CLP",
+      "image": "/assets/things/yamaha-clp-320.webp"
     },
     {
       "id": "banc-piano",
@@ -447,14 +449,14 @@
       "name": "Weighted vest",
       "brand": "Decathlon",
       "category": "sport",
-      "note": "To load walks and bodyweight work."
+      "note": "The adjustable 6 to 10 kg Domyos, to load walks and bodyweight work."
     },
     {
       "id": "anneaux-cts",
       "name": "CTS rings",
       "brand": "Christophe Carrio",
       "category": "sport",
-      "note": "Black and blue. Pull-ups and dips anywhere.",
+      "note": "Black. Pull-ups and dips anywhere.",
       "mono": "CTS"
     },
     {
@@ -547,7 +549,7 @@
       "name": "SWS500 wetsuit",
       "brand": "Olaian",
       "category": "skate",
-      "note": "Bought in Hendaye, for the October ocean.",
+      "note": "3 mm, bought in Hendaye for the October ocean.",
       "mono": "SURF"
     },
     {

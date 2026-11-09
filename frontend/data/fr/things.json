@@ -81,7 +81,8 @@
       "brand": "",
       "category": "setup",
       "note": "Sous le bureau, pour câbler le Mac mini, le PC et le Raspberry. Un cadeau de Victor à Noël.",
-      "mono": "ETH"
+      "mono": "ETH",
+      "image": "/assets/things/switch-ethernet.webp"
     },
     {
       "id": "pc-windows",
@@ -112,7 +113,7 @@
     {
       "id": "tapis-de-marche",
       "name": "Tapis de marche",
-      "brand": "Amazon",
+      "brand": "homeTro",
       "category": "setup",
       "note": "Sous le bureau : marcher pendant les calls.",
       "url": "https://www.amazon.fr/dp/B0FY35MDNY",
@@ -223,7 +224,8 @@
       "brand": "Yamaha",
       "category": "musique",
       "note": "Piano numérique, 88 touches lestées. Le meuble qui joue.",
-      "mono": "CLP"
+      "mono": "CLP",
+      "image": "/assets/things/yamaha-clp-320.webp"
     },
     {
       "id": "banc-piano",
@@ -447,14 +449,14 @@
       "name": "Gilet lesté",
       "brand": "Decathlon",
       "category": "sport",
-      "note": "Pour charger la marche et le poids du corps."
+      "note": "Le Domyos réglable de 6 à 10 kg, pour charger la marche et le poids du corps."
     },
     {
       "id": "anneaux-cts",
       "name": "Anneaux CTS",
       "brand": "Christophe Carrio",
       "category": "sport",
-      "note": "Noirs et bleus. Les tractions et les dips n'importe où.",
+      "note": "Noirs. Les tractions et les dips n'importe où.",
       "mono": "CTS"
     },
     {
@@ -547,7 +549,7 @@
       "name": "Combinaison de surf SWS500",
       "brand": "Olaian",
       "category": "skate",
-      "note": "Achetée à Hendaye, pour l'océan d'octobre.",
+      "note": "En 3 mm, achetée à Hendaye pour l'océan d'octobre.",
       "mono": "SURF"
     },
     {
