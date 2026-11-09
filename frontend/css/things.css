@@ -1138,3 +1138,38 @@ body .things-sheet .things-sheet-card {
   .things-grid .thing .thing-visual { animation: none; }
   .things-sheet { animation: none; }
 }
+
+/* ─── bare header: the title alone, filters as plain words ─── */
+.things-kicker,
+.things-intro { display: none; }
+.things-hero { margin-bottom: clamp(1.25rem, 3vw, 2rem); }
+
+body .things-page .things-filters {
+  flex-wrap: wrap;
+  gap: 0.15rem 1.35rem;
+  width: auto;
+  margin: 0 0 1rem;
+  padding: 0;
+  overflow: visible;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+body .things-page .things-filter-indicator { display: none; }
+body .things-page .things-filter {
+  padding: 0.3rem 0;
+  border-radius: 0;
+  color: var(--t-faint);
+  font-size: 1rem;
+  text-decoration: underline 1.5px transparent;
+  text-underline-offset: 0.35em;
+  transition: color 0.25s ease, text-decoration-color 0.25s ease;
+}
+body .things-page .things-filter:hover { color: var(--t-dim); }
+body .things-page .things-filter[aria-selected="true"] {
+  color: var(--t-ink);
+  text-decoration-color: currentColor;
+}
+body .things-page .things-filter-count,
+body .things-page .things-filter.is-empty { display: none; }
