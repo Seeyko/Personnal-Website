@@ -558,10 +558,11 @@
     {
       "id": "chat-des-rues",
       "name": "Chat des rues",
-      "brand": "Manga",
+      "brand": "Yuri Sonoda",
       "category": "books",
-      "note": "Le manga au complet, les 6 tomes.",
-      "mono": "猫"
+      "note": "Hachi & Maruru, le manga au complet : les 6 tomes.",
+      "mono": "猫",
+      "image": "/assets/things/chat-des-rues.webp"
     },
     {
       "id": "clan-des-otori",
@@ -660,7 +661,8 @@
       "brand": "Rodolphe, Griffo",
       "category": "books",
       "note": "Le tome 1, trouvé sur l'étagère entre deux séries.",
-      "mono": "UT"
+      "mono": "UT",
+      "image": "/assets/things/utopie.webp"
     },
     {
       "id": "ezechiel",
@@ -704,7 +706,8 @@
       "brand": "Daruma.com",
       "category": "objets",
       "note": "Rouge. Un œil peint au début de l'objectif, l'autre quand il est atteint.",
-      "url": "https://daruma.com"
+      "url": "https://daruma.com",
+      "image": "/assets/things/daruma.webp"
     },
     {
       "id": "airtags",
@@ -778,7 +781,8 @@
       "brand": "Emma",
       "category": "maison",
       "note": "Le meilleur achat en heures d'utilisation.",
-      "mono": "Zz"
+      "mono": "Zz",
+      "image": "/assets/things/matelas-emma.webp"
     },
     {
       "id": "philips-65pus7354",

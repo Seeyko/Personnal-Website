@@ -735,6 +735,73 @@
       "rotate": -2,
       "page": "",
       "note": "Cover photo sent by Tom (Delcourt, Rodolphe / Ramón Marcos / Dimitri Fogolin)."
+    },
+    "chat-des-rues": {
+      "source": "local/books/chat-des-rues.png",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2,
+      "page": "",
+      "note": "Cover sent by Tom (Hachi & Maruru, Chats des rues 1, Yuri Sonoda, Doki-Doki)."
+    },
+    "utopie": {
+      "source": "local/books/utopie.png",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -2.5,
+      "page": "",
+      "note": "Cover sent by Tom (Utopie vol. 1, Rodolphe / Griffo, Delcourt)."
+    },
+    "daruma": {
+      "source": "https://cdn.shopify.com/s/files/1/0255/2984/3805/files/daruma-japonais-rouge-9-a-15-cm-12-459.jpg?v=1747310889&width=1600",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://universdujapon.com/products/daruma-japonais-rouge-9-a-15-cm",
+      "note": "Red daruma, link given by Tom."
+    },
+    "matelas-emma": {
+      "source": "https://eu-images.contentstack.com/v3/assets/blt167b24547e5b1906/blt4c38880328c6a1ef/69dcf018d7281d4ff8586057/LayerSection_Original_Global_Image.png?width=1600",
+      "matte": "alpha",
+      "inpaint": [
+        [
+          0.255,
+          0.065,
+          0.325,
+          0.135
+        ],
+        [
+          0.36,
+          0.225,
+          0.43,
+          0.295
+        ],
+        [
+          0.5,
+          0.305,
+          0.57,
+          0.375
+        ],
+        [
+          0.62,
+          0.395,
+          0.69,
+          0.465
+        ],
+        [
+          0.715,
+          0.5,
+          0.785,
+          0.57
+        ],
+        [
+          0.795,
+          0.655,
+          0.865,
+          0.725
+        ]
+      ],
+      "page": "https://www.emma.fr/matelas/matelas-emma-original",
+      "note": "Emma Original exploded layers, official PNG; layer numbers erased."
     }
   }
 }
