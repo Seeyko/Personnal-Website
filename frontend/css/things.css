@@ -995,11 +995,10 @@ body[data-theme="fps"] .things-sheet {
   left: var(--dx, 0);
   width: calc(var(--s, 1) * clamp(130px, 17vw, 200px));
   perspective: none;
-  translate: var(--px, 0) var(--py, 0);
-  rotate: var(--pr, 0deg);
+  /* translate / rotate / transition-delay are set inline by scatter() */
   transition:
-    translate 0.7s cubic-bezier(.2, .8, .2, 1) var(--pd, 0ms),
-    rotate 0.7s cubic-bezier(.2, .8, .2, 1) var(--pd, 0ms);
+    translate 0.5s var(--ease-move),
+    rotate 0.5s var(--ease-move);
 }
 
 .things-grid .thing-hit,
@@ -1064,9 +1063,9 @@ body[data-theme="fps"] .things-sheet {
 .things-grid .things-empty { width: 100%; }
 
 /* scattered: everyone steps back, the picked one leaves for the detail */
-.things-grid .thing > .thing-hit { transition: opacity 0.45s ease, filter 0.45s ease; }
-.things-grid.is-scattered .thing > .thing-hit { opacity: 0.3; filter: blur(1.5px) saturate(0.6); }
-.things-grid.is-scattered .thing.is-picked > .thing-hit { opacity: 0; transition-duration: 0.15s; }
+.things-grid .thing > .thing-hit { transition: opacity 0.4s var(--ease-out); }
+.things-grid.is-scattered .thing > .thing-hit { opacity: 0.28; }
+.things-grid .thing.is-picked > .thing-hit { opacity: 0; transition: none; }
 
 @keyframes pile-bob {
   0%, 100% { transform: translateY(0); }
@@ -1084,11 +1083,14 @@ body[data-theme="fps"] .things-sheet {
   place-items: center;
   padding: clamp(1rem, 4vw, 3rem);
   box-sizing: border-box;
+  /* only the veil fades: the content is carried by the flying visual */
   background: color-mix(in srgb, var(--t-card) 55%, transparent);
-  animation: things-fade 0.4s ease both;
+  animation: veil-in 0.3s var(--ease-out) both;
 }
 .things-sheet[open] { display: grid; }
-.things-sheet.is-closing { animation: things-fade-out 0.24s ease both; }
+.things-sheet.is-closing { animation: veil-out 0.3s var(--ease-out) both; }
+@keyframes veil-in { from { background-color: transparent; } }
+@keyframes veil-out { to { background-color: transparent; } }
 .things-sheet::backdrop { background: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 
 body .things-sheet .things-sheet-card {
@@ -1137,6 +1139,7 @@ body .things-sheet .things-sheet-card {
   .things-grid .thing { transition: opacity 0.2s ease; translate: none; rotate: none; }
   .things-grid .thing .thing-visual { animation: none; }
   .things-sheet { animation: none; }
+  .things-grid .thing-hit:active .thing-visual { scale: 1; }
 }
 
 /* ─── bare header: the title alone, filters as plain words ─── */
@@ -1173,3 +1176,40 @@ body .things-page .things-filter[aria-selected="true"] {
 }
 body .things-page .things-filter-count,
 body .things-page .things-filter.is-empty { display: none; }
+
+/* ─── motion tokens + polish (emilkowalski/skills standards) ─── */
+.things-page, .things-sheet {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-move: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* entrance: shorter, strong ease-out, small travel */
+body.loaded .things-grid .thing.is-in {
+  animation: pile-in 0.5s var(--ease-out) var(--d, 0ms) both;
+}
+@keyframes pile-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* hover lift: quick and interruptible */
+.things-grid .thing-sticker {
+  transition: transform 0.3s var(--ease-out), filter 0.3s var(--ease-out);
+}
+
+/* press feedback on the whole thing */
+.things-grid .thing .thing-visual { transition: scale 0.16s var(--ease-out); }
+.things-grid .thing-hit:active .thing-visual { scale: 0.97; }
+
+/* touch: no false hovers on tap */
+@media (hover: none) {
+  .things-grid .thing-hit:hover .thing-sticker {
+    transform: translate3d(var(--st-x), var(--st-y), 0) rotate(var(--st-tilt));
+  }
+  .things-grid .thing-hit:hover .thing-sticker::after { opacity: 0; }
+  .things-grid .thing-hit:hover .thing-anim { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.loaded .things-grid .thing.is-in { animation: things-fade 0.2s ease both; }
+}

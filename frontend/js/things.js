@@ -15,7 +15,11 @@
  * under prefers-reduced-motion.
  */
 (() => {
-    const EASE = 'cubic-bezier(.2, .8, .2, 1)';
+    // Motion follows Emil Kowalski's standards (emilkowalski/skills):
+    // strong ease-out to enter/exit, strong ease-in-out to move on screen,
+    // never ease-in, short stagger capped, transforms + opacity only.
+    const EASE = 'cubic-bezier(0.23, 1, 0.32, 1)';     // ease-out: enter / exit
+    const MOVE = 'cubic-bezier(0.77, 0, 0.175, 1)';    // ease-in-out: on-screen moves
     const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const $ = sel => document.querySelector(sel);
@@ -56,6 +60,9 @@
                 ? `<span class="thing-anim" aria-hidden="true" style="--anim: url('${esc(item.anim)}'); --frames: ${Number(item.animFrames) || 10}"></span>` : ''}</span>`
             : `<span class="thing-mono" aria-hidden="true">${esc(item.mono || monogram(item.name))}</span>`;
     }
+
+    // Shrinking gaps (50, 40, 32…ms), capped near 250ms: reads as a wave, not a queue.
+    const stagger = i => Math.round(250 * (1 - Math.pow(0.8, i)));
 
     // ─── Rendering ───────────────────────────────────────────────
 
@@ -180,15 +187,15 @@
                 const dx = from.left - to.left, dy = from.top - to.top;
                 if (dx || dy) c.animate(
                     [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }],
-                    { duration: 520, easing: EASE });
+                    { duration: 420, easing: MOVE });
             } else {
                 c.animate(
-                    [{ opacity: 0, transform: 'translateY(14px) scale(.96)' }, { opacity: 1, transform: 'none' }],
-                    { duration: 460, easing: EASE, delay: 40 * enterIndex++, fill: 'backwards' });
+                    [{ opacity: 0, transform: 'translateY(8px) scale(.96)' }, { opacity: 1, transform: 'none' }],
+                    { duration: 320, easing: EASE, delay: stagger(enterIndex++), fill: 'backwards' });
             }
         });
         if (!shown) empty.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }],
-            { duration: 420, easing: EASE });
+            { duration: 300, easing: EASE });
     }
 
     function moveIndicator(animate = true) {
@@ -235,7 +242,7 @@
         const io = new IntersectionObserver(entries => {
             entries.forEach(e => {
                 if (!e.isIntersecting) return;
-                e.target.style.setProperty('--d', `${Math.min(batch++, 10) * 55}ms`);
+                e.target.style.setProperty('--d', `${stagger(batch++)}ms`);
                 e.target.classList.add('is-in');
                 io.unobserve(e.target);
             });
@@ -288,22 +295,28 @@
         document.documentElement.classList.add('things-sheet-open');
 
         if (reduced()) return;
-        // The picked thing flies from the pile into the detail.
-        const art = card.querySelector('.thing-sticker, .thing-mono');
-        const big = sheet.querySelector('.things-sheet-visual');
-        if (art) {
-            const from = art.getBoundingClientRect(), to = big.getBoundingClientRect();
-            const s = Math.min(from.width / to.width, from.height / to.height);
-            const dx = from.left + from.width / 2 - (to.left + to.width / 2);
-            const dy = from.top + from.height / 2 - (to.top + to.height / 2);
-            big.animate([
-                { transform: `translate(${dx}px, ${dy}px) scale(${s}) rotate(${getComputedStyle(card).getPropertyValue('--tilt') || '0deg'})` },
-                { transform: 'none' }
-            ], { duration: 620, easing: EASE });
-        }
+        // Lead: the picked thing flies from the pile into the detail (shared element).
+        const fly = flight(card);
+        if (fly) sheet.querySelector('.things-sheet-visual').animate(
+            [{ transform: fly }, { transform: 'none' }], { duration: 480, easing: MOVE });
+        // Support: the text arrives while the lead is still landing, small moves only.
         sheet.querySelectorAll('.things-sheet-body > *').forEach((el, i) =>
-            el.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
-                { duration: 380, delay: 160 + i * 50, easing: EASE, fill: 'backwards' }));
+            el.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }],
+                { duration: 300, delay: 180 + stagger(i) / 2, easing: EASE, fill: 'backwards' }));
+    }
+
+    // Transform that puts the detail visual on top of the card's sticker.
+    function flight(card) {
+        const art = card?.querySelector('.thing-sticker, .thing-mono');
+        const big = els.sheet.querySelector('.things-sheet-visual');
+        if (!art) return null;
+        const from = art.getBoundingClientRect(), to = big.getBoundingClientRect();
+        if (!from.width || !to.width) return null;
+        const s = Math.min(from.width / to.width, from.height / to.height);
+        const dx = from.left + from.width / 2 - (to.left + to.width / 2);
+        const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+        const tilt = getComputedStyle(card).getPropertyValue('--tilt').trim() || '0deg';
+        return `translate(${dx}px, ${dy}px) scale(${s}) rotate(${tilt})`;
     }
 
     // The rest of the pile moves out of the way, pushed away from the picked
@@ -322,10 +335,11 @@
             const d = Math.hypot(dx, dy) || 1;
             const push = 140 + 380 * Math.exp(-d / 420);
             dx = dx / d * push; dy = dy / d * push * 0.8;
-            t.style.setProperty('--px', `${dx.toFixed(0)}px`);
-            t.style.setProperty('--py', `${dy.toFixed(0)}px`);
-            t.style.setProperty('--pr', `${((dx > 0 ? 1 : -1) * Math.min(18, push / 22)).toFixed(1)}deg`);
-            t.style.setProperty('--pd', `${Math.min(220, d / 6).toFixed(0)}ms`);
+            // set on the element itself (no parent CSS var → no style recalc of the pile)
+            t.style.translate = `${dx.toFixed(0)}px ${dy.toFixed(0)}px`;
+            t.style.rotate = `${((dx > 0 ? 1 : -1) * Math.min(14, push / 28)).toFixed(1)}deg`;
+            // outward from the click: near things leave first, far ones a beat later
+            t.style.transitionDelay = `${Math.min(120, d / 8).toFixed(0)}ms`;
         });
     }
 
@@ -333,7 +347,7 @@
         els.grid.classList.remove('is-scattered');
         els.grid.querySelectorAll('.thing').forEach(t => {
             t.classList.remove('is-picked');
-            ['--px', '--py', '--pr', '--pd'].forEach(v => t.style.removeProperty(v));
+            t.style.translate = t.style.rotate = t.style.transitionDelay = '';
         });
     }
 
@@ -347,13 +361,23 @@
             openedFrom?.querySelector('.thing-hit')?.focus({ preventScroll: true });
         };
         if (reduced()) return done();
-        const panel = sheet.querySelector('.things-sheet-card');
+        // Reverse of the open: the thing flies back to its spot while the pile
+        // closes in around it, all at once; the text just fades.
         sheet.classList.add('is-closing');
+        const fly = flight(openedFrom);
         gather();
-        panel.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.94)' }],
-            { duration: 240, easing: 'ease-in' }).finished.then(() => {
+        openedFrom?.classList.add('is-picked');
+        sheet.querySelector('.things-sheet-body').animate([{ opacity: 1 }, { opacity: 0 }],
+            { duration: 150, easing: EASE, fill: 'forwards' });
+        const visual = sheet.querySelector('.things-sheet-visual');
+        const anim = fly
+            ? visual.animate([{ transform: 'none' }, { transform: fly }], { duration: 380, easing: MOVE, fill: 'forwards' })
+            : visual.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: EASE, fill: 'forwards' });
+        anim.finished.then(() => {
+            openedFrom?.classList.remove('is-picked');
             sheet.classList.remove('is-closing');
             done();
+            sheet.getAnimations({ subtree: true }).forEach(a => a.cancel());
         });
     }
 
