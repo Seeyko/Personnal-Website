@@ -1084,7 +1084,7 @@ body[data-theme="fps"] .things-sheet {
   padding: clamp(1rem, 4vw, 3rem);
   box-sizing: border-box;
   /* only the veil fades: the content is carried by the flying visual */
-  background: color-mix(in srgb, var(--t-card) 55%, transparent);
+  background: color-mix(in srgb, var(--t-card) 72%, transparent);
   animation: veil-in 0.3s var(--ease-out) both;
 }
 .things-sheet[open] { display: grid; }
@@ -1212,4 +1212,81 @@ body.loaded .things-grid .thing.is-in {
 
 @media (prefers-reduced-motion: reduce) {
   body.loaded .things-grid .thing.is-in { animation: things-fade 0.2s ease both; }
+}
+
+/* ─── clean grid (v2): aligned cells, the stickers keep a little life ─── */
+.things-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+  gap: clamp(1.75rem, 3.5vw, 2.75rem) clamp(1rem, 2.5vw, 2rem);
+  justify-content: stretch;
+  align-items: start;
+}
+.things-grid .thing { width: auto; top: 0; left: 0; }
+.things-grid .thing .thing-visual { display: grid; place-items: center; }
+.things-grid .thing-sticker {
+  width: calc(var(--s, 1) * 100%);
+  height: calc(var(--s, 1) * 100%);
+}
+.things-grid .thing-body { width: 100%; min-width: 0; }
+.things-grid .thing-name,
+.things-grid .thing-brand {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .things-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.75rem 1rem; }
+  .things-grid .thing { width: auto; }
+  .things-grid .thing-name { font-size: 0.85rem; }
+}
+
+/* ─── detail browsing: prev / count / next, drag feedback ─── */
+.things-sheet { touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.things-sheet .things-model { touch-action: none; }
+.things-sheet.is-dragging { cursor: grabbing; }
+.things-sheet .things-sheet-visual,
+.things-sheet .things-sheet-body { will-change: transform; }
+
+.things-sheet-nav {
+  position: fixed;
+  left: 50%;
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border-radius: 999px;
+  background: var(--t-card);
+  box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.35);
+  color: var(--t-ink);
+}
+.things-sheet-nav button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease, scale 0.16s var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .things-sheet-nav button:hover { background: var(--t-pill); }
+}
+.things-sheet-nav button:active { scale: 0.92; }
+.things-sheet-nav button:disabled { opacity: 0.25; cursor: default; }
+.things-sheet-count {
+  min-width: 4.5em;
+  text-align: center;
+  font: 500 0.75rem/1 var(--t-font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--t-dim);
+}
+@media (max-width: 720px) {
+  .things-sheet .things-sheet-card { padding-bottom: 4rem; }
 }

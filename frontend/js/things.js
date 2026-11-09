@@ -66,14 +66,13 @@
 
     // ─── Rendering ───────────────────────────────────────────────
 
-    // A loose pile, not a grid: every thing gets its own size, tilt, offset
-    // and float phase, derived from its id so the pile is the same on each visit.
+    // Clean grid, loose stickers: every thing gets its own size, tilt and float
+    // phase inside its cell, derived from its id (same on every visit).
     function scatterVars(id) {
         let h = 2166136261;
         for (const ch of id) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
         const r = n => ((h >>> n) & 255) / 255;
-        return `--s:${(0.78 + r(0) * 0.5).toFixed(2)};--tilt:${((r(8) - 0.5) * 14).toFixed(1)}deg;`
-            + `--dy:${((r(16) - 0.5) * 4.5).toFixed(2)}rem;--dx:${((r(20) - 0.5) * 2.5).toFixed(2)}rem;`
+        return `--s:${(0.82 + r(0) * 0.18).toFixed(2)};--tilt:${((r(8) - 0.5) * 8).toFixed(1)}deg;`
             + `--ph:${(-r(24) * 7).toFixed(2)}s`;
     }
 
@@ -270,9 +269,9 @@
             shadow-intensity="1" exposure="1.05" interaction-prompt="none"></model-viewer>`;
     }
 
-    function openSheet(card) {
+    function fillSheet(card) {
         const item = data.items.find(i => i.id === card.dataset.id);
-        if (!item) return;
+        if (!item) return null;
         const sheet = els.sheet;
         sheet.style.setProperty('--hue', hueFor(item.category));
         $('#things-sheet-visual').innerHTML = item.model ? modelViewer(item) : visual(item);
@@ -288,7 +287,16 @@
             link.innerHTML = `${esc(tr('visit', 'Voir le site'))} <span aria-hidden="true">↗</span>`;
         }
         sheet.querySelector('.things-sheet-close').setAttribute('aria-label', tr('close', 'Fermer'));
+        const list = navList(), i = list.indexOf(card);
+        $('#things-sheet-count').textContent = `${i + 1} / ${list.length}`;
+        sheet.querySelector('[data-step="-1"]').disabled = i <= 0;
+        sheet.querySelector('[data-step="1"]').disabled = i >= list.length - 1;
+        return item;
+    }
 
+    function openSheet(card) {
+        if (!fillSheet(card)) return;
+        const sheet = els.sheet;
         openedFrom = card;
         scatter(card);
         sheet.showModal();
@@ -328,6 +336,7 @@
         els.grid.classList.add('is-scattered');
         card.classList.add('is-picked');
         els.grid.querySelectorAll('.thing:not([hidden])').forEach(t => {
+            t.style.translate = t.style.rotate = '';
             if (t === card) return;
             const r = t.getBoundingClientRect();
             if (r.bottom < -vh || r.top > 2 * vh) return;
@@ -349,6 +358,134 @@
             t.classList.remove('is-picked');
             t.style.translate = t.style.rotate = t.style.transitionDelay = '';
         });
+    }
+
+    // ─── Browsing inside the detail ──────────────────────────────
+    // Swipe (touch / mouse drag), wheel / trackpad or arrow keys move to the
+    // previous / next thing. The card follows the finger, a flick is enough
+    // (velocity, not only distance), past the ends it resists, and the pile
+    // behind re-forms around the new thing.
+
+    const navList = () => [...els.grid.querySelectorAll('.thing:not([hidden])')];
+    let busy = false;
+
+    function parts() {
+        return [els.sheet.querySelector('.things-sheet-visual'), els.sheet.querySelector('.things-sheet-body')];
+    }
+
+    function step(dir, fromX = 0) {
+        if (busy || !els.sheet.open || !openedFrom) return;
+        const list = navList();
+        const next = list[list.indexOf(openedFrom) + dir];
+        const [vis, body] = parts();
+        if (!next) return settle(fromX);
+        if (reduced()) { fillSheet(next); repile(next); return; }
+        busy = true;
+        // out: the visual leads, the text follows a little behind (parallax)
+        const outV = vis.animate([
+            { transform: `translateX(${fromX}px) rotate(${fromX / 40}deg)`, opacity: 1 },
+            { transform: `translateX(${-dir * 55}vw) rotate(${-dir * 12}deg)`, opacity: 0 }
+        ], { duration: 240, easing: EASE, fill: 'forwards' });
+        body.animate([{ transform: `translateX(${fromX * 0.4}px)`, opacity: 1 },
+            { transform: `translateX(${-dir * 60}px)`, opacity: 0 }], { duration: 180, easing: EASE, fill: 'forwards' });
+        outV.finished.then(() => {
+            fillSheet(next);
+            repile(next);
+            vis.getAnimations().forEach(a => a.cancel());
+            body.getAnimations().forEach(a => a.cancel());
+            vis.animate([
+                { transform: `translateX(${dir * 45}vw) rotate(${dir * 10}deg) scale(.92)`, opacity: 0 },
+                { transform: 'none', opacity: 1 }
+            ], { duration: 460, easing: EASE });
+            body.querySelectorAll(':scope > *').forEach((el, i) =>
+                el.animate([{ transform: `translateX(${dir * 40}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }],
+                    { duration: 360, delay: 60 + stagger(i) / 3, easing: EASE, fill: 'backwards' }));
+            setTimeout(() => { busy = false; }, 200);
+        });
+    }
+
+    // Snap back after a drag that didn't go far or fast enough (or hit an end).
+    function settle(fromX) {
+        const [vis, body] = parts();
+        if (!fromX) {
+            vis.animate([{ transform: 'none' }, { transform: 'translateX(-14px)' }, { transform: 'translateX(8px)' }, { transform: 'none' }],
+                { duration: 320, easing: MOVE });
+            return;
+        }
+        vis.animate([{ transform: `translateX(${fromX}px) rotate(${fromX / 40}deg)` }, { transform: 'none' }],
+            { duration: 420, easing: EASE });
+        body.animate([{ transform: `translateX(${fromX * 0.4}px)` }, { transform: 'none' }], { duration: 420, easing: EASE });
+    }
+
+    // The pile behind moves to the new thing: bring it on screen, push the rest away.
+    function repile(card) {
+        gather();
+        const r = card.getBoundingClientRect();
+        window.scrollBy({ top: r.top + r.height / 2 - innerHeight / 2, behavior: 'instant' });
+        openedFrom = card;
+        scatter(card);
+    }
+
+    function bindBrowse() {
+        const sheet = els.sheet;
+        sheet.querySelectorAll('[data-step]').forEach(b =>
+            b.addEventListener('click', e => { e.stopPropagation(); step(Number(b.dataset.step)); }));
+        sheet.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); step(1); }
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); step(-1); }
+        });
+
+        // wheel / trackpad: one step per gesture (inertia is swallowed)
+        let acc = 0, quietTimer = null, locked = false;
+        sheet.addEventListener('wheel', e => {
+            e.preventDefault();
+            clearTimeout(quietTimer);
+            quietTimer = setTimeout(() => { locked = false; acc = 0; }, 160);
+            if (locked) return;
+            acc += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+            if (Math.abs(acc) > 40) { locked = true; step(acc > 0 ? 1 : -1); acc = 0; }
+        }, { passive: false });
+
+        // drag / swipe: the visual follows the pointer
+        let start = null;
+        sheet.addEventListener('pointerdown', e => {
+            if (busy || e.button > 0 || e.target.closest('a, button, model-viewer')) return;
+            start = { x: e.clientX, y: e.clientY, t: performance.now(), dx: 0, id: e.pointerId, drag: false };
+        });
+        sheet.addEventListener('pointermove', e => {
+            if (!start || e.pointerId !== start.id) return;
+            let dx = e.clientX - start.x;
+            if (!start.drag) {
+                if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(e.clientY - start.y)) return;
+                start.drag = true;
+                sheet.setPointerCapture(e.pointerId);
+                sheet.classList.add('is-dragging');
+            }
+            const list = navList(), i = list.indexOf(openedFrom);
+            const atEnd = (dx > 0 && i <= 0) || (dx < 0 && i >= list.length - 1);
+            if (atEnd) dx = Math.sign(dx) * Math.pow(Math.abs(dx), 0.75);   // rubber band past the ends
+            start.dx = dx;
+            const [vis, body] = parts();
+            vis.style.transform = `translateX(${dx}px) rotate(${dx / 40}deg)`;
+            vis.style.opacity = String(1 - Math.min(0.5, Math.abs(dx) / 600));
+            body.style.transform = `translateX(${dx * 0.4}px)`;
+        });
+        const end = e => {
+            if (!start || e.pointerId !== start.id) return;
+            const { dx, t, drag } = start;
+            start = null;
+            if (!drag) return;
+            sheet.classList.remove('is-dragging');
+            sheet.dataset.dragged = '1';   // swallow the click that follows the drag
+            const [vis, body] = parts();
+            vis.style.transform = vis.style.opacity = body.style.transform = '';
+            const v = Math.abs(dx) / (performance.now() - t);
+            if (e.type !== 'pointercancel' && (Math.abs(dx) > 90 || v > 0.4)) step(dx < 0 ? 1 : -1, dx);
+            else settle(dx);
+        };
+        sheet.addEventListener('dragstart', e => e.preventDefault());   // native image drag would cancel the swipe
+        sheet.addEventListener('pointerup', end);
+        sheet.addEventListener('pointercancel', end);
     }
 
     function closeSheet() {
@@ -414,8 +551,10 @@
             if (card) openSheet(card);
         });
         els.sheet.addEventListener('click', e => {
+            if (els.sheet.dataset.dragged) { delete els.sheet.dataset.dragged; return; }
             if (e.target === els.sheet || e.target.closest('[data-close]')) closeSheet();
         });
+        bindBrowse();
         els.sheet.addEventListener('cancel', e => { e.preventDefault(); closeSheet(); });
         window.addEventListener('resize', () => moveIndicator(false));
         window.addEventListener('languageChanged', async () => {
