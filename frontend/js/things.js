@@ -8,9 +8,10 @@
  * Retired items (no longer used) are listed last, desaturated.
  * No image → a monogram tile, tinted by its category.
  *
- * Motion: hero letters rise in, the filter pill slides, cards enter staggered
- * and re-flow with FLIP on filter, a spotlight follows the pointer, and the
- * detail sheet grows out of the card it was opened from. All of it is off
+ * Layout: a loose pile of floating stickers (size, tilt, offset from the id).
+ * Motion: hero letters rise in, the filter pill slides, things enter staggered
+ * and re-flow with FLIP on filter; on click the rest of the pile is pushed
+ * away and the picked thing flies into the detail. All of it is off
  * under prefers-reduced-motion.
  */
 (() => {
@@ -58,6 +59,17 @@
 
     // ─── Rendering ───────────────────────────────────────────────
 
+    // A loose pile, not a grid: every thing gets its own size, tilt, offset
+    // and float phase, derived from its id so the pile is the same on each visit.
+    function scatterVars(id) {
+        let h = 2166136261;
+        for (const ch of id) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+        const r = n => ((h >>> n) & 255) / 255;
+        return `--s:${(0.78 + r(0) * 0.5).toFixed(2)};--tilt:${((r(8) - 0.5) * 14).toFixed(1)}deg;`
+            + `--dy:${((r(16) - 0.5) * 4.5).toFixed(2)}rem;--dx:${((r(20) - 0.5) * 2.5).toFixed(2)}rem;`
+            + `--ph:${(-r(24) * 7).toFixed(2)}s`;
+    }
+
     function renderFilters() {
         const counts = Object.fromEntries(data.categories.map(c => [c.id, 0]));
         data.items.forEach(i => { if (i.category in counts) counts[i.category]++; });
@@ -80,7 +92,7 @@
         const items = [...data.items.filter(i => !i.retired), ...data.items.filter(i => i.retired)];
         els.grid.innerHTML = items.map((item, i) => `
             <article class="thing${item.favorite ? ' is-favorite' : ''}${item.retired ? ' is-retired' : ''}" data-id="${esc(item.id)}"
-                     data-category="${esc(item.category)}" style="--hue:${hueFor(item.category)};--i:${i}">
+                     data-category="${esc(item.category)}" style="--hue:${hueFor(item.category)};--i:${i};${scatterVars(item.id)}">
                 <button class="thing-hit" type="button" aria-haspopup="dialog">
                     <span class="thing-visual">${visual(item)}</span>
                     <span class="thing-body">
@@ -233,29 +245,6 @@
         cards.forEach(c => io.observe(c));
     }
 
-    function bindPointer() {
-        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-        els.grid.addEventListener('pointermove', e => {
-            const card = e.target.closest('.thing');
-            if (!card) return;
-            const r = card.getBoundingClientRect();
-            const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-            card.style.setProperty('--mx', `${x * 100}%`);
-            card.style.setProperty('--my', `${y * 100}%`);
-            if (!reduced()) {
-                card.style.setProperty('--rx', `${(0.5 - y) * 6}deg`);
-                card.style.setProperty('--ry', `${(x - 0.5) * 8}deg`);
-            }
-        });
-        els.grid.addEventListener('pointerout', e => {
-            const card = e.target.closest('.thing');
-            if (card && !card.contains(e.relatedTarget)) {
-                card.style.setProperty('--rx', '0deg');
-                card.style.setProperty('--ry', '0deg');
-            }
-        });
-    }
-
     // ─── Detail sheet ────────────────────────────────────────────
 
     // 3D model in the sheet (model-viewer is loaded on first use only)
@@ -294,22 +283,58 @@
         sheet.querySelector('.things-sheet-close').setAttribute('aria-label', tr('close', 'Fermer'));
 
         openedFrom = card;
+        scatter(card);
         sheet.showModal();
         document.documentElement.classList.add('things-sheet-open');
 
         if (reduced()) return;
-        const panel = sheet.querySelector('.things-sheet-card');
-        const from = card.getBoundingClientRect(), to = panel.getBoundingClientRect();
-        const sx = from.width / to.width, sy = from.height / to.height;
-        const dx = from.left + from.width / 2 - (to.left + to.width / 2);
-        const dy = from.top + from.height / 2 - (to.top + to.height / 2);
-        panel.animate([
-            { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, opacity: 0.4 },
-            { transform: 'none', opacity: 1 }
-        ], { duration: 520, easing: EASE });
+        // The picked thing flies from the pile into the detail.
+        const art = card.querySelector('.thing-sticker, .thing-mono');
+        const big = sheet.querySelector('.things-sheet-visual');
+        if (art) {
+            const from = art.getBoundingClientRect(), to = big.getBoundingClientRect();
+            const s = Math.min(from.width / to.width, from.height / to.height);
+            const dx = from.left + from.width / 2 - (to.left + to.width / 2);
+            const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+            big.animate([
+                { transform: `translate(${dx}px, ${dy}px) scale(${s}) rotate(${getComputedStyle(card).getPropertyValue('--tilt') || '0deg'})` },
+                { transform: 'none' }
+            ], { duration: 620, easing: EASE });
+        }
         sheet.querySelectorAll('.things-sheet-body > *').forEach((el, i) =>
             el.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
                 { duration: 380, delay: 160 + i * 50, easing: EASE, fill: 'backwards' }));
+    }
+
+    // The rest of the pile moves out of the way, pushed away from the picked
+    // thing (closer ones further), and comes back on close.
+    function scatter(card) {
+        const c = card.getBoundingClientRect();
+        const cx = c.left + c.width / 2, cy = c.top + c.height / 2;
+        const vh = innerHeight;
+        els.grid.classList.add('is-scattered');
+        card.classList.add('is-picked');
+        els.grid.querySelectorAll('.thing:not([hidden])').forEach(t => {
+            if (t === card) return;
+            const r = t.getBoundingClientRect();
+            if (r.bottom < -vh || r.top > 2 * vh) return;
+            let dx = r.left + r.width / 2 - cx, dy = r.top + r.height / 2 - cy;
+            const d = Math.hypot(dx, dy) || 1;
+            const push = 140 + 380 * Math.exp(-d / 420);
+            dx = dx / d * push; dy = dy / d * push * 0.8;
+            t.style.setProperty('--px', `${dx.toFixed(0)}px`);
+            t.style.setProperty('--py', `${dy.toFixed(0)}px`);
+            t.style.setProperty('--pr', `${((dx > 0 ? 1 : -1) * Math.min(18, push / 22)).toFixed(1)}deg`);
+            t.style.setProperty('--pd', `${Math.min(220, d / 6).toFixed(0)}ms`);
+        });
+    }
+
+    function gather() {
+        els.grid.classList.remove('is-scattered');
+        els.grid.querySelectorAll('.thing').forEach(t => {
+            t.classList.remove('is-picked');
+            ['--px', '--py', '--pr', '--pd'].forEach(v => t.style.removeProperty(v));
+        });
     }
 
     function closeSheet() {
@@ -317,14 +342,16 @@
         if (!sheet.open) return;
         const done = () => {
             sheet.close();
+            gather();
             document.documentElement.classList.remove('things-sheet-open');
             openedFrom?.querySelector('.thing-hit')?.focus({ preventScroll: true });
         };
         if (reduced()) return done();
         const panel = sheet.querySelector('.things-sheet-card');
         sheet.classList.add('is-closing');
-        panel.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(16px) scale(.97)' }],
-            { duration: 220, easing: 'ease-in' }).finished.then(() => {
+        gather();
+        panel.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.94)' }],
+            { duration: 240, easing: 'ease-in' }).finished.then(() => {
             sheet.classList.remove('is-closing');
             done();
         });
@@ -369,7 +396,6 @@
             await load();
             revealOnScroll();
         });
-        bindPointer();
     }
 
     async function init() {

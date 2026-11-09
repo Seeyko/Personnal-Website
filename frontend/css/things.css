@@ -969,3 +969,172 @@ body[data-theme="fps"] .things-sheet {
 .things-sheet-visual .thing-sticker.has-anim > img { visibility: visible; }
 .things-sheet-visual .thing-anim { display: none; }
 @media (prefers-reduced-motion: reduce) { .thing-anim { transition: none; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   LOOSE PILE — no cards: floating stickers of mixed sizes, tilted
+   and offset (vars from scatterVars() in things.js), a name that
+   only sharpens on hover. Clicking pushes the pile away (--px/--py)
+   and the detail opens in the cleared space.
+   ═══════════════════════════════════════════════════════════════ */
+
+.things-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(1.5rem, 3vw, 2.75rem) clamp(0.5rem, 2vw, 1.75rem);
+  padding: 1.5rem 0 3rem;
+}
+
+.things-grid .thing {
+  --st-tilt: var(--tilt, 0deg);
+  --st-x: 0%;
+  --st-y: 0%;
+  position: relative;
+  top: var(--dy, 0);
+  left: var(--dx, 0);
+  width: calc(var(--s, 1) * clamp(130px, 17vw, 200px));
+  perspective: none;
+  translate: var(--px, 0) var(--py, 0);
+  rotate: var(--pr, 0deg);
+  transition:
+    translate 0.7s cubic-bezier(.2, .8, .2, 1) var(--pd, 0ms),
+    rotate 0.7s cubic-bezier(.2, .8, .2, 1) var(--pd, 0ms);
+}
+
+.things-grid .thing-hit,
+.things-grid .thing-hit:hover,
+.things-grid .thing-hit:focus-visible {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  transform: none;
+  backdrop-filter: none;
+  align-items: center;
+  text-align: center;
+}
+.things-grid .thing-hit::before { display: none; }
+.things-grid .thing-hit:focus-visible { outline: none; }
+
+.things-grid .thing .thing-visual {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  overflow: visible;
+  animation: pile-bob 7s ease-in-out var(--ph, 0s) infinite;
+}
+.things-grid .thing-sticker { width: 100%; height: 100%; }
+
+/* no photo yet: a hand-written paper tag instead of a tile */
+.things-grid .thing-mono {
+  padding: 0.5em 0.7em;
+  border-radius: 10px;
+  background: var(--t-card);
+  color: var(--t-tile-ink);
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  box-shadow: 0 1px 1px var(--st-c), 0 10px 18px -8px var(--st-a);
+  transform: rotate(var(--tilt, 0deg));
+}
+.things-grid .thing-hit:hover .thing-mono { transform: rotate(0deg) scale(1.08); }
+
+.things-grid .thing-body {
+  padding: 0.55rem 0 0;
+  gap: 0.05rem;
+  align-items: center;
+  opacity: 0.62;
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(.2, .8, .2, 1);
+}
+.things-grid .thing-hit:hover .thing-body,
+.things-grid .thing-hit:focus-visible .thing-body { opacity: 1; transform: translateY(2px); }
+.things-grid .thing-name { font-size: 0.9rem; font-weight: 500; }
+.things-grid .thing-brand { font-size: 0.62rem; }
+.things-grid .thing-note,
+.things-grid .thing-tags { display: none; }
+.things-grid .thing.is-favorite .thing-name::after { content: ' ★'; color: var(--t-accent); }
+
+.things-grid .thing-hit:focus-visible .thing-name {
+  outline: 2px solid var(--t-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.things-grid .things-empty { width: 100%; }
+
+/* scattered: everyone steps back, the picked one leaves for the detail */
+.things-grid .thing > .thing-hit { transition: opacity 0.45s ease, filter 0.45s ease; }
+.things-grid.is-scattered .thing > .thing-hit { opacity: 0.3; filter: blur(1.5px) saturate(0.6); }
+.things-grid.is-scattered .thing.is-picked > .thing-hit { opacity: 0; transition-duration: 0.15s; }
+
+@keyframes pile-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+/* ─── detail: floats in the cleared space, no card ─── */
+
+.things-sheet {
+  width: 100vw;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  display: none;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--t-card) 55%, transparent);
+  animation: things-fade 0.4s ease both;
+}
+.things-sheet[open] { display: grid; }
+.things-sheet.is-closing { animation: things-fade-out 0.24s ease both; }
+.things-sheet::backdrop { background: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+body .things-sheet .things-sheet-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1rem, 4vw, 3.5rem);
+  width: min(960px, 100%);
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.things-sheet .things-sheet-visual {
+  aspect-ratio: 4 / 3;
+  background: none;
+  border: 0;
+  overflow: visible;
+}
+.things-sheet .things-sheet-visual .thing-sticker { width: 100%; height: 100%; }
+
+.things-sheet .things-sheet-body { padding: 0; }
+.things-sheet .things-sheet-name { font-size: clamp(1.8rem, 4vw, 2.75rem); }
+.things-sheet .things-sheet-note { color: var(--t-ink); opacity: 0.78; }
+
+.things-sheet .things-sheet-close {
+  position: fixed;
+  top: 88px;
+  right: clamp(1rem, 3vw, 1.75rem);
+  width: 44px;
+  height: 44px;
+  background: var(--t-card);
+  box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 720px) {
+  .things-grid { gap: 1.25rem 0.25rem; }
+  .things-grid .thing { width: calc(var(--s, 1) * 42vw * 0.82); }
+  body .things-sheet .things-sheet-card { grid-template-columns: 1fr; text-align: left; }
+  .things-sheet .things-sheet-visual { width: 85%; margin: 0 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .things-grid .thing { transition: opacity 0.2s ease; translate: none; rotate: none; }
+  .things-grid .thing .thing-visual { animation: none; }
+  .things-sheet { animation: none; }
+}
