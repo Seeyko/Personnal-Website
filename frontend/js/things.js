@@ -2,7 +2,8 @@
  * Things — the gear Tom actually uses.
  *
  * Data: /data/{lang}/things.json ({ intro, updated, categories[], items[] }).
- * An item: { id, name, brand, category, note, url?, image?, model?, since?, favorite?, retired?, mono? }.
+ * An item: { id, name, brand, category, note, url?, image?, anim?, animFrames?, model?, since?, favorite?, retired?, mono? }.
+ * anim: horizontal sprite strip of animFrames 4:3 frames (frame 0 = image), played on card hover.
  * mono overrides the auto monogram (two first letters).
  * Retired items (no longer used) are listed last, desaturated.
  * No image → a monogram tile, tinted by its category.
@@ -50,7 +51,8 @@
 
     function visual(item) {
         return item.image
-            ? `<span class="thing-sticker" style="--st-img: url('${esc(item.image)}')"><img src="${esc(item.image)}" alt="" loading="lazy" decoding="async"></span>`
+            ? `<span class="thing-sticker${item.anim ? ' has-anim' : ''}" style="--st-img: url('${esc(item.image)}')"><img src="${esc(item.image)}" alt="" loading="lazy" decoding="async">${item.anim
+                ? `<span class="thing-anim" aria-hidden="true" style="--anim: url('${esc(item.anim)}'); --frames: ${Number(item.animFrames) || 10}"></span>` : ''}</span>`
             : `<span class="thing-mono" aria-hidden="true">${esc(item.mono || monogram(item.name))}</span>`;
     }
 

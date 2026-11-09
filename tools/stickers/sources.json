@@ -807,7 +807,7 @@
       "source": "local/desk/bureau-3d.png",
       "matte": "alpha",
       "page": "https://claude.ai/artifact/XrMoVSEh9oDnMKnsKz12gy",
-      "note": "Render of Tom's 3D desk model (three.js, transparent background)."
+      "note": "Render of Tom's 3D desk model (three.js, transparent background), walking pad hidden. Frame 0 of local/desk/frames; the hover animation strip is built by anim_strip.py, do not rebuild this one with make_stickers.py."
     },
     "manette-pro-switch": {
       "source": "local/rc/switch-pro-controller.jpg",

@@ -99,7 +99,9 @@
       "category": "setup",
       "note": "Un piètement Autonomous à double moteur, de 62 à 127 cm, sous un plateau live edge en chêne massif de 200 × 80 cm trouvé chez Leroy Merlin. Le tapis de marche se glisse dessous.",
       "mono": "AD",
-      "image": "/assets/things/bureau-assis-debout.webp"
+      "image": "/assets/things/bureau-assis-debout.webp",
+      "anim": "/assets/things/bureau-assis-debout-anim.webp",
+      "animFrames": 10
     },
     {
       "id": "cpod",

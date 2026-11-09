@@ -953,3 +953,19 @@ body[data-theme="fps"] .things-sheet {
   cursor: grab;
 }
 .things-sheet-visual .things-model:active { cursor: grabbing; }
+
+/* animated sticker (anim + animFrames in things.json): a horizontal strip of
+   4:3 frames, frame 0 identical to the static image; hover plays it forward,
+   leaving plays it back (e.g. the standing desk rising). */
+.thing-sticker.has-anim > img { visibility: hidden; }
+.thing-anim {
+  position: absolute;
+  inset: 0;
+  background: var(--anim) 0% 50% / calc(var(--frames) * 100%) 100% no-repeat;
+  transition: background-position 1.1s steps(var(--frames), jump-none);
+}
+.thing-hit:hover .thing-anim,
+.thing-hit:focus-visible .thing-anim { background-position: 100% 50%; }
+.things-sheet-visual .thing-sticker.has-anim > img { visibility: visible; }
+.things-sheet-visual .thing-anim { display: none; }
+@media (prefers-reduced-motion: reduce) { .thing-anim { transition: none; } }
