@@ -1,0 +1,61 @@
+{
+  "intro": "The objects, apps and tools I actually use. Not a wishlist: what's on my desk, in my dock and under my wheels.",
+  "updated": "2026-11",
+  "categories": [
+    { "id": "setup", "label": "Setup", "hint": "Machines, screens, peripherals" },
+    { "id": "apps", "label": "Apps", "hint": "What runs every day" },
+    { "id": "dev", "label": "Dev", "hint": "The stack and the build tools" },
+    { "id": "audio", "label": "Audio", "hint": "Headphones, speakers, music" },
+    { "id": "ride", "label": "Ride", "hint": "Gear for rolling" },
+    { "id": "books", "label": "Reading", "hint": "Books that mattered" },
+    { "id": "edc", "label": "Everyday", "hint": "What comes everywhere with me" }
+  ],
+  "items": [
+    {
+      "id": "mac-mini",
+      "name": "Mac mini",
+      "brand": "Apple",
+      "category": "setup",
+      "note": "The build machine: agents, local servers, and everything that has to run without me."
+    },
+    {
+      "id": "pc-windows",
+      "name": "Desktop PC",
+      "brand": "Windows",
+      "category": "setup",
+      "note": "The tower: gaming, editing, and the heavy lifting."
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "brand": "Anthropic",
+      "category": "dev",
+      "note": "My pair. I spec, it builds, I review.",
+      "url": "https://claude.com/claude-code",
+      "favorite": true
+    },
+    {
+      "id": "go",
+      "name": "Go",
+      "brand": "Google",
+      "category": "dev",
+      "note": "The backend of this site and my APIs: simple, fast, boring in the good way.",
+      "url": "https://go.dev"
+    },
+    {
+      "id": "vanilla-js",
+      "name": "Vanilla JavaScript",
+      "brand": "The web",
+      "category": "dev",
+      "note": "This site runs with no framework and no build step. Tools you understand."
+    },
+    {
+      "id": "gsap",
+      "name": "GSAP",
+      "brand": "GreenSock",
+      "category": "dev",
+      "note": "Every scroll animation on this site.",
+      "url": "https://gsap.com"
+    }
+  ]
+}

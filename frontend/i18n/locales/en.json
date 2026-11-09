@@ -51,6 +51,7 @@
     "about": "About",
     "blog": "Blog",
     "contact": "Contact",
+    "things": "Things",
     "history": "History"
   },
   "sections": {
@@ -249,6 +250,19 @@
   },
   "writing": {
     "intro": "Notes, posts, and what I'm learning while building."
+  },
+  "things": {
+    "title": "Things",
+    "all": "All",
+    "items": "things",
+    "item": "thing",
+    "emptyTag": "IN BUILD",
+    "empty": "This shelf fills up soon.",
+    "updated": "Updated",
+    "visit": "Visit website",
+    "favorite": "Favorite",
+    "close": "Close",
+    "categories": "Categories"
   },
   "blog": {
     "subtitle": "Product engineering, AI, and what it changes in the way we live and work.",

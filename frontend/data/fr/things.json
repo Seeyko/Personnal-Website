@@ -1,0 +1,61 @@
+{
+  "intro": "Les objets, les apps et les outils que j'utilise vraiment. Pas une wishlist : ce qui est sur mon bureau, dans mon dock et sous mes roues.",
+  "updated": "2026-11",
+  "categories": [
+    { "id": "setup", "label": "Setup", "hint": "Machines, écrans, périphériques" },
+    { "id": "apps", "label": "Apps", "hint": "Ce qui tourne tous les jours" },
+    { "id": "dev", "label": "Dev", "hint": "La stack et les outils du build" },
+    { "id": "audio", "label": "Audio", "hint": "Casques, enceintes, musique" },
+    { "id": "ride", "label": "Ride", "hint": "Le matos pour rouler" },
+    { "id": "books", "label": "Lectures", "hint": "Les livres qui ont compté" },
+    { "id": "edc", "label": "Quotidien", "hint": "Ce qui me suit partout" }
+  ],
+  "items": [
+    {
+      "id": "mac-mini",
+      "name": "Mac mini",
+      "brand": "Apple",
+      "category": "setup",
+      "note": "La machine du build : agents, serveurs locaux, et tout ce qui doit tourner sans moi."
+    },
+    {
+      "id": "pc-windows",
+      "name": "PC fixe",
+      "brand": "Windows",
+      "category": "setup",
+      "note": "La tour : jeu, montage, et les gros calculs."
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "brand": "Anthropic",
+      "category": "dev",
+      "note": "Mon binôme. Je spécifie, il construit, je relis.",
+      "url": "https://claude.com/claude-code",
+      "favorite": true
+    },
+    {
+      "id": "go",
+      "name": "Go",
+      "brand": "Google",
+      "category": "dev",
+      "note": "Le backend de ce site et de mes API : simple, rapide, ennuyeux dans le bon sens.",
+      "url": "https://go.dev"
+    },
+    {
+      "id": "vanilla-js",
+      "name": "JavaScript vanilla",
+      "brand": "Le web",
+      "category": "dev",
+      "note": "Ce site tourne sans framework ni build. Des outils qu'on comprend."
+    },
+    {
+      "id": "gsap",
+      "name": "GSAP",
+      "brand": "GreenSock",
+      "category": "dev",
+      "note": "Toutes les animations au scroll du site.",
+      "url": "https://gsap.com"
+    }
+  ]
+}

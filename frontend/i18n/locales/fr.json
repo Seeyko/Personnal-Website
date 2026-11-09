@@ -51,6 +51,7 @@
     "about": "À propos",
     "blog": "Blog",
     "contact": "Contact",
+    "things": "Things",
     "history": "Historique"
   },
   "sections": {
@@ -249,6 +250,19 @@
   },
   "writing": {
     "intro": "Notes, posts, et ce que j'apprends en construisant."
+  },
+  "things": {
+    "title": "Things",
+    "all": "Tout",
+    "items": "objets",
+    "item": "objet",
+    "emptyTag": "EN BUILD",
+    "empty": "Cette étagère se remplit bientôt.",
+    "updated": "Mis à jour",
+    "visit": "Voir le site",
+    "favorite": "Favori",
+    "close": "Fermer",
+    "categories": "Catégories"
   },
   "blog": {
     "subtitle": "Product engineering, IA, et ce qu'elle change dans notre façon de vivre et de travailler.",
