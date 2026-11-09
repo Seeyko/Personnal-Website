@@ -1,5 +1,5 @@
 /**
- * Things — the objects, apps and tools Tom actually uses.
+ * Things — the gear Tom actually uses.
  *
  * Data: /data/{lang}/things.json ({ intro, updated, categories[], items[] }).
  * An item: { id, name, brand, category, note, url?, image?, model?, since?, favorite?, retired?, mono? }.

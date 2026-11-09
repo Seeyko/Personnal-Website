@@ -1,5 +1,5 @@
 {
-  "intro": "The objects, apps and tools I actually use. Not a wishlist: what's on my desk, in my dock and under my wheels.",
+  "intro": "The gear I actually use. Not a wishlist: what's on my desk, in the workshop, on my shelves and under my wheels.",
   "updated": "2026-11",
   "categories": [
     {
@@ -21,21 +21,6 @@
       "id": "outils",
       "label": "Tools",
       "hint": "The workshop: what makes things"
-    },
-    {
-      "id": "ia",
-      "label": "AI",
-      "hint": "The models and services I pay for to build"
-    },
-    {
-      "id": "dev",
-      "label": "Dev",
-      "hint": "The stack and the build tools"
-    },
-    {
-      "id": "apps",
-      "label": "Apps",
-      "hint": "What runs every day"
     },
     {
       "id": "gaming",
@@ -187,15 +172,6 @@
       "since": "2024",
       "mono": "MX",
       "image": "/assets/things/logitech-mx-vertical.webp"
-    },
-    {
-      "id": "logitech-g512",
-      "name": "G512 keyboard",
-      "brand": "Logitech",
-      "category": "setup",
-      "note": "Mechanical, for the gaming PC.",
-      "mono": "G512",
-      "image": "/assets/things/logitech-g512.webp"
     },
     {
       "id": "logitech-g602",
@@ -372,137 +348,6 @@
       "category": "outils",
       "note": "The curves the machines can't do.",
       "mono": "S"
-    },
-    {
-      "id": "claude-ultra",
-      "name": "Claude Ultra",
-      "brand": "Anthropic",
-      "category": "ia",
-      "note": "My personal plan to grind on RideMyPark and all my other projects.",
-      "url": "https://claude.ai",
-      "favorite": true,
-      "mono": "CU",
-      "image": "/assets/things/claude-ultra.webp"
-    },
-    {
-      "id": "claude-team",
-      "name": "Claude Team",
-      "brand": "Anthropic",
-      "category": "ia",
-      "note": "For the RideMyPark team: the Discord bot, the published MCP, working together.",
-      "url": "https://claude.ai",
-      "mono": "CT",
-      "image": "/assets/things/claude-team.webp"
-    },
-    {
-      "id": "chatgpt",
-      "name": "ChatGPT",
-      "brand": "OpenAI",
-      "category": "ia",
-      "note": "The personal assistant on the Discord I share with Valentine, plus images.",
-      "url": "https://chatgpt.com",
-      "mono": "GPT",
-      "image": "/assets/things/chatgpt.webp"
-    },
-    {
-      "id": "elevenlabs",
-      "name": "ElevenLabs",
-      "brand": "ElevenLabs",
-      "category": "ia",
-      "note": "The voices behind RideMyPark reels.",
-      "url": "https://elevenlabs.io",
-      "mono": "11",
-      "image": "/assets/things/elevenlabs.webp"
-    },
-    {
-      "id": "fal-ai",
-      "name": "fal.ai",
-      "brand": "fal",
-      "category": "ia",
-      "note": "Generated images and video when needed.",
-      "url": "https://fal.ai",
-      "mono": "fal",
-      "image": "/assets/things/fal-ai.webp"
-    },
-    {
-      "id": "claude-code",
-      "name": "Claude Code",
-      "brand": "Anthropic",
-      "category": "dev",
-      "note": "My pair. I spec, it builds, I review.",
-      "url": "https://claude.com/claude-code",
-      "favorite": true,
-      "image": "/assets/things/claude-code.webp"
-    },
-    {
-      "id": "go",
-      "name": "Go",
-      "brand": "Google",
-      "category": "dev",
-      "note": "The backend of this site and my APIs: simple, fast, boring in the good way.",
-      "url": "https://go.dev",
-      "image": "/assets/things/go.webp"
-    },
-    {
-      "id": "vanilla-js",
-      "name": "Vanilla JavaScript",
-      "brand": "The web",
-      "category": "dev",
-      "note": "This site runs with no framework and no build step. Tools you understand.",
-      "image": "/assets/things/vanilla-js.webp"
-    },
-    {
-      "id": "gsap",
-      "name": "GSAP",
-      "brand": "GreenSock",
-      "category": "dev",
-      "note": "Every scroll animation on this site.",
-      "url": "https://gsap.com",
-      "image": "/assets/things/gsap.webp"
-    },
-    {
-      "id": "docker",
-      "name": "Docker",
-      "brand": "Docker",
-      "category": "dev",
-      "note": "Everything local runs in a container.",
-      "url": "https://www.docker.com",
-      "image": "/assets/things/docker.webp"
-    },
-    {
-      "id": "xcode",
-      "name": "Xcode",
-      "brand": "Apple",
-      "category": "dev",
-      "note": "For iOS apps, on the Mac mini.",
-      "mono": "XC",
-      "image": "/assets/things/xcode.webp"
-    },
-    {
-      "id": "tailscale",
-      "name": "Tailscale",
-      "brand": "Tailscale",
-      "category": "apps",
-      "note": "The PC and the Mac mini on one network, wherever I am.",
-      "url": "https://tailscale.com",
-      "image": "/assets/things/tailscale.webp"
-    },
-    {
-      "id": "spotify",
-      "name": "Spotify",
-      "brand": "Spotify",
-      "category": "apps",
-      "note": "Always open.",
-      "url": "https://spotify.com",
-      "image": "/assets/things/spotify.webp"
-    },
-    {
-      "id": "moonjar",
-      "name": "Moonjar",
-      "brand": "Moonjar",
-      "category": "apps",
-      "note": "Screenshots and videos of my apps.",
-      "mono": "MJ"
     },
     {
       "id": "ps5-manette",
