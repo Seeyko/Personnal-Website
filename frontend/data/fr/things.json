@@ -705,7 +705,7 @@
       "name": "L'univers de Troy",
       "brand": "Arleston, Tarquin, Mourier",
       "category": "books",
-      "note": "Lanfeust de Troy 1 à 8 (complet), Lanfeust des Étoiles 1 à 7, Lanfeust Odyssey 1, Trolls de Troy 1 à 10. Tout est coché dans le carnet.",
+      "note": "Lanfeust de Troy 1 à 8, Lanfeust des Étoiles 1 à 8, Trolls de Troy 1 à 19 (avec les intégrales), Lanfeust Odyssey 1, Cixi de Troy, Gnomes de Troy, Tubonia et L'expédition d'Alunÿs.",
       "mono": "LT"
     },
     {
@@ -713,7 +713,7 @@
       "name": "Les mondes d'Aldébaran",
       "brand": "Leo",
       "category": "books",
-      "note": "Aldébaran, Bételgeuse et Kenya au complet, Antarès 1 à 3, Survivants et Retour sur Aldébaran, plus Namibia.",
+      "note": "Aldébaran, Bételgeuse, Antarès, Survivants et Retour sur Aldébaran, plus Neptune et Bellatrix. Et les trois séries Kenya, Namibia et Amazonie.",
       "mono": "ALD"
     },
     {
@@ -731,6 +731,47 @@
       "category": "books",
       "note": "La trilogie Nikopol (La foire aux immortels, La femme piège, Froid équateur), Le sommeil du monstre, 32 décembre, Partie de chasse, La ville qui n'existait pas.",
       "mono": "EB"
+    },
+    {
+      "id": "tintin",
+      "name": "Tintin",
+      "brand": "Hergé",
+      "category": "books",
+      "note": "Presque toute la série, du Congo aux Picaros.",
+      "mono": "TT"
+    },
+    {
+      "id": "asterix",
+      "name": "Astérix",
+      "brand": "Goscinny, Uderzo",
+      "category": "books",
+      "note": "Une douzaine d'albums, du Combat des chefs à Astérix chez les Belges.",
+      "mono": "AX"
+    },
+    {
+      "id": "polars",
+      "name": "Les polars",
+      "brand": "Läckberg, Kepler, Lagercrantz, Kellerman",
+      "category": "books",
+      "note": "Le nid du coucou, La sorcière, La cage dorée, Le marchand de sable, Incurables, Millénium 5 et 6, La valse du diable.",
+      "mono": "⌕"
+    },
+    {
+      "id": "mr-robot-red-wheelbarrow",
+      "name": "Mr. Robot: Red Wheelbarrow",
+      "brand": "Sam Esmail, Courtney Looney",
+      "category": "books",
+      "note": "Le carnet d'Elliot, en vrai. Génial.",
+      "favorite": true,
+      "mono": "MR"
+    },
+    {
+      "id": "zabardast",
+      "name": "Zabardast",
+      "brand": "Jérôme Tanon",
+      "category": "books",
+      "note": "Le livre photo du Karakoram.",
+      "mono": "ZB"
     },
     {
       "id": "carnet-bd",
