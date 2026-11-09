@@ -106,7 +106,6 @@
       "name": "CPOD chair",
       "brand": "Équilibre",
       "category": "setup",
-      "url": "https://equilibre-france-ergonomie.fr/produits/siege-tms-cpod/",
       "image": "/assets/things/cpod.webp"
     },
     {
@@ -114,7 +113,6 @@
       "name": "Walking pad",
       "brand": "homeTro",
       "category": "setup",
-      "url": "https://www.amazon.fr/dp/B0FY35MDNY",
       "mono": "TM",
       "image": "/assets/things/tapis-de-marche.webp"
     },
@@ -296,7 +294,6 @@
       "name": "265 mm Japanese saw",
       "brand": "Tajima",
       "category": "outils",
-      "url": "https://www.castorama.fr/scie-japonaise-tajima-265-mm-outifrance/4975364019356_CAFR.prd",
       "mono": "鋸",
       "image": "/assets/things/tajima-scie-japonaise.webp"
     },
@@ -457,7 +454,6 @@
       "name": "JB Gillet Whis deck 8.38\"",
       "brand": "Primitive x Dragon Ball Super",
       "category": "skate",
-      "url": "https://www.ebay.de/itm/305559355131",
       "mono": "ウイス",
       "image": "/assets/things/primitive-whis.webp"
     },
@@ -466,7 +462,6 @@
       "name": "Andy Anderson Heron Skull",
       "brand": "Powell Peralta",
       "category": "skate",
-      "url": "https://www.blue-tomato.com/fr-FR/product/Powell+Peralta-Andy+Anderson+Heron+Skull+8+45+Skateboard+Deck-727122",
       "favorite": true,
       "mono": "AA",
       "image": "/assets/things/powell-anderson-heron.webp"
@@ -501,7 +496,6 @@
       "name": "Burton Custom Flying V 158",
       "brand": "Burton",
       "category": "skate",
-      "url": "https://sidelineswap.com/gear/snowboarding/snowboards/12556576-burton-custom-flying-v-158-snowboard-2017-2018-new-read",
       "mono": "158",
       "image": "/assets/things/burton-custom-flying-v.webp"
     },
@@ -527,7 +521,6 @@
       "name": "Low Roller bag",
       "brand": "Dakine",
       "category": "skate",
-      "url": "https://eu.dakine.com/fr-fr/products/low-roller-snowboard-bag-black-w26",
       "mono": "BAG",
       "image": "/assets/things/dakine-low-roller.webp"
     },
@@ -671,7 +664,6 @@
       "name": "Daruma",
       "brand": "Daruma.com",
       "category": "objets",
-      "url": "https://daruma.com",
       "image": "/assets/things/daruma.webp"
     },
     {
@@ -687,7 +679,6 @@
       "name": "AL13 copper razor and stand",
       "brand": "Henson Shaving",
       "category": "objets",
-      "url": "https://hensonshaving.com/products/henson-al13-in-copper",
       "mono": "AL13",
       "image": "/assets/things/henson-al13.webp"
     },
