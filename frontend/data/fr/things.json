@@ -685,20 +685,61 @@
       "mono": "BK"
     },
     {
-      "id": "univers-troy",
-      "name": "Lanfeust, Trolls de Troy, Namibia",
-      "brand": "Arleston, Tarquin & co",
+      "id": "chat-des-rues",
+      "name": "Chat des rues",
+      "brand": "Manga",
       "category": "books",
-      "note": "Toutes les séries de ces auteurs, au complet.",
+      "note": "Le manga au complet, les 6 tomes.",
+      "mono": "猫"
+    },
+    {
+      "id": "clan-des-otori",
+      "name": "Le clan des Otori",
+      "brand": "Lian Hearn",
+      "category": "books",
+      "note": "Les 4 premiers tomes.",
+      "mono": "OT"
+    },
+    {
+      "id": "univers-troy",
+      "name": "L'univers de Troy",
+      "brand": "Arleston, Tarquin, Mourier",
+      "category": "books",
+      "note": "Lanfeust de Troy 1 à 8 (complet), Lanfeust des Étoiles 1 à 7, Lanfeust Odyssey 1, Trolls de Troy 1 à 10. Tout est coché dans le carnet.",
       "mono": "LT"
     },
     {
       "id": "leo-aldebaran",
-      "name": "Survivants, Retour sur Aldébaran",
+      "name": "Les mondes d'Aldébaran",
       "brand": "Leo",
       "category": "books",
-      "note": "La suite des mondes de Leo, après Namibia.",
+      "note": "Aldébaran, Bételgeuse et Kenya au complet, Antarès 1 à 3, Survivants et Retour sur Aldébaran, plus Namibia.",
       "mono": "ALD"
+    },
+    {
+      "id": "vent-des-dieux",
+      "name": "Le vent des dieux",
+      "brand": "Cothias, Adamov",
+      "category": "books",
+      "note": "Tomes 1 à 14 sur 16. Il en manque deux.",
+      "mono": "風"
+    },
+    {
+      "id": "bilal",
+      "name": "Bilal",
+      "brand": "Enki Bilal",
+      "category": "books",
+      "note": "La trilogie Nikopol (La foire aux immortels, La femme piège, Froid équateur), Le sommeil du monstre, 32 décembre, Partie de chasse, La ville qui n'existait pas.",
+      "mono": "EB"
+    },
+    {
+      "id": "carnet-bd",
+      "name": "Le carnet des collections",
+      "brand": "Le carnet",
+      "category": "books",
+      "note": "Un carnet où chaque tome acheté se colorie. Au complet : Garulfo, Rails, Les feux d'Askell, Le cycle des deux horizons, Les voyages de Takuan, Légendes des contrées oubliées, Rognon le Leu, Terres d'ombre, Le cœur de sang. En cours : Balade au bout du monde, Pacush Blues, Atalante, Chroniques barbares, Le roi cyclope, Les mondes de Luz, Blueberry, Jeremiah, L'Incal, Pétillon et une vingtaine d'autres.",
+      "favorite": true,
+      "mono": "№"
     },
     {
       "id": "livres-sagesse",

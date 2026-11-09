@@ -685,20 +685,61 @@
       "mono": "BK"
     },
     {
-      "id": "univers-troy",
-      "name": "Lanfeust, Trolls de Troy, Namibia",
-      "brand": "Arleston, Tarquin & co",
+      "id": "chat-des-rues",
+      "name": "Chat des rues",
+      "brand": "Manga",
       "category": "books",
-      "note": "Every series by these authors, complete.",
+      "note": "The full manga, all 6 volumes.",
+      "mono": "猫"
+    },
+    {
+      "id": "clan-des-otori",
+      "name": "Tales of the Otori",
+      "brand": "Lian Hearn",
+      "category": "books",
+      "note": "The first 4 volumes.",
+      "mono": "OT"
+    },
+    {
+      "id": "univers-troy",
+      "name": "The world of Troy",
+      "brand": "Arleston, Tarquin, Mourier",
+      "category": "books",
+      "note": "Lanfeust de Troy 1–8 (complete), Lanfeust des Étoiles 1–7, Lanfeust Odyssey 1, Trolls de Troy 1–10. All ticked off in the notebook.",
       "mono": "LT"
     },
     {
       "id": "leo-aldebaran",
-      "name": "Survivants, Retour sur Aldébaran",
+      "name": "The Worlds of Aldebaran",
       "brand": "Leo",
       "category": "books",
-      "note": "More of Leo's worlds, after Namibia.",
+      "note": "Aldébaran, Bételgeuse and Kenya complete, Antarès 1–3, Survivants and Retour sur Aldébaran, plus Namibia.",
       "mono": "ALD"
+    },
+    {
+      "id": "vent-des-dieux",
+      "name": "Le vent des dieux",
+      "brand": "Cothias, Adamov",
+      "category": "books",
+      "note": "Volumes 1–14 of 16. Two to go.",
+      "mono": "風"
+    },
+    {
+      "id": "bilal",
+      "name": "Bilal",
+      "brand": "Enki Bilal",
+      "category": "books",
+      "note": "The Nikopol trilogy, Le sommeil du monstre, 32 décembre, Partie de chasse, La ville qui n'existait pas.",
+      "mono": "EB"
+    },
+    {
+      "id": "carnet-bd",
+      "name": "The collection notebook",
+      "brand": "Le carnet",
+      "category": "books",
+      "note": "A notebook where every volume bought gets coloured in. Complete: Garulfo, Rails, Les feux d'Askell, Le cycle des deux horizons, Les voyages de Takuan, Légendes des contrées oubliées, Rognon le Leu, Terres d'ombre, Le cœur de sang. In progress: Balade au bout du monde, Pacush Blues, Atalante, Chroniques barbares, Le roi cyclope, Les mondes de Luz, Blueberry, Jeremiah, L'Incal, Pétillon and twenty-odd more.",
+      "favorite": true,
+      "mono": "№"
     },
     {
       "id": "livres-sagesse",
