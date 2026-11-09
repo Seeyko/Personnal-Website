@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="/css/language-switcher.css" />
 
   <!-- Things Styles -->
-  <link rel="stylesheet" href="/css/things.css?v=2026-11-09j" />
+  <link rel="stylesheet" href="/css/things.css?v=2026-11-09k" />
 
   <!-- Blip (the site's cursor agent: lives on the page, draws it as you scroll) -->
   <link rel="stylesheet" href="/css/blip-cursor.css?v=2026-10-15-perf" />
@@ -191,6 +191,11 @@
         <a class="things-sheet-link" id="things-sheet-link" href="#" target="_blank" rel="noopener"></a>
       </div>
     </div>
+    <nav class="things-sheet-nav" aria-label="Navigation">
+      <button type="button" data-step="-1" aria-label="Précédent"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <span class="things-sheet-count" id="things-sheet-count"></span>
+      <button type="button" data-step="1" aria-label="Suivant"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </nav>
   </dialog>
 
   <!-- Footer -->
@@ -238,7 +243,7 @@
 </script>
 
 <!-- Things -->
-<script src="/js/things.js?v=2026-11-09j"></script>
+<script src="/js/things.js?v=2026-11-09k"></script>
 
 <!-- Theme JS (dynamically loaded) -->
 <script id="theme-js" src=""></script>
