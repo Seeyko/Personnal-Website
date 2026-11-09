@@ -335,6 +335,21 @@ body.loaded .thing.is-in {
   color: var(--t-dim);
 }
 
+.thing-retired {
+  font-family: var(--t-font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--t-radius-sm);
+  border: 1px dashed var(--t-line-strong);
+  color: var(--t-dim);
+}
+
+/* Retired: the story stays, the colour goes. */
+.thing.is-retired .thing-visual { filter: grayscale(1); opacity: 0.6; transition: filter 0.5s ease, opacity 0.5s ease; }
+.thing.is-retired .thing-hit:hover .thing-visual { filter: grayscale(0.4); opacity: 0.85; }
+.thing.is-retired .thing-name { color: var(--t-dim); }
+
 .thing-fav {
   color: var(--t-accent);
   border-color: color-mix(in srgb, var(--t-accent) 30%, transparent);

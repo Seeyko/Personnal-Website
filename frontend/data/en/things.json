@@ -2,13 +2,36 @@
   "intro": "The objects, apps and tools I actually use. Not a wishlist: what's on my desk, in my dock and under my wheels.",
   "updated": "2026-11",
   "categories": [
-    { "id": "setup", "label": "Setup", "hint": "Machines, screens, peripherals" },
-    { "id": "apps", "label": "Apps", "hint": "What runs every day" },
-    { "id": "dev", "label": "Dev", "hint": "The stack and the build tools" },
-    { "id": "audio", "label": "Audio", "hint": "Headphones, speakers, music" },
-    { "id": "ride", "label": "Ride", "hint": "Gear for rolling" },
-    { "id": "books", "label": "Reading", "hint": "Books that mattered" },
-    { "id": "edc", "label": "Everyday", "hint": "What comes everywhere with me" }
+    {
+      "id": "setup",
+      "label": "Setup",
+      "hint": "Machines, desk, smart home"
+    },
+    {
+      "id": "dev",
+      "label": "Dev",
+      "hint": "The stack and the build tools"
+    },
+    {
+      "id": "gaming",
+      "label": "Gaming",
+      "hint": "Consoles and controllers, old and new"
+    },
+    {
+      "id": "sport",
+      "label": "Sport",
+      "hint": "Ways to move without leaving home"
+    },
+    {
+      "id": "photo",
+      "label": "Photo",
+      "hint": "What takes the pictures"
+    },
+    {
+      "id": "objets",
+      "label": "Objects",
+      "hint": "The ones with a story"
+    }
   ],
   "items": [
     {
@@ -24,6 +47,46 @@
       "brand": "Windows",
       "category": "setup",
       "note": "The tower: gaming, editing, and the heavy lifting."
+    },
+    {
+      "id": "cpod",
+      "name": "CPOD chair",
+      "brand": "Équilibre",
+      "category": "setup",
+      "note": "The ergonomic chair. Hours of sitting without paying for it the next day.",
+      "url": "https://equilibre-france-ergonomie.fr/produits/siege-tms-cpod/"
+    },
+    {
+      "id": "tapis-de-marche",
+      "name": "Walking pad",
+      "brand": "Amazon",
+      "category": "setup",
+      "note": "Under the desk: walking through calls.",
+      "url": "https://www.amazon.fr/dp/B0FY35MDNY",
+      "mono": "TM"
+    },
+    {
+      "id": "raspberry-pi-3",
+      "name": "Raspberry Pi 3",
+      "brand": "Raspberry Pi",
+      "category": "setup",
+      "note": "In its red and white case. The first server that fits in a hand."
+    },
+    {
+      "id": "ikea-ampoules",
+      "name": "Smart bulbs",
+      "brand": "IKEA",
+      "category": "setup",
+      "note": "Light you adjust without getting up.",
+      "mono": "IK"
+    },
+    {
+      "id": "hp-deskjet-2710",
+      "name": "DeskJet 2710",
+      "brand": "HP",
+      "category": "setup",
+      "note": "The printer. Used twice a year, but those two times, it matters.",
+      "mono": "DJ"
     },
     {
       "id": "claude-code",
@@ -56,6 +119,97 @@
       "category": "dev",
       "note": "Every scroll animation on this site.",
       "url": "https://gsap.com"
+    },
+    {
+      "id": "ps5-manette",
+      "name": "PS5 controller",
+      "brand": "Sony",
+      "category": "gaming",
+      "note": "The DualSense."
+    },
+    {
+      "id": "switch-animal-crossing",
+      "name": "Switch Animal Crossing edition",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "note": "The pastel Joy-Cons.",
+      "mono": "SW"
+    },
+    {
+      "id": "ps4",
+      "name": "PS4",
+      "brand": "Sony",
+      "category": "gaming",
+      "note": "The previous generation, still plugged in."
+    },
+    {
+      "id": "xbox-360",
+      "name": "Xbox 360",
+      "brand": "Microsoft",
+      "category": "gaming",
+      "note": "The one where it all started."
+    },
+    {
+      "id": "game-boy-color",
+      "name": "Game Boy Color",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "note": "Clear purple, you can see the circuits."
+    },
+    {
+      "id": "kettlebells",
+      "name": "Kettlebells",
+      "brand": "Decathlon",
+      "category": "sport",
+      "note": "The full set: 4, 8, 12, 16 and 20 kg.",
+      "mono": "KB"
+    },
+    {
+      "id": "gilet-leste",
+      "name": "Weighted vest",
+      "brand": "Decathlon",
+      "category": "sport",
+      "note": "To load walks and bodyweight work."
+    },
+    {
+      "id": "anneaux-cts",
+      "name": "CTS rings",
+      "brand": "Christophe Carrio",
+      "category": "sport",
+      "note": "Black and blue. Pull-ups and dips anywhere.",
+      "mono": "CTS"
+    },
+    {
+      "id": "whoop",
+      "name": "Whoop",
+      "brand": "Whoop",
+      "category": "sport",
+      "note": "Retired: it stopped teaching me much.",
+      "retired": true
+    },
+    {
+      "id": "sony-a6000",
+      "name": "Alpha 6000",
+      "brand": "Sony",
+      "category": "photo",
+      "note": "The white body, with the SELP1650 (16-50mm f/3.5-5.6).",
+      "mono": "α6"
+    },
+    {
+      "id": "daruma",
+      "name": "Daruma",
+      "brand": "Daruma.com",
+      "category": "objets",
+      "note": "Red. One eye painted when the goal starts, the other when it's reached.",
+      "url": "https://daruma.com"
+    },
+    {
+      "id": "limitless",
+      "name": "Limitless pendant",
+      "brand": "Limitless",
+      "category": "objets",
+      "note": "Retired: the product was discontinued. RIP.",
+      "retired": true
     }
   ]
 }

@@ -2,7 +2,9 @@
  * Things — the objects, apps and tools Tom actually uses.
  *
  * Data: /data/{lang}/things.json ({ intro, updated, categories[], items[] }).
- * An item: { id, name, brand, category, note, url?, image?, since?, favorite? }.
+ * An item: { id, name, brand, category, note, url?, image?, since?, favorite?, retired?, mono? }.
+ * mono overrides the auto monogram (two first letters).
+ * Retired items (no longer used) are listed last, desaturated.
  * No image → a monogram tile, tinted by its category.
  *
  * Motion: hero letters rise in, the filter pill slides, cards enter staggered
@@ -49,7 +51,7 @@
     function visual(item) {
         return item.image
             ? `<img src="${esc(item.image)}" alt="" loading="lazy" decoding="async">`
-            : `<span class="thing-mono" aria-hidden="true">${esc(monogram(item.name))}</span>`;
+            : `<span class="thing-mono" aria-hidden="true">${esc(item.mono || monogram(item.name))}</span>`;
     }
 
     // ─── Rendering ───────────────────────────────────────────────
@@ -72,8 +74,10 @@
     }
 
     function renderGrid() {
-        els.grid.innerHTML = data.items.map((item, i) => `
-            <article class="thing${item.favorite ? ' is-favorite' : ''}" data-id="${esc(item.id)}"
+        // Retired things close the list: still part of the story, no longer in use.
+        const items = [...data.items.filter(i => !i.retired), ...data.items.filter(i => i.retired)];
+        els.grid.innerHTML = items.map((item, i) => `
+            <article class="thing${item.favorite ? ' is-favorite' : ''}${item.retired ? ' is-retired' : ''}" data-id="${esc(item.id)}"
                      data-category="${esc(item.category)}" style="--hue:${hueFor(item.category)};--i:${i}">
                 <button class="thing-hit" type="button" aria-haspopup="dialog">
                     <span class="thing-visual">${visual(item)}</span>
@@ -85,6 +89,7 @@
                     <span class="thing-tags">
                         <span class="thing-cat">${esc(catLabel(item.category))}</span>
                         ${item.favorite ? `<span class="thing-fav">★ ${esc(tr('favorite', 'Favori'))}</span>` : ''}
+                        ${item.retired ? `<span class="thing-retired">${esc(tr('retired', 'Plus utilisé'))}</span>` : ''}
                     </span>
                 </button>
             </article>`).join('') + `
@@ -257,7 +262,8 @@
         const sheet = els.sheet;
         sheet.style.setProperty('--hue', hueFor(item.category));
         $('#things-sheet-visual').innerHTML = visual(item);
-        $('#things-sheet-meta').textContent = [item.brand, catLabel(item.category), item.since]
+        $('#things-sheet-meta').textContent = [item.brand, catLabel(item.category), item.since,
+            item.retired && tr('retired', 'Plus utilisé')]
             .filter(Boolean).join(' · ');
         $('#things-sheet-name').textContent = item.name;
         $('#things-sheet-note').textContent = item.note || '';

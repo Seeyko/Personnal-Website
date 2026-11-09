@@ -2,13 +2,36 @@
   "intro": "Les objets, les apps et les outils que j'utilise vraiment. Pas une wishlist : ce qui est sur mon bureau, dans mon dock et sous mes roues.",
   "updated": "2026-11",
   "categories": [
-    { "id": "setup", "label": "Setup", "hint": "Machines, écrans, périphériques" },
-    { "id": "apps", "label": "Apps", "hint": "Ce qui tourne tous les jours" },
-    { "id": "dev", "label": "Dev", "hint": "La stack et les outils du build" },
-    { "id": "audio", "label": "Audio", "hint": "Casques, enceintes, musique" },
-    { "id": "ride", "label": "Ride", "hint": "Le matos pour rouler" },
-    { "id": "books", "label": "Lectures", "hint": "Les livres qui ont compté" },
-    { "id": "edc", "label": "Quotidien", "hint": "Ce qui me suit partout" }
+    {
+      "id": "setup",
+      "label": "Setup",
+      "hint": "Machines, bureau, maison connectée"
+    },
+    {
+      "id": "dev",
+      "label": "Dev",
+      "hint": "La stack et les outils du build"
+    },
+    {
+      "id": "gaming",
+      "label": "Jeu",
+      "hint": "Consoles et manettes, d'hier et d'aujourd'hui"
+    },
+    {
+      "id": "sport",
+      "label": "Sport",
+      "hint": "De quoi bouger sans sortir"
+    },
+    {
+      "id": "photo",
+      "label": "Photo",
+      "hint": "Ce qui prend les images"
+    },
+    {
+      "id": "objets",
+      "label": "Objets",
+      "hint": "Ceux qui ont une histoire"
+    }
   ],
   "items": [
     {
@@ -24,6 +47,46 @@
       "brand": "Windows",
       "category": "setup",
       "note": "La tour : jeu, montage, et les gros calculs."
+    },
+    {
+      "id": "cpod",
+      "name": "Siège CPOD",
+      "brand": "Équilibre",
+      "category": "setup",
+      "note": "Le siège ergonomique. Des heures assis sans le payer le lendemain.",
+      "url": "https://equilibre-france-ergonomie.fr/produits/siege-tms-cpod/"
+    },
+    {
+      "id": "tapis-de-marche",
+      "name": "Tapis de marche",
+      "brand": "Amazon",
+      "category": "setup",
+      "note": "Sous le bureau : marcher pendant les calls.",
+      "url": "https://www.amazon.fr/dp/B0FY35MDNY",
+      "mono": "TM"
+    },
+    {
+      "id": "raspberry-pi-3",
+      "name": "Raspberry Pi 3",
+      "brand": "Raspberry Pi",
+      "category": "setup",
+      "note": "Dans son boîtier rouge et blanc. Le premier serveur qui tient dans la main."
+    },
+    {
+      "id": "ikea-ampoules",
+      "name": "Ampoules connectées",
+      "brand": "IKEA",
+      "category": "setup",
+      "note": "La lumière qui se règle sans se lever.",
+      "mono": "IK"
+    },
+    {
+      "id": "hp-deskjet-2710",
+      "name": "DeskJet 2710",
+      "brand": "HP",
+      "category": "setup",
+      "note": "L'imprimante. Elle sert deux fois par an, mais ces deux fois-là, elle sert.",
+      "mono": "DJ"
     },
     {
       "id": "claude-code",
@@ -56,6 +119,97 @@
       "category": "dev",
       "note": "Toutes les animations au scroll du site.",
       "url": "https://gsap.com"
+    },
+    {
+      "id": "ps5-manette",
+      "name": "Manette PS5",
+      "brand": "Sony",
+      "category": "gaming",
+      "note": "La DualSense."
+    },
+    {
+      "id": "switch-animal-crossing",
+      "name": "Switch édition Animal Crossing",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "note": "Les Joy-Con pastel.",
+      "mono": "SW"
+    },
+    {
+      "id": "ps4",
+      "name": "PS4",
+      "brand": "Sony",
+      "category": "gaming",
+      "note": "La génération d'avant, toujours branchée."
+    },
+    {
+      "id": "xbox-360",
+      "name": "Xbox 360",
+      "brand": "Microsoft",
+      "category": "gaming",
+      "note": "Celle qui a tout commencé."
+    },
+    {
+      "id": "game-boy-color",
+      "name": "Game Boy Color",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "note": "Violette transparente, on voit les circuits."
+    },
+    {
+      "id": "kettlebells",
+      "name": "Kettlebells",
+      "brand": "Decathlon",
+      "category": "sport",
+      "note": "La série complète : 4, 8, 12, 16 et 20 kg.",
+      "mono": "KB"
+    },
+    {
+      "id": "gilet-leste",
+      "name": "Gilet lesté",
+      "brand": "Decathlon",
+      "category": "sport",
+      "note": "Pour charger la marche et le poids du corps."
+    },
+    {
+      "id": "anneaux-cts",
+      "name": "Anneaux CTS",
+      "brand": "Christophe Carrio",
+      "category": "sport",
+      "note": "Noirs et bleus. Les tractions et les dips n'importe où.",
+      "mono": "CTS"
+    },
+    {
+      "id": "whoop",
+      "name": "Whoop",
+      "brand": "Whoop",
+      "category": "sport",
+      "note": "Plus porté : il ne m'apprenait plus grand-chose.",
+      "retired": true
+    },
+    {
+      "id": "sony-a6000",
+      "name": "Alpha 6000",
+      "brand": "Sony",
+      "category": "photo",
+      "note": "Le boîtier blanc, avec le SELP1650 (16-50 mm f/3.5-5.6).",
+      "mono": "α6"
+    },
+    {
+      "id": "daruma",
+      "name": "Daruma",
+      "brand": "Daruma.com",
+      "category": "objets",
+      "note": "Rouge. Un œil peint au début de l'objectif, l'autre quand il est atteint.",
+      "url": "https://daruma.com"
+    },
+    {
+      "id": "limitless",
+      "name": "Pendentif Limitless",
+      "brand": "Limitless",
+      "category": "objets",
+      "note": "Plus porté : le produit a été arrêté. RIP.",
+      "retired": true
     }
   ]
 }
