@@ -2312,3 +2312,13 @@ body[data-theme="terminal"] .mobile-commit-description {
     transition: none;
   }
 }
+
+/* Seven nav entries (blog + things pages): the full "$ cd ./x" commands no
+   longer fit next to the prompt, so the compact laptop layout kicks in on
+   every desktop width instead of only below 1060px. */
+@media (min-width: 769px) and (max-width: 1600px) {
+  body[data-theme="terminal"] .nav:has(.nav-link:nth-child(7)) { gap: 0.25rem; }
+  body[data-theme="terminal"] .nav:has(.nav-link:nth-child(7)) .nav-link { padding: 0.35rem 0.4rem; font-size: 0.72rem; }
+  body[data-theme="terminal"] .nav:has(.nav-link:nth-child(7)) .nav-prefix { display: none; }
+  body[data-theme="terminal"] .header:has(.nav-link:nth-child(7)) .brand-suffix { display: none; }
+}

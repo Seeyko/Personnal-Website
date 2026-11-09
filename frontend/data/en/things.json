@@ -1,0 +1,847 @@
+{
+  "intro": "The gear I actually use. Not a wishlist: what's on my desk, in the workshop, on my shelves and under my wheels.",
+  "updated": "2026-11",
+  "categories": [
+    {
+      "id": "setup",
+      "label": "Setup",
+      "hint": "Machines, desk, smart home"
+    },
+    {
+      "id": "audio",
+      "label": "Audio",
+      "hint": "Headphones and earbuds"
+    },
+    {
+      "id": "musique",
+      "label": "Music",
+      "hint": "What makes sound beyond headphones"
+    },
+    {
+      "id": "outils",
+      "label": "Tools",
+      "hint": "The workshop: what makes things"
+    },
+    {
+      "id": "gaming",
+      "label": "Gaming",
+      "hint": "Consoles and controllers, old and new"
+    },
+    {
+      "id": "sport",
+      "label": "Sport",
+      "hint": "Ways to move without leaving home"
+    },
+    {
+      "id": "skate",
+      "label": "Ride",
+      "hint": "Skate, surf, snow: things that slide"
+    },
+    {
+      "id": "photo",
+      "label": "Photo",
+      "hint": "What takes the pictures"
+    },
+    {
+      "id": "books",
+      "label": "Reading",
+      "hint": "Books that mattered"
+    },
+    {
+      "id": "objets",
+      "label": "Objects",
+      "hint": "The ones with a story"
+    },
+    {
+      "id": "maison",
+      "label": "Home",
+      "hint": "The appliances humming in the background"
+    }
+  ],
+  "items": [
+    {
+      "id": "mac-mini",
+      "name": "Mac mini M1",
+      "brand": "Apple",
+      "category": "setup",
+      "note": "16GB. The build server: 8 GitHub Actions runners, the agents and everything that has to run without me.",
+      "image": "/assets/things/mac-mini.webp"
+    },
+    {
+      "id": "ssd-externe-samsung",
+      "name": "External SSD 1TB",
+      "brand": "Samsung",
+      "category": "setup",
+      "note": "Plugged into the Mac mini through a UGREEN USB-C hub, next to an old SSD recycled in a 2.5\" enclosure.",
+      "mono": "SSD"
+    },
+    {
+      "id": "switch-ethernet",
+      "name": "Ethernet switch",
+      "brand": "",
+      "category": "setup",
+      "note": "Under the desk, wiring the Mac mini, the PC and the Raspberry. A Christmas gift from Victor.",
+      "mono": "ETH",
+      "image": "/assets/things/switch-ethernet.webp"
+    },
+    {
+      "id": "pc-windows",
+      "name": "Desktop PC",
+      "brand": "Self-built",
+      "category": "setup",
+      "note": "Rebuilt in 2024 in a Corsair 4000D Airflow case (RM750x PSU, H115i liquid cooler): i5-12400F, RTX 4060, MSI B660-A board, 16GB Corsair, 2TB WD_BLACK. Gaming, editing and heavy lifting.",
+      "image": "/assets/things/pc-windows.webp"
+    },
+    {
+      "id": "bureau-assis-debout",
+      "name": "Standing desk",
+      "brand": "Autonomous",
+      "category": "setup",
+      "note": "An Autonomous dual-motor frame, 62 to 127 cm, under a 200 × 80 cm solid oak live edge top from Leroy Merlin. The walking pad slides underneath.",
+      "mono": "AD",
+      "image": "/assets/things/bureau-assis-debout.webp",
+      "anim": "/assets/things/bureau-assis-debout-anim.webp",
+      "animFrames": 10
+    },
+    {
+      "id": "cpod",
+      "name": "CPOD chair",
+      "brand": "Équilibre",
+      "category": "setup",
+      "note": "The ergonomic chair. Hours of sitting without paying for it the next day.",
+      "url": "https://equilibre-france-ergonomie.fr/produits/siege-tms-cpod/",
+      "image": "/assets/things/cpod.webp"
+    },
+    {
+      "id": "tapis-de-marche",
+      "name": "Walking pad",
+      "brand": "homeTro",
+      "category": "setup",
+      "note": "Under the desk: walking through calls.",
+      "url": "https://www.amazon.fr/dp/B0FY35MDNY",
+      "mono": "TM",
+      "image": "/assets/things/tapis-de-marche.webp"
+    },
+    {
+      "id": "raspberry-pi-3",
+      "name": "Raspberry Pi 3",
+      "brand": "Raspberry Pi",
+      "category": "setup",
+      "note": "In its official red and white case (Amazon, 2017). The first server that fits in a hand.",
+      "since": "2017",
+      "image": "/assets/things/raspberry-pi-3.webp"
+    },
+    {
+      "id": "ikea-ampoules",
+      "name": "Smart bulbs",
+      "brand": "IKEA",
+      "category": "setup",
+      "note": "Light you adjust without getting up.",
+      "mono": "IK",
+      "image": "/assets/things/ikea-ampoules.webp"
+    },
+    {
+      "id": "hp-deskjet-2710",
+      "name": "DeskJet 2710",
+      "brand": "HP",
+      "category": "setup",
+      "note": "The printer. Used twice a year, but those two times, it matters.",
+      "mono": "DJ",
+      "image": "/assets/things/hp-deskjet-2710.webp"
+    },
+    {
+      "id": "iphone-15-pro",
+      "name": "iPhone 15 Pro",
+      "brand": "Apple",
+      "category": "setup",
+      "note": "Black titanium, refurbished from Back Market with a new battery. Always in my pocket.",
+      "since": "2026",
+      "image": "/assets/things/iphone-15-pro.webp"
+    },
+    {
+      "id": "chaise-gamer",
+      "name": "Gaming chair",
+      "brand": "Songmics",
+      "category": "setup",
+      "note": "Retired: replaced by the CPOD chair.",
+      "since": "2017",
+      "retired": true,
+      "image": "/assets/things/chaise-gamer.webp"
+    },
+    {
+      "id": "philips-499p9",
+      "name": "Philips 499P9H",
+      "brand": "Philips",
+      "category": "setup",
+      "note": "49-inch super-ultrawide: two screens in one, no bezel in the middle.",
+      "mono": "49\"",
+      "image": "/assets/things/philips-499p9.webp"
+    },
+    {
+      "id": "logitech-g610",
+      "name": "G610 keyboard",
+      "brand": "Logitech",
+      "category": "setup",
+      "note": "The PC's mechanical keyboard.",
+      "image": "/assets/things/logitech-g610.webp"
+    },
+    {
+      "id": "logitech-mx-vertical",
+      "name": "MX Vertical mouse",
+      "brand": "Logitech",
+      "category": "setup",
+      "note": "Vertical: the wrist stays on its side, even after ten hours.",
+      "since": "2024",
+      "mono": "MX",
+      "image": "/assets/things/logitech-mx-vertical.webp"
+    },
+    {
+      "id": "logitech-g602",
+      "name": "G602 mouse",
+      "brand": "Logitech",
+      "category": "setup",
+      "note": "Wireless, years of service.",
+      "mono": "G602",
+      "image": "/assets/things/logitech-g602.webp"
+    },
+    {
+      "id": "arctis-nova-pro",
+      "name": "Arctis Nova Pro Wireless",
+      "brand": "SteelSeries",
+      "category": "audio",
+      "note": "The PC headset: calls, games and music.",
+      "mono": "NP",
+      "image": "/assets/things/arctis-nova-pro.webp"
+    },
+    {
+      "id": "airpods",
+      "name": "AirPods",
+      "brand": "Apple",
+      "category": "audio",
+      "note": "For everything away from the desk.",
+      "image": "/assets/things/airpods.webp"
+    },
+    {
+      "id": "yamaha-clp-320",
+      "name": "Clavinova CLP-320",
+      "brand": "Yamaha",
+      "category": "musique",
+      "note": "Digital piano, 88 weighted keys. The furniture that plays.",
+      "mono": "CLP",
+      "image": "/assets/things/yamaha-clp-320.webp"
+    },
+    {
+      "id": "banc-piano",
+      "name": "Adjustable piano bench",
+      "brand": "Banc classique",
+      "category": "musique",
+      "note": "Mahogany wood, cream velvet, two knobs for the height.",
+      "mono": "♪",
+      "image": "/assets/things/banc-piano.webp"
+    },
+    {
+      "id": "bosch-gks-85-g",
+      "name": "GKS 85 G",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "The circular saw, guide-rail ready: straight cuts for furniture.",
+      "since": "2026",
+      "image": "/assets/things/bosch-gks-85-g.webp"
+    },
+    {
+      "id": "bosch-gsb-18v",
+      "name": "GSB 18V-55 hammer drill",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "The workshop's base tool, on the 18V platform.",
+      "since": "2021",
+      "mono": "GSB",
+      "image": "/assets/things/bosch-gsb-18v.webp"
+    },
+    {
+      "id": "bosch-gws-18v-10-p",
+      "name": "GWS 18V-10 PC grinder",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "Cutting, deburring, sanding metal.",
+      "since": "2021",
+      "mono": "GWS",
+      "image": "/assets/things/bosch-gws-18v-10-p.webp"
+    },
+    {
+      "id": "bosch-gss-18v-10",
+      "name": "GSS 18V-10 sander",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "The finish before the oil.",
+      "since": "2021",
+      "mono": "GSS",
+      "image": "/assets/things/bosch-gss-18v-10.webp"
+    },
+    {
+      "id": "bosch-gst-160-ce",
+      "name": "GST 160 CE jigsaw",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "Curves and inside cuts.",
+      "mono": "GST",
+      "image": "/assets/things/bosch-gst-160-ce.webp"
+    },
+    {
+      "id": "bosch-fsn-1600",
+      "name": "FSN 1100 + 1600 guide rails",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "With the GKS 85 G: straight cuts, short or long.",
+      "since": "2026",
+      "mono": "FSN",
+      "image": "/assets/things/bosch-fsn-1600.webp"
+    },
+    {
+      "id": "bosch-visseuse-chocs",
+      "name": "GDR 18V-160 impact driver",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "For long screws and stubborn bolts.",
+      "mono": "GDR",
+      "image": "/assets/things/bosch-visseuse-chocs.webp"
+    },
+    {
+      "id": "bosch-marteau",
+      "name": "1600A0116BT hammer",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "The one tool with no battery that never lets me down.",
+      "mono": "HAM",
+      "image": "/assets/things/bosch-marteau.webp"
+    },
+    {
+      "id": "bosch-niveau-25",
+      "name": "25 cm magnetic level",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "Small, magnetic underneath, always in a pocket.",
+      "mono": "LVL",
+      "image": "/assets/things/bosch-niveau-25.webp"
+    },
+    {
+      "id": "tajima-scie-japonaise",
+      "name": "265 mm Japanese saw",
+      "brand": "Tajima",
+      "category": "outils",
+      "note": "Cuts on the pull: precise and thin, for joinery.",
+      "url": "https://www.castorama.fr/scie-japonaise-tajima-265-mm-outifrance/4975364019356_CAFR.prd",
+      "mono": "鋸",
+      "image": "/assets/things/tajima-scie-japonaise.webp"
+    },
+    {
+      "id": "bosch-gms-120",
+      "name": "GMS 120 detector",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "note": "Before drilling a wall: cables, pipes, studs.",
+      "mono": "GMS",
+      "image": "/assets/things/bosch-gms-120.webp"
+    },
+    {
+      "id": "stanley-fatmax-etabli",
+      "name": "FATMAX Express folding workbench",
+      "brand": "STANLEY",
+      "category": "outils",
+      "note": "The workshop that folds against the wall.",
+      "mono": "FM",
+      "image": "/assets/things/stanley-fatmax-etabli.webp"
+    },
+    {
+      "id": "stanley-etau",
+      "name": "Swivel vise",
+      "brand": "STANLEY",
+      "category": "outils",
+      "note": "Holds the piece at any angle.",
+      "mono": "ÉTAU",
+      "image": "/assets/things/stanley-etau.webp"
+    },
+    {
+      "id": "stanley-presse-cadre",
+      "name": "Frame clamp",
+      "brand": "STANLEY",
+      "category": "outils",
+      "note": "For gluing frames perfectly square.",
+      "mono": "90°",
+      "image": "/assets/things/stanley-presse-cadre.webp"
+    },
+    {
+      "id": "stanley-scie-chantourner",
+      "name": "Coping saw",
+      "brand": "STANLEY",
+      "category": "outils",
+      "note": "The curves the machines can't do.",
+      "mono": "S",
+      "image": "/assets/things/stanley-scie-chantourner.webp"
+    },
+    {
+      "id": "fer-a-souder",
+      "name": "Soldering iron",
+      "brand": "",
+      "category": "outils",
+      "note": "Soldering iron.",
+      "mono": "FER",
+      "image": "/assets/things/fer-a-souder.webp"
+    },
+    {
+      "id": "ps5-manette",
+      "name": "PS5 controller",
+      "brand": "Sony",
+      "category": "gaming",
+      "note": "The DualSense.",
+      "image": "/assets/things/ps5-manette.webp"
+    },
+    {
+      "id": "switch-animal-crossing",
+      "name": "Switch Animal Crossing edition",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "note": "The pastel Joy-Cons.",
+      "mono": "SW",
+      "image": "/assets/things/switch-animal-crossing.webp"
+    },
+    {
+      "id": "manette-pro-switch",
+      "name": "Switch Pro Controller",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "note": "The real controller for long sessions, when the Joy-Cons are not enough.",
+      "mono": "PRO",
+      "image": "/assets/things/manette-pro-switch.webp"
+    },
+    {
+      "id": "ps4",
+      "name": "PS4",
+      "brand": "Sony",
+      "category": "gaming",
+      "note": "The previous generation, still plugged in.",
+      "image": "/assets/things/ps4.webp"
+    },
+    {
+      "id": "xbox-360",
+      "name": "Xbox 360",
+      "brand": "Microsoft",
+      "category": "gaming",
+      "note": "The one where it all started.",
+      "image": "/assets/things/xbox-360.webp"
+    },
+    {
+      "id": "game-boy-color",
+      "name": "Game Boy Color",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "note": "Clear purple, you can see the circuits.",
+      "image": "/assets/things/game-boy-color.webp"
+    },
+    {
+      "id": "kettlebells",
+      "name": "Kettlebells",
+      "brand": "Decathlon",
+      "category": "sport",
+      "note": "The full set: 4, 8, 12, 16 and 20 kg.",
+      "mono": "KB",
+      "image": "/assets/things/kettlebells.webp"
+    },
+    {
+      "id": "gilet-leste",
+      "name": "Weighted vest",
+      "brand": "Decathlon",
+      "category": "sport",
+      "note": "The adjustable 6 to 10 kg Domyos, to load walks and bodyweight work.",
+      "image": "/assets/things/gilet-leste.webp"
+    },
+    {
+      "id": "anneaux-cts",
+      "name": "CTS rings",
+      "brand": "Christophe Carrio",
+      "category": "sport",
+      "note": "Black. Pull-ups and dips anywhere.",
+      "mono": "CTS"
+    },
+    {
+      "id": "whoop",
+      "name": "Whoop",
+      "brand": "Whoop",
+      "category": "sport",
+      "note": "Retired: it stopped teaching me much.",
+      "retired": true,
+      "image": "/assets/things/whoop.webp"
+    },
+    {
+      "id": "theragun-pro",
+      "name": "Theragun Pro",
+      "brand": "Therabody",
+      "category": "sport",
+      "note": "Recovery after training.",
+      "image": "/assets/things/theragun-pro.webp"
+    },
+    {
+      "id": "tente-forclaz-mt900",
+      "name": "MT900 tent + MH500 cook set",
+      "brand": "Forclaz",
+      "category": "sport",
+      "note": "Two-person, for trekking trips.",
+      "mono": "⛺",
+      "image": "/assets/things/tente-forclaz-mt900.webp"
+    },
+    {
+      "id": "meuble-skate",
+      "name": "Skateboard rack",
+      "brand": "Handmade",
+      "category": "skate",
+      "note": "Built and hand-painted: two pine panels cut into waves, eight slots on each side to hang the decks.",
+      "image": "/assets/things/meuble-skate.webp",
+      "model": "/assets/things/models/meuble-skate.glb",
+      "favorite": true,
+      "mono": "≋"
+    },
+    {
+      "id": "primitive-whis",
+      "name": "JB Gillet Whis deck 8.38\"",
+      "brand": "Primitive x Dragon Ball Super",
+      "category": "skate",
+      "note": "JB Gillet's pro model. Too pretty for grip tape: it stays on the wall.",
+      "url": "https://www.ebay.de/itm/305559355131",
+      "mono": "ウイス",
+      "image": "/assets/things/primitive-whis.webp"
+    },
+    {
+      "id": "powell-anderson-heron",
+      "name": "Andy Anderson Heron Skull",
+      "brand": "Powell Peralta",
+      "category": "skate",
+      "note": "The current board, set up with soft green wheels.",
+      "url": "https://www.blue-tomato.com/fr-FR/product/Powell+Peralta-Andy+Anderson+Heron+Skull+8+45+Skateboard+Deck-727122",
+      "favorite": true,
+      "mono": "AA",
+      "image": "/assets/things/powell-anderson-heron.webp"
+    },
+    {
+      "id": "enjoi-panda",
+      "name": "Enjoi Panda complete",
+      "brand": "Enjoi",
+      "category": "skate",
+      "note": "Blue and red pandas, still almost new.",
+      "mono": "🐼",
+      "image": "/assets/things/enjoi-panda.webp"
+    },
+    {
+      "id": "decks-uses",
+      "name": "The worn-out decks",
+      "brand": "Element, Cliché & co",
+      "category": "skate",
+      "note": "Element, Cliché and the rest: scraped to the wood, kept on the rack.",
+      "retired": true,
+      "mono": "×6",
+      "image": "/assets/things/decks-uses.webp"
+    },
+    {
+      "id": "bones-reds",
+      "name": "Bones Reds bearings",
+      "brand": "Bones",
+      "category": "skate",
+      "note": "The classic, no surprises.",
+      "mono": "RED",
+      "image": "/assets/things/bones-reds.webp"
+    },
+    {
+      "id": "olaian-sws500",
+      "name": "SWS500 wetsuit",
+      "brand": "Olaian",
+      "category": "skate",
+      "note": "3 mm, bought in Hendaye for the October ocean.",
+      "mono": "SURF"
+    },
+    {
+      "id": "burton-custom-flying-v",
+      "name": "Burton Custom Flying V 158",
+      "brand": "Burton",
+      "category": "skate",
+      "note": "The snowboard, 2017-2018 model.",
+      "url": "https://sidelineswap.com/gear/snowboarding/snowboards/12556576-burton-custom-flying-v-158-snowboard-2017-2018-new-read",
+      "mono": "158",
+      "image": "/assets/things/burton-custom-flying-v.webp"
+    },
+    {
+      "id": "burton-mission",
+      "name": "Burton Mission bindings",
+      "brand": "Burton",
+      "category": "skate",
+      "note": "Found on Leboncoin for winter.",
+      "mono": "SNOW",
+      "image": "/assets/things/burton-mission.webp"
+    },
+    {
+      "id": "sony-a6000",
+      "name": "Alpha 6000",
+      "brand": "Sony",
+      "category": "photo",
+      "note": "The white body, with the SELP1650 (16-50mm f/3.5-5.6).",
+      "mono": "α6",
+      "image": "/assets/things/sony-a6000.webp"
+    },
+    {
+      "id": "dakine-low-roller",
+      "name": "Low Roller bag",
+      "brand": "Dakine",
+      "category": "skate",
+      "note": "The wheeled bag that carries the board.",
+      "url": "https://eu.dakine.com/fr-fr/products/low-roller-snowboard-bag-black-w26",
+      "mono": "BAG",
+      "image": "/assets/things/dakine-low-roller.webp"
+    },
+    {
+      "id": "berserk",
+      "name": "Berserk",
+      "brand": "Kentaro Miura",
+      "category": "books",
+      "note": "The complete collection, mostly hunted down on Leboncoin.",
+      "mono": "BK",
+      "image": "/assets/things/berserk.webp"
+    },
+    {
+      "id": "chat-des-rues",
+      "name": "Chat des rues",
+      "brand": "Yuri Sonoda",
+      "category": "books",
+      "note": "Hachi & Maruru, the full manga: all 6 volumes.",
+      "mono": "猫",
+      "image": "/assets/things/chat-des-rues.webp"
+    },
+    {
+      "id": "clan-des-otori",
+      "name": "Tales of the Otori",
+      "brand": "Stéphane Melchior, Benjamin Bachelier",
+      "category": "books",
+      "note": "The comic adaptation of Lian Hearn's novels: the first 4 volumes.",
+      "mono": "OT",
+      "image": "/assets/things/clan-des-otori.webp"
+    },
+    {
+      "id": "univers-troy",
+      "name": "The world of Troy",
+      "brand": "Arleston, Tarquin, Mourier",
+      "category": "books",
+      "note": "Lanfeust de Troy 1–8, Lanfeust des Étoiles 1–8, Trolls de Troy 1–19 (with the omnibus editions), Lanfeust Odyssey 1, Cixi de Troy, Gnomes de Troy, Tubonia and L'expédition d'Alunÿs.",
+      "mono": "LT",
+      "image": "/assets/things/univers-troy.webp"
+    },
+    {
+      "id": "leo-aldebaran",
+      "name": "The Worlds of Aldebaran",
+      "brand": "Leo",
+      "category": "books",
+      "note": "Aldébaran, Bételgeuse, Antarès, Survivants and Retour sur Aldébaran, plus Neptune and Bellatrix. And the three series Kenya, Namibia and Amazonie.",
+      "mono": "ALD",
+      "image": "/assets/things/leo-aldebaran.webp"
+    },
+    {
+      "id": "vent-des-dieux",
+      "name": "Le vent des dieux",
+      "brand": "Cothias, Adamov",
+      "category": "books",
+      "note": "Volumes 1–14 of 16. Two to go.",
+      "mono": "風",
+      "image": "/assets/things/vent-des-dieux.webp"
+    },
+    {
+      "id": "bilal",
+      "name": "Bilal",
+      "brand": "Enki Bilal",
+      "category": "books",
+      "note": "The Nikopol trilogy, Le sommeil du monstre, 32 décembre, Partie de chasse, La ville qui n'existait pas.",
+      "mono": "EB",
+      "image": "/assets/things/bilal.webp"
+    },
+    {
+      "id": "tintin",
+      "name": "Tintin",
+      "brand": "Hergé",
+      "category": "books",
+      "note": "Almost the whole series, from the Congo to the Picaros.",
+      "mono": "TT",
+      "image": "/assets/things/tintin.webp"
+    },
+    {
+      "id": "asterix",
+      "name": "Asterix",
+      "brand": "Goscinny, Uderzo",
+      "category": "books",
+      "note": "A dozen albums, from Asterix and the Big Fight to Asterix in Belgium.",
+      "mono": "AX",
+      "image": "/assets/things/asterix.webp"
+    },
+    {
+      "id": "polars",
+      "name": "Crime novels",
+      "brand": "Läckberg, Kepler, Lagercrantz, Kellerman",
+      "category": "books",
+      "note": "The Cuckoo, The Girl in the Woods, The Golden Cage, The Sandman, Millennium 5 and 6, and a Kellerman.",
+      "mono": "⌕",
+      "image": "/assets/things/polars.webp"
+    },
+    {
+      "id": "mr-robot-red-wheelbarrow",
+      "name": "Mr. Robot: Red Wheelbarrow",
+      "brand": "Sam Esmail, Courtney Looney",
+      "category": "books",
+      "note": "Elliot's journal, for real. Brilliant.",
+      "favorite": true,
+      "mono": "MR",
+      "image": "/assets/things/mr-robot-red-wheelbarrow.webp"
+    },
+    {
+      "id": "zabardast",
+      "name": "Zabardast",
+      "brand": "Jérôme Tanon",
+      "category": "books",
+      "note": "The Karakoram photo book.",
+      "mono": "ZB",
+      "image": "/assets/things/zabardast.webp"
+    },
+    {
+      "id": "utopie",
+      "name": "Utopie",
+      "brand": "Rodolphe, Griffo",
+      "category": "books",
+      "note": "Volume 1, found on the shelf between two series.",
+      "mono": "UT",
+      "image": "/assets/things/utopie.webp"
+    },
+    {
+      "id": "ezechiel",
+      "name": "Ezechiel",
+      "brand": "Rodolphe, Ramón Marcos, Dimitri Fogolin",
+      "category": "books",
+      "note": "Volume 1, Le pays de la nuit, from Delcourt.",
+      "mono": "EZ",
+      "image": "/assets/things/ezechiel.webp"
+    },
+    {
+      "id": "livres-sagesse",
+      "name": "Tao Te Ching, In the Buddha's Words, Atomic Habits",
+      "brand": "Lao Tseu, Bouddha, James Clear",
+      "category": "books",
+      "note": "The three bedside books.",
+      "mono": "道",
+      "image": "/assets/things/livres-sagesse.webp"
+    },
+    {
+      "id": "livre-menuiserie",
+      "name": "Le grand livre de la menuiserie",
+      "brand": "Book",
+      "category": "books",
+      "note": "The bible before every piece of furniture.",
+      "mono": "GL",
+      "image": "/assets/things/livre-menuiserie.webp"
+    },
+    {
+      "id": "daruma",
+      "name": "Daruma",
+      "brand": "Daruma.com",
+      "category": "objets",
+      "note": "Red. One eye painted when the goal starts, the other when it's reached.",
+      "url": "https://daruma.com",
+      "image": "/assets/things/daruma.webp"
+    },
+    {
+      "id": "airtags",
+      "name": "AirTags ×4",
+      "brand": "Apple",
+      "category": "objets",
+      "note": "On the keys, the bag and whatever goes missing.",
+      "mono": "×4",
+      "image": "/assets/things/airtags.webp"
+    },
+    {
+      "id": "henson-al13",
+      "name": "AL13 copper razor and stand",
+      "brand": "Henson Shaving",
+      "category": "objets",
+      "note": "Machined from aerospace aluminium, copper finish, resting on its matching stand by the sink. One blade, zero plastic.",
+      "url": "https://hensonshaving.com/products/henson-al13-in-copper",
+      "mono": "AL13",
+      "image": "/assets/things/henson-al13.webp"
+    },
+    {
+      "id": "panasonic-er-gp82",
+      "name": "ER-GP82 trimmer",
+      "brand": "Panasonic",
+      "category": "objets",
+      "note": "The pro trimmer, always on its charging stand.",
+      "mono": "GP82",
+      "image": "/assets/things/panasonic-er-gp82.webp"
+    },
+    {
+      "id": "limitless",
+      "name": "Limitless pendant",
+      "brand": "Limitless",
+      "category": "objets",
+      "note": "Retired: the product was discontinued. RIP.",
+      "retired": true,
+      "image": "/assets/things/limitless.webp"
+    },
+    {
+      "id": "bosch-lave-vaisselle",
+      "name": "SMV6ECX93E dishwasher",
+      "brand": "Bosch",
+      "category": "maison",
+      "note": "Serie 6, fully integrated, Home Connect, 13 place settings.",
+      "mono": "S6",
+      "image": "/assets/things/bosch-lave-vaisselle.webp"
+    },
+    {
+      "id": "haier-lave-linge",
+      "name": "HW100-B14367U washer",
+      "brand": "Haier",
+      "category": "maison",
+      "note": "10 kg, direct-drive motor, connected. Brand new.",
+      "since": "2026",
+      "mono": "HW",
+      "image": "/assets/things/haier-lave-linge.webp"
+    },
+    {
+      "id": "haier-seche-linge",
+      "name": "HD100-C367U1 dryer",
+      "brand": "Haier",
+      "category": "maison",
+      "note": "Heat pump, 10 kg, quiet. Came with the washer.",
+      "since": "2026",
+      "mono": "HD",
+      "image": "/assets/things/haier-seche-linge.webp"
+    },
+    {
+      "id": "ecovacs-t50",
+      "name": "T50 Omni robot vacuum",
+      "brand": "Ecovacs",
+      "category": "maison",
+      "note": "It cleans while I code.",
+      "mono": "T50",
+      "image": "/assets/things/ecovacs-t50.webp"
+    },
+    {
+      "id": "matelas-emma",
+      "name": "Emma mattress",
+      "brand": "Emma",
+      "category": "maison",
+      "note": "The best purchase per hour of use.",
+      "mono": "Zz",
+      "image": "/assets/things/matelas-emma.webp"
+    },
+    {
+      "id": "philips-65pus7354",
+      "name": "65PUS7354 TV",
+      "brand": "Philips",
+      "category": "maison",
+      "note": "65-inch 4K, Ambilight, Dolby Vision and Atmos.",
+      "since": "2020",
+      "mono": "65\"",
+      "image": "/assets/things/philips-65pus7354.webp"
+    }
+  ]
+}

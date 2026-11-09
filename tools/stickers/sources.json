@@ -1,0 +1,960 @@
+{
+  "_doc": "item id -> sticker source. See README.md. source: https URL, local path (relative to this folder) or iconify:<set>:<name>. matte: auto|alpha|white|rembg|none. Optional: crop [x0,y0,x1,y1] fractions, rotate (deg), scale (default 1), dx/dy (px), keep (all|largest), erode (px), fill_holes, tol (white key). page = where the source was found.",
+  "items": {
+    "cpod": {
+      "source": "https://equilibre-france-ergonomie.fr/wp-content/uploads/2021/07/Produit-Equilibre-5-48.png",
+      "matte": "rembg",
+      "page": "https://equilibre-france-ergonomie.fr/produits/siege-tms-cpod/"
+    },
+    "iphone-15-pro": {
+      "source": "https://www.apple.com/v/iphone/compare/am/images/overview/compare_iphone15_pro_black_titanium__etz96gq8ruoi_large_2x.jpg",
+      "matte": "rembg",
+      "page": "https://www.apple.com/fr/iphone/compare/",
+      "note": "black titanium (as in Tom's note)"
+    },
+    "airpods": {
+      "source": "https://www.apple.com/v/airpods-5/a/images/overview/contrast/explore_airpods_5_out__elly16h5teie_xlarge_2x.jpg",
+      "matte": "white",
+      "page": "https://www.apple.com/fr/airpods-4/",
+      "tol": 6
+    },
+    "ikea-ampoules": {
+      "source": "https://www.ikea.com/fr/fr/images/products/kajplats-ampoule-led-e27-1055-lumen-connecte-spectre-blanc-globe-blanc-opaque__1452572_pe991091_s5.jpg?f=xl",
+      "matte": "rembg",
+      "page": "https://www.ikea.com/fr/fr/p/kajplats-ampoule-led-e27-1055-lumen-connecte-spectre-blanc-globe-blanc-opaque-20608592/"
+    },
+    "game-boy-color": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Game-Boy-Color-Purple.png/960px-Game-Boy-Color-Purple.png",
+      "matte": "alpha",
+      "page": "https://commons.wikimedia.org/wiki/File:Game-Boy-Color-Purple.png",
+      "note": "Atomic Purple, Evan-Amos (public domain)"
+    },
+    "xbox-360": {
+      "page": "https://commons.wikimedia.org/wiki/File:Xbox-360-Elite-Console-Set.png",
+      "note": "Xbox 360 Elite (black) + black controller. Evan-Amos, public domain.",
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Xbox-360-Elite-Console-Set.png/960px-Xbox-360-Elite-Console-Set.png",
+      "matte": "alpha",
+      "alpha_min": 0.2,
+      "keep": "all"
+    },
+    "ps4": {
+      "source": "https://i.ebayimg.com/images/g/vMoAAOSwLJ9Z7ENv/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "all",
+      "page": "https://ebay.co.uk/p/239125535",
+      "note": "PS4 Slim Glacier White + white DualShock 4 (Sony stock photo from the eBay catalogue page).",
+      "add_polys": [
+        [
+          [
+            0.0375,
+            0.0244
+          ],
+          [
+            0.15,
+            0.0189
+          ],
+          [
+            0.5687,
+            0.1015
+          ],
+          [
+            0.5938,
+            0.1286
+          ],
+          [
+            0.5938,
+            0.9202
+          ],
+          [
+            0.585,
+            0.9337
+          ],
+          [
+            0.6025,
+            0.9553
+          ],
+          [
+            0.025,
+            0.9716
+          ],
+          [
+            0.0375,
+            0.9472
+          ]
+        ]
+      ]
+    },
+    "ps5-manette": {
+      "source": "https://i.ebayimg.com/images/g/yp8AAOSwGUBjqDxG/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.de/p/11057447254",
+      "note": "DualSense Starlight Blue (Sony stock photo from the eBay catalogue page)."
+    },
+    "sony-a6000": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Sony_Alpha_ILCE-6000_-_13.JPG/960px-Sony_Alpha_ILCE-6000_-_13.JPG",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://commons.wikimedia.org/wiki/File:Sony_Alpha_ILCE-6000_-_13.JPG",
+      "note": "silver/white body with the 16-50 kit lens"
+    },
+    "switch-animal-crossing": {
+      "source": "https://m.media-amazon.com/images/S/mediaservice.woot.com/d39acbf3-19c0-4ae2-b164-912fa36cd978.png",
+      "matte": "white",
+      "tol": 10,
+      "keep": "largest",
+      "page": "https://sellout.woot.com/offers/nintendo-switch-animal-crossing-edition-1",
+      "note": "Switch (full size) Animal Crossing: New Horizons edition, pastel green + blue Joy-Con. No clean shot of the AC dock was reachable."
+    },
+    "raspberry-pi-3": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Raspberry_Pi_3_Model_B_official_case_closed_%2829095116840%29.jpg/960px-Raspberry_Pi_3_Model_B_official_case_closed_%2829095116840%29.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://commons.wikimedia.org/wiki/File:Raspberry_Pi_3_Model_B_official_case_closed_(29095116840).jpg",
+      "note": "official red/white case"
+    },
+    "kettlebells": {
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Cast_Iron_Russian_kettlebell.jpg/960px-Cast_Iron_Russian_kettlebell.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://commons.wikimedia.org/wiki/File:Cast_Iron_Russian_kettlebell.jpg",
+      "note": "generic cast-iron kettlebell (Decathlon site blocked by Cloudflare)",
+      "open": 10
+    },
+    "mac-mini": {
+      "source": "https://i.ebayimg.com/images/g/qjQAAOSwi3Bfq8c1/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.co.uk/p/25042399642",
+      "note": "Mac mini M1 (2020, silver), Apple stock photo via the eBay catalogue."
+    },
+    "primitive-whis": {
+      "source": "local/skate/b0968866-photo.jpeg",
+      "quad": [
+        [
+          0.358,
+          0.0
+        ],
+        [
+          0.764,
+          0.0
+        ],
+        [
+          0.682,
+          0.84
+        ],
+        [
+          0.462,
+          0.84
+        ]
+      ],
+      "quad_aspect": 3.2,
+      "matte": "deck",
+      "rotate": 90,
+      "page": "Tom's photo (project share things/photos-skate/b0968866-photo.jpeg)",
+      "note": "eBay listing unreachable (ebay.com / i.ebayimg.com blocked); perspective-corrected from Tom's photo, nose re-rounded"
+    },
+    "enjoi-panda": {
+      "source": "local/skate/473473db-IMG_1709.jpeg",
+      "crop": [
+        0.23,
+        0.48,
+        0.83,
+        0.76
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "Tom's photo (things/photos-skate/473473db-IMG_1709.jpeg)",
+      "open": 9
+    },
+    "powell-anderson-heron": {
+      "source": "local/skate/e56bdcfb-IMG_1706.jpeg",
+      "crop": [
+        0.28,
+        0.17,
+        0.76,
+        0.42
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "Tom's photo (things/photos-skate/e56bdcfb-IMG_1706.jpeg)",
+      "note": "blue-tomato.com, longboardsusa.com, rollersnakes.co.uk blocked; Tom's own complete"
+    },
+    "decks-uses": {
+      "source": "local/skate/d846fa84-IMG_1707.jpeg",
+      "decks": [
+        {
+          "quad": [
+            [
+              0.272,
+              0.15
+            ],
+            [
+              0.465,
+              0.15
+            ],
+            [
+              0.452,
+              0.685
+            ],
+            [
+              0.27,
+              0.685
+            ]
+          ],
+          "tilt": 7
+        },
+        {
+          "quad": [
+            [
+              0.468,
+              0.128
+            ],
+            [
+              0.665,
+              0.128
+            ],
+            [
+              0.645,
+              0.652
+            ],
+            [
+              0.455,
+              0.652
+            ]
+          ],
+          "tilt": 0
+        },
+        {
+          "quad": [
+            [
+              0.668,
+              0.118
+            ],
+            [
+              0.84,
+              0.118
+            ],
+            [
+              0.79,
+              0.588
+            ],
+            [
+              0.64,
+              0.588
+            ]
+          ],
+          "tilt": -7
+        }
+      ],
+      "matte": "alpha",
+      "page": "Tom's photo (things/photos-skate/d846fa84-IMG_1707.jpeg)",
+      "note": "three worn decks, perspective-corrected and fanned"
+    },
+    "airtags": {
+      "source": "https://www.apple.com/v/airtag/g/images/overview/hero_airtag__7jmq2is50n6y_large_2x.jpg",
+      "crop": [
+        0.36,
+        0.36,
+        0.64,
+        0.64
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "scale": 0.8,
+      "page": "https://www.apple.com/fr/airtag/",
+      "shape": "ellipse",
+      "shape_shrink": 0.045,
+      "erode": 3
+    },
+    "bosch-fsn-1600": {
+      "source": "https://www.bosch-professional.com/be/fr/ocsmedia/376039-54/application-image/full/accessoires-divers-pro-fsn-1600-1600z0000f.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/be/fr/products/fsn-1600-1600Z0000F"
+    },
+    "bosch-gks-85-g": {
+      "source": "https://www.bosch-professional.com/fr/fr/ocsmedia/329334-54/application-image/full/scie-circulaire-pro-gks-85-g-060157a900.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/fr/fr/products/gks-85-g-060157A900"
+    },
+    "bosch-gsb-18v": {
+      "source": "https://www.bosch-professional.com/gb/en/ocsmedia/375556-54/application-image/full/cordless-combi-pro-gsb-18v-55-06019h5302.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/gb/en/products/gsb-18v-55-06019H5302"
+    },
+    "bosch-gss-18v-10": {
+      "source": "https://www.bosch-professional.com/de/de/ocsmedia/187446-54/application-image/full/akku-schwingschleifer-pro-gss-18v-10-06019d0200.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/de/de/products/gss-18v-10-06019D0200"
+    },
+    "bosch-gst-160-ce": {
+      "source": "https://www.bosch-professional.com/de/de/ocsmedia/133149-54/application-image/full/stichsaege-pro-gst-160-ce-0601517000.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/de/de/products/gst-160-ce-0601517000"
+    },
+    "bosch-gws-18v-10-p": {
+      "source": "https://www.bosch-professional.com/gb/en/ocsmedia/295500-54/application-image/full/cordless-angle-grinder-pro-gws-18v-10-pc-06019g3e0a.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/gb/en/products/gws-18v-10-pc-06019G3E0A"
+    },
+    "bosch-niveau-25": {
+      "source": "https://www.bosch-professional.com/binary/ocsmedia/optimized/full/o586314v82_1600A016BN_bo_pro_u_f_1.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/ge/en/level-magnetic-25-cm-professional-7867329-ocs-ac/"
+    },
+    "henson-al13": {
+      "source": "https://cdn.shopify.com/s/files/1/0269/8025/3776/files/copper-wide.jpg?width=1600",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://hensonshaving.com/products/henson-razor-stand",
+      "_note": "AL13 copper resting on the Henson stand (single photo)"
+    },
+    "dakine-low-roller": {
+      "source": "https://cdn.shopify.com/s/files/1/0272/5920/7752/files/LOWROLLERSNOWBOARDBAG-BLACK-194626594231_10004583_BLACK-62M_MAIN.jpg?width=1400",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://eu.dakine.com/fr-fr/products/low-roller-snowboard-bag-black-w26"
+    },
+    "logitech-mx-vertical": {
+      "source": "https://resource.logitech.com/c_fill,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/mx-vertical/gallery/mx-vertical-gallery-01-new.png",
+      "matte": "alpha",
+      "page": "https://www.logitech.com/en-us/shop/p/mx-vertical-ergonomic-mouse"
+    },
+    "philips-499p9": {
+      "source": "https://images.philips.com/is/image/philipsconsumer/tpv_3820111?$png$&wid=1600",
+      "matte": "auto",
+      "keep": "largest",
+      "page": "https://www.philips.fr/c-p/499P9H_00/"
+    },
+    "bosch-marteau": {
+      "source": "https://www.bosch-professional.com/binary/ocsmedia/optimized/full/o586317v82_1600A016BT_bo_pro_u_f_1.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/be/fr/professionele-slotenmakershamer-7788702-ocs-ac/"
+    },
+    "bosch-lave-vaisselle": {
+      "source": "https://media3.bosch-home.com/Product_Shots/1600x/11271213_SMV6ECX93E_STP_def.webp",
+      "matte": "alpha",
+      "page": "https://www.bosch-home.fr/fr/product/SMV6ECX93E"
+    },
+    "chaise-gamer": {
+      "source": "https://cdn.shopify.com/s/files/1/0662/0774/4223/files/B34OBG073B05-1.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.songmics.fr/products/songmics-chaise-gaming-avec-repose-pieds-obg73",
+      "note": "Exact Songmics model unknown: black OBG73 used."
+    },
+    "burton-mission": {
+      "source": "https://cdn.shopify.com/s/files/1/0804/4062/3361/files/1054617A02_1.webp?width=1600",
+      "matte": "alpha",
+      "page": "https://www.burton.com/fr-ca/products/mens-burton-mission-re-flex-snowboard-bindings-105461",
+      "note": "Black colorway (Tom bought his second-hand; colour not specified)."
+    },
+    "limitless": {
+      "source": "https://www.limitless.ai/media/og-preview.jpg",
+      "crop": [
+        0.34,
+        0.47,
+        0.533,
+        1.0
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.limitless.ai",
+      "note": "Pendant cropped from the site preview image (product discontinued)."
+    },
+    "banc-piano": {
+      "source": "local/piano/69532fe7-photo.jpeg",
+      "quad": [
+        [
+          0.0,
+          0.25
+        ],
+        [
+          0.99,
+          0.25
+        ],
+        [
+          0.9,
+          0.86
+        ],
+        [
+          0.1,
+          0.86
+        ]
+      ],
+      "quad_aspect": 0.8,
+      "matte": "rembg",
+      "keep": "all",
+      "flatten": {
+        "min_v": 0.5,
+        "max_s": 0.35,
+        "sigma": 0.06,
+        "keep": 0.45,
+        "detail": 1.6
+      },
+      "note": "Tom photo (local, gitignored): perspective straightened, stains on the cream seat flattened.",
+      "add_ellipses": [
+        [
+          0.115,
+          0.174,
+          0.034,
+          0.034
+        ]
+      ]
+    },
+    "philips-65pus7354": {
+      "source": "https://images.philips.com/is/image/philipsconsumer/tpv_3129050?$png$&wid=1600",
+      "inpaint": [
+        [
+          0.53,
+          0.228,
+          0.815,
+          0.345
+        ]
+      ],
+      "matte": "poly",
+      "polys": [
+        [
+          [
+            0.168,
+            0.211
+          ],
+          [
+            0.83,
+            0.211
+          ],
+          [
+            0.83,
+            0.743
+          ],
+          [
+            0.168,
+            0.743
+          ]
+        ],
+        [
+          [
+            0.487,
+            0.74
+          ],
+          [
+            0.513,
+            0.74
+          ],
+          [
+            0.513,
+            0.76
+          ],
+          [
+            0.487,
+            0.76
+          ]
+        ],
+        [
+          [
+            0.29,
+            0.756
+          ],
+          [
+            0.71,
+            0.756
+          ],
+          [
+            0.7125,
+            0.778
+          ],
+          [
+            0.2875,
+            0.778
+          ]
+        ]
+      ],
+      "page": "https://www.philips.fr/c-p/65PUS7354_12",
+      "note": "Press shot has the Ambilight glow baked in: outline traced by hand (matte poly), 4K badge inpainted."
+    },
+    "logitech-g610": {
+      "source": "https://i.ebayimg.com/images/g/RBwAAOSw7GFgEfLo/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.com/p/2292738328"
+    },
+    "logitech-g602": {
+      "source": "https://i.ebayimg.com/images/g/LvsAAOxyTkJSPpz8/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.co.uk/p/170514838",
+      "note": "Logitech stock photo via the eBay catalogue (only 521 px)."
+    },
+    "berserk": {
+      "source": "https://m.media-amazon.com/images/P/2344020683.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2344020683",
+      "note": "Cover (Glénat, tome 1 (nouvelle édition)), Amazon cover image by ISBN."
+    },
+    "clan-des-otori": {
+      "source": "https://m.media-amazon.com/images/P/2075088101.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.gallimard-jeunesse.fr/9782075088107/le-silence-du-rossignol.html",
+      "note": "Cover of the comic adaptation (tome 1, Le silence du rossignol, Melchior / Bachelier, Gallimard), Amazon cover image by ISBN."
+    },
+    "univers-troy": {
+      "source": "https://m.media-amazon.com/images/P/2877642577.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2877642577",
+      "note": "Cover (Lanfeust de Troy 1 : L'ivoire du Magohamoth (Soleil)), Amazon cover image by ISBN."
+    },
+    "vent-des-dieux": {
+      "source": "https://m.media-amazon.com/images/P/2723427250.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/2723427250",
+      "note": "Cover (Tome 5 : La balade de Mizu (Glénat)), Amazon cover image by ISBN."
+    },
+    "tintin": {
+      "source": "https://m.media-amazon.com/images/P/2203001100.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2203001100",
+      "note": "Cover (Le secret de la Licorne (Casterman)), Amazon cover image by ISBN.",
+      "crop": [
+        0.027,
+        0,
+        1,
+        1
+      ]
+    },
+    "asterix": {
+      "source": "https://m.media-amazon.com/images/P/2012101399.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/2012101399",
+      "note": "Cover (Le combat des chefs), Amazon cover image by ISBN."
+    },
+    "polars": {
+      "source": "https://m.media-amazon.com/images/P/2330081812.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2330081812",
+      "note": "Cover (Millénium 5 (Actes Sud, Actes noirs)), Amazon cover image by ISBN."
+    },
+    "mr-robot-red-wheelbarrow": {
+      "source": "https://m.media-amazon.com/images/P/1419724428.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/1419724428",
+      "note": "Cover (Abrams Image, 2016), Amazon cover image by ISBN.",
+      "trim_white": true
+    },
+    "zabardast": {
+      "source": "https://m.media-amazon.com/images/P/2365450687.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2365450687",
+      "note": "Cover (Jérôme Tanon), Amazon cover image by ISBN."
+    },
+    "livres-sagesse": {
+      "source": "https://m.media-amazon.com/images/P/0735211299.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/0735211299",
+      "note": "Cover (Atomic Habits (Avery)), Amazon cover image by ISBN."
+    },
+    "livre-menuiserie": {
+      "source": "https://m.media-amazon.com/images/P/221267645X.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/221267645X",
+      "note": "Cover (Gallauziaux & Fedullo, Eyrolles), Amazon cover image by ISBN."
+    },
+    "arctis-nova-pro": {
+      "source": "https://images.ctfassets.net/hmm5mo4qf4mf/26Exn6YSwJ5dG8nyVxbDx1/ee31e09c726a07457737dacc62a95043/arctis_nova_pro_wl_black_img_buy_2_2.png__1920x1080_crop-fit_optimize_subsampling-2-229.png",
+      "compose": {
+        "size": [
+          1600,
+          1200
+        ],
+        "layers": [
+          {
+            "source": "https://images.ctfassets.net/hmm5mo4qf4mf/26Exn6YSwJ5dG8nyVxbDx1/ee31e09c726a07457737dacc62a95043/arctis_nova_pro_wl_black_img_buy_2_2.png__1920x1080_crop-fit_optimize_subsampling-2-229.png",
+            "box": [
+              0.04,
+              0.0,
+              0.66,
+              0.86
+            ]
+          },
+          {
+            "source": "https://images.ctfassets.net/hmm5mo4qf4mf/4EwYTpKVVXomhKP0iwxz5l/eee8a3f7c09dab1956a92d984523ee0c/arctis_nova_pro_wl_black_img_buy_1.png__1920x1080_crop-fit_optimize_subsampling-2-227.png",
+            "crop": [
+              0.283,
+              0.7195,
+              0.736,
+              0.97
+            ],
+            "box": [
+              0.4,
+              0.64,
+              0.98,
+              1.0
+            ]
+          }
+        ]
+      },
+      "matte": "alpha",
+      "keep": "all",
+      "page": "https://steelseries.com/gaming-headsets/arctis-nova-pro-wireless",
+      "_note": "Arctis Nova Pro Wireless (black) composed with its GameDAC base station, both from SteelSeries' official images"
+    },
+    "hp-deskjet-2710": {
+      "source": "https://i.ebayimg.com/images/g/MBgAAOSw~6ljWpHi/s-l1600.jpg",
+      "inpaint": [
+        [
+          0.2,
+          0.735,
+          0.8,
+          0.9
+        ]
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://ebay.co.uk/p/15047043611",
+      "note": "DeskJet 2710e stock photo (same body as the 2710); the orange HP+ promo sheet is inpainted out."
+    },
+    "bones-reds": {
+      "source": "https://i.ebayimg.com/images/g/H0cAAeSwRT9qdpUs/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.com/p/1294764929",
+      "note": "Seller photo of the retail box (no clean stock shot reachable)."
+    },
+    "ecovacs-t50": {
+      "source": "https://site-static.ecovacs.com/upload/fr/image/product/2025/09/10/055809_2483$id-t50-omni-black-920x920.png",
+      "matte": "alpha",
+      "alpha_min": 0.35,
+      "keep": "largest",
+      "page": "https://www.ecovacs.com/fr/deebot-robotic-vacuum-cleaner/deebot-t50-omni"
+    },
+    "haier-lave-linge": {
+      "source": "https://cdn.shopify.com/s/files/1/0684/9776/8534/files/640-28_31020833_09_02_l_hw100-b14367u-fr-M.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "fill_holes": true,
+      "page": "https://www.haier-europe.com/fr_FR/products/31020833-hw100-b14367u-fr"
+    },
+    "haier-seche-linge": {
+      "source": "https://www.haier-europe.com/h-image/haier-product/2025/7/17516250/640-28_31102958_11_03_l_hd100-c367u1-s-M.jpg?w=1600&h=1600&q=90",
+      "matte": "rembg",
+      "keep": "largest",
+      "fill_holes": true,
+      "page": "https://www.haier-europe.com/fr_CH/seche-linge/31102958/hd100-c367u1-s/",
+      "_note": "Swiss -S variant of the same HD100-C367U1 (identical design; no fr_FR page found)"
+    },
+    "burton-custom-flying-v": {
+      "source": "https://edge.images.sidelineswap.com/production/096/214/697/d05b605726429068_original.jpeg?height=1600",
+      "quad_aspect": 8.0,
+      "matte": "rembg",
+      "keep": "largest",
+      "fill_holes": true,
+      "rotate": -66,
+      "page": "https://sidelineswap.com/gear/snowboarding/snowboards/12556576-burton-custom-flying-v-158-snowboard-2017-2018-new-read",
+      "_note": "listing photo of the exact board (topsheet), perspective straightened",
+      "quad_post": [
+        [
+          0.131,
+          0.0
+        ],
+        [
+          0.792,
+          0.0
+        ],
+        [
+          0.661,
+          1.0
+        ],
+        [
+          0.325,
+          1.0
+        ]
+      ]
+    },
+    "leo-aldebaran": {
+      "source": "https://m.media-amazon.com/images/P/2205087177.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2205087177",
+      "note": "Cover (Dargaud 2020, Aldébaran tome 1 : La catastrophe), Amazon cover image by ISBN."
+    },
+    "bilal": {
+      "source": "https://m.media-amazon.com/images/P/220315845X.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/220315845X",
+      "note": "Cover (Casterman, Nikopol, la trilogie), Amazon cover image by ISBN."
+    },
+    "stanley-fatmax-etabli": {
+      "source": "https://i.ebayimg.com/images/g/pNUAAOSwyudge2O2/s-l1600.png",
+      "matte": "auto",
+      "keep": "largest",
+      "page": "https://ebay.co.uk/p/10007412109",
+      "note": "Stanley FMST1-75672 stock photo via the eBay catalogue (assets.stanleyoutillage.fr is blocked)."
+    },
+    "stanley-etau": {
+      "source": "https://i.ebayimg.com/images/g/q5UAAOSwwK5g9taW/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.de/p/1605475805",
+      "note": "Stanley 1-83-069 multi-angle vice (étau d établi sur rotule), eBay catalogue stock photo."
+    },
+    "stanley-scie-chantourner": {
+      "source": "https://i.ebayimg.com/images/g/dzQAAOSwIpxiuvZe/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "all",
+      "page": "https://www.ebay.co.uk/p/1005104210",
+      "note": "Stanley FatMax 0-15-106 coping saw, eBay catalogue photo."
+    },
+    "ezechiel": {
+      "source": "local/books/ezechiel.png",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -2,
+      "page": "",
+      "note": "Cover photo sent by Tom (Delcourt, Rodolphe / Ramón Marcos / Dimitri Fogolin)."
+    },
+    "chat-des-rues": {
+      "source": "local/books/chat-des-rues.png",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2,
+      "page": "",
+      "note": "Cover sent by Tom (Hachi & Maruru, Chats des rues 1, Yuri Sonoda, Doki-Doki)."
+    },
+    "utopie": {
+      "source": "local/books/utopie.png",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -2.5,
+      "page": "",
+      "note": "Cover sent by Tom (Utopie vol. 1, Rodolphe / Griffo, Delcourt)."
+    },
+    "daruma": {
+      "source": "https://cdn.shopify.com/s/files/1/0255/2984/3805/files/daruma-japonais-rouge-9-a-15-cm-12-459.jpg?v=1747310889&width=1600",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://universdujapon.com/products/daruma-japonais-rouge-9-a-15-cm",
+      "note": "Red daruma, link given by Tom."
+    },
+    "matelas-emma": {
+      "source": "https://eu-images.contentstack.com/v3/assets/blt167b24547e5b1906/blt4c38880328c6a1ef/69dcf018d7281d4ff8586057/LayerSection_Original_Global_Image.png?width=1600",
+      "matte": "alpha",
+      "inpaint": [
+        [
+          0.255,
+          0.065,
+          0.325,
+          0.135
+        ],
+        [
+          0.36,
+          0.225,
+          0.43,
+          0.295
+        ],
+        [
+          0.5,
+          0.305,
+          0.57,
+          0.375
+        ],
+        [
+          0.62,
+          0.395,
+          0.69,
+          0.465
+        ],
+        [
+          0.715,
+          0.5,
+          0.785,
+          0.57
+        ],
+        [
+          0.795,
+          0.655,
+          0.865,
+          0.725
+        ]
+      ],
+      "page": "https://www.emma.fr/matelas/matelas-emma-original",
+      "note": "Emma Original exploded layers, official PNG; layer numbers erased."
+    },
+    "bureau-assis-debout": {
+      "source": "local/desk/bureau-3d.png",
+      "matte": "alpha",
+      "page": "https://claude.ai/artifact/XrMoVSEh9oDnMKnsKz12gy",
+      "note": "Render of Tom's 3D desk model (three.js, transparent background), walking pad hidden. Frame 0 of local/desk/frames; the hover animation strip is built by anim_strip.py, do not rebuild this one with make_stickers.py."
+    },
+    "manette-pro-switch": {
+      "source": "local/rc/switch-pro-controller.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "",
+      "note": "Nintendo Switch Pro Controller, product photo from Tom's Amazon order.",
+      "crop": [
+        0.33,
+        0.25,
+        0.93,
+        0.87
+      ]
+    },
+    "fer-a-souder": {
+      "source": "local/rc/sremtch-fer-souder.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "",
+      "note": "Soldering iron, product photo from the Amazon order (Tom wants it shown without brand).",
+      "crop": [
+        0.15,
+        0.01,
+        0.53,
+        0.41
+      ]
+    },
+    "panasonic-er-gp82": {
+      "source": "local/rc/panasonic-er-gp82-ebay.jpg",
+      "crop": [
+        0.38,
+        0,
+        0.88,
+        1
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.de/p/5038015371",
+      "note": "Panasonic ER-GP82, eBay catalogue photo (combs cropped out)."
+    },
+    "bosch-visseuse-chocs": {
+      "source": "local/rc/bosch-gdr-18v-160.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": "",
+      "crop": [
+        0,
+        0,
+        1,
+        0.8
+      ]
+    },
+    "bosch-gms-120": {
+      "source": "local/rc/bosch-gms-120.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": "",
+      "crop": [
+        0.6,
+        0,
+        1,
+        1
+      ]
+    },
+    "stanley-presse-cadre": {
+      "source": "local/rc/stanley-presse-cadre.jpg",
+      "matte": "white",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": ""
+    },
+    "tajima-scie-japonaise": {
+      "source": "local/rc/tajima-jpr265.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": ""
+    },
+    "theragun-pro": {
+      "source": "local/rc/theragun-pro.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": ""
+    },
+    "whoop": {
+      "source": "local/rc/whoop-5.jpg",
+      "matte": "white",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": ""
+    },
+    "pc-windows": {
+      "source": "local/rc/corsair-4000d.jpg",
+      "crop": [
+        0.02,
+        0,
+        0.98,
+        0.93
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.com/shop/corsair-4000d-airflow",
+      "note": "Corsair 4000D Airflow black, eBay listing photo (same case as Tom's 2024 rebuild)."
+    },
+    "yamaha-clp-320": {
+      "source": "local/rc/yamaha-clp-320.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://en.audiofanzine.com/digital-piano/yamaha/clavinova-clp-320/",
+      "note": "Clavinova CLP-320, Audiofanzine product photo."
+    },
+    "switch-ethernet": {
+      "source": "local/rc/tp-link-sg105.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.tp-link.com/fr/home-networking/soho-switch/tl-sg105/",
+      "note": "Square metal desktop switch (TP-Link TL-SG105) — Tom: boxy, raw, ports with LEDs."
+    },
+    "gilet-leste": {
+      "source": "local/rc/domyos-gilet.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.decathlon.fr/p/gilet-leste-de-musculation-ajustable-de-6-a-10kg/344654/c382m8786091",
+      "note": "Domyos adjustable 6-10 kg weighted vest, Decathlon product photo."
+    },
+    "tente-forclaz-mt900": {
+      "source": "local/rc/forclaz-mt900.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.decathlon.fr/p/tente-dome-de-trekking-2-places-legere-et-autoportante-mt900/301558/c149m8882674",
+      "note": "Forclaz MT900 2-person dome tent, Decathlon product photo."
+    },
+    "tapis-de-marche": {
+      "source": "local/rc/hometro-tapis.jpg",
+      "crop": [
+        0,
+        0,
+        0.62,
+        0.9
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.amazon.fr/dp/B0FY35MDNY",
+      "note": "homeTro walking pad, Amazon A+ photo (packing list text cropped out)."
+    }
+  }
+}

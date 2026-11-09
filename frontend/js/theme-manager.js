@@ -15,7 +15,7 @@ const ThemeManager = (() => {
     // nginx serves .js and .css as immutable for a year: bump this whenever a
     // theme's JS or CSS changes, or visitors keep the old file (the pages version
     // this script too).
-    const ASSET_VERSION = '2026-10-05';
+    const ASSET_VERSION = '2026-11-09';
     const STORAGE_KEY = 'portfolio_theme';
     const SCROLL_KEY = 'portfolio_scroll';
     let currentThemeId = null;

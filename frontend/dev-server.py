@@ -31,6 +31,10 @@ class SPAHandler(http.server.SimpleHTTPRequestHandler):
             # Otherwise serve blog.html
             self.path = '/blog.html'
 
+        # /things -> things.html
+        if path.rstrip('/') == '/things':
+            self.path = '/things.html'
+
         # For other paths, check if file exists
         file_path = Path('.') / self.path.lstrip('/').split('?')[0]
         if not file_path.is_file() and not file_path.is_dir():
