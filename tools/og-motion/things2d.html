@@ -1,0 +1,342 @@
+<!doctype html>
+<!--
+  og-motion /things, en 2D — les stickers de la page tombent un par un et s'entassent comme dans une
+  machine de fête foraine (vraie physique 2D, matter-js), puis Blip saute sur le tas et les sort un à
+  un pour les ranger en grille sous l'en-tête « Things », comme sur la page.
+
+  Les stickers sont les VRAIES images de la page (frontend/assets/things/*.webp, déjà détourées avec
+  leur liseré blanc), dans l'ordre de frontend/data/fr/things.json : seulement les objets publiés
+  (avec image, pas « plus utilisé »). Blip = le vrai sprite blip-default.svg, pixel pour pixel.
+
+  La physique est calculée une fois au chargement (pas fixe de 1/60 s, déterministe), puis render(t)
+  ne fait que lire l'état à l'instant t : render3d.mjs capture 24 i/s.
+
+  Servi depuis la racine du dépôt :  python3 -m http.server 8766  →  /tools/og-motion/things2d.html
+  ?t=12.3 fige un instant · ?play la joue en boucle · ?w=1200&h=630 taille du rendu
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>og-motion things</title>
+<style>
+  html, body { margin: 0; overflow: hidden; background: #f8f7f4; }
+  canvas { display: block; }
+</style>
+<script src="https://unpkg.com/matter-js@0.19.0/build/matter.min.js"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const Q = new URLSearchParams(location.search);
+const W = +(Q.get('w') || 1920), H = +(Q.get('h') || 1080);
+const SW = 1920, SH = 1080;                                     // la scène est pensée en 1920×1080
+const DURATION = 18, FPS_SIM = 60;
+const PAL = { paper: '#f8f7f4', dot: '#e4ddd2', ink: '#2c2825', muted: '#7a726a', accent: '#3d7a73', line: '#d6cfc4' };
+
+// ── temps ──────────────────────────────────────────────────────────
+const step = t => Math.floor(t * 12 + 1e-6) / 12;              // Blip bouge par pas de 1/12 s (BRANDING.md)
+const clamp = (v, a = 0, b = 1) => Math.min(Math.max(v, a), b);
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const ease = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const out = k => 1 - Math.pow(1 - k, 3);
+const lerp = (a, b, k) => a + (b - a) * k;
+let seed = 11;                                                  // aléa déterministe : la même vidéo à chaque rendu
+const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+
+const canvas = document.getElementById('c');
+canvas.width = W; canvas.height = H;
+const ctx = canvas.getContext('2d');
+const K = Math.min(W / SW, H / SH), OX = (W - SW * K) / 2, OY = (H - SH * K) / 2;
+
+// ── la page : en-tête et grille ────────────────────────────────────
+const COLS = 13, ROWS = 6;                                      // 77 objets + la case de Blip
+const GRID = { x: 150, y: 350, w: 1620, h: 690 };
+const CW = GRID.w / COLS, CH = GRID.h / ROWS;
+const slot = j => ({ x: GRID.x + (j % COLS + .5) * CW, y: GRID.y + (Math.floor(j / COLS) + .5) * CH });
+const PILE_W = 210, GRID_W = 152;                               // largeur d'un sticker (image 4:3) dans le tas / dans la grille
+const FLOOR = SH - 14;
+
+// ── Blip : le sprite du site, et sa variante yeux fermés ──────────
+const BLIP_PX = 7;                                              // 24 px de sprite → 168 px
+let blipOpen, blipShut;
+async function loadBlip() {
+  const svg = await (await fetch('/frontend/assets/brand/blip-default.svg')).text();
+  const img = new Image();
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  await img.decode();
+  const mk = shut => {
+    const c = document.createElement('canvas'); c.width = c.height = 24;
+    const g = c.getContext('2d'); g.imageSmoothingEnabled = false; g.drawImage(img, 0, 0, 24, 24);
+    if (shut) {                                                 // clignement : le visage prend la couleur du corps
+      const d = g.getImageData(0, 0, 24, 24), at = (x, y) => (y * 24 + x) * 4, b = at(8, 13);
+      for (let y = 11; y <= 16; y++) for (let x = 8; x <= 15; x++) {
+        const i = at(x, y);
+        if (d.data[i + 3] > 128) for (let k = 0; k < 3; k++) d.data[i + k] = d.data[b + k];
+      }
+      g.putImageData(d, 0, 0);
+    }
+    return c;
+  };
+  blipOpen = mk(false); blipShut = mk(true);
+}
+function drawBlip(x, y, sy = 1, shut = false, sx = 1, sc = 1) { // (x, y) = le milieu de ses pieds
+  const s = BLIP_PX * sc;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(sx, sy);
+  ctx.imageSmoothingEnabled = false;
+  ctx.shadowColor = 'rgba(30,24,18,.18)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 4;
+  ctx.drawImage(shut ? blipShut : blipOpen, -12 * s, -24 * s, 24 * s, 24 * s);
+  ctx.restore();
+}
+const blinkAt = (t, phase = 0) => ((t + phase) % 1.06) < 1 / 12;
+
+// ── les stickers ───────────────────────────────────────────────────
+const stickers = [];
+function alphaBox(img) {                                        // la silhouette utile de l'image (sans le vide autour)
+  const c = document.createElement('canvas'); c.width = 160; c.height = 120;
+  const g = c.getContext('2d'); g.drawImage(img, 0, 0, 160, 120);
+  const d = g.getImageData(0, 0, 160, 120).data;
+  let x0 = 160, y0 = 120, x1 = 0, y1 = 0;
+  for (let y = 0; y < 120; y++) for (let x = 0; x < 160; x++) if (d[(y * 160 + x) * 4 + 3] > 100) {
+    x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+  }
+  return { x0: x0 / 160, y0: y0 / 120, x1: (x1 + 1) / 160, y1: (y1 + 1) / 120 };
+}
+function drawSticker(s, x, y, a, w) {
+  const h = w * .75, b = s.box;
+  ctx.save();
+  ctx.translate(x, y); ctx.rotate(a);
+  // le centre de la silhouette est l'origine (c'est aussi le centre du corps physique)
+  const cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2;
+  ctx.shadowColor = 'rgba(30,24,18,.22)'; ctx.shadowBlur = 12 * (w / PILE_W); ctx.shadowOffsetY = 5 * (w / PILE_W);
+  ctx.drawImage(s.img, -cx * w, -cy * h, w, h);
+  ctx.restore();
+}
+
+// ── la physique : calculée une fois, enregistrée à 60 i/s ─────────
+const TIDY0 = 9.9, FLY = .7;
+let TIDY_END = 15.8;
+const BLIP_IN = 8.2, BLIP_ON = 9.2;
+let REC = [];                                                   // REC[step][j] = [x, y, angle] ou null
+function simulate() {
+  const { Engine, Bodies, Composite, Body } = Matter;
+  const engine = Engine.create({ positionIterations: 12, velocityIterations: 10 });
+  engine.gravity.y = 1.5;
+  Composite.add(engine.world, [
+    Bodies.rectangle(SW / 2, FLOOR + 100, SW * 2, 200, { isStatic: true, friction: .9 }),
+    Bodies.rectangle(-100, SH / 2 - 600, 200, SH * 3, { isStatic: true }),
+    Bodies.rectangle(SW + 100, SH / 2 - 600, 200, SH * 3, { isStatic: true })
+  ]);
+  const n = Math.round(DURATION * FPS_SIM);
+  for (let i = 0; i <= n; i++) {
+    const t = i / FPS_SIM;
+    for (const s of stickers) {
+      if (!s.body && !s.gone && t >= s.drop) {
+        const b = s.box, w = (b.x1 - b.x0) * PILE_W * .94, h = (b.y1 - b.y0) * PILE_W * .75 * .94;
+        s.body = Bodies.rectangle(s.spawn.x, -h, w, h, { chamfer: { radius: Math.min(w, h) * .18 }, friction: .55, frictionStatic: .8, restitution: .12, density: .002 });
+        Body.setAngle(s.body, s.spawn.a);
+        Body.setVelocity(s.body, { x: s.spawn.vx, y: 6 });
+        Body.setAngularVelocity(s.body, s.spawn.va);
+        s.w = w; s.h = h;
+        Composite.add(engine.world, s.body);
+      }
+      if (s.body && t >= s.tidy) {                              // Blip le sort du tas : le reste s'effondre dans le trou
+        s.from = { x: s.body.position.x, y: s.body.position.y, a: s.body.angle };
+        Composite.remove(engine.world, s.body);
+        s.body = null; s.gone = true;
+      }
+    }
+    REC.push(stickers.map(s => s.body ? [s.body.position.x, s.body.position.y, s.body.angle] : null));
+    Engine.update(engine, 1000 / FPS_SIM);
+  }
+}
+const recAt = t => REC[clamp(Math.floor(t * FPS_SIM + 1e-6), 0, REC.length - 1)];
+// le haut du tas à l'abscisse x (pour poser Blip dessus) : le bord haut des rectangles tournés
+function topAt(s, p, x) {
+  const c = Math.cos(p[2]), sn = Math.sin(p[2]), hw = s.w / 2, hh = s.h / 2;
+  const pts = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(([u, v]) => [p[0] + u * c - v * sn, p[1] + u * sn + v * c]);
+  let top = Infinity;
+  for (let i = 0; i < 4; i++) {
+    const [x0, y0] = pts[i], [x1, y1] = pts[(i + 1) % 4];
+    if ((x - x0) * (x - x1) > 0 || x0 === x1) continue;
+    top = Math.min(top, y0 + (y1 - y0) * (x - x0) / (x1 - x0));
+  }
+  return top;
+}
+function surface(t, x) {
+  const st = recAt(t);
+  let top = FLOOR;
+  stickers.forEach((s, j) => {
+    const p = st[j];
+    if (!p || t < s.drop + 1.3) return;                         // il tombe encore
+    for (const dx of [-28, 0, 28]) top = Math.min(top, topAt(s, p, x + dx));
+  });
+  return top + 4;
+}
+
+async function build() {
+  document.fonts.add(await new FontFace('DM Sans', 'url(/frontend/assets/fonts/rP2Hp2ywxg089UriCZOIHQ.woff2)', { weight: '100 1000' }).load());
+  document.fonts.add(await new FontFace('JetBrains Mono', 'url(/frontend/assets/fonts/tDbV2o-flEEny0FZhsfKu5WU4xD7OwE.woff2)', { weight: '400' }).load());
+  await loadBlip();
+  const data = await (await fetch('/frontend/data/fr/things.json')).json();
+  const items = data.items.filter(i => i.image && !i.retired);
+  await Promise.all(items.map(async (it, j) => {
+    const img = new Image(); img.src = '/frontend' + it.image; await img.decode();
+    stickers[j] = { id: it.id, img, box: alphaBox(img), slot: slot(j), tilt: (rnd() - .5) * .08 };
+  }));
+  const M = stickers.length;
+  window.COUNT = M;
+  // ordre de chute : quelques objets forts d'abord, lentement, puis le reste en averse
+  const hero = ['meuble-skate', 'yamaha-clp-320', 'sony-a6000'];
+  const rest = stickers.filter(s => !hero.includes(s.id));
+  for (let i = rest.length - 1; i > 0; i--) { const k = Math.floor(rnd() * (i + 1)); [rest[i], rest[k]] = [rest[k], rest[i]]; }
+  const order = [...hero.map(h => stickers.find(s => s.id === h)).filter(Boolean), ...rest];
+  order.forEach((s, k) => {
+    s.drop = .5 + 6.9 * Math.sqrt(k / (M - 1));                 // de plus en plus vite
+    const spread = k < 3 ? 260 : 820;
+    s.spawn = { x: SW / 2 + (rnd() * 2 - 1) * spread, a: (rnd() - .5) * 1.2, vx: (rnd() - .5) * 6, va: (rnd() - .5) * .12 };
+  });
+  // le rangement : dans l'ordre de la page (catégorie par catégorie)
+  stickers.forEach((s, j) => { s.tidy = TIDY0 + 5.3 * Math.pow(j / (M - 1), .72); });
+  TIDY_END = Math.max(...stickers.map(s => s.tidy)) + FLY;
+  simulate();
+}
+
+// ── le décor ───────────────────────────────────────────────────────
+function paper() {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = PAL.paper; ctx.fillRect(0, 0, W, H);
+  const gap = 28 * K;                                           // la grille de points du fond du site
+  ctx.fillStyle = PAL.dot;
+  for (let y = gap / 2; y < H; y += gap) for (let x = gap / 2; x < W; x += gap) { ctx.beginPath(); ctx.arc(x, y, 1.6 * K, 0, 7); ctx.fill(); }
+  ctx.setTransform(K, 0, 0, K, OX, OY);
+}
+function header(t) {
+  const k0 = 12.2;
+  if (t < k0) return;
+  // le kicker se tape, le titre monte lettre par lettre (comme l'entrée du titre de la page)
+  ctx.save();
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = '400 30px "JetBrains Mono"';
+  const kick = '~/things', nk = Math.floor(prog(t, k0, k0 + .5) * kick.length + 1e-6);
+  ctx.fillStyle = PAL.accent;
+  ctx.fillText(kick.slice(0, nk), GRID.x + 6, 156);
+  const kw = ctx.measureText(kick).width;
+  if (Math.floor(t * 2) % 2 === 0 || t > k0 + 1.4) ctx.fillRect(GRID.x + 6 + ctx.measureText(kick.slice(0, nk)).width + 6, 132, 15, 27);
+  if (t > k0 + .55) {
+    ctx.globalAlpha = out(prog(t, k0 + .55, k0 + .9));
+    ctx.fillStyle = PAL.line; ctx.fillRect(GRID.x + 6 + kw + 34, 126, 2, 38);
+    ctx.fillStyle = PAL.muted; ctx.fillText(`${stickers.length} things`, GRID.x + 6 + kw + 52, 156);
+  }
+  ctx.font = '700 168px "DM Sans"';
+  ctx.letterSpacing = '-7px';
+  ctx.fillStyle = PAL.ink;
+  let x = GRID.x - 4;
+  [...'Things'].forEach((ch, i) => {
+    const k = out(prog(t, k0 + .2 + i * .06, k0 + .75 + i * .06));
+    ctx.globalAlpha = k;
+    ctx.fillText(ch, x, 318 + (1 - k) * 60);
+    x += ctx.measureText(ch).width;
+  });
+  ctx.restore();
+}
+
+// ── render(t) ──────────────────────────────────────────────────────
+let STILL = false;
+function blipState(t) {
+  const ts = step(t);
+  if (ts < BLIP_IN - .5) return null;
+  const SIDE = 1560;
+  let x = SIDE, y, sy = 1, sx = 1, sc = 1;
+  if (ts < BLIP_IN) {                                           // il tombe dans la machine
+    const k = Math.floor(prog(ts, BLIP_IN - .5, BLIP_IN) * 6) / 6;
+    y = lerp(-40, surface(BLIP_IN, SIDE), k * k);
+  } else if (ts < BLIP_ON) {                                    // il atterrit, s'écrase, regarde le tas, cligne
+    y = surface(BLIP_IN, SIDE);
+    const kk = prog(ts, BLIP_IN, BLIP_IN + .5);
+    sy = [.62, 1.18, .92, 1.04, 1, 1][Math.min(5, Math.floor(kk * 6))];
+    sx = ts > BLIP_IN + .9 && ts < BLIP_IN + 1.2 ? -1 : 1;       // il se retourne vers le tas, puis revient
+    if (ts > BLIP_ON - .25) sy = .78;                           // il prend son élan
+  } else {
+    // il saute de sticker en sticker : sur chacun des premiers, puis il reste sur le haut du tas
+    const hops = stickers.slice(0, 6).map(s => [s.tidy - .42, s.tidy]);
+    let perch = recAt(TIDY0 - .05)[0];
+    const at = j => { const p = recAt(stickers[j].tidy - .43)[j]; return p ? p[0] : SIDE; };
+    const P = [SIDE, ...hops.map((_, j) => at(j))];
+    const T0 = [BLIP_ON, ...hops.map(h => h[0])];
+    let i = 0; while (i + 1 < T0.length && ts >= T0[i + 1]) i++;
+    const from = P[i], to = P[Math.min(i + 1, P.length - 1)];
+    const ta = i === 0 ? BLIP_ON : T0[i], tb = ta + .42;
+    const kh = i + 1 < P.length ? Math.floor(prog(ts, ta, tb) * 6) / 6 : 1;
+    const end = TIDY_END - FLY + .1;
+    if (ts < end) {
+      x = i + 1 < P.length ? lerp(from, to, kh) : P[P.length - 1];
+      const ground = surface(ts, x);
+      y = ground - Math.sin(Math.PI * kh) * 150 * (kh < 1 ? 1 : 0);
+      // un coup de reins à chaque sticker sorti
+      const cur = stickers.reduce((a, s) => (s.tidy <= ts ? s : a), null);
+      if (cur && ts - cur.tidy < 1 / 12) sy = .8; else if (cur && ts - cur.tidy < 2 / 12) sy = 1.1;
+      if (kh >= 1 && i + 1 < P.length) {} // posé
+      const nxt = stickers.find(s => s.tidy > ts);
+      if (nxt) sx = nxt.slot.x < x ? -1 : 1;
+    } else {                                                    // la dernière case : trois bonds, et il se pose
+      const home = slot(COLS * ROWS - 1), hx = home.x, hy = home.y + CH * .46;
+      const x0 = P[P.length - 1], y0 = FLOOR;
+      const k = Math.floor(prog(ts, end, end + 1.3) * 12) / 12;
+      const hop = Math.min(2, Math.floor(k * 3)), kk = k * 3 - hop;
+      if (k >= 1) {
+        x = hx; y = hy;
+        const q = prog(ts, end + 1.3, end + 1.7); sy = [.7, 1.12, .96, 1][Math.min(3, Math.floor(q * 4))];
+      } else {
+        const a = hop / 3, b = (hop + 1) / 3;
+        x = lerp(lerp(x0, hx, a), lerp(x0, hx, b), kk);
+        y = lerp(lerp(y0, hy, a), lerp(y0, hy, b), kk) - Math.sin(Math.PI * kk) * 160;
+      }
+      sx = 1;
+      sc = lerp(1, .68, k);                                     // il se fait petit pour tenir dans sa case
+    }
+  }
+  return { x, y, sy, sx, sc, shut: blinkAt(ts, .3) };
+}
+function render(T) {
+  const t = STILL ? DURATION : T;
+  paper();
+  header(t);
+  const st = recAt(t);
+  // 1. ceux déjà rangés, 2. le tas, 3. ceux en vol
+  const flying = [];
+  stickers.forEach((s, j) => {
+    if (t < s.tidy) return;
+    const k = prog(t, s.tidy, s.tidy + FLY);
+    if (k < 1) { flying.push([s, k]); return; }
+    const b = prog(t, s.tidy + FLY, s.tidy + FLY + .25);        // tac : posé, un petit rebond
+    drawSticker(s, s.slot.x, s.slot.y - Math.sin(Math.PI * b) * 8 * (1 - b), s.tilt, GRID_W * (1 + Math.sin(Math.PI * b) * .06 * (1 - b)));
+  });
+  stickers.forEach((s, j) => { const p = st[j]; if (p) drawSticker(s, p[0], p[1], p[2], PILE_W); });
+  const blip = blipState(t);
+  flying.forEach(([s, k]) => {
+    const e = ease(k), f = s.from, to = s.slot;
+    const cx = (f.x + to.x) / 2, cy = Math.min(f.y, to.y) - 260;   // un arc : il saute du tas à sa case
+    const x = (1 - e) * (1 - e) * f.x + 2 * (1 - e) * e * cx + e * e * to.x;
+    const y = (1 - e) * (1 - e) * f.y + 2 * (1 - e) * e * cy + e * e * to.y;
+    const a0 = f.a - Math.round((f.a - s.tilt) / (Math.PI * 2)) * Math.PI * 2;
+    drawSticker(s, x, y, lerp(a0, s.tilt, e), lerp(PILE_W, GRID_W, e) * (1 + Math.sin(Math.PI * k) * .15));
+  });
+  if (blip) drawBlip(blip.x, blip.y, blip.sy, !STILL && blip.shut, STILL ? 1 : blip.sx, blip.sc);
+}
+
+window.ready = (async () => {
+  await build();
+  window.DURATION = DURATION;
+  window.render = render;
+  window.setStill = v => { STILL = v; };
+  if (Q.has('play')) {                                         // aperçu en boucle dans un navigateur
+    const start = performance.now();
+    const loop = () => { render(((performance.now() - start) / 1000) % DURATION); requestAnimationFrame(loop); };
+    loop();
+  } else render(Q.has('t') ? +Q.get('t') : DURATION);
+})();
+</script>
+</body>
+</html>

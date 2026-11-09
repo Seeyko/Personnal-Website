@@ -1,19 +1,21 @@
 # og-motion
 
-## /things — `things3d.html`
+## /things — `things2d.html`
 
-La vidéo de la page /things (18 s, 1920×1080, boucle) : les stickers de la page tombent un par un et
-s'entassent, puis Blip saute sur le tas et lance chaque sticker à sa place dans une grille rangée
-(l'ordre de la page, catégorie par catégorie), sous l'en-tête « Things ». La dernière case est vide :
-c'est celle de Blip. Même monde que `scene3d.html` (papier + grille de points, Blip en voxels, ombres).
+La vidéo de la page /things (18 s, 1920×1080, boucle), en 2D : les stickers de la page tombent un par
+un et s'entassent comme dans une machine de fête foraine (vraie physique 2D, matter-js 0.19.0,
+calculée une fois au chargement à pas fixe, donc la même vidéo à chaque rendu). Blip tombe sur le tas,
+saute de sticker en sticker et les sort un à un (le reste s'effondre dans le trou) pour les ranger en
+grille, dans l'ordre de la page, sous l'en-tête « ~/things · N things / Things ». La dernière case est
+vide : c'est celle de Blip.
 - Les stickers = les images de `frontend/assets/things/`, lues dans `frontend/data/fr/things.json`
   (objets avec image et pas « plus utilisé ») : un objet ajouté à la page entre dans la vidéo au
   prochain rendu. La grille fait 13 × 6 : au-delà de 77 objets, agrandir `COLS`/`ROWS`.
-- Rendu : `node render3d.mjs --scene things3d.html --out ./out-things` (même serveur que plus bas ;
-  `--three <three.module.js>` si unpkg n'est pas joignable depuis le navigateur), puis le même
-  encodage que la v4 avec `og-things.mp4` / `.webm`.
-- og:image = `things3d.html?w=1200&h=630&t=18` → `frontend/assets/brand/og-things.png`, balises
-  dans `frontend/things.html` (monter le `?v=` à chaque nouveau rendu).
+- Rendu : `node render3d.mjs --scene things2d.html --out ./out-things` (même serveur que plus bas ;
+  `--vendor <dossier>` sert les fichiers unpkg en local si le navigateur ne joint pas unpkg), puis le
+  même encodage que la v4 vers `og-things.mp4` (crf 27) / `.webm` (crf 42).
+- og:image = `things2d.html?w=1200&h=630&t=18` (après `setStill(true)`) → `frontend/assets/brand/og-things.png`,
+  balises dans `frontend/things.html` (monter le `?v=` à chaque nouveau rendu).
 
 ## v4 (actuelle) — scène Three.js 3D : `scene3d.html`
 
