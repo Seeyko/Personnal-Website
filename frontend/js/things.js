@@ -268,7 +268,7 @@
         }
         return `<model-viewer class="things-model" src="${esc(item.model)}" alt="${esc(item.name)}"
             ${item.image ? `poster="${esc(item.image)}"` : ''} camera-controls touch-action="pan-y"
-            ${reduced() ? '' : 'auto-rotate'} rotation-per-second="18deg" camera-target="0m 0.68m 0m"
+            ${reduced() ? '' : 'auto-rotate'} rotation-per-second="18deg" camera-target="0m 0.63m 0m"
             shadow-intensity="1" exposure="1.05" interaction-prompt="none"></model-viewer>`;
     }
 
