@@ -377,6 +377,14 @@ def render(spec: dict, img: Image.Image, cache: Path, item_id: str) -> Image.Ima
         raise ValueError(f"unknown matte mode {mode}")
     alpha = clean_alpha(alpha, spec.get("keep", "all"), int(spec.get("erode", 1 if mode == "rembg" else 0)),
                         bool(spec.get("fill_holes", False)), int(spec.get("open", 0)))
+    if spec.get("shape") == "ellipse":  # round objects: replace a ragged matte by its fitted ellipse
+        cs, _ = cv2.findContours((alpha > 0.5).astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        (cx, cy), (ew, eh), ang = cv2.fitEllipse(max(cs, key=cv2.contourArea))
+        k = float(spec.get("shape_shrink", 0.0))
+        ss = 4
+        m = np.zeros((alpha.shape[0] * ss, alpha.shape[1] * ss), np.uint8)
+        cv2.ellipse(m, ((cx * ss, cy * ss), (ew * ss * (1 - k), eh * ss * (1 - k)), ang), 255, -1)
+        alpha = cv2.resize(m.astype(np.float32) / 255, alpha.shape[::-1], interpolation=cv2.INTER_AREA)
     rgba = rgba.copy()
     rgba[..., 3] = alpha
     if spec.get("rotate"):  # after matting, so the turned corners stay transparent

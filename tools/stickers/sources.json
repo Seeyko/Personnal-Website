@@ -55,10 +55,10 @@
       "page": "https://equilibre-france-ergonomie.fr/produits/siege-tms-cpod/"
     },
     "iphone-15-pro": {
-      "source": "https://www.apple.com/v/iphone/compare/am/images/overview/compare_iphone15_pro_natural_titanium__scqfo7q20n2i_large_2x.jpg",
+      "source": "https://www.apple.com/v/iphone/compare/am/images/overview/compare_iphone15_pro_black_titanium__etz96gq8ruoi_large_2x.jpg",
       "matte": "rembg",
       "page": "https://www.apple.com/fr/iphone/compare/",
-      "note": "natural titanium"
+      "note": "black titanium (as in Tom's note)"
     },
     "airpods": {
       "source": "https://www.apple.com/v/airpods-5/a/images/overview/contrast/explore_airpods_5_out__elly16h5teie_xlarge_2x.jpg",
@@ -150,7 +150,8 @@
       "matte": "rembg",
       "keep": "largest",
       "page": "https://commons.wikimedia.org/wiki/File:Cast_Iron_Russian_kettlebell.jpg",
-      "note": "generic cast-iron kettlebell (Decathlon site blocked by Cloudflare)"
+      "note": "generic cast-iron kettlebell (Decathlon site blocked by Cloudflare)",
+      "open": 10
     },
     "mac-mini": {
       "source": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Mac_Mini_fifth_generation_M1.png",
@@ -282,8 +283,20 @@
       "note": "three worn decks, perspective-corrected and fanned"
     },
     "airtags": {
-      "source": null,
-      "note": "pending"
+      "source": "https://www.apple.com/v/airtag/g/images/overview/hero_airtag__7jmq2is50n6y_large_2x.jpg",
+      "crop": [
+        0.36,
+        0.36,
+        0.64,
+        0.64
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "scale": 0.8,
+      "page": "https://www.apple.com/fr/airtag/",
+      "shape": "ellipse",
+      "shape_shrink": 0.045,
+      "erode": 3
     }
   }
 }

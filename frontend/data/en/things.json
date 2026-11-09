@@ -89,7 +89,8 @@
       "brand": "Équilibre",
       "category": "setup",
       "note": "The ergonomic chair. Hours of sitting without paying for it the next day.",
-      "url": "https://equilibre-france-ergonomie.fr/produits/siege-tms-cpod/"
+      "url": "https://equilibre-france-ergonomie.fr/produits/siege-tms-cpod/",
+      "image": "/assets/things/cpod.webp"
     },
     {
       "id": "tapis-de-marche",
@@ -106,7 +107,8 @@
       "brand": "Raspberry Pi",
       "category": "setup",
       "note": "In its official red and white case (Amazon, 2017). The first server that fits in a hand.",
-      "since": "2017"
+      "since": "2017",
+      "image": "/assets/things/raspberry-pi-3.webp"
     },
     {
       "id": "ikea-ampoules",
@@ -114,7 +116,8 @@
       "brand": "IKEA",
       "category": "setup",
       "note": "Light you adjust without getting up.",
-      "mono": "IK"
+      "mono": "IK",
+      "image": "/assets/things/ikea-ampoules.webp"
     },
     {
       "id": "hp-deskjet-2710",
@@ -130,7 +133,8 @@
       "brand": "Apple",
       "category": "setup",
       "note": "Black titanium, refurbished from Back Market with a new battery. Always in my pocket.",
-      "since": "2026"
+      "since": "2026",
+      "image": "/assets/things/iphone-15-pro.webp"
     },
     {
       "id": "chaise-gamer",
@@ -194,7 +198,8 @@
       "name": "AirPods",
       "brand": "Apple",
       "category": "audio",
-      "note": "For everything away from the desk."
+      "note": "For everything away from the desk.",
+      "image": "/assets/things/airpods.webp"
     },
     {
       "id": "bosch-gks-85-g",
@@ -329,7 +334,8 @@
       "note": "My personal plan to grind on RideMyPark and all my other projects.",
       "url": "https://claude.ai",
       "favorite": true,
-      "mono": "CU"
+      "mono": "CU",
+      "image": "/assets/things/claude-ultra.webp"
     },
     {
       "id": "claude-team",
@@ -338,7 +344,8 @@
       "category": "ia",
       "note": "For the RideMyPark team: the Discord bot, the published MCP, working together.",
       "url": "https://claude.ai",
-      "mono": "CT"
+      "mono": "CT",
+      "image": "/assets/things/claude-team.webp"
     },
     {
       "id": "chatgpt",
@@ -347,7 +354,8 @@
       "category": "ia",
       "note": "The personal assistant on the Discord I share with Valentine, plus images.",
       "url": "https://chatgpt.com",
-      "mono": "GPT"
+      "mono": "GPT",
+      "image": "/assets/things/chatgpt.webp"
     },
     {
       "id": "elevenlabs",
@@ -356,7 +364,8 @@
       "category": "ia",
       "note": "The voices behind RideMyPark reels.",
       "url": "https://elevenlabs.io",
-      "mono": "11"
+      "mono": "11",
+      "image": "/assets/things/elevenlabs.webp"
     },
     {
       "id": "fal-ai",
@@ -365,7 +374,8 @@
       "category": "ia",
       "note": "Generated images and video when needed.",
       "url": "https://fal.ai",
-      "mono": "fal"
+      "mono": "fal",
+      "image": "/assets/things/fal-ai.webp"
     },
     {
       "id": "claude-code",
@@ -452,7 +462,8 @@
       "name": "PS5 controller",
       "brand": "Sony",
       "category": "gaming",
-      "note": "The DualSense."
+      "note": "The DualSense.",
+      "image": "/assets/things/ps5-manette.webp"
     },
     {
       "id": "switch-animal-crossing",
@@ -460,28 +471,32 @@
       "brand": "Nintendo",
       "category": "gaming",
       "note": "The pastel Joy-Cons.",
-      "mono": "SW"
+      "mono": "SW",
+      "image": "/assets/things/switch-animal-crossing.webp"
     },
     {
       "id": "ps4",
       "name": "PS4",
       "brand": "Sony",
       "category": "gaming",
-      "note": "The previous generation, still plugged in."
+      "note": "The previous generation, still plugged in.",
+      "image": "/assets/things/ps4.webp"
     },
     {
       "id": "xbox-360",
       "name": "Xbox 360",
       "brand": "Microsoft",
       "category": "gaming",
-      "note": "The one where it all started."
+      "note": "The one where it all started.",
+      "image": "/assets/things/xbox-360.webp"
     },
     {
       "id": "game-boy-color",
       "name": "Game Boy Color",
       "brand": "Nintendo",
       "category": "gaming",
-      "note": "Clear purple, you can see the circuits."
+      "note": "Clear purple, you can see the circuits.",
+      "image": "/assets/things/game-boy-color.webp"
     },
     {
       "id": "kettlebells",
@@ -489,7 +504,8 @@
       "brand": "Decathlon",
       "category": "sport",
       "note": "The full set: 4, 8, 12, 16 and 20 kg.",
-      "mono": "KB"
+      "mono": "KB",
+      "image": "/assets/things/kettlebells.webp"
     },
     {
       "id": "gilet-leste",
@@ -547,7 +563,8 @@
       "category": "skate",
       "note": "JB Gillet's pro model. Too pretty for grip tape: it stays on the wall.",
       "url": "https://www.ebay.de/itm/305559355131",
-      "mono": "ウイス"
+      "mono": "ウイス",
+      "image": "/assets/things/primitive-whis.webp"
     },
     {
       "id": "powell-anderson-heron",
@@ -557,7 +574,8 @@
       "note": "The current board, set up with soft green wheels.",
       "url": "https://www.blue-tomato.com/fr-FR/product/Powell+Peralta-Andy+Anderson+Heron+Skull+8+45+Skateboard+Deck-727122",
       "favorite": true,
-      "mono": "AA"
+      "mono": "AA",
+      "image": "/assets/things/powell-anderson-heron.webp"
     },
     {
       "id": "enjoi-panda",
@@ -565,7 +583,8 @@
       "brand": "Enjoi",
       "category": "skate",
       "note": "Blue and red pandas, still almost new.",
-      "mono": "🐼"
+      "mono": "🐼",
+      "image": "/assets/things/enjoi-panda.webp"
     },
     {
       "id": "decks-uses",
@@ -574,7 +593,8 @@
       "category": "skate",
       "note": "Element, Cliché and the rest: scraped to the wood, kept on the rack.",
       "retired": true,
-      "mono": "×6"
+      "mono": "×6",
+      "image": "/assets/things/decks-uses.webp"
     },
     {
       "id": "etnies-joslin-2",
@@ -614,7 +634,8 @@
       "brand": "Sony",
       "category": "photo",
       "note": "The white body, with the SELP1650 (16-50mm f/3.5-5.6).",
-      "mono": "α6"
+      "mono": "α6",
+      "image": "/assets/things/sony-a6000.webp"
     },
     {
       "id": "berserk",
@@ -670,7 +691,8 @@
       "brand": "Apple",
       "category": "objets",
       "note": "On the keys, the bag and whatever goes missing.",
-      "mono": "×4"
+      "mono": "×4",
+      "image": "/assets/things/airtags.webp"
     },
     {
       "id": "limitless",
