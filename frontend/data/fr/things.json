@@ -718,15 +718,6 @@
       "image": "/assets/things/ezechiel.webp"
     },
     {
-      "id": "carnet-bd",
-      "name": "Le carnet des collections",
-      "brand": "Le carnet",
-      "category": "books",
-      "note": "Un carnet où chaque tome acheté se colorie. Au complet : Garulfo, Rails, Les feux d'Askell, Le cycle des deux horizons, Les voyages de Takuan, Légendes des contrées oubliées, Rognon le Leu, Terres d'ombre, Le cœur de sang. En cours : Balade au bout du monde, Pacush Blues, Atalante, Chroniques barbares, Le roi cyclope, Les mondes de Luz, Blueberry, Jeremiah, L'Incal, Pétillon et une vingtaine d'autres.",
-      "favorite": true,
-      "mono": "№"
-    },
-    {
       "id": "livres-sagesse",
       "name": "Tao-Te-King, In the Buddha's Words, Atomic Habits",
       "brand": "Lao Tseu, Bouddha, James Clear",
