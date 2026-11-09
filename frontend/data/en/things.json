@@ -13,6 +13,11 @@
       "hint": "Headphones and earbuds"
     },
     {
+      "id": "musique",
+      "label": "Music",
+      "hint": "What makes sound beyond headphones"
+    },
+    {
       "id": "outils",
       "label": "Tools",
       "hint": "The workshop: what makes things"
@@ -200,6 +205,22 @@
       "category": "audio",
       "note": "For everything away from the desk.",
       "image": "/assets/things/airpods.webp"
+    },
+    {
+      "id": "yamaha-clp-320",
+      "name": "Clavinova CLP-320",
+      "brand": "Yamaha",
+      "category": "musique",
+      "note": "Digital piano, 88 weighted keys. The furniture that plays.",
+      "mono": "CLP"
+    },
+    {
+      "id": "banc-piano",
+      "name": "Adjustable piano bench",
+      "brand": "Banc classique",
+      "category": "musique",
+      "note": "Mahogany wood, cream velvet, two knobs for the height.",
+      "mono": "♪"
     },
     {
       "id": "bosch-gks-85-g",
@@ -779,6 +800,15 @@
       "category": "maison",
       "note": "The best purchase per hour of use.",
       "mono": "Zz"
+    },
+    {
+      "id": "philips-65pus7354",
+      "name": "65PUS7354 TV",
+      "brand": "Philips",
+      "category": "maison",
+      "note": "65-inch 4K, Ambilight, Dolby Vision and Atmos.",
+      "since": "2020",
+      "mono": "65\""
     }
   ]
 }

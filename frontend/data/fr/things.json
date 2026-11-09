@@ -13,6 +13,11 @@
       "hint": "Casques et écouteurs"
     },
     {
+      "id": "musique",
+      "label": "Musique",
+      "hint": "Ce qui fait du son autrement qu'au casque"
+    },
+    {
       "id": "outils",
       "label": "Outils",
       "hint": "L'atelier : ce qui sert à fabriquer"
@@ -200,6 +205,22 @@
       "category": "audio",
       "note": "Pour tout ce qui se passe loin du bureau.",
       "image": "/assets/things/airpods.webp"
+    },
+    {
+      "id": "yamaha-clp-320",
+      "name": "Clavinova CLP-320",
+      "brand": "Yamaha",
+      "category": "musique",
+      "note": "Piano numérique, 88 touches lestées. Le meuble qui joue.",
+      "mono": "CLP"
+    },
+    {
+      "id": "banc-piano",
+      "name": "Banquette de piano réglable",
+      "brand": "Banc classique",
+      "category": "musique",
+      "note": "Bois acajou, velours crème, deux molettes pour la hauteur.",
+      "mono": "♪"
     },
     {
       "id": "bosch-gks-85-g",
@@ -779,6 +800,15 @@
       "category": "maison",
       "note": "Le meilleur achat en heures d'utilisation.",
       "mono": "Zz"
+    },
+    {
+      "id": "philips-65pus7354",
+      "name": "TV 65PUS7354",
+      "brand": "Philips",
+      "category": "maison",
+      "note": "65 pouces 4K, Ambilight, Dolby Vision et Atmos.",
+      "since": "2020",
+      "mono": "65\""
     }
   ]
 }
