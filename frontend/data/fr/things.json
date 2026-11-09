@@ -552,7 +552,6 @@
       "category": "skate",
       "note": "Construit et peint à la main : deux panneaux de pin découpés en vagues, huit encoches de chaque côté pour ranger les planches.",
       "image": "/assets/things/meuble-skate.webp",
-      "model": "/assets/things/models/meuble-skate.glb",
       "favorite": true,
       "mono": "≋"
     },
