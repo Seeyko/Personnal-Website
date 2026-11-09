@@ -1,5 +1,20 @@
 # og-motion
 
+## /things — `things3d.html`
+
+La vidéo de la page /things (18 s, 1920×1080, boucle) : les stickers de la page tombent un par un et
+s'entassent, puis Blip saute sur le tas et lance chaque sticker à sa place dans une grille rangée
+(l'ordre de la page, catégorie par catégorie), sous l'en-tête « Things ». La dernière case est vide :
+c'est celle de Blip. Même monde que `scene3d.html` (papier + grille de points, Blip en voxels, ombres).
+- Les stickers = les images de `frontend/assets/things/`, lues dans `frontend/data/fr/things.json`
+  (objets avec image et pas « plus utilisé ») : un objet ajouté à la page entre dans la vidéo au
+  prochain rendu. La grille fait 13 × 6 : au-delà de 77 objets, agrandir `COLS`/`ROWS`.
+- Rendu : `node render3d.mjs --scene things3d.html --out ./out-things` (même serveur que plus bas ;
+  `--three <three.module.js>` si unpkg n'est pas joignable depuis le navigateur), puis le même
+  encodage que la v4 avec `og-things.mp4` / `.webm`.
+- og:image = `things3d.html?w=1200&h=630&t=18` → `frontend/assets/brand/og-things.png`, balises
+  dans `frontend/things.html` (monter le `?v=` à chaque nouveau rendu).
+
 ## v4 (actuelle) — scène Three.js 3D : `scene3d.html`
 
 Blip et son essaim construisent les projets en 3D (21,5 s, 1920×1080, boucle, thème default).
