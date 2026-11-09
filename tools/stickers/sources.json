@@ -802,6 +802,12 @@
       ],
       "page": "https://www.emma.fr/matelas/matelas-emma-original",
       "note": "Emma Original exploded layers, official PNG; layer numbers erased."
+    },
+    "bureau-assis-debout": {
+      "source": "local/desk/bureau-3d.png",
+      "matte": "alpha",
+      "page": "https://claude.ai/artifact/XrMoVSEh9oDnMKnsKz12gy",
+      "note": "Render of Tom's 3D desk model (three.js, transparent background)."
     }
   }
 }

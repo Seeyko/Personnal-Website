@@ -80,7 +80,8 @@
       "brand": "Autonomous",
       "category": "setup",
       "note": "An Autonomous dual-motor frame, 62 to 127 cm, under a 200 × 80 cm solid oak live edge top from Leroy Merlin. The walking pad slides underneath.",
-      "mono": "AD"
+      "mono": "AD",
+      "image": "/assets/things/bureau-assis-debout.webp"
     },
     {
       "id": "cpod",
