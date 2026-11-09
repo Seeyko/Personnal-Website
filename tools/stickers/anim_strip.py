@@ -1,11 +1,12 @@
 """Animated sticker strip from rendered frames (same placement for every frame).
 
 Usage (from the repo root, with the stickers venv):
-    python tools/stickers/anim_strip.py tools/stickers/local/desk/frames /tmp/last.png
-Frames: transparent PNGs f00..fNN of the same size (here: the 3D desk rendered at
-heights 74 -> 116 cm with three.js, walking pad hidden). Writes the static sticker
-(frame 0) and a horizontal strip of half-size frames used by .thing-anim on hover.
-Item id and output names are fixed to bureau-assis-debout for now.
+    python tools/stickers/anim_strip.py <frames dir> /tmp/last.png [name]
+Frames: transparent PNGs f00..fNN of the same size, rendered with three.js:
+  - bureau-assis-debout (default): the 3D desk at heights 74 -> 116 cm, walking pad hidden;
+  - meuble-skate-3d: Tom's skate rack, the decks sliding in and clipping into the slots.
+Writes frontend/assets/things/<name>.webp (frame 0, the static sticker) and
+<name>-anim.webp, a horizontal strip of half-size frames stepped by things.js.
 """
 import sys,glob,hashlib,numpy as np,cv2
 from PIL import Image
@@ -20,7 +21,8 @@ cw,ch=x1-x0,y1-y0; s=min(bw/cw,bh/ch)
 cov=float((ims[0][y0:y1,x0:x1,3]>0.5).sum())*s*s/(bw*bh)
 if cov>M.COVERAGE: s*=(M.COVERAGE/cov)**0.5
 nw,nh=round(cw*s),round(ch*s); ox=(W*SS-nw)//2; oy=(H*SS-nh)//2
-seed=int(hashlib.sha1(b'bureau-assis-debout').hexdigest()[:8],16)
+NAME=sys.argv[3] if len(sys.argv)>3 else 'bureau-assis-debout'
+seed=int(hashlib.sha1(NAME.encode()).hexdigest()[:8],16)
 outs=[]
 for im in ims:
     crop=im[y0:y1,x0:x1].copy(); crop[...,:3]*=crop[...,3:4]
@@ -31,10 +33,10 @@ for im in ims:
     p=np.dstack([rgb*oa[...,None],oa]); p=cv2.resize(p,(W,H),interpolation=cv2.INTER_AREA)
     af=p[...,3:4]; rf=np.where(af>1e-4,p[...,:3]/np.maximum(af,1e-4),0)
     outs.append(Image.fromarray((np.dstack([np.clip(rf,0,1),np.clip(af,0,1)])*255+.5).astype(np.uint8),'RGBA'))
-M.save_webp(outs[0],__import__('pathlib').Path('frontend/assets/things/bureau-assis-debout.webp'))
+M.save_webp(outs[0],__import__('pathlib').Path(f'frontend/assets/things/{NAME}.webp'))
 fw,fh=W//2,H//2
 strip=Image.new('RGBA',(fw*len(outs),fh))
 for k,o in enumerate(outs): strip.paste(o.resize((fw,fh),Image.LANCZOS),(k*fw,0))
-strip.save('frontend/assets/things/bureau-assis-debout-anim.webp','WEBP',quality=82,alpha_quality=90,method=6)
+strip.save(f'frontend/assets/things/{NAME}-anim.webp','WEBP',quality=82,alpha_quality=90,method=6)
 outs[-1].save(sys.argv[2])
 print(W,H,len(outs))

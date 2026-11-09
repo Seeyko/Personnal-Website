@@ -3,7 +3,8 @@
  *
  * Data: /data/{lang}/things.json ({ intro, updated, categories[], items[] }).
  * An item: { id, name, brand, category, note, url?, image?, anim?, animFrames?, model?, since?, favorite?, retired?, mono? }.
- * anim: horizontal sprite strip of animFrames 4:3 frames (frame 0 = image), played on card hover.
+ * anim: horizontal sprite strip of animFrames 4:3 frames (frame 0 = image): played forward on hover,
+ * back on leave, and looped (with a pause at each end) while the thing is open in the detail.
  * mono overrides the auto monogram (two first letters).
  * Retired items (no longer used) are listed last, desaturated.
  * No image → a monogram tile, tinted by its category.
@@ -222,11 +223,7 @@
             b.setAttribute('aria-selected', String(b.dataset.filter === id)));
         moveIndicator();
         applyFilter();
-        if (push) {
-            const url = new URL(location);
-            id === 'all' ? url.searchParams.delete('c') : url.searchParams.set('c', id);
-            history.replaceState({}, '', url);
-        }
+        if (push) setParam('c', id === 'all' ? null : id);
     }
 
     // ─── Entrance + pointer ──────────────────────────────────────
@@ -274,7 +271,8 @@
         if (!item) return null;
         const sheet = els.sheet;
         sheet.style.setProperty('--hue', hueFor(item.category));
-        $('#things-sheet-visual').innerHTML = item.model ? modelViewer(item) : visual(item);
+        // a sprite animation (looped below) wins over the 3D viewer
+        $('#things-sheet-visual').innerHTML = item.model && !item.anim ? modelViewer(item) : visual(item);
         $('#things-sheet-meta').textContent = [item.brand, catLabel(item.category), item.since,
             item.retired && tr('retired', 'Plus utilisé')]
             .filter(Boolean).join(' · ');
@@ -287,6 +285,9 @@
             link.innerHTML = `${esc(tr('visit', 'Voir le site'))} <span aria-hidden="true">↗</span>`;
         }
         sheet.querySelector('.things-sheet-close').setAttribute('aria-label', tr('close', 'Fermer'));
+        setParam('o', item.id);   // the open thing lives in the URL: /things?o=mac-mini
+        const sheetAnim = $('#things-sheet-visual .thing-anim');
+        if (sheetAnim) loopAnim(sheetAnim);
         const list = navList(), i = list.indexOf(card);
         $('#things-sheet-count').textContent = `${i + 1} / ${list.length}`;
         sheet.querySelector('[data-step="-1"]').disabled = i <= 0;
@@ -357,6 +358,52 @@
         els.grid.querySelectorAll('.thing').forEach(t => {
             t.classList.remove('is-picked');
             t.style.translate = t.style.rotate = t.style.transitionDelay = '';
+        });
+    }
+
+    // ─── Sprite animations (e.g. the standing desk rising) ───────
+    // Frames are stepped one by one from JS so an interrupted hover just turns
+    // around from the current frame (a CSS transition on background-position
+    // could land between two frames and slide like a carousel).
+    const FRAME_MS = 95;
+    const anims = new WeakMap();
+
+    function animTo(el, target, done) {
+        const n = Number(getComputedStyle(el).getPropertyValue('--frames')) || 10;
+        const st = anims.get(el) || { frame: 0, timer: null };
+        anims.set(el, st);
+        clearTimeout(st.timer);
+        target = Math.max(0, Math.min(n - 1, target));
+        const tick = () => {
+            if (st.frame !== target) st.frame += st.frame < target ? 1 : -1;
+            el.style.backgroundPosition = `${(st.frame / (n - 1)) * 100}% 50%`;
+            if (st.frame !== target) st.timer = setTimeout(tick, FRAME_MS);
+            else if (done) st.timer = setTimeout(done, 0);
+        };
+        if (reduced()) { st.frame = target; el.style.backgroundPosition = `${(target / (n - 1)) * 100}% 50%`; return; }
+        tick();
+    }
+
+    // Up, pause, down, pause, again; stops as soon as the element leaves the DOM.
+    function loopAnim(el) {
+        const n = Number(getComputedStyle(el).getPropertyValue('--frames')) || 10;
+        const up = () => el.isConnected && animTo(el, n - 1, () => { anims.get(el).timer = setTimeout(down, 1300); });
+        const down = () => el.isConnected && animTo(el, 0, () => { anims.get(el).timer = setTimeout(up, 1300); });
+        anims.get(el) && clearTimeout(anims.get(el).timer);
+        setTimeout(up, 500);
+    }
+
+    function bindAnims() {
+        const hover = window.matchMedia('(hover: hover)').matches;
+        if (!hover) return;
+        els.grid.addEventListener('pointerover', e => {
+            const a = e.target.closest('.thing')?.querySelector('.thing-anim');
+            if (a && !e.target.closest('.thing').contains(e.relatedTarget)) animTo(a, Infinity);
+        });
+        els.grid.addEventListener('pointerout', e => {
+            const t = e.target.closest('.thing');
+            const a = t?.querySelector('.thing-anim');
+            if (a && !t.contains(e.relatedTarget)) animTo(a, 0);
         });
     }
 
@@ -488,9 +535,16 @@
         sheet.addEventListener('pointercancel', end);
     }
 
+    function setParam(key, value) {
+        const url = new URL(location);
+        value ? url.searchParams.set(key, value) : url.searchParams.delete(key);
+        history.replaceState({}, '', url);
+    }
+
     function closeSheet() {
         const sheet = els.sheet;
         if (!sheet.open) return;
+        setParam('o', null);
         const done = () => {
             sheet.close();
             gather();
@@ -555,6 +609,7 @@
             if (e.target === els.sheet || e.target.closest('[data-close]')) closeSheet();
         });
         bindBrowse();
+        bindAnims();
         els.sheet.addEventListener('cancel', e => { e.preventDefault(); closeSheet(); });
         window.addEventListener('resize', () => moveIndicator(false));
         window.addEventListener('languageChanged', async () => {
@@ -574,6 +629,14 @@
         // Fonts change pill widths: re-measure once they're in.
         document.fonts?.ready.then(() => moveIndicator(false));
         document.body.classList.add('things-ready');
+        // Deep link: /things?o=<id> opens that thing straight away.
+        const wanted = new URLSearchParams(location.search).get('o');
+        const card = wanted && els.grid.querySelector(`.thing[data-id="${CSS.escape(wanted)}"]:not([hidden])`);
+        if (card) {
+            card.classList.add('is-in');
+            card.scrollIntoView({ block: 'center', behavior: 'instant' });
+            setTimeout(() => openSheet(card), 300);
+        }
     }
 
     document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
