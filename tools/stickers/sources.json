@@ -808,6 +808,112 @@
       "matte": "alpha",
       "page": "https://claude.ai/artifact/XrMoVSEh9oDnMKnsKz12gy",
       "note": "Render of Tom's 3D desk model (three.js, transparent background)."
+    },
+    "manette-pro-switch": {
+      "source": "local/rc/switch-pro-controller.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "",
+      "note": "Nintendo Switch Pro Controller, product photo from Tom's Amazon order.",
+      "crop": [
+        0.33,
+        0.25,
+        0.93,
+        0.87
+      ]
+    },
+    "fer-a-souder": {
+      "source": "local/rc/sremtch-fer-souder.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "",
+      "note": "Soldering iron, product photo from the Amazon order (Tom wants it shown without brand).",
+      "crop": [
+        0.15,
+        0.01,
+        0.53,
+        0.41
+      ]
+    },
+    "panasonic-er-gp82": {
+      "source": "local/rc/panasonic-er-gp82-ebay.jpg",
+      "crop": [
+        0.38,
+        0,
+        0.88,
+        1
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.de/p/5038015371",
+      "note": "Panasonic ER-GP82, eBay catalogue photo (combs cropped out)."
+    },
+    "bosch-visseuse-chocs": {
+      "source": "local/rc/bosch-gdr-18v-160.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": "",
+      "crop": [
+        0,
+        0,
+        1,
+        0.8
+      ]
+    },
+    "bosch-gms-120": {
+      "source": "local/rc/bosch-gms-120.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": "",
+      "crop": [
+        0.6,
+        0,
+        1,
+        1
+      ]
+    },
+    "stanley-presse-cadre": {
+      "source": "local/rc/stanley-presse-cadre.jpg",
+      "matte": "white",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": ""
+    },
+    "tajima-scie-japonaise": {
+      "source": "local/rc/tajima-jpr265.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": ""
+    },
+    "theragun-pro": {
+      "source": "local/rc/theragun-pro.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": ""
+    },
+    "whoop": {
+      "source": "local/rc/whoop-5.jpg",
+      "matte": "white",
+      "keep": "largest",
+      "note": "Product photo from the order listing.",
+      "page": ""
+    },
+    "pc-windows": {
+      "source": "local/rc/corsair-4000d.jpg",
+      "crop": [
+        0.02,
+        0,
+        0.98,
+        0.93
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.com/shop/corsair-4000d-airflow",
+      "note": "Corsair 4000D Airflow black, eBay listing photo (same case as Tom's 2024 rebuild)."
     }
   }
 }

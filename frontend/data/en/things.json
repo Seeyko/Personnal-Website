@@ -68,11 +68,28 @@
       "image": "/assets/things/mac-mini.webp"
     },
     {
+      "id": "ssd-externe-samsung",
+      "name": "External SSD 1TB",
+      "brand": "Samsung",
+      "category": "setup",
+      "note": "Plugged into the Mac mini through a UGREEN USB-C hub, next to an old SSD recycled in a 2.5\" enclosure.",
+      "mono": "SSD"
+    },
+    {
+      "id": "switch-ethernet",
+      "name": "Ethernet switch",
+      "brand": "",
+      "category": "setup",
+      "note": "Under the desk, wiring the Mac mini, the PC and the Raspberry. A Christmas gift from Victor.",
+      "mono": "ETH"
+    },
+    {
       "id": "pc-windows",
       "name": "Desktop PC",
-      "brand": "Windows",
+      "brand": "Self-built",
       "category": "setup",
-      "note": "The MSI tower: i5-12400F, RTX 4060, 2TB NVMe. Gaming, editing and heavy lifting."
+      "note": "Rebuilt in 2024 in a Corsair 4000D Airflow case (RM750x PSU, H115i liquid cooler): i5-12400F, RTX 4060, MSI B660-A board, 16GB Corsair, 2TB WD_BLACK. Gaming, editing and heavy lifting.",
+      "image": "/assets/things/pc-windows.webp"
     },
     {
       "id": "bureau-assis-debout",
@@ -281,7 +298,8 @@
       "brand": "Bosch Professional",
       "category": "outils",
       "note": "For long screws and stubborn bolts.",
-      "mono": "GDR"
+      "mono": "GDR",
+      "image": "/assets/things/bosch-visseuse-chocs.webp"
     },
     {
       "id": "bosch-marteau",
@@ -308,7 +326,8 @@
       "category": "outils",
       "note": "Cuts on the pull: precise and thin, for joinery.",
       "url": "https://www.castorama.fr/scie-japonaise-tajima-265-mm-outifrance/4975364019356_CAFR.prd",
-      "mono": "鋸"
+      "mono": "鋸",
+      "image": "/assets/things/tajima-scie-japonaise.webp"
     },
     {
       "id": "bosch-gms-120",
@@ -316,7 +335,8 @@
       "brand": "Bosch Professional",
       "category": "outils",
       "note": "Before drilling a wall: cables, pipes, studs.",
-      "mono": "GMS"
+      "mono": "GMS",
+      "image": "/assets/things/bosch-gms-120.webp"
     },
     {
       "id": "stanley-fatmax-etabli",
@@ -342,7 +362,8 @@
       "brand": "STANLEY",
       "category": "outils",
       "note": "For gluing frames perfectly square.",
-      "mono": "90°"
+      "mono": "90°",
+      "image": "/assets/things/stanley-presse-cadre.webp"
     },
     {
       "id": "stanley-scie-chantourner",
@@ -352,6 +373,15 @@
       "note": "The curves the machines can't do.",
       "mono": "S",
       "image": "/assets/things/stanley-scie-chantourner.webp"
+    },
+    {
+      "id": "fer-a-souder",
+      "name": "Soldering iron",
+      "brand": "",
+      "category": "outils",
+      "note": "Soldering iron.",
+      "mono": "FER",
+      "image": "/assets/things/fer-a-souder.webp"
     },
     {
       "id": "ps5-manette",
@@ -369,6 +399,15 @@
       "note": "The pastel Joy-Cons.",
       "mono": "SW",
       "image": "/assets/things/switch-animal-crossing.webp"
+    },
+    {
+      "id": "manette-pro-switch",
+      "name": "Switch Pro Controller",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "note": "The real controller for long sessions, when the Joy-Cons are not enough.",
+      "mono": "PRO",
+      "image": "/assets/things/manette-pro-switch.webp"
     },
     {
       "id": "ps4",
@@ -424,14 +463,16 @@
       "brand": "Whoop",
       "category": "sport",
       "note": "Retired: it stopped teaching me much.",
-      "retired": true
+      "retired": true,
+      "image": "/assets/things/whoop.webp"
     },
     {
       "id": "theragun-pro",
       "name": "Theragun Pro",
       "brand": "Therabody",
       "category": "sport",
-      "note": "Recovery after training."
+      "note": "Recovery after training.",
+      "image": "/assets/things/theragun-pro.webp"
     },
     {
       "id": "tente-forclaz-mt900",
@@ -728,6 +769,15 @@
       "url": "https://hensonshaving.com/products/henson-al13-in-copper",
       "mono": "AL13",
       "image": "/assets/things/henson-al13.webp"
+    },
+    {
+      "id": "panasonic-er-gp82",
+      "name": "ER-GP82 trimmer",
+      "brand": "Panasonic",
+      "category": "objets",
+      "note": "The pro trimmer, always on its charging stand.",
+      "mono": "GP82",
+      "image": "/assets/things/panasonic-er-gp82.webp"
     },
     {
       "id": "limitless",
