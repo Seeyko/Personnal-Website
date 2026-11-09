@@ -64,7 +64,6 @@
       "name": "Mac mini M1",
       "brand": "Apple",
       "category": "setup",
-      "note": "16 Go. Le serveur du build : 8 runners GitHub Actions, les agents et tout ce qui doit tourner sans moi.",
       "image": "/assets/things/mac-mini.webp"
     },
     {
@@ -72,7 +71,7 @@
       "name": "SSD externe 1 To",
       "brand": "Samsung",
       "category": "setup",
-      "note": "Branché au Mac mini par un hub USB-C UGREEN, avec un vieux SSD recyclé dans un boîtier 2,5\".",
+      "note": "Branché au Mac mini par un hub USB-C.",
       "mono": "SSD"
     },
     {
@@ -80,7 +79,7 @@
       "name": "Switch Ethernet",
       "brand": "",
       "category": "setup",
-      "note": "Sous le bureau, pour câbler le Mac mini, le PC et le Raspberry. Un cadeau de Victor à Noël.",
+      "note": "Un cadeau de Victor à Noël.",
       "mono": "ETH",
       "image": "/assets/things/switch-ethernet.webp"
     },
@@ -97,7 +96,6 @@
       "name": "Bureau assis-debout",
       "brand": "Autonomous",
       "category": "setup",
-      "note": "Un piètement Autonomous à double moteur, de 62 à 127 cm, sous un plateau live edge en chêne massif de 200 × 80 cm trouvé chez Leroy Merlin. Le tapis de marche se glisse dessous.",
       "mono": "AD",
       "image": "/assets/things/bureau-assis-debout.webp",
       "anim": "/assets/things/bureau-assis-debout-anim.webp",
@@ -108,7 +106,6 @@
       "name": "Siège CPOD",
       "brand": "Équilibre",
       "category": "setup",
-      "note": "Le siège ergonomique. Des heures assis sans le payer le lendemain.",
       "url": "https://equilibre-france-ergonomie.fr/produits/siege-tms-cpod/",
       "image": "/assets/things/cpod.webp"
     },
@@ -117,7 +114,6 @@
       "name": "Tapis de marche",
       "brand": "homeTro",
       "category": "setup",
-      "note": "Sous le bureau : marcher pendant les calls.",
       "url": "https://www.amazon.fr/dp/B0FY35MDNY",
       "mono": "TM",
       "image": "/assets/things/tapis-de-marche.webp"
@@ -127,25 +123,14 @@
       "name": "Raspberry Pi 3",
       "brand": "Raspberry Pi",
       "category": "setup",
-      "note": "Dans son boîtier officiel rouge et blanc (Amazon, 2017). Le premier serveur qui tient dans la main.",
       "since": "2017",
       "image": "/assets/things/raspberry-pi-3.webp"
-    },
-    {
-      "id": "ikea-ampoules",
-      "name": "Ampoules connectées",
-      "brand": "IKEA",
-      "category": "setup",
-      "note": "La lumière qui se règle sans se lever.",
-      "mono": "IK",
-      "image": "/assets/things/ikea-ampoules.webp"
     },
     {
       "id": "hp-deskjet-2710",
       "name": "DeskJet 2710",
       "brand": "HP",
       "category": "setup",
-      "note": "L'imprimante. Elle sert deux fois par an, mais ces deux fois-là, elle sert.",
       "mono": "DJ",
       "image": "/assets/things/hp-deskjet-2710.webp"
     },
@@ -154,7 +139,6 @@
       "name": "iPhone 15 Pro",
       "brand": "Apple",
       "category": "setup",
-      "note": "Titane noir, reconditionné chez Back Market avec une batterie neuve. Toujours dans la poche.",
       "since": "2026",
       "image": "/assets/things/iphone-15-pro.webp"
     },
@@ -163,7 +147,7 @@
       "name": "Chaise gamer",
       "brand": "Songmics",
       "category": "setup",
-      "note": "Plus utilisée : remplacée par le siège CPOD.",
+      "note": "Plus utilisée.",
       "since": "2017",
       "retired": true,
       "image": "/assets/things/chaise-gamer.webp"
@@ -173,7 +157,6 @@
       "name": "Philips 499P9H",
       "brand": "Philips",
       "category": "setup",
-      "note": "49 pouces en super-ultrawide : deux écrans en un, sans la barre au milieu.",
       "mono": "49\"",
       "image": "/assets/things/philips-499p9.webp"
     },
@@ -182,7 +165,6 @@
       "name": "Clavier G610",
       "brand": "Logitech",
       "category": "setup",
-      "note": "Le clavier mécanique du PC.",
       "image": "/assets/things/logitech-g610.webp"
     },
     {
@@ -190,7 +172,6 @@
       "name": "Souris MX Vertical",
       "brand": "Logitech",
       "category": "setup",
-      "note": "Verticale : le poignet reste de profil, même après dix heures.",
       "since": "2024",
       "mono": "MX",
       "image": "/assets/things/logitech-mx-vertical.webp"
@@ -200,7 +181,6 @@
       "name": "Souris G602",
       "brand": "Logitech",
       "category": "setup",
-      "note": "Sans fil, des années de service.",
       "mono": "G602",
       "image": "/assets/things/logitech-g602.webp"
     },
@@ -209,7 +189,6 @@
       "name": "Arctis Nova Pro Wireless",
       "brand": "SteelSeries",
       "category": "audio",
-      "note": "Le casque du PC : calls, jeu et musique.",
       "mono": "NP",
       "image": "/assets/things/arctis-nova-pro.webp"
     },
@@ -218,7 +197,6 @@
       "name": "AirPods",
       "brand": "Apple",
       "category": "audio",
-      "note": "Pour tout ce qui se passe loin du bureau.",
       "image": "/assets/things/airpods.webp"
     },
     {
@@ -226,7 +204,6 @@
       "name": "Clavinova CLP-320",
       "brand": "Yamaha",
       "category": "musique",
-      "note": "Piano numérique, 88 touches lestées. Le meuble qui joue.",
       "mono": "CLP",
       "image": "/assets/things/yamaha-clp-320.webp"
     },
@@ -235,7 +212,6 @@
       "name": "Banquette de piano réglable",
       "brand": "Banc classique",
       "category": "musique",
-      "note": "Bois acajou, velours crème, deux molettes pour la hauteur.",
       "mono": "♪",
       "image": "/assets/things/banc-piano.webp"
     },
@@ -244,7 +220,6 @@
       "name": "GKS 85 G",
       "brand": "Bosch Professional",
       "category": "outils",
-      "note": "La scie circulaire, compatible rail de guidage : les coupes droites pour les meubles.",
       "since": "2026",
       "image": "/assets/things/bosch-gks-85-g.webp"
     },
@@ -253,7 +228,6 @@
       "name": "Perceuse-visseuse GSB 18V-55",
       "brand": "Bosch Professional",
       "category": "outils",
-      "note": "La base de l'atelier, sur la plateforme 18V.",
       "since": "2021",
       "mono": "GSB",
       "image": "/assets/things/bosch-gsb-18v.webp"
@@ -263,7 +237,6 @@
       "name": "Meuleuse GWS 18V-10 PC",
       "brand": "Bosch Professional",
       "category": "outils",
-      "note": "Couper, ébavurer, poncer le métal.",
       "since": "2021",
       "mono": "GWS",
       "image": "/assets/things/bosch-gws-18v-10-p.webp"
@@ -273,7 +246,6 @@
       "name": "Ponceuse GSS 18V-10",
       "brand": "Bosch Professional",
       "category": "outils",
-      "note": "La finition avant l'huile.",
       "since": "2021",
       "mono": "GSS",
       "image": "/assets/things/bosch-gss-18v-10.webp"
@@ -283,7 +255,6 @@
       "name": "Scie sauteuse GST 160 CE",
       "brand": "Bosch Professional",
       "category": "outils",
-      "note": "Les courbes et les découpes intérieures.",
       "mono": "GST",
       "image": "/assets/things/bosch-gst-160-ce.webp"
     },
@@ -292,7 +263,6 @@
       "name": "Rails FSN 1100 + 1600",
       "brand": "Bosch Professional",
       "category": "outils",
-      "note": "Avec la GKS 85 G : des coupes droites, courtes ou longues.",
       "since": "2026",
       "mono": "FSN",
       "image": "/assets/things/bosch-fsn-1600.webp"
@@ -302,7 +272,6 @@
       "name": "Visseuse à chocs GDR 18V-160",
       "brand": "Bosch Professional",
       "category": "outils",
-      "note": "Pour les longues vis et les boulons qui résistent.",
       "mono": "GDR",
       "image": "/assets/things/bosch-visseuse-chocs.webp"
     },
@@ -311,7 +280,6 @@
       "name": "Marteau 1600A0116BT",
       "brand": "Bosch Professional",
       "category": "outils",
-      "note": "Le seul outil sans batterie qui ne me lâche jamais.",
       "mono": "HAM",
       "image": "/assets/things/bosch-marteau.webp"
     },
@@ -320,7 +288,6 @@
       "name": "Niveau 25 cm aimanté",
       "brand": "Bosch Professional",
       "category": "outils",
-      "note": "Petit, magnétique dessous, toujours dans la poche.",
       "mono": "LVL",
       "image": "/assets/things/bosch-niveau-25.webp"
     },
@@ -329,7 +296,6 @@
       "name": "Scie japonaise 265 mm",
       "brand": "Tajima",
       "category": "outils",
-      "note": "Coupe en tirant : précise, fine, pour les assemblages.",
       "url": "https://www.castorama.fr/scie-japonaise-tajima-265-mm-outifrance/4975364019356_CAFR.prd",
       "mono": "鋸",
       "image": "/assets/things/tajima-scie-japonaise.webp"
@@ -339,7 +305,6 @@
       "name": "Détecteur GMS 120",
       "brand": "Bosch Professional",
       "category": "outils",
-      "note": "Avant de percer un mur : câbles, tuyaux, montants.",
       "mono": "GMS",
       "image": "/assets/things/bosch-gms-120.webp"
     },
@@ -348,7 +313,6 @@
       "name": "Établi pliant FATMAX Express",
       "brand": "STANLEY",
       "category": "outils",
-      "note": "L'atelier qui se replie contre le mur.",
       "mono": "FM",
       "image": "/assets/things/stanley-fatmax-etabli.webp"
     },
@@ -357,7 +321,6 @@
       "name": "Étau sur rotule",
       "brand": "STANLEY",
       "category": "outils",
-      "note": "Il tient la pièce dans n'importe quel angle.",
       "mono": "ÉTAU",
       "image": "/assets/things/stanley-etau.webp"
     },
@@ -366,7 +329,6 @@
       "name": "Presse à cadre",
       "brand": "STANLEY",
       "category": "outils",
-      "note": "Pour coller des cadres bien d'équerre.",
       "mono": "90°",
       "image": "/assets/things/stanley-presse-cadre.webp"
     },
@@ -375,7 +337,6 @@
       "name": "Scie à chantourner",
       "brand": "STANLEY",
       "category": "outils",
-      "note": "Les courbes que les machines ne font pas.",
       "mono": "S",
       "image": "/assets/things/stanley-scie-chantourner.webp"
     },
@@ -384,7 +345,6 @@
       "name": "Fer à souder",
       "brand": "",
       "category": "outils",
-      "note": "Fer à souder.",
       "mono": "FER",
       "image": "/assets/things/fer-a-souder.webp"
     },
@@ -393,7 +353,6 @@
       "name": "Manette PS5",
       "brand": "Sony",
       "category": "gaming",
-      "note": "La DualSense.",
       "image": "/assets/things/ps5-manette.webp"
     },
     {
@@ -401,7 +360,6 @@
       "name": "Switch édition Animal Crossing",
       "brand": "Nintendo",
       "category": "gaming",
-      "note": "Les Joy-Con pastel.",
       "mono": "SW",
       "image": "/assets/things/switch-animal-crossing.webp"
     },
@@ -410,7 +368,6 @@
       "name": "Manette Pro Switch",
       "brand": "Nintendo",
       "category": "gaming",
-      "note": "La vraie manette pour les longues sessions, quand les Joy-Con ne suffisent plus.",
       "mono": "PRO",
       "image": "/assets/things/manette-pro-switch.webp"
     },
@@ -419,7 +376,6 @@
       "name": "PS4",
       "brand": "Sony",
       "category": "gaming",
-      "note": "La génération d'avant, toujours branchée.",
       "image": "/assets/things/ps4.webp"
     },
     {
@@ -427,7 +383,6 @@
       "name": "Xbox 360",
       "brand": "Microsoft",
       "category": "gaming",
-      "note": "Celle qui a tout commencé.",
       "image": "/assets/things/xbox-360.webp"
     },
     {
@@ -435,7 +390,6 @@
       "name": "Game Boy Color",
       "brand": "Nintendo",
       "category": "gaming",
-      "note": "Violette transparente, on voit les circuits.",
       "image": "/assets/things/game-boy-color.webp"
     },
     {
@@ -443,7 +397,7 @@
       "name": "Kettlebells",
       "brand": "Decathlon",
       "category": "sport",
-      "note": "La série complète : 4, 8, 12, 16 et 20 kg.",
+      "note": "4, 8, 12, 16 et 20 kg.",
       "mono": "KB",
       "image": "/assets/things/kettlebells.webp"
     },
@@ -452,7 +406,6 @@
       "name": "Gilet lesté",
       "brand": "Decathlon",
       "category": "sport",
-      "note": "Le Domyos réglable de 6 à 10 kg, pour charger la marche et le poids du corps.",
       "image": "/assets/things/gilet-leste.webp"
     },
     {
@@ -460,7 +413,7 @@
       "name": "Anneaux CTS",
       "brand": "Christophe Carrio",
       "category": "sport",
-      "note": "Noirs. Les tractions et les dips n'importe où.",
+      "note": "Noirs.",
       "mono": "CTS"
     },
     {
@@ -468,7 +421,7 @@
       "name": "Whoop",
       "brand": "Whoop",
       "category": "sport",
-      "note": "Plus porté : il ne m'apprenait plus grand-chose.",
+      "note": "Plus porté : il ne m'apportait plus grand-chose.",
       "retired": true,
       "image": "/assets/things/whoop.webp"
     },
@@ -477,7 +430,6 @@
       "name": "Theragun Pro",
       "brand": "Therabody",
       "category": "sport",
-      "note": "La récupération après les séances.",
       "image": "/assets/things/theragun-pro.webp"
     },
     {
@@ -485,7 +437,6 @@
       "name": "Tente MT900 + popote MH500",
       "brand": "Forclaz",
       "category": "sport",
-      "note": "Deux places, pour partir en trek.",
       "mono": "⛺",
       "image": "/assets/things/tente-forclaz-mt900.webp"
     },
@@ -494,18 +445,18 @@
       "name": "Meuble à skate",
       "brand": "Fait main",
       "category": "skate",
-      "note": "Construit et peint à la main : deux panneaux de pin découpés en vagues, huit encoches de chaque côté pour ranger les planches.",
-      "image": "/assets/things/meuble-skate.webp",
+      "image": "/assets/things/meuble-skate-3d.webp",
       "model": "/assets/things/models/meuble-skate.glb",
       "favorite": true,
-      "mono": "≋"
+      "mono": "≋",
+      "anim": "/assets/things/meuble-skate-3d-anim.webp",
+      "animFrames": 24
     },
     {
       "id": "primitive-whis",
       "name": "Deck Whis JB Gillet 8.38\"",
       "brand": "Primitive x Dragon Ball Super",
       "category": "skate",
-      "note": "Le pro model de JB Gillet. Trop beau pour le grip : il reste au mur.",
       "url": "https://www.ebay.de/itm/305559355131",
       "mono": "ウイス",
       "image": "/assets/things/primitive-whis.webp"
@@ -515,7 +466,6 @@
       "name": "Andy Anderson Heron Skull",
       "brand": "Powell Peralta",
       "category": "skate",
-      "note": "Le skate du moment, monté avec des roues vertes soft.",
       "url": "https://www.blue-tomato.com/fr-FR/product/Powell+Peralta-Andy+Anderson+Heron+Skull+8+45+Skateboard+Deck-727122",
       "favorite": true,
       "mono": "AA",
@@ -526,7 +476,6 @@
       "name": "Complete Enjoi Panda",
       "brand": "Enjoi",
       "category": "skate",
-      "note": "Les pandas bleus et rouges, encore presque neufs.",
       "mono": "🐼",
       "image": "/assets/things/enjoi-panda.webp"
     },
@@ -535,26 +484,16 @@
       "name": "Les decks usés",
       "brand": "Element, Cliché & co",
       "category": "skate",
-      "note": "Element, Cliché et les autres : rayés jusqu'au bois, rangés sur le rack.",
       "retired": true,
       "mono": "×6",
       "image": "/assets/things/decks-uses.webp"
-    },
-    {
-      "id": "bones-reds",
-      "name": "Roulements Bones Reds",
-      "brand": "Bones",
-      "category": "skate",
-      "note": "Le classique, sans surprise.",
-      "mono": "RED",
-      "image": "/assets/things/bones-reds.webp"
     },
     {
       "id": "olaian-sws500",
       "name": "Combinaison de surf SWS500",
       "brand": "Olaian",
       "category": "skate",
-      "note": "En 3 mm, achetée à Hendaye pour l'océan d'octobre.",
+      "note": "En 3 mm.",
       "mono": "SURF"
     },
     {
@@ -562,7 +501,6 @@
       "name": "Burton Custom Flying V 158",
       "brand": "Burton",
       "category": "skate",
-      "note": "La planche de snow, version 2017-2018.",
       "url": "https://sidelineswap.com/gear/snowboarding/snowboards/12556576-burton-custom-flying-v-158-snowboard-2017-2018-new-read",
       "mono": "158",
       "image": "/assets/things/burton-custom-flying-v.webp"
@@ -572,7 +510,6 @@
       "name": "Fixations Burton Mission",
       "brand": "Burton",
       "category": "skate",
-      "note": "Trouvées sur Leboncoin pour l'hiver.",
       "mono": "SNOW",
       "image": "/assets/things/burton-mission.webp"
     },
@@ -581,7 +518,7 @@
       "name": "Alpha 6000",
       "brand": "Sony",
       "category": "photo",
-      "note": "Le boîtier blanc, avec le SELP1650 (16-50 mm f/3.5-5.6).",
+      "note": "Avec l'objectif SELP1650 (16-50 mm f/3.5-5.6).",
       "mono": "α6",
       "image": "/assets/things/sony-a6000.webp"
     },
@@ -590,7 +527,6 @@
       "name": "Housse Low Roller",
       "brand": "Dakine",
       "category": "skate",
-      "note": "La housse à roulettes pour emmener le snow.",
       "url": "https://eu.dakine.com/fr-fr/products/low-roller-snowboard-bag-black-w26",
       "mono": "BAG",
       "image": "/assets/things/dakine-low-roller.webp"
@@ -600,7 +536,7 @@
       "name": "Berserk",
       "brand": "Kentaro Miura",
       "category": "books",
-      "note": "La collection complète, montée en grande partie sur Leboncoin.",
+      "note": "La collection complète.",
       "mono": "BK",
       "image": "/assets/things/berserk.webp"
     },
@@ -609,7 +545,7 @@
       "name": "Chat des rues",
       "brand": "Yuri Sonoda",
       "category": "books",
-      "note": "Hachi & Maruru, le manga au complet : les 6 tomes.",
+      "note": "La collection complète, les 6 tomes.",
       "mono": "猫",
       "image": "/assets/things/chat-des-rues.webp"
     },
@@ -618,7 +554,7 @@
       "name": "Le clan des Otori",
       "brand": "Stéphane Melchior, Benjamin Bachelier",
       "category": "books",
-      "note": "La BD tirée des romans de Lian Hearn : les 4 premiers tomes.",
+      "note": "Les 4 premiers tomes.",
       "mono": "OT",
       "image": "/assets/things/clan-des-otori.webp"
     },
@@ -627,7 +563,7 @@
       "name": "L'univers de Troy",
       "brand": "Arleston, Tarquin, Mourier",
       "category": "books",
-      "note": "Lanfeust de Troy 1 à 8, Lanfeust des Étoiles 1 à 8, Trolls de Troy 1 à 19 (avec les intégrales), Lanfeust Odyssey 1, Cixi de Troy, Gnomes de Troy, Tubonia et L'expédition d'Alunÿs.",
+      "note": "Tous les Lanfeust et les Trolls de Troy.",
       "mono": "LT",
       "image": "/assets/things/univers-troy.webp"
     },
@@ -636,7 +572,7 @@
       "name": "Les mondes d'Aldébaran",
       "brand": "Leo",
       "category": "books",
-      "note": "Aldébaran, Bételgeuse, Antarès, Survivants et Retour sur Aldébaran, plus Neptune et Bellatrix. Et les trois séries Kenya, Namibia et Amazonie.",
+      "note": "Namibia et toutes les séries de Leo.",
       "mono": "ALD",
       "image": "/assets/things/leo-aldebaran.webp"
     },
@@ -645,7 +581,6 @@
       "name": "Le vent des dieux",
       "brand": "Cothias, Adamov",
       "category": "books",
-      "note": "Tomes 1 à 14 sur 16. Il en manque deux.",
       "mono": "風",
       "image": "/assets/things/vent-des-dieux.webp"
     },
@@ -654,7 +589,6 @@
       "name": "Bilal",
       "brand": "Enki Bilal",
       "category": "books",
-      "note": "La trilogie Nikopol (La foire aux immortels, La femme piège, Froid équateur), Le sommeil du monstre, 32 décembre, Partie de chasse, La ville qui n'existait pas.",
       "mono": "EB",
       "image": "/assets/things/bilal.webp"
     },
@@ -663,7 +597,6 @@
       "name": "Tintin",
       "brand": "Hergé",
       "category": "books",
-      "note": "Presque toute la série, du Congo aux Picaros.",
       "mono": "TT",
       "image": "/assets/things/tintin.webp"
     },
@@ -672,7 +605,6 @@
       "name": "Astérix",
       "brand": "Goscinny, Uderzo",
       "category": "books",
-      "note": "Une douzaine d'albums, du Combat des chefs à Astérix chez les Belges.",
       "mono": "AX",
       "image": "/assets/things/asterix.webp"
     },
@@ -681,7 +613,6 @@
       "name": "Les polars",
       "brand": "Läckberg, Kepler, Lagercrantz, Kellerman",
       "category": "books",
-      "note": "Le nid du coucou, La sorcière, La cage dorée, Le marchand de sable, Incurables, Millénium 5 et 6, La valse du diable.",
       "mono": "⌕",
       "image": "/assets/things/polars.webp"
     },
@@ -690,7 +621,7 @@
       "name": "Mr. Robot: Red Wheelbarrow",
       "brand": "Sam Esmail, Courtney Looney",
       "category": "books",
-      "note": "Le carnet d'Elliot, en vrai. Génial.",
+      "note": "Génial.",
       "favorite": true,
       "mono": "MR",
       "image": "/assets/things/mr-robot-red-wheelbarrow.webp"
@@ -700,7 +631,6 @@
       "name": "Zabardast",
       "brand": "Jérôme Tanon",
       "category": "books",
-      "note": "Le livre photo du Karakoram.",
       "mono": "ZB",
       "image": "/assets/things/zabardast.webp"
     },
@@ -709,7 +639,6 @@
       "name": "Utopie",
       "brand": "Rodolphe, Griffo",
       "category": "books",
-      "note": "Le tome 1, trouvé sur l'étagère entre deux séries.",
       "mono": "UT",
       "image": "/assets/things/utopie.webp"
     },
@@ -718,7 +647,6 @@
       "name": "Ezechiel",
       "brand": "Rodolphe, Ramón Marcos, Dimitri Fogolin",
       "category": "books",
-      "note": "Le tome 1, Le pays de la nuit, chez Delcourt.",
       "mono": "EZ",
       "image": "/assets/things/ezechiel.webp"
     },
@@ -727,7 +655,6 @@
       "name": "Tao-Te-King, In the Buddha's Words, Atomic Habits",
       "brand": "Lao Tseu, Bouddha, James Clear",
       "category": "books",
-      "note": "Les trois livres de chevet.",
       "mono": "道",
       "image": "/assets/things/livres-sagesse.webp"
     },
@@ -736,7 +663,6 @@
       "name": "Le grand livre de la menuiserie",
       "brand": "Livre",
       "category": "books",
-      "note": "La bible avant chaque meuble.",
       "mono": "GL",
       "image": "/assets/things/livre-menuiserie.webp"
     },
@@ -745,7 +671,6 @@
       "name": "Daruma",
       "brand": "Daruma.com",
       "category": "objets",
-      "note": "Rouge. Un œil peint au début de l'objectif, l'autre quand il est atteint.",
       "url": "https://daruma.com",
       "image": "/assets/things/daruma.webp"
     },
@@ -754,7 +679,6 @@
       "name": "AirTags ×4",
       "brand": "Apple",
       "category": "objets",
-      "note": "Sur les clés, le sac et ce qui disparaît.",
       "mono": "×4",
       "image": "/assets/things/airtags.webp"
     },
@@ -763,7 +687,6 @@
       "name": "Rasoir AL13 cuivre et son support",
       "brand": "Henson Shaving",
       "category": "objets",
-      "note": "Usiné dans l'aluminium aéronautique, finition cuivre, posé sur son support assorti à côté du lavabo. Une lame, zéro plastique.",
       "url": "https://hensonshaving.com/products/henson-al13-in-copper",
       "mono": "AL13",
       "image": "/assets/things/henson-al13.webp"
@@ -773,7 +696,6 @@
       "name": "Tondeuse ER-GP82",
       "brand": "Panasonic",
       "category": "objets",
-      "note": "La tondeuse pro, toujours posée sur son socle de charge.",
       "mono": "GP82",
       "image": "/assets/things/panasonic-er-gp82.webp"
     },
@@ -782,7 +704,7 @@
       "name": "Pendentif Limitless",
       "brand": "Limitless",
       "category": "objets",
-      "note": "Plus porté : le produit a été arrêté. RIP.",
+      "note": "Plus porté : le produit a été arrêté.",
       "retired": true,
       "image": "/assets/things/limitless.webp"
     },
@@ -791,7 +713,6 @@
       "name": "Lave-vaisselle SMV6ECX93E",
       "brand": "Bosch",
       "category": "maison",
-      "note": "Série 6, tout intégrable, Home Connect, 13 couverts.",
       "mono": "S6",
       "image": "/assets/things/bosch-lave-vaisselle.webp"
     },
@@ -800,7 +721,6 @@
       "name": "Lave-linge HW100-B14367U",
       "brand": "Haier",
       "category": "maison",
-      "note": "10 kg, moteur direct drive, connecté. Tout neuf.",
       "since": "2026",
       "mono": "HW",
       "image": "/assets/things/haier-lave-linge.webp"
@@ -810,7 +730,6 @@
       "name": "Sèche-linge HD100-C367U1",
       "brand": "Haier",
       "category": "maison",
-      "note": "Pompe à chaleur, 10 kg, silencieux. Arrivé avec le lave-linge.",
       "since": "2026",
       "mono": "HD",
       "image": "/assets/things/haier-seche-linge.webp"
@@ -820,7 +739,6 @@
       "name": "Aspirateur robot T50 Omni",
       "brand": "Ecovacs",
       "category": "maison",
-      "note": "Il passe pendant que je code.",
       "mono": "T50",
       "image": "/assets/things/ecovacs-t50.webp"
     },
@@ -829,7 +747,6 @@
       "name": "Matelas Emma",
       "brand": "Emma",
       "category": "maison",
-      "note": "Le meilleur achat en heures d'utilisation.",
       "mono": "Zz",
       "image": "/assets/things/matelas-emma.webp"
     },
@@ -838,7 +755,6 @@
       "name": "TV 65PUS7354",
       "brand": "Philips",
       "category": "maison",
-      "note": "65 pouces 4K, Ambilight, Dolby Vision et Atmos.",
       "since": "2020",
       "mono": "65\"",
       "image": "/assets/things/philips-65pus7354.webp"

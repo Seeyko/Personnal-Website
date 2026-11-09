@@ -962,13 +962,8 @@ body[data-theme="fps"] .things-sheet {
   position: absolute;
   inset: 0;
   background: var(--anim) 0% 50% / calc(var(--frames) * 100%) 100% no-repeat;
-  transition: background-position 1.1s steps(var(--frames), jump-none);
+  /* frames are stepped by JS (playAnim in things.js): never interpolated */
 }
-.thing-hit:hover .thing-anim,
-.thing-hit:focus-visible .thing-anim { background-position: 100% 50%; }
-.things-sheet-visual .thing-sticker.has-anim > img { visibility: visible; }
-.things-sheet-visual .thing-anim { display: none; }
-@media (prefers-reduced-motion: reduce) { .thing-anim { transition: none; } }
 
 /* ═══════════════════════════════════════════════════════════════
    LOOSE PILE — no cards: floating stickers of mixed sizes, tilted
@@ -1207,7 +1202,6 @@ body.loaded .things-grid .thing.is-in {
     transform: translate3d(var(--st-x), var(--st-y), 0) rotate(var(--st-tilt));
   }
   .things-grid .thing-hit:hover .thing-sticker::after { opacity: 0; }
-  .things-grid .thing-hit:hover .thing-anim { background-position: 0% 50%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

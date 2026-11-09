@@ -85,11 +85,11 @@
       ]
     },
     "ps5-manette": {
-      "source": "https://i.ebayimg.com/images/g/yp8AAOSwGUBjqDxG/s-l1600.jpg",
+      "source": "https://storage.googleapis.com/images.pricecharting.com/8b49909a660ab7b7d960827d575ffbe10b0ab0a998346bf203e412fa5832b2d3/1600.jpg",
       "matte": "rembg",
       "keep": "largest",
-      "page": "https://www.ebay.de/p/11057447254",
-      "note": "DualSense Starlight Blue (Sony stock photo from the eBay catalogue page)."
+      "page": "https://www.pricecharting.com/game/6055380",
+      "note": "DualSense Cobalt Blue (dark blue, Tom's), PriceCharting product photo."
     },
     "sony-a6000": {
       "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Sony_Alpha_ILCE-6000_-_13.JPG/960px-Sony_Alpha_ILCE-6000_-_13.JPG",
@@ -916,11 +916,11 @@
       "note": "Corsair 4000D Airflow black, eBay listing photo (same case as Tom's 2024 rebuild)."
     },
     "yamaha-clp-320": {
-      "source": "local/rc/yamaha-clp-320.jpg",
+      "source": "local/rc/yamaha-clp-320-black.jpg",
       "matte": "rembg",
       "keep": "largest",
       "page": "https://en.audiofanzine.com/digital-piano/yamaha/clavinova-clp-320/",
-      "note": "Clavinova CLP-320, Audiofanzine product photo."
+      "note": "Clavinova CLP-320, Audiofanzine photo recoloured from rosewood to black (Tom's is all black). Recolour: wood mask (low-V reddish pixels, gold excluded) -> luminance x0.38."
     },
     "switch-ethernet": {
       "source": "local/rc/tp-link-sg105.jpg",
