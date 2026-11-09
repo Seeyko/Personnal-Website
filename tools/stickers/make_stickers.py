@@ -112,7 +112,37 @@ def render_svg(svg: str, long_side: int = 1800) -> Image.Image:
     return Image.open(io.BytesIO(bytes(png))).convert("RGBA")
 
 
+def compose_layers(spec: dict, cache: Path) -> Image.Image:
+    """Build the source from several (already transparent) images.
+
+    spec["compose"] = {"size": [W, H], "layers": [{"source", "crop"?, "box": [x0, y0, x1, y1]}, ...]}
+    Each layer is cropped (fractions), trimmed to its alpha, fitted inside its box (fractions of
+    the canvas, aspect kept, bottom-centred) and pasted in order, later layers on top.
+    """
+    comp = spec["compose"]
+    W, H = comp.get("size", [1600, 1200])
+    canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    for layer in comp["layers"]:
+        im = load_source(layer, cache)
+        if "crop" in layer:
+            x0, y0, x1, y1 = layer["crop"]
+            im = im.crop((round(x0 * im.width), round(y0 * im.height), round(x1 * im.width), round(y1 * im.height)))
+        bb = im.getchannel("A").point(lambda v: 255 if v > 8 else 0).getbbox()
+        if bb:
+            im = im.crop(bb)
+        bx0, by0, bx1, by1 = layer["box"]
+        bw, bh = (bx1 - bx0) * W, (by1 - by0) * H
+        s = min(bw / im.width, bh / im.height)
+        im = im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), Image.LANCZOS)
+        x = round(bx0 * W + (bw - im.width) / 2)
+        y = round(by1 * H - im.height)
+        canvas.alpha_composite(im, (x, y))
+    return canvas
+
+
 def load_source(spec: dict, cache: Path) -> Image.Image:
+    if "compose" in spec:
+        return compose_layers(spec, cache)
     src = spec["source"]
     if src.startswith("iconify:"):
         svg = iconify_svg(src, cache)

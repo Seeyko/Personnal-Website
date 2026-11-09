@@ -62,6 +62,7 @@ python3 -m venv .venv && .venv/bin/pip install -r tools/stickers/requirements.tx
 | `shape: ellipse`, `shape_shrink` | remplace un masque irrégulier par l'ellipse ajustée (objets ronds) |
 | `flatten` | nettoie les taches d'un tissu clair : `{min_v, max_s, sigma, keep, detail}` |
 | `book` | couverture → livre : tranche de pages et plat arrière (valeur = épaisseur relative, ex. `0.03`) ; à combiner avec `rotate` |
+| `compose` | assemble plusieurs images déjà détourées en une seule source : `{"size": [W, H], "layers": [{"source", "crop"?, "box": [x0, y0, x1, y1]}]}`, chaque calque rogné à son alpha, ajusté dans sa boîte (fractions du canevas, calé en bas) puis empilé dans l'ordre ; `source` reste requis (premier calque) |
 | `page` | page où la source a été trouvée (traçabilité) |
 | `note` | remarque libre (modèle exact, pourquoi pas de source…) |
 

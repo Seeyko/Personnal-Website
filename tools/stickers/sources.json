@@ -381,16 +381,11 @@
       "page": "https://www.bosch-professional.com/ge/en/level-magnetic-25-cm-professional-7867329-ocs-ac/"
     },
     "henson-al13": {
-      "source": "https://cdn.shopify.com/s/files/1/0269/8025/3776/products/copper-04.jpg?width=1200",
+      "source": "https://cdn.shopify.com/s/files/1/0269/8025/3776/files/copper-wide.jpg?width=1600",
       "matte": "rembg",
       "keep": "largest",
-      "page": "https://hensonshaving.com/products/henson-al13-in-copper"
-    },
-    "henson-stand": {
-      "source": "https://cdn.shopify.com/s/files/1/0269/8025/3776/products/standonly-v02-4x5.jpg?width=1200",
-      "matte": "rembg",
-      "keep": "largest",
-      "page": "https://hensonshaving.com/products/henson-razor-stand"
+      "page": "https://hensonshaving.com/products/henson-razor-stand",
+      "_note": "AL13 copper resting on the Henson stand (single photo)"
     },
     "dakine-low-roller": {
       "source": "https://cdn.shopify.com/s/files/1/0272/5920/7752/files/LOWROLLERSNOWBOARDBAG-BLACK-194626594231_10004583_BLACK-62M_MAIN.jpg?width=1400",
@@ -669,11 +664,43 @@
       "note": "Cover (Gallauziaux & Fedullo, Eyrolles), Amazon cover image by ISBN."
     },
     "arctis-nova-pro": {
-      "source": "https://i.ebayimg.com/images/g/qAUAAOSwfd9kuskd/s-l1600.jpg",
-      "matte": "rembg",
-      "keep": "largest",
-      "page": "https://ebay.co.uk/p/22058189727",
-      "note": "Stock photo via the eBay catalogue (steelseries.com images are on images.ctfassets.net, blocked)."
+      "source": "https://images.ctfassets.net/hmm5mo4qf4mf/26Exn6YSwJ5dG8nyVxbDx1/ee31e09c726a07457737dacc62a95043/arctis_nova_pro_wl_black_img_buy_2_2.png__1920x1080_crop-fit_optimize_subsampling-2-229.png",
+      "compose": {
+        "size": [
+          1600,
+          1200
+        ],
+        "layers": [
+          {
+            "source": "https://images.ctfassets.net/hmm5mo4qf4mf/26Exn6YSwJ5dG8nyVxbDx1/ee31e09c726a07457737dacc62a95043/arctis_nova_pro_wl_black_img_buy_2_2.png__1920x1080_crop-fit_optimize_subsampling-2-229.png",
+            "box": [
+              0.04,
+              0.0,
+              0.66,
+              0.86
+            ]
+          },
+          {
+            "source": "https://images.ctfassets.net/hmm5mo4qf4mf/4EwYTpKVVXomhKP0iwxz5l/eee8a3f7c09dab1956a92d984523ee0c/arctis_nova_pro_wl_black_img_buy_1.png__1920x1080_crop-fit_optimize_subsampling-2-227.png",
+            "crop": [
+              0.283,
+              0.7195,
+              0.736,
+              0.97
+            ],
+            "box": [
+              0.4,
+              0.64,
+              0.98,
+              1.0
+            ]
+          }
+        ]
+      },
+      "matte": "alpha",
+      "keep": "all",
+      "page": "https://steelseries.com/gaming-headsets/arctis-nova-pro-wireless",
+      "_note": "Arctis Nova Pro Wireless (black) composed with its GameDAC base station, both from SteelSeries' official images"
     },
     "hp-deskjet-2710": {
       "source": "https://i.ebayimg.com/images/g/MBgAAOSw~6ljWpHi/s-l1600.jpg",
