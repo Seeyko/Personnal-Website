@@ -494,12 +494,12 @@
       "note": "Cover (Glénat, tome 1 (nouvelle édition)), Amazon cover image by ISBN."
     },
     "clan-des-otori": {
-      "source": "https://m.media-amazon.com/images/P/207030258X.01._SCRM_.jpg",
+      "source": "https://m.media-amazon.com/images/P/2075088101.01._SCRM_.jpg",
       "matte": "none",
       "book": 0.03,
       "rotate": 2.5,
-      "page": "https://www.amazon.fr/dp/207030258X",
-      "note": "Cover (Folio, tome 1 : Le silence du rossignol), Amazon cover image by ISBN."
+      "page": "https://www.gallimard-jeunesse.fr/9782075088107/le-silence-du-rossignol.html",
+      "note": "Cover of the comic adaptation (tome 1, Le silence du rossignol, Melchior / Bachelier, Gallimard), Amazon cover image by ISBN."
     },
     "univers-troy": {
       "source": "https://m.media-amazon.com/images/P/2877642577.01._SCRM_.jpg",
@@ -923,11 +923,11 @@
       "note": "Clavinova CLP-320, Audiofanzine product photo."
     },
     "switch-ethernet": {
-      "source": "local/rc/tp-link-sg1005d.jpg",
+      "source": "local/rc/tp-link-sg105.jpg",
       "matte": "rembg",
       "keep": "largest",
-      "page": "https://www.tp-link.com/fr/home-networking/soho-switch/tl-sg1005d/",
-      "note": "Generic black 5-port switch (TP-Link TL-SG1005D) — Tom: \"n'importe lequel, un ultra classique noir\"."
+      "page": "https://www.tp-link.com/fr/home-networking/soho-switch/tl-sg105/",
+      "note": "Square metal desktop switch (TP-Link TL-SG105) — Tom: boxy, raw, ports with LEDs."
     }
   }
 }
