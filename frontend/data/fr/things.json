@@ -79,7 +79,8 @@
       "name": "Mac mini M1",
       "brand": "Apple",
       "category": "setup",
-      "note": "16 Go. Le serveur du build : 8 runners GitHub Actions, les agents et tout ce qui doit tourner sans moi."
+      "note": "16 Go. Le serveur du build : 8 runners GitHub Actions, les agents et tout ce qui doit tourner sans moi.",
+      "image": "/assets/things/mac-mini.webp"
     },
     {
       "id": "pc-windows",
@@ -87,6 +88,14 @@
       "brand": "Windows",
       "category": "setup",
       "note": "La tour MSI : i5-12400F, RTX 4060, 2 To en NVMe. Jeu, montage et gros calculs."
+    },
+    {
+      "id": "bureau-assis-debout",
+      "name": "Bureau assis-debout",
+      "brand": "Autonomous",
+      "category": "setup",
+      "note": "Un piètement Autonomous à double moteur, de 62 à 127 cm, sous un plateau live edge en chêne massif de 200 × 80 cm trouvé chez Leroy Merlin. Le tapis de marche se glisse dessous.",
+      "mono": "AD"
     },
     {
       "id": "cpod",
@@ -130,7 +139,8 @@
       "brand": "HP",
       "category": "setup",
       "note": "L'imprimante. Elle sert deux fois par an, mais ces deux fois-là, elle sert.",
-      "mono": "DJ"
+      "mono": "DJ",
+      "image": "/assets/things/hp-deskjet-2710.webp"
     },
     {
       "id": "iphone-15-pro",
@@ -148,7 +158,8 @@
       "category": "setup",
       "note": "Plus utilisée : remplacée par le siège CPOD.",
       "since": "2017",
-      "retired": true
+      "retired": true,
+      "image": "/assets/things/chaise-gamer.webp"
     },
     {
       "id": "philips-499p9",
@@ -156,14 +167,16 @@
       "brand": "Philips",
       "category": "setup",
       "note": "49 pouces en super-ultrawide : deux écrans en un, sans la barre au milieu.",
-      "mono": "49\""
+      "mono": "49\"",
+      "image": "/assets/things/philips-499p9.webp"
     },
     {
       "id": "logitech-g610",
       "name": "Clavier G610",
       "brand": "Logitech",
       "category": "setup",
-      "note": "Le clavier mécanique du PC."
+      "note": "Le clavier mécanique du PC.",
+      "image": "/assets/things/logitech-g610.webp"
     },
     {
       "id": "logitech-mx-vertical",
@@ -172,7 +185,8 @@
       "category": "setup",
       "note": "Verticale : le poignet reste de profil, même après dix heures.",
       "since": "2024",
-      "mono": "MX"
+      "mono": "MX",
+      "image": "/assets/things/logitech-mx-vertical.webp"
     },
     {
       "id": "logitech-g512",
@@ -180,7 +194,8 @@
       "brand": "Logitech",
       "category": "setup",
       "note": "Mécanique, pour le PC de jeu.",
-      "mono": "G512"
+      "mono": "G512",
+      "image": "/assets/things/logitech-g512.webp"
     },
     {
       "id": "logitech-g602",
@@ -188,7 +203,8 @@
       "brand": "Logitech",
       "category": "setup",
       "note": "Sans fil, des années de service.",
-      "mono": "G602"
+      "mono": "G602",
+      "image": "/assets/things/logitech-g602.webp"
     },
     {
       "id": "arctis-nova-pro",
@@ -196,7 +212,8 @@
       "brand": "SteelSeries",
       "category": "audio",
       "note": "Le casque du PC : calls, jeu et musique.",
-      "mono": "NP"
+      "mono": "NP",
+      "image": "/assets/things/arctis-nova-pro.webp"
     },
     {
       "id": "airpods",
@@ -220,7 +237,8 @@
       "brand": "Banc classique",
       "category": "musique",
       "note": "Bois acajou, velours crème, deux molettes pour la hauteur.",
-      "mono": "♪"
+      "mono": "♪",
+      "image": "/assets/things/banc-piano.webp"
     },
     {
       "id": "bosch-gks-85-g",
@@ -228,7 +246,8 @@
       "brand": "Bosch Professional",
       "category": "outils",
       "note": "La scie circulaire, compatible rail de guidage : les coupes droites pour les meubles.",
-      "since": "2026"
+      "since": "2026",
+      "image": "/assets/things/bosch-gks-85-g.webp"
     },
     {
       "id": "bosch-gsb-18v",
@@ -237,7 +256,8 @@
       "category": "outils",
       "note": "La base de l'atelier, sur la plateforme 18V.",
       "since": "2021",
-      "mono": "GSB"
+      "mono": "GSB",
+      "image": "/assets/things/bosch-gsb-18v.webp"
     },
     {
       "id": "bosch-gws-18v-10-p",
@@ -246,7 +266,8 @@
       "category": "outils",
       "note": "Couper, ébavurer, poncer le métal.",
       "since": "2021",
-      "mono": "GWS"
+      "mono": "GWS",
+      "image": "/assets/things/bosch-gws-18v-10-p.webp"
     },
     {
       "id": "bosch-gss-18v-10",
@@ -255,7 +276,8 @@
       "category": "outils",
       "note": "La finition avant l'huile.",
       "since": "2021",
-      "mono": "GSS"
+      "mono": "GSS",
+      "image": "/assets/things/bosch-gss-18v-10.webp"
     },
     {
       "id": "bosch-gst-160-ce",
@@ -263,7 +285,8 @@
       "brand": "Bosch Professional",
       "category": "outils",
       "note": "Les courbes et les découpes intérieures.",
-      "mono": "GST"
+      "mono": "GST",
+      "image": "/assets/things/bosch-gst-160-ce.webp"
     },
     {
       "id": "bosch-fsn-1600",
@@ -272,7 +295,8 @@
       "category": "outils",
       "note": "Avec la GKS 85 G : des coupes droites, courtes ou longues.",
       "since": "2026",
-      "mono": "FSN"
+      "mono": "FSN",
+      "image": "/assets/things/bosch-fsn-1600.webp"
     },
     {
       "id": "bosch-visseuse-chocs",
@@ -288,7 +312,8 @@
       "brand": "Bosch Professional",
       "category": "outils",
       "note": "Le seul outil sans batterie qui ne me lâche jamais.",
-      "mono": "HAM"
+      "mono": "HAM",
+      "image": "/assets/things/bosch-marteau.webp"
     },
     {
       "id": "bosch-niveau-25",
@@ -296,7 +321,8 @@
       "brand": "Bosch Professional",
       "category": "outils",
       "note": "Petit, magnétique dessous, toujours dans la poche.",
-      "mono": "LVL"
+      "mono": "LVL",
+      "image": "/assets/things/bosch-niveau-25.webp"
     },
     {
       "id": "tajima-scie-japonaise",
@@ -631,7 +657,8 @@
       "brand": "Bones",
       "category": "skate",
       "note": "Le classique, sans surprise.",
-      "mono": "RED"
+      "mono": "RED",
+      "image": "/assets/things/bones-reds.webp"
     },
     {
       "id": "olaian-sws500",
@@ -656,7 +683,8 @@
       "brand": "Burton",
       "category": "skate",
       "note": "Trouvées sur Leboncoin pour l'hiver.",
-      "mono": "SNOW"
+      "mono": "SNOW",
+      "image": "/assets/things/burton-mission.webp"
     },
     {
       "id": "sony-a6000",
@@ -674,7 +702,8 @@
       "category": "skate",
       "note": "La housse à roulettes pour emmener le snow.",
       "url": "https://eu.dakine.com/fr-fr/products/low-roller-snowboard-bag-black-w26",
-      "mono": "BAG"
+      "mono": "BAG",
+      "image": "/assets/things/dakine-low-roller.webp"
     },
     {
       "id": "berserk",
@@ -682,7 +711,8 @@
       "brand": "Kentaro Miura",
       "category": "books",
       "note": "La collection complète, montée en grande partie sur Leboncoin.",
-      "mono": "BK"
+      "mono": "BK",
+      "image": "/assets/things/berserk.webp"
     },
     {
       "id": "chat-des-rues",
@@ -698,7 +728,8 @@
       "brand": "Lian Hearn",
       "category": "books",
       "note": "Les 4 premiers tomes.",
-      "mono": "OT"
+      "mono": "OT",
+      "image": "/assets/things/clan-des-otori.webp"
     },
     {
       "id": "univers-troy",
@@ -706,7 +737,8 @@
       "brand": "Arleston, Tarquin, Mourier",
       "category": "books",
       "note": "Lanfeust de Troy 1 à 8, Lanfeust des Étoiles 1 à 8, Trolls de Troy 1 à 19 (avec les intégrales), Lanfeust Odyssey 1, Cixi de Troy, Gnomes de Troy, Tubonia et L'expédition d'Alunÿs.",
-      "mono": "LT"
+      "mono": "LT",
+      "image": "/assets/things/univers-troy.webp"
     },
     {
       "id": "leo-aldebaran",
@@ -722,7 +754,8 @@
       "brand": "Cothias, Adamov",
       "category": "books",
       "note": "Tomes 1 à 14 sur 16. Il en manque deux.",
-      "mono": "風"
+      "mono": "風",
+      "image": "/assets/things/vent-des-dieux.webp"
     },
     {
       "id": "bilal",
@@ -738,7 +771,8 @@
       "brand": "Hergé",
       "category": "books",
       "note": "Presque toute la série, du Congo aux Picaros.",
-      "mono": "TT"
+      "mono": "TT",
+      "image": "/assets/things/tintin.webp"
     },
     {
       "id": "asterix",
@@ -746,7 +780,8 @@
       "brand": "Goscinny, Uderzo",
       "category": "books",
       "note": "Une douzaine d'albums, du Combat des chefs à Astérix chez les Belges.",
-      "mono": "AX"
+      "mono": "AX",
+      "image": "/assets/things/asterix.webp"
     },
     {
       "id": "polars",
@@ -754,7 +789,8 @@
       "brand": "Läckberg, Kepler, Lagercrantz, Kellerman",
       "category": "books",
       "note": "Le nid du coucou, La sorcière, La cage dorée, Le marchand de sable, Incurables, Millénium 5 et 6, La valse du diable.",
-      "mono": "⌕"
+      "mono": "⌕",
+      "image": "/assets/things/polars.webp"
     },
     {
       "id": "mr-robot-red-wheelbarrow",
@@ -763,7 +799,8 @@
       "category": "books",
       "note": "Le carnet d'Elliot, en vrai. Génial.",
       "favorite": true,
-      "mono": "MR"
+      "mono": "MR",
+      "image": "/assets/things/mr-robot-red-wheelbarrow.webp"
     },
     {
       "id": "zabardast",
@@ -771,7 +808,8 @@
       "brand": "Jérôme Tanon",
       "category": "books",
       "note": "Le livre photo du Karakoram.",
-      "mono": "ZB"
+      "mono": "ZB",
+      "image": "/assets/things/zabardast.webp"
     },
     {
       "id": "carnet-bd",
@@ -788,7 +826,8 @@
       "brand": "Lao Tseu, Bouddha, James Clear",
       "category": "books",
       "note": "Les trois livres de chevet.",
-      "mono": "道"
+      "mono": "道",
+      "image": "/assets/things/livres-sagesse.webp"
     },
     {
       "id": "livre-menuiserie",
@@ -796,7 +835,8 @@
       "brand": "Livre",
       "category": "books",
       "note": "La bible avant chaque meuble.",
-      "mono": "GL"
+      "mono": "GL",
+      "image": "/assets/things/livre-menuiserie.webp"
     },
     {
       "id": "daruma",
@@ -822,7 +862,8 @@
       "category": "objets",
       "note": "Usiné dans l'aluminium aéronautique, finition cuivre. Une lame, zéro plastique.",
       "url": "https://hensonshaving.com/products/henson-al13-in-copper",
-      "mono": "AL13"
+      "mono": "AL13",
+      "image": "/assets/things/henson-al13.webp"
     },
     {
       "id": "henson-stand",
@@ -831,7 +872,8 @@
       "category": "objets",
       "note": "Le socle assorti, posé à côté du lavabo.",
       "url": "https://hensonshaving.com/products/henson-razor-stand",
-      "mono": "H"
+      "mono": "H",
+      "image": "/assets/things/henson-stand.webp"
     },
     {
       "id": "limitless",
@@ -839,7 +881,8 @@
       "brand": "Limitless",
       "category": "objets",
       "note": "Plus porté : le produit a été arrêté. RIP.",
-      "retired": true
+      "retired": true,
+      "image": "/assets/things/limitless.webp"
     },
     {
       "id": "bosch-lave-vaisselle",
@@ -847,7 +890,8 @@
       "brand": "Bosch",
       "category": "maison",
       "note": "Série 6, tout intégrable, Home Connect, 13 couverts.",
-      "mono": "S6"
+      "mono": "S6",
+      "image": "/assets/things/bosch-lave-vaisselle.webp"
     },
     {
       "id": "haier-lave-linge",
@@ -890,7 +934,8 @@
       "category": "maison",
       "note": "65 pouces 4K, Ambilight, Dolby Vision et Atmos.",
       "since": "2020",
-      "mono": "65\""
+      "mono": "65\"",
+      "image": "/assets/things/philips-65pus7354.webp"
     }
   ]
 }

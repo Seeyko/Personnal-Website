@@ -78,21 +78,66 @@
       "note": "Atomic Purple, Evan-Amos (public domain)"
     },
     "xbox-360": {
-      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Xbox-360-Pro-wController.jpg/960px-Xbox-360-Pro-wController.jpg",
-      "matte": "rembg",
-      "page": "https://commons.wikimedia.org/wiki/File:Xbox-360-Pro-wController.jpg",
-      "note": "Evan-Amos (public domain)"
+      "page": "https://commons.wikimedia.org/wiki/File:Xbox-360-Elite-Console-Set.png",
+      "note": "Xbox 360 Elite (black) + black controller. Evan-Amos, public domain.",
+      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Xbox-360-Elite-Console-Set.png/960px-Xbox-360-Elite-Console-Set.png",
+      "matte": "alpha",
+      "alpha_min": 0.2,
+      "keep": "all"
     },
     "ps4": {
-      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/PS4-Console-wDS4.png/960px-PS4-Console-wDS4.png",
-      "matte": "alpha",
-      "page": "https://commons.wikimedia.org/wiki/File:PS4-Console-wDS4.png",
-      "note": "Evan-Amos (public domain)"
+      "source": "https://i.ebayimg.com/images/g/vMoAAOSwLJ9Z7ENv/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "all",
+      "page": "https://ebay.co.uk/p/239125535",
+      "note": "PS4 Slim Glacier White + white DualShock 4 (Sony stock photo from the eBay catalogue page).",
+      "add_polys": [
+        [
+          [
+            0.0375,
+            0.0244
+          ],
+          [
+            0.15,
+            0.0189
+          ],
+          [
+            0.5687,
+            0.1015
+          ],
+          [
+            0.5938,
+            0.1286
+          ],
+          [
+            0.5938,
+            0.9202
+          ],
+          [
+            0.585,
+            0.9337
+          ],
+          [
+            0.6025,
+            0.9553
+          ],
+          [
+            0.025,
+            0.9716
+          ],
+          [
+            0.0375,
+            0.9472
+          ]
+        ]
+      ]
     },
     "ps5-manette": {
-      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Playstation_DualSense_Controller.png/960px-Playstation_DualSense_Controller.png",
+      "source": "https://i.ebayimg.com/images/g/yp8AAOSwGUBjqDxG/s-l1600.jpg",
       "matte": "rembg",
-      "page": "https://commons.wikimedia.org/wiki/File:Playstation_DualSense_Controller.png"
+      "keep": "largest",
+      "page": "https://www.ebay.de/p/11057447254",
+      "note": "DualSense Starlight Blue (Sony stock photo from the eBay catalogue page)."
     },
     "sony-a6000": {
       "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Sony_Alpha_ILCE-6000_-_13.JPG/960px-Sony_Alpha_ILCE-6000_-_13.JPG",
@@ -102,11 +147,12 @@
       "note": "silver/white body with the 16-50 kit lens"
     },
     "switch-animal-crossing": {
-      "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Switch_avec_manettes_sp%C3%A9ciales_animal_crossing_sur_son_dock.jpg/960px-Switch_avec_manettes_sp%C3%A9ciales_animal_crossing_sur_son_dock.jpg",
-      "matte": "rembg",
+      "source": "https://m.media-amazon.com/images/S/mediaservice.woot.com/d39acbf3-19c0-4ae2-b164-912fa36cd978.png",
+      "matte": "white",
+      "tol": 10,
       "keep": "largest",
-      "page": "https://commons.wikimedia.org/wiki/File:Switch_avec_manettes_spéciales_animal_crossing_sur_son_dock.jpg",
-      "note": "Animal Crossing edition Joy-Cons on the dock"
+      "page": "https://sellout.woot.com/offers/nintendo-switch-animal-crossing-edition-1",
+      "note": "Switch (full size) Animal Crossing: New Horizons edition, pastel green + blue Joy-Con. No clean shot of the AC dock was reachable."
     },
     "claude-ultra": {
       "source": "iconify:logos:claude-icon",
@@ -154,10 +200,11 @@
       "open": 10
     },
     "mac-mini": {
-      "source": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Mac_Mini_fifth_generation_M1.png",
-      "matte": "auto",
-      "page": "https://commons.wikimedia.org/wiki/File:Mac_Mini_fifth_generation_M1.png",
-      "note": "M1 (2020) silver design; source is small (382 px)"
+      "source": "https://i.ebayimg.com/images/g/qjQAAOSwi3Bfq8c1/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.co.uk/p/25042399642",
+      "note": "Mac mini M1 (2020, silver), Apple stock photo via the eBay catalogue."
     },
     "primitive-whis": {
       "source": "local/skate/b0968866-photo.jpeg",
@@ -297,6 +344,358 @@
       "shape": "ellipse",
       "shape_shrink": 0.045,
       "erode": 3
+    },
+    "bosch-fsn-1600": {
+      "source": "https://www.bosch-professional.com/be/fr/ocsmedia/376039-54/application-image/full/accessoires-divers-pro-fsn-1600-1600z0000f.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/be/fr/products/fsn-1600-1600Z0000F"
+    },
+    "bosch-gks-85-g": {
+      "source": "https://www.bosch-professional.com/fr/fr/ocsmedia/329334-54/application-image/full/scie-circulaire-pro-gks-85-g-060157a900.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/fr/fr/products/gks-85-g-060157A900"
+    },
+    "bosch-gsb-18v": {
+      "source": "https://www.bosch-professional.com/gb/en/ocsmedia/375556-54/application-image/full/cordless-combi-pro-gsb-18v-55-06019h5302.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/gb/en/products/gsb-18v-55-06019H5302"
+    },
+    "bosch-gss-18v-10": {
+      "source": "https://www.bosch-professional.com/de/de/ocsmedia/187446-54/application-image/full/akku-schwingschleifer-pro-gss-18v-10-06019d0200.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/de/de/products/gss-18v-10-06019D0200"
+    },
+    "bosch-gst-160-ce": {
+      "source": "https://www.bosch-professional.com/de/de/ocsmedia/133149-54/application-image/full/stichsaege-pro-gst-160-ce-0601517000.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/de/de/products/gst-160-ce-0601517000"
+    },
+    "bosch-gws-18v-10-p": {
+      "source": "https://www.bosch-professional.com/gb/en/ocsmedia/295500-54/application-image/full/cordless-angle-grinder-pro-gws-18v-10-pc-06019g3e0a.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/gb/en/products/gws-18v-10-pc-06019G3E0A"
+    },
+    "bosch-niveau-25": {
+      "source": "https://www.bosch-professional.com/binary/ocsmedia/optimized/full/o586314v82_1600A016BN_bo_pro_u_f_1.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/ge/en/level-magnetic-25-cm-professional-7867329-ocs-ac/"
+    },
+    "henson-al13": {
+      "source": "https://cdn.shopify.com/s/files/1/0269/8025/3776/products/copper-04.jpg?width=1200",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://hensonshaving.com/products/henson-al13-in-copper"
+    },
+    "henson-stand": {
+      "source": "https://cdn.shopify.com/s/files/1/0269/8025/3776/products/standonly-v02-4x5.jpg?width=1200",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://hensonshaving.com/products/henson-razor-stand"
+    },
+    "dakine-low-roller": {
+      "source": "https://cdn.shopify.com/s/files/1/0272/5920/7752/files/LOWROLLERSNOWBOARDBAG-BLACK-194626594231_10004583_BLACK-62M_MAIN.jpg?width=1400",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://eu.dakine.com/fr-fr/products/low-roller-snowboard-bag-black-w26"
+    },
+    "logitech-mx-vertical": {
+      "source": "https://resource.logitech.com/c_fill,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/mx-vertical/gallery/mx-vertical-gallery-01-new.png",
+      "matte": "alpha",
+      "page": "https://www.logitech.com/en-us/shop/p/mx-vertical-ergonomic-mouse"
+    },
+    "philips-499p9": {
+      "source": "https://images.philips.com/is/image/philipsconsumer/tpv_3820111?$png$&wid=1600",
+      "matte": "auto",
+      "keep": "largest",
+      "page": "https://www.philips.fr/c-p/499P9H_00/"
+    },
+    "logitech-g512": {
+      "source": "https://resource.logitechg.com/c_fill,q_auto,f_auto,dpr_1.0/d_transparent.gif/content/dam/gaming/en/non-braid/flying-v-mx-g512/g512-keyboard_gallery-1-2x-nb.png",
+      "matte": "alpha",
+      "page": "https://www.logitechg.com/fr-fr/shop/p/g512-mechanical-gaming-keyboard"
+    },
+    "bosch-marteau": {
+      "source": "https://www.bosch-professional.com/binary/ocsmedia/optimized/full/o586317v82_1600A016BT_bo_pro_u_f_1.png",
+      "matte": "alpha",
+      "page": "https://www.bosch-professional.com/be/fr/professionele-slotenmakershamer-7788702-ocs-ac/"
+    },
+    "bosch-lave-vaisselle": {
+      "source": "https://media3.bosch-home.com/Product_Shots/1600x/11271213_SMV6ECX93E_STP_def.webp",
+      "matte": "alpha",
+      "page": "https://www.bosch-home.fr/fr/product/SMV6ECX93E"
+    },
+    "chaise-gamer": {
+      "source": "https://cdn.shopify.com/s/files/1/0662/0774/4223/files/B34OBG073B05-1.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.songmics.fr/products/songmics-chaise-gaming-avec-repose-pieds-obg73",
+      "note": "Exact Songmics model unknown: black OBG73 used."
+    },
+    "burton-mission": {
+      "source": "https://cdn.shopify.com/s/files/1/0804/4062/3361/files/1054617A02_1.webp?width=1600",
+      "matte": "alpha",
+      "page": "https://www.burton.com/fr-ca/products/mens-burton-mission-re-flex-snowboard-bindings-105461",
+      "note": "Black colorway (Tom bought his second-hand; colour not specified)."
+    },
+    "limitless": {
+      "source": "https://www.limitless.ai/media/og-preview.jpg",
+      "crop": [
+        0.34,
+        0.47,
+        0.533,
+        1.0
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.limitless.ai",
+      "note": "Pendant cropped from the site preview image (product discontinued)."
+    },
+    "banc-piano": {
+      "source": "local/piano/69532fe7-photo.jpeg",
+      "quad": [
+        [
+          0.0,
+          0.25
+        ],
+        [
+          0.99,
+          0.25
+        ],
+        [
+          0.9,
+          0.86
+        ],
+        [
+          0.1,
+          0.86
+        ]
+      ],
+      "quad_aspect": 0.8,
+      "matte": "rembg",
+      "keep": "all",
+      "flatten": {
+        "min_v": 0.5,
+        "max_s": 0.35,
+        "sigma": 0.06,
+        "keep": 0.45,
+        "detail": 1.6
+      },
+      "note": "Tom photo (local, gitignored): perspective straightened, stains on the cream seat flattened.",
+      "add_ellipses": [
+        [
+          0.115,
+          0.174,
+          0.034,
+          0.034
+        ]
+      ]
+    },
+    "philips-65pus7354": {
+      "source": "https://images.philips.com/is/image/philipsconsumer/tpv_3129050?$png$&wid=1600",
+      "inpaint": [
+        [
+          0.53,
+          0.228,
+          0.815,
+          0.345
+        ]
+      ],
+      "matte": "poly",
+      "polys": [
+        [
+          [
+            0.168,
+            0.211
+          ],
+          [
+            0.83,
+            0.211
+          ],
+          [
+            0.83,
+            0.743
+          ],
+          [
+            0.168,
+            0.743
+          ]
+        ],
+        [
+          [
+            0.487,
+            0.74
+          ],
+          [
+            0.513,
+            0.74
+          ],
+          [
+            0.513,
+            0.76
+          ],
+          [
+            0.487,
+            0.76
+          ]
+        ],
+        [
+          [
+            0.29,
+            0.756
+          ],
+          [
+            0.71,
+            0.756
+          ],
+          [
+            0.7125,
+            0.778
+          ],
+          [
+            0.2875,
+            0.778
+          ]
+        ]
+      ],
+      "page": "https://www.philips.fr/c-p/65PUS7354_12",
+      "note": "Press shot has the Ambilight glow baked in: outline traced by hand (matte poly), 4K badge inpainted."
+    },
+    "logitech-g610": {
+      "source": "https://i.ebayimg.com/images/g/RBwAAOSw7GFgEfLo/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.com/p/2292738328"
+    },
+    "logitech-g602": {
+      "source": "https://i.ebayimg.com/images/g/LvsAAOxyTkJSPpz8/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.co.uk/p/170514838",
+      "note": "Logitech stock photo via the eBay catalogue (only 521 px)."
+    },
+    "berserk": {
+      "source": "https://m.media-amazon.com/images/P/2344020683.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2344020683",
+      "note": "Cover (Glénat, tome 1 (nouvelle édition)), Amazon cover image by ISBN."
+    },
+    "clan-des-otori": {
+      "source": "https://m.media-amazon.com/images/P/207030258X.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/207030258X",
+      "note": "Cover (Folio, tome 1 : Le silence du rossignol), Amazon cover image by ISBN."
+    },
+    "univers-troy": {
+      "source": "https://m.media-amazon.com/images/P/2877642577.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2877642577",
+      "note": "Cover (Lanfeust de Troy 1 : L'ivoire du Magohamoth (Soleil)), Amazon cover image by ISBN."
+    },
+    "vent-des-dieux": {
+      "source": "https://m.media-amazon.com/images/P/2723427250.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/2723427250",
+      "note": "Cover (Tome 5 : La balade de Mizu (Glénat)), Amazon cover image by ISBN."
+    },
+    "tintin": {
+      "source": "https://m.media-amazon.com/images/P/2203001100.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2203001100",
+      "note": "Cover (Le secret de la Licorne (Casterman)), Amazon cover image by ISBN.",
+      "crop": [
+        0.027,
+        0,
+        1,
+        1
+      ]
+    },
+    "asterix": {
+      "source": "https://m.media-amazon.com/images/P/2012101399.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/2012101399",
+      "note": "Cover (Le combat des chefs), Amazon cover image by ISBN."
+    },
+    "polars": {
+      "source": "https://m.media-amazon.com/images/P/2330081812.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2330081812",
+      "note": "Cover (Millénium 5 (Actes Sud, Actes noirs)), Amazon cover image by ISBN."
+    },
+    "mr-robot-red-wheelbarrow": {
+      "source": "https://m.media-amazon.com/images/P/1419724428.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/1419724428",
+      "note": "Cover (Abrams Image, 2016), Amazon cover image by ISBN.",
+      "trim_white": true
+    },
+    "zabardast": {
+      "source": "https://m.media-amazon.com/images/P/2365450687.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/2365450687",
+      "note": "Cover (Jérôme Tanon), Amazon cover image by ISBN."
+    },
+    "livres-sagesse": {
+      "source": "https://m.media-amazon.com/images/P/0735211299.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/0735211299",
+      "note": "Cover (Atomic Habits (Avery)), Amazon cover image by ISBN."
+    },
+    "livre-menuiserie": {
+      "source": "https://m.media-amazon.com/images/P/221267645X.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -3,
+      "page": "https://www.amazon.fr/dp/221267645X",
+      "note": "Cover (Gallauziaux & Fedullo, Eyrolles), Amazon cover image by ISBN."
+    },
+    "arctis-nova-pro": {
+      "source": "https://i.ebayimg.com/images/g/qAUAAOSwfd9kuskd/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://ebay.co.uk/p/22058189727",
+      "note": "Stock photo via the eBay catalogue (steelseries.com images are on images.ctfassets.net, blocked)."
+    },
+    "hp-deskjet-2710": {
+      "source": "https://i.ebayimg.com/images/g/MBgAAOSw~6ljWpHi/s-l1600.jpg",
+      "inpaint": [
+        [
+          0.2,
+          0.735,
+          0.8,
+          0.9
+        ]
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://ebay.co.uk/p/15047043611",
+      "note": "DeskJet 2710e stock photo (same body as the 2710); the orange HP+ promo sheet is inpainted out."
+    },
+    "bones-reds": {
+      "source": "https://i.ebayimg.com/images/g/H0cAAeSwRT9qdpUs/s-l1600.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.ebay.com/p/1294764929",
+      "note": "Seller photo of the retail box (no clean stock shot reachable)."
     }
   }
 }

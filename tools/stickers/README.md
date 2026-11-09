@@ -50,6 +50,18 @@ python3 -m venv .venv && .venv/bin/pip install -r tools/stickers/requirements.tx
 | `erode` | px retirés au bord du masque (défaut 1 avec rembg, contre les liserés) |
 | `bridge` | force du pontage entre morceaux séparés (défaut 1) |
 | `color` | recolore un logo vectoriel monochrome (`#0AE448`) |
+| `matte: deck` / `poly` | `deck` : planche de skate vue à plat (rectangle à nez et tail ronds) ; `poly` : contour tracé à la main, `polys` = liste de polygones en fractions |
+| `trim_white` | coupe les marges blanches autour d'une couverture |
+| `inpaint` | liste de `[x0, y0, x1, y1]` (fractions) à effacer avant détourage (badge, texte promo) |
+| `quad`, `quad_aspect` | redresse la perspective : 4 coins TL, TR, BR, BL en fractions → rectangle de rapport hauteur/largeur `quad_aspect` |
+| `decks` | plusieurs planches d'une même photo, recomposées en éventail : liste de `{quad, aspect, tilt}` |
+| `alpha_min` | avec `matte: alpha`, supprime un filigrane ou un voile sous cette opacité |
+| `open` | px : ouverture morphologique, coupe les fines excroissances (ombre, câble) |
+| `fill_holes` | bouche les trous du masque |
+| `add_polys`, `add_ellipses` | ajoute au masque des parties oubliées par le détourage (`[cx, cy, rx, ry]` pour les ellipses) |
+| `shape: ellipse`, `shape_shrink` | remplace un masque irrégulier par l'ellipse ajustée (objets ronds) |
+| `flatten` | nettoie les taches d'un tissu clair : `{min_v, max_s, sigma, keep, detail}` |
+| `book` | couverture → livre : tranche de pages et plat arrière (valeur = épaisseur relative, ex. `0.03`) ; à combiner avec `rotate` |
 | `page` | page où la source a été trouvée (traçabilité) |
 | `note` | remarque libre (modèle exact, pourquoi pas de source…) |
 

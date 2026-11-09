@@ -312,6 +312,66 @@ def warp_quad(rgba: np.ndarray, quad, aspect: float) -> np.ndarray:
     return np.clip(out, 0, 1)
 
 
+def flatten_fabric(rgba: np.ndarray, alpha: np.ndarray, opt: dict) -> np.ndarray:
+    """Even out stains on a light, low-saturation surface (e.g. a cream seat) inside the matte.
+
+    Pixels brighter than min_v and less saturated than max_s form the region; its low-frequency
+    colour (normalised Gaussian, sigma as a fraction of the width) is replaced by the region's
+    median colour, so blotches vanish while the fine weave and edge shading (keep) remain.
+    """
+    rgb = rgba[..., :3]
+    hsv = cv2.cvtColor((rgb * 255).astype(np.uint8), cv2.COLOR_RGB2HSV).astype(np.float32) / 255
+    region = (alpha > 0.5) & (hsv[..., 2] > float(opt.get("min_v", 0.55))) & (hsv[..., 1] < float(opt.get("max_s", 0.3)))
+    region = cv2.morphologyEx(region.astype(np.uint8), cv2.MORPH_CLOSE, np.ones((9, 9), np.uint8))
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(region, connectivity=8)
+    if n <= 1:
+        return rgba
+    region = (lab == 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))).astype(np.float32)
+    region = np.maximum(region, holes(region > 0.5).astype(np.float32))
+    sigma = float(opt.get("sigma", 0.03)) * rgb.shape[1]
+    w = cv2.GaussianBlur(region, (0, 0), sigma) + 1e-6
+    low = cv2.GaussianBlur(rgb * region[..., None], (0, 0), sigma) / w[..., None]
+    target = np.median(rgb[region > 0.5], axis=0)
+    if "color" in opt:
+        target = np.float32(opt["color"]) / 255
+    keep = float(opt.get("keep", 0.25))
+    if "detail" in opt:  # keep only the fine weave (high-pass, px) on top of the smoothed shading
+        hp = rgb - cv2.GaussianBlur(rgb, (0, 0), float(opt["detail"]))
+        fixed = target + keep * (low - target) + hp
+    else:
+        fixed = rgb - low + (target + keep * (low - target))
+    soft = cv2.GaussianBlur(region, (0, 0), 2.0)[..., None]  # feather the boundary
+    out = rgba.copy()
+    out[..., :3] = np.clip(rgb * (1 - soft) + fixed * soft, 0, 1)
+    return out
+
+
+def book_depth(rgba: np.ndarray, depth: float) -> np.ndarray:
+    """Give a flat cover some volume: cream page edges below/right, a darker back board, spine shading."""
+    hh, ww = rgba.shape[:2]
+    d = max(4, round(depth * ww))
+    out = np.zeros((hh + d, ww + d, 4), np.float32)
+    # back board, shifted by d
+    out[d:d + hh, d:d + ww, :3] = rgba[..., :3].mean(axis=(0, 1)) * 0.45
+    out[d:d + hh, d:d + ww, 3] = rgba[..., 3]
+    # page block, shifted by ~2/3 d, with fine horizontal/vertical page lines
+    p = round(d * 0.7)
+    yy, xx = np.mgrid[0:hh, 0:ww]
+    lines = 0.93 + 0.05 * np.sin((xx + yy) * 2.1)
+    page = np.stack([0.96 * lines, 0.94 * lines, 0.88 * lines], -1).astype(np.float32)
+    out[p:p + hh, p:p + ww, :3] = np.where(rgba[..., 3:4] > 0, page, out[p:p + hh, p:p + ww, :3])
+    out[p:p + hh, p:p + ww, 3] = np.maximum(out[p:p + hh, p:p + ww, 3], rgba[..., 3])
+    # cover on top, with a soft hinge shade near the spine (left) and a faint edge highlight
+    cov = rgba.copy()
+    x = np.linspace(0, 1, ww, dtype=np.float32)[None, :, None]
+    shade = 1 - 0.22 * np.exp(-((x - 0.035) / 0.012) ** 2) - 0.10 * np.clip(1 - x / 0.03, 0, 1)
+    cov[..., :3] = np.clip(cov[..., :3] * shade, 0, 1)
+    a = cov[..., 3:4]
+    out[:hh, :ww, :3] = cov[..., :3] * a + out[:hh, :ww, :3] * (1 - a)
+    out[:hh, :ww, 3] = np.maximum(out[:hh, :ww, 3], cov[..., 3])
+    return out
+
+
 def deck_mask(hh: int, ww: int) -> np.ndarray:
     """Skateboard deck seen flat (vertical): rectangle with round nose and tail, anti-aliased."""
     ss = 4
@@ -352,6 +412,22 @@ def render(spec: dict, img: Image.Image, cache: Path, item_id: str) -> Image.Ima
         x0, y0, x1, y1 = spec["crop"]
         rgba = rgba[round(y0 * hh):round(y1 * hh), round(x0 * ww):round(x1 * ww)]
         img = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
+    if spec.get("trim_white"):  # drop near-white margins around a scanned/photographed cover
+        m = rgba[..., :3].mean(axis=2) < 0.94
+        ys, xs = np.where(m)
+        rgba = rgba[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+        img = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
+    if "inpaint" in spec:  # erase overlays (badges, text) given as [x0, y0, x1, y1] fractions of the crop
+        hh, ww = rgba.shape[:2]
+        m = np.zeros((hh, ww), np.uint8)
+        for x0, y0, x1, y1 in spec["inpaint"]:
+            m[round(y0 * hh):round(y1 * hh), round(x0 * ww):round(x1 * ww)] = 255
+        rgb = cv2.inpaint((rgba[..., :3] * 255).astype(np.uint8), m, 9, cv2.INPAINT_NS).astype(np.float32) / 255
+        soft = cv2.GaussianBlur(cv2.dilate(m, np.ones((15, 15), np.uint8)).astype(np.float32) / 255, (0, 0), 6)[..., None]
+        rgb = rgb * (1 - soft) + cv2.GaussianBlur(rgb, (0, 0), 12) * soft  # smooth the fill
+        rgba = rgba.copy()
+        rgba[..., :3] = rgb
+        img = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
     if "quad" in spec:  # perspective fix: 4 corners (fractions) TL, TR, BR, BL -> upright rectangle
         rgba = warp_quad(rgba, spec["quad"], spec.get("quad_aspect", 1.0))
         img = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
@@ -364,6 +440,9 @@ def render(spec: dict, img: Image.Image, cache: Path, item_id: str) -> Image.Ima
         mode = "alpha" if (rgba[..., 3] < 0.5).mean() > 0.02 else "rembg"
     if mode == "alpha":
         alpha = rgba[..., 3].copy()
+        if spec.get("alpha_min"):  # drop a faint baked-in watermark / haze below this opacity
+            m = float(spec["alpha_min"])
+            alpha = np.clip((alpha - m) / (1 - m), 0, 1)
     elif mode == "white":
         alpha = matte_white(img, float(spec.get("tol", 22)))
         alpha = np.minimum(alpha, rgba[..., 3])
@@ -371,10 +450,31 @@ def render(spec: dict, img: Image.Image, cache: Path, item_id: str) -> Image.Ima
         alpha = matte_rembg(img, spec.get("model", "isnet-general-use"), cache)
     elif mode == "deck":  # skateboard deck seen flat: rectangle with round nose and tail
         alpha = deck_mask(*rgba.shape[:2])
+    elif mode == "poly":  # hand-traced outline: list of polygons in fractions of the (cropped) image
+        hh, ww = rgba.shape[:2]
+        ss = 4
+        m = np.zeros((hh * ss, ww * ss), np.uint8)
+        for poly in spec["polys"]:
+            cv2.fillPoly(m, [np.int32([[x * ww * ss, y * hh * ss] for x, y in poly])], 255, lineType=cv2.LINE_AA)
+        alpha = cv2.resize(m.astype(np.float32) / 255, (ww, hh), interpolation=cv2.INTER_AREA)
     elif mode == "none":
         alpha = np.ones(rgba.shape[:2], np.float32)
     else:
         raise ValueError(f"unknown matte mode {mode}")
+    if "add_polys" in spec:  # hand-traced parts the matte missed (polygons, fractions), merged into the alpha
+        hh, ww = alpha.shape
+        ss = 4
+        m = np.zeros((hh * ss, ww * ss), np.uint8)
+        for poly in spec["add_polys"]:
+            cv2.fillPoly(m, [np.int32([[x * ww * ss, y * hh * ss] for x, y in poly])], 255, lineType=cv2.LINE_AA)
+        alpha = np.maximum(alpha, cv2.resize(m.astype(np.float32) / 255, (ww, hh), interpolation=cv2.INTER_AREA))
+    if "add_ellipses" in spec:  # parts the matte missed: [cx, cy, rx, ry] fractions, merged into the alpha
+        hh, ww = alpha.shape
+        ss = 4
+        m = np.zeros((hh * ss, ww * ss), np.uint8)
+        for cx, cy, rx, ry in spec["add_ellipses"]:
+            cv2.ellipse(m, (round(cx * ww * ss), round(cy * hh * ss)), (round(rx * ww * ss), round(ry * hh * ss)), 0, 0, 360, 255, -1)
+        alpha = np.maximum(alpha, cv2.resize(m.astype(np.float32) / 255, (ww, hh), interpolation=cv2.INTER_AREA))
     alpha = clean_alpha(alpha, spec.get("keep", "all"), int(spec.get("erode", 1 if mode == "rembg" else 0)),
                         bool(spec.get("fill_holes", False)), int(spec.get("open", 0)))
     if spec.get("shape") == "ellipse":  # round objects: replace a ragged matte by its fitted ellipse
@@ -385,8 +485,12 @@ def render(spec: dict, img: Image.Image, cache: Path, item_id: str) -> Image.Ima
         m = np.zeros((alpha.shape[0] * ss, alpha.shape[1] * ss), np.uint8)
         cv2.ellipse(m, ((cx * ss, cy * ss), (ew * ss * (1 - k), eh * ss * (1 - k)), ang), 255, -1)
         alpha = cv2.resize(m.astype(np.float32) / 255, alpha.shape[::-1], interpolation=cv2.INTER_AREA)
+    if "flatten" in spec:  # clean stains off a light fabric (e.g. a cream seat)
+        rgba = flatten_fabric(rgba, alpha, spec["flatten"])
     rgba = rgba.copy()
     rgba[..., 3] = alpha
+    if spec.get("book"):  # front cover -> book: page block peeking out right and bottom, soft spine shade
+        rgba = book_depth(rgba, float(spec["book"]) if not isinstance(spec["book"], bool) else 0.03)
     if spec.get("rotate"):  # after matting, so the turned corners stay transparent
         pm = Image.fromarray((rgba * 255).astype(np.uint8), "RGBA")
         pm = pm.rotate(float(spec["rotate"]), resample=Image.BICUBIC, expand=True)
