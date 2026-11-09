@@ -812,6 +812,22 @@
       "image": "/assets/things/zabardast.webp"
     },
     {
+      "id": "utopie",
+      "name": "Utopie",
+      "brand": "Rodolphe, Griffo",
+      "category": "books",
+      "note": "Volume 1, found on the shelf between two series.",
+      "mono": "UT"
+    },
+    {
+      "id": "ezechiel",
+      "name": "Ezechiel",
+      "brand": "Le pays de la nuit",
+      "category": "books",
+      "note": "On the shelf too, even though it isn't in the notebook.",
+      "mono": "EZ"
+    },
+    {
       "id": "carnet-bd",
       "name": "The collection notebook",
       "brand": "Le carnet",
@@ -857,23 +873,13 @@
     },
     {
       "id": "henson-al13",
-      "name": "AL13 razor in copper",
+      "name": "AL13 copper razor and stand",
       "brand": "Henson Shaving",
       "category": "objets",
-      "note": "Machined from aerospace aluminium, copper finish. One blade, zero plastic.",
+      "note": "Machined from aerospace aluminium, copper finish, resting on its matching stand by the sink. One blade, zero plastic.",
       "url": "https://hensonshaving.com/products/henson-al13-in-copper",
       "mono": "AL13",
       "image": "/assets/things/henson-al13.webp"
-    },
-    {
-      "id": "henson-stand",
-      "name": "Razor stand",
-      "brand": "Henson Shaving",
-      "category": "objets",
-      "note": "The matching stand, next to the sink.",
-      "url": "https://hensonshaving.com/products/henson-razor-stand",
-      "mono": "H",
-      "image": "/assets/things/henson-stand.webp"
     },
     {
       "id": "limitless",

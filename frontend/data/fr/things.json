@@ -812,6 +812,22 @@
       "image": "/assets/things/zabardast.webp"
     },
     {
+      "id": "utopie",
+      "name": "Utopie",
+      "brand": "Rodolphe, Griffo",
+      "category": "books",
+      "note": "Le tome 1, trouvé sur l'étagère entre deux séries.",
+      "mono": "UT"
+    },
+    {
+      "id": "ezechiel",
+      "name": "Ezechiel",
+      "brand": "Le pays de la nuit",
+      "category": "books",
+      "note": "Lui aussi est sur l'étagère, même s'il n'est pas dans le carnet.",
+      "mono": "EZ"
+    },
+    {
       "id": "carnet-bd",
       "name": "Le carnet des collections",
       "brand": "Le carnet",
@@ -857,23 +873,13 @@
     },
     {
       "id": "henson-al13",
-      "name": "Rasoir AL13 cuivre",
+      "name": "Rasoir AL13 cuivre et son support",
       "brand": "Henson Shaving",
       "category": "objets",
-      "note": "Usiné dans l'aluminium aéronautique, finition cuivre. Une lame, zéro plastique.",
+      "note": "Usiné dans l'aluminium aéronautique, finition cuivre, posé sur son support assorti à côté du lavabo. Une lame, zéro plastique.",
       "url": "https://hensonshaving.com/products/henson-al13-in-copper",
       "mono": "AL13",
       "image": "/assets/things/henson-al13.webp"
-    },
-    {
-      "id": "henson-stand",
-      "name": "Support de rasoir",
-      "brand": "Henson Shaving",
-      "category": "objets",
-      "note": "Le socle assorti, posé à côté du lavabo.",
-      "url": "https://hensonshaving.com/products/henson-razor-stand",
-      "mono": "H",
-      "image": "/assets/things/henson-stand.webp"
     },
     {
       "id": "limitless",
