@@ -70,7 +70,8 @@
       "name": "Raspberry Pi 3",
       "brand": "Raspberry Pi",
       "category": "setup",
-      "note": "Dans son boîtier rouge et blanc. Le premier serveur qui tient dans la main."
+      "note": "Dans son boîtier officiel rouge et blanc (Amazon, 2017). Le premier serveur qui tient dans la main.",
+      "since": "2017"
     },
     {
       "id": "ikea-ampoules",

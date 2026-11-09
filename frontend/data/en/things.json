@@ -70,7 +70,8 @@
       "name": "Raspberry Pi 3",
       "brand": "Raspberry Pi",
       "category": "setup",
-      "note": "In its red and white case. The first server that fits in a hand."
+      "note": "In its official red and white case (Amazon, 2017). The first server that fits in a hand.",
+      "since": "2017"
     },
     {
       "id": "ikea-ampoules",
