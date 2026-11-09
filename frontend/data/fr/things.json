@@ -117,7 +117,8 @@
       "category": "setup",
       "note": "Sous le bureau : marcher pendant les calls.",
       "url": "https://www.amazon.fr/dp/B0FY35MDNY",
-      "mono": "TM"
+      "mono": "TM",
+      "image": "/assets/things/tapis-de-marche.webp"
     },
     {
       "id": "raspberry-pi-3",
@@ -449,7 +450,8 @@
       "name": "Gilet lesté",
       "brand": "Decathlon",
       "category": "sport",
-      "note": "Le Domyos réglable de 6 à 10 kg, pour charger la marche et le poids du corps."
+      "note": "Le Domyos réglable de 6 à 10 kg, pour charger la marche et le poids du corps.",
+      "image": "/assets/things/gilet-leste.webp"
     },
     {
       "id": "anneaux-cts",
@@ -482,7 +484,8 @@
       "brand": "Forclaz",
       "category": "sport",
       "note": "Deux places, pour partir en trek.",
-      "mono": "⛺"
+      "mono": "⛺",
+      "image": "/assets/things/tente-forclaz-mt900.webp"
     },
     {
       "id": "meuble-skate",

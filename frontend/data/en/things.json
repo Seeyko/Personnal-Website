@@ -117,7 +117,8 @@
       "category": "setup",
       "note": "Under the desk: walking through calls.",
       "url": "https://www.amazon.fr/dp/B0FY35MDNY",
-      "mono": "TM"
+      "mono": "TM",
+      "image": "/assets/things/tapis-de-marche.webp"
     },
     {
       "id": "raspberry-pi-3",
@@ -449,7 +450,8 @@
       "name": "Weighted vest",
       "brand": "Decathlon",
       "category": "sport",
-      "note": "The adjustable 6 to 10 kg Domyos, to load walks and bodyweight work."
+      "note": "The adjustable 6 to 10 kg Domyos, to load walks and bodyweight work.",
+      "image": "/assets/things/gilet-leste.webp"
     },
     {
       "id": "anneaux-cts",
@@ -482,7 +484,8 @@
       "brand": "Forclaz",
       "category": "sport",
       "note": "Two-person, for trekking trips.",
-      "mono": "⛺"
+      "mono": "⛺",
+      "image": "/assets/things/tente-forclaz-mt900.webp"
     },
     {
       "id": "meuble-skate",

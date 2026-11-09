@@ -928,6 +928,33 @@
       "keep": "largest",
       "page": "https://www.tp-link.com/fr/home-networking/soho-switch/tl-sg105/",
       "note": "Square metal desktop switch (TP-Link TL-SG105) — Tom: boxy, raw, ports with LEDs."
+    },
+    "gilet-leste": {
+      "source": "local/rc/domyos-gilet.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.decathlon.fr/p/gilet-leste-de-musculation-ajustable-de-6-a-10kg/344654/c382m8786091",
+      "note": "Domyos adjustable 6-10 kg weighted vest, Decathlon product photo."
+    },
+    "tente-forclaz-mt900": {
+      "source": "local/rc/forclaz-mt900.jpg",
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.decathlon.fr/p/tente-dome-de-trekking-2-places-legere-et-autoportante-mt900/301558/c149m8882674",
+      "note": "Forclaz MT900 2-person dome tent, Decathlon product photo."
+    },
+    "tapis-de-marche": {
+      "source": "local/rc/hometro-tapis.jpg",
+      "crop": [
+        0,
+        0,
+        0.62,
+        0.9
+      ],
+      "matte": "rembg",
+      "keep": "largest",
+      "page": "https://www.amazon.fr/dp/B0FY35MDNY",
+      "note": "homeTro walking pad, Amazon A+ photo (packing list text cropped out)."
     }
   }
 }
