@@ -664,32 +664,19 @@
       "_note": "Swiss -S variant of the same HD100-C367U1 (identical design; no fr_FR page found)"
     },
     "burton-custom-flying-v": {
-      "source": "https://edge.images.sidelineswap.com/production/096/214/697/d05b605726429068_original.jpeg?height=1600",
-      "quad_aspect": 8.0,
-      "matte": "rembg",
+      "source": "https://images.blue-tomato.com/is/image/bluetomato/303169768_front.jpg-WBUni-ssg0YbrmO-k6jrJ-zodhs/303169768+front+jpg.jpg?wid=2000&hei=2000",
+      "crop": [
+        0.28,
+        0.0,
+        0.5,
+        1.0
+      ],
+      "matte": "white",
       "keep": "largest",
       "fill_holes": true,
       "rotate": -66,
-      "page": "https://sidelineswap.com/gear/snowboarding/snowboards/12556576-burton-custom-flying-v-158-snowboard-2017-2018-new-read",
-      "_note": "listing photo of the exact board (topsheet), perspective straightened",
-      "quad_post": [
-        [
-          0.131,
-          0.0
-        ],
-        [
-          0.792,
-          0.0
-        ],
-        [
-          0.661,
-          1.0
-        ],
-        [
-          0.325,
-          1.0
-        ]
-      ]
+      "page": "https://www.blue-tomato.com/fr-FR/account/order/88393407/",
+      "_note": "Blue Tomato product photo of the exact board ordered (Custom Flying V 166 Wide 2018), topsheet only"
     },
     "leo-aldebaran": {
       "source": "https://m.media-amazon.com/images/P/2205087177.01._SCRM_.jpg",
