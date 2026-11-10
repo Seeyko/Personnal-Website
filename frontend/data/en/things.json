@@ -205,14 +205,6 @@
       "image": "/assets/things/sony-a6000.webp"
     },
     {
-      "id": "tente-forclaz-mt900",
-      "name": "MT900 tent + MH500 cook set",
-      "brand": "Forclaz",
-      "category": "sport",
-      "mono": "⛺",
-      "image": "/assets/things/tente-forclaz-mt900.webp"
-    },
-    {
       "id": "cpod",
       "name": "CPOD chair",
       "brand": "Équilibre",
