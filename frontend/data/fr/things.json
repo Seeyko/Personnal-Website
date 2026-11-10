@@ -205,14 +205,6 @@
       "image": "/assets/things/sony-a6000.webp"
     },
     {
-      "id": "tente-forclaz-mt900",
-      "name": "Tente MT900 + popote MH500",
-      "brand": "Forclaz",
-      "category": "sport",
-      "mono": "⛺",
-      "image": "/assets/things/tente-forclaz-mt900.webp"
-    },
-    {
       "id": "cpod",
       "name": "Siège CPOD",
       "brand": "Équilibre",
