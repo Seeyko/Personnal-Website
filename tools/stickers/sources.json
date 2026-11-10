@@ -942,6 +942,22 @@
       "keep": "largest",
       "page": "https://www.amazon.fr/dp/B0FY35MDNY",
       "note": "homeTro walking pad, Amazon A+ photo (packing list text cropped out)."
+    },
+    "blue-tomato-white-rabbit": {
+      "source": "https://images.blue-tomato.com/is/image/bluetomato/303655149_front.jpg-sZ0j3ejO2J-aezTEEy2ORfRt_IU/303655149+front+jpg.jpg?wid=2000&hei=2000",
+      "matte": "white",
+      "keep": "largest",
+      "rotate": 90,
+      "page": "https://www.blue-tomato.com/fr-FR/account/order/92305791/",
+      "note": "Blue Tomato product photo of the deck Tom ordered in 2018"
+    },
+    "powell-cab-dragon-ball": {
+      "source": "https://images.blue-tomato.com/is/image/bluetomato/303589965_front.jpg-60JxocS3zpWhWVmoA5IK6-mvLkA/303589965+front+jpg.jpg?wid=2000&hei=2000",
+      "matte": "white",
+      "keep": "largest",
+      "rotate": 90,
+      "page": "https://www.blue-tomato.com/fr-FR/account/order/92865796/",
+      "note": "Blue Tomato product photo of the deck Tom ordered in 2019"
     }
   }
 }

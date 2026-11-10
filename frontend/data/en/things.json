@@ -467,6 +467,22 @@
       "image": "/assets/things/powell-anderson-heron.webp"
     },
     {
+      "id": "blue-tomato-white-rabbit",
+      "name": "Follow The White Rabbit deck 8.5\"",
+      "brand": "Blue Tomato",
+      "category": "skate",
+      "mono": "🐇",
+      "image": "/assets/things/blue-tomato-white-rabbit.webp"
+    },
+    {
+      "id": "powell-cab-dragon-ball",
+      "name": "Caballero Dragon Ball deck 8.25\"",
+      "brand": "Powell Peralta",
+      "category": "skate",
+      "mono": "CAB",
+      "image": "/assets/things/powell-cab-dragon-ball.webp"
+    },
+    {
       "id": "enjoi-panda",
       "name": "Enjoi Panda complete",
       "brand": "Enjoi",
