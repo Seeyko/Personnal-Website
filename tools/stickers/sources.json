@@ -564,14 +564,6 @@
       "page": "https://www.amazon.fr/dp/2365450687",
       "note": "Cover (Jérôme Tanon), Amazon cover image by ISBN."
     },
-    "livres-sagesse": {
-      "source": "https://m.media-amazon.com/images/P/0735211299.01._SCRM_.jpg",
-      "matte": "none",
-      "book": 0.03,
-      "rotate": 2.5,
-      "page": "https://www.amazon.fr/dp/0735211299",
-      "note": "Cover (Atomic Habits (Avery)), Amazon cover image by ISBN."
-    },
     "livre-menuiserie": {
       "source": "https://m.media-amazon.com/images/P/221267645X.01._SCRM_.jpg",
       "matte": "none",
@@ -958,6 +950,56 @@
       "rotate": 90,
       "page": "https://www.blue-tomato.com/fr-FR/account/order/92865796/",
       "note": "Blue Tomato product photo of the deck Tom ordered in 2019"
+    },
+    "atomic-habits": {
+      "source": "https://m.media-amazon.com/images/P/0735211299.01._SCRM_.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": 2.5,
+      "page": "https://www.amazon.fr/dp/0735211299",
+      "note": "Cover (Atomic Habits (Avery)), Amazon cover image by ISBN."
+    },
+    "tao-te-king": {
+      "source": "https://m.media-amazon.com/images/I/71oyjlMLcVL.jpg",
+      "matte": "none",
+      "book": 0.03,
+      "rotate": -2,
+      "page": "https://www.amazon.fr/dp/2290162043",
+      "note": "Librio edition, from Tom's Amazon order (ASIN 2290162043)."
+    },
+    "in-the-buddhas-words": {
+      "source": "local/books/in-the-buddhas-words.png",
+      "matte": "poly",
+      "polys": [
+        [
+          [
+            0.2979,
+            0.125
+          ],
+          [
+            0.3724,
+            0.1109
+          ],
+          [
+            0.6552,
+            0.1521
+          ],
+          [
+            0.7005,
+            0.862
+          ],
+          [
+            0.388,
+            0.8948
+          ],
+          [
+            0.301,
+            0.8464
+          ]
+        ]
+      ],
+      "rotate": 1.5,
+      "page": "photo sent by Tom (Wisdom Publications, Bhikkhu Bodhi)"
     }
   }
 }

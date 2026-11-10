@@ -60,28 +60,16 @@
   ],
   "items": [
     {
-      "id": "mac-mini",
-      "name": "Mac mini M1",
-      "brand": "Apple",
-      "category": "setup",
-      "image": "/assets/things/mac-mini.webp"
-    },
-    {
-      "id": "ssd-externe-samsung",
-      "name": "SSD externe 1 To",
-      "brand": "Samsung",
-      "category": "setup",
-      "note": "Branché au Mac mini par un hub USB-C.",
-      "mono": "SSD"
-    },
-    {
-      "id": "switch-ethernet",
-      "name": "Switch Ethernet",
-      "brand": "",
-      "category": "setup",
-      "note": "Un cadeau de Victor à Noël.",
-      "mono": "ETH",
-      "image": "/assets/things/switch-ethernet.webp"
+      "id": "meuble-skate",
+      "name": "Meuble à skate",
+      "brand": "Fait main",
+      "category": "skate",
+      "image": "/assets/things/meuble-skate-3d.webp",
+      "model": "/assets/things/models/meuble-skate.glb",
+      "favorite": true,
+      "mono": "≋",
+      "anim": "/assets/things/meuble-skate-3d-anim.webp",
+      "animFrames": 24
     },
     {
       "id": "pc-windows",
@@ -92,6 +80,30 @@
       "image": "/assets/things/pc-windows.webp"
     },
     {
+      "id": "yamaha-clp-320",
+      "name": "Clavinova CLP-320",
+      "brand": "Yamaha",
+      "category": "musique",
+      "mono": "CLP",
+      "image": "/assets/things/yamaha-clp-320.webp"
+    },
+    {
+      "id": "burton-custom-flying-v",
+      "name": "Burton Custom Flying V 166 Wide",
+      "brand": "Burton",
+      "category": "skate",
+      "mono": "166W",
+      "image": "/assets/things/burton-custom-flying-v.webp"
+    },
+    {
+      "id": "burton-mission",
+      "name": "Fixations Burton Mission",
+      "brand": "Burton",
+      "category": "skate",
+      "mono": "SNOW",
+      "image": "/assets/things/burton-mission.webp"
+    },
+    {
       "id": "bureau-assis-debout",
       "name": "Bureau assis-debout",
       "brand": "Autonomous",
@@ -100,6 +112,105 @@
       "image": "/assets/things/bureau-assis-debout.webp",
       "anim": "/assets/things/bureau-assis-debout-anim.webp",
       "animFrames": 10
+    },
+    {
+      "id": "primitive-whis",
+      "name": "Deck Whis JB Gillet 8.38\"",
+      "brand": "Primitive x Dragon Ball Super",
+      "category": "skate",
+      "mono": "ウイス",
+      "image": "/assets/things/primitive-whis.webp"
+    },
+    {
+      "id": "powell-anderson-heron",
+      "name": "Andy Anderson Heron Skull",
+      "brand": "Powell Peralta",
+      "category": "skate",
+      "favorite": true,
+      "mono": "AA",
+      "image": "/assets/things/powell-anderson-heron.webp"
+    },
+    {
+      "id": "enjoi-panda",
+      "name": "Complete Enjoi Panda",
+      "brand": "Enjoi",
+      "category": "skate",
+      "mono": "🐼",
+      "image": "/assets/things/enjoi-panda.webp"
+    },
+    {
+      "id": "blue-tomato-white-rabbit",
+      "name": "Deck Follow The White Rabbit 8.5\"",
+      "brand": "Blue Tomato",
+      "category": "skate",
+      "mono": "🐇",
+      "image": "/assets/things/blue-tomato-white-rabbit.webp"
+    },
+    {
+      "id": "powell-cab-dragon-ball",
+      "name": "Deck Caballero Dragon Ball 8.25\"",
+      "brand": "Powell Peralta",
+      "category": "skate",
+      "mono": "CAB",
+      "image": "/assets/things/powell-cab-dragon-ball.webp"
+    },
+    {
+      "id": "decks-uses",
+      "name": "Les decks usés",
+      "brand": "Element, Cliché & co",
+      "category": "skate",
+      "retired": true,
+      "mono": "×6",
+      "image": "/assets/things/decks-uses.webp"
+    },
+    {
+      "id": "mac-mini",
+      "name": "Mac mini M1",
+      "brand": "Apple",
+      "category": "setup",
+      "image": "/assets/things/mac-mini.webp"
+    },
+    {
+      "id": "philips-65pus7354",
+      "name": "TV 65PUS7354",
+      "brand": "Philips",
+      "category": "maison",
+      "since": "2020",
+      "mono": "65\"",
+      "image": "/assets/things/philips-65pus7354.webp"
+    },
+    {
+      "id": "philips-499p9",
+      "name": "Philips 499P9H",
+      "brand": "Philips",
+      "category": "setup",
+      "mono": "49\"",
+      "image": "/assets/things/philips-499p9.webp"
+    },
+    {
+      "id": "iphone-15-pro",
+      "name": "iPhone 15 Pro",
+      "brand": "Apple",
+      "category": "setup",
+      "since": "2026",
+      "image": "/assets/things/iphone-15-pro.webp"
+    },
+    {
+      "id": "sony-a6000",
+      "name": "Alpha 6000",
+      "brand": "Sony",
+      "category": "photo",
+      "note": "Avec l'objectif SELP1650 (16-50 mm f/3.5-5.6).",
+      "mono": "α6",
+      "image": "/assets/things/sony-a6000.webp"
+    },
+    {
+      "id": "tente-forclaz-mt900",
+      "name": "Tente MT900 + popote MH500",
+      "brand": "Forclaz",
+      "category": "sport",
+      "mono": "⛺",
+      "image": "/assets/things/tente-forclaz-mt900.webp"
     },
     {
       "id": "cpod",
@@ -117,72 +228,6 @@
       "image": "/assets/things/tapis-de-marche.webp"
     },
     {
-      "id": "raspberry-pi-3",
-      "name": "Raspberry Pi 3",
-      "brand": "Raspberry Pi",
-      "category": "setup",
-      "since": "2017",
-      "image": "/assets/things/raspberry-pi-3.webp"
-    },
-    {
-      "id": "hp-deskjet-2710",
-      "name": "DeskJet 2710",
-      "brand": "HP",
-      "category": "setup",
-      "mono": "DJ",
-      "image": "/assets/things/hp-deskjet-2710.webp"
-    },
-    {
-      "id": "iphone-15-pro",
-      "name": "iPhone 15 Pro",
-      "brand": "Apple",
-      "category": "setup",
-      "since": "2026",
-      "image": "/assets/things/iphone-15-pro.webp"
-    },
-    {
-      "id": "chaise-gamer",
-      "name": "Chaise gamer",
-      "brand": "Songmics",
-      "category": "setup",
-      "note": "Plus utilisée.",
-      "since": "2017",
-      "retired": true,
-      "image": "/assets/things/chaise-gamer.webp"
-    },
-    {
-      "id": "philips-499p9",
-      "name": "Philips 499P9H",
-      "brand": "Philips",
-      "category": "setup",
-      "mono": "49\"",
-      "image": "/assets/things/philips-499p9.webp"
-    },
-    {
-      "id": "logitech-g610",
-      "name": "Clavier G610",
-      "brand": "Logitech",
-      "category": "setup",
-      "image": "/assets/things/logitech-g610.webp"
-    },
-    {
-      "id": "logitech-mx-vertical",
-      "name": "Souris MX Vertical",
-      "brand": "Logitech",
-      "category": "setup",
-      "since": "2024",
-      "mono": "MX",
-      "image": "/assets/things/logitech-mx-vertical.webp"
-    },
-    {
-      "id": "logitech-g602",
-      "name": "Souris G602",
-      "brand": "Logitech",
-      "category": "setup",
-      "mono": "G602",
-      "image": "/assets/things/logitech-g602.webp"
-    },
-    {
       "id": "arctis-nova-pro",
       "name": "Arctis Nova Pro Wireless",
       "brand": "SteelSeries",
@@ -191,27 +236,121 @@
       "image": "/assets/things/arctis-nova-pro.webp"
     },
     {
-      "id": "airpods",
-      "name": "AirPods",
-      "brand": "Apple",
-      "category": "audio",
-      "image": "/assets/things/airpods.webp"
+      "id": "ps5-manette",
+      "name": "Manette PS5",
+      "brand": "Sony",
+      "category": "gaming",
+      "image": "/assets/things/ps5-manette.webp"
     },
     {
-      "id": "yamaha-clp-320",
-      "name": "Clavinova CLP-320",
-      "brand": "Yamaha",
-      "category": "musique",
-      "mono": "CLP",
-      "image": "/assets/things/yamaha-clp-320.webp"
+      "id": "switch-animal-crossing",
+      "name": "Switch édition Animal Crossing",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "mono": "SW",
+      "image": "/assets/things/switch-animal-crossing.webp"
     },
     {
-      "id": "banc-piano",
-      "name": "Banquette de piano réglable",
-      "brand": "Banc classique",
-      "category": "musique",
-      "mono": "♪",
-      "image": "/assets/things/banc-piano.webp"
+      "id": "ps4",
+      "name": "PS4",
+      "brand": "Sony",
+      "category": "gaming",
+      "image": "/assets/things/ps4.webp"
+    },
+    {
+      "id": "berserk",
+      "name": "Berserk",
+      "brand": "Kentaro Miura",
+      "category": "books",
+      "note": "La collection complète.",
+      "mono": "BK",
+      "image": "/assets/things/berserk.webp"
+    },
+    {
+      "id": "leo-aldebaran",
+      "name": "Les mondes d'Aldébaran",
+      "brand": "Leo, Rodolphe",
+      "category": "books",
+      "note": "Namibia et toutes les séries de Leo.",
+      "mono": "ALD",
+      "image": "/assets/things/leo-aldebaran.webp"
+    },
+    {
+      "id": "univers-troy",
+      "name": "L'univers de Troy",
+      "brand": "Arleston, Tarquin, Mourier",
+      "category": "books",
+      "note": "Tous les Lanfeust et les Trolls de Troy.",
+      "mono": "LT",
+      "image": "/assets/things/univers-troy.webp"
+    },
+    {
+      "id": "chat-des-rues",
+      "name": "Chat des rues",
+      "brand": "Yuri Sonoda",
+      "category": "books",
+      "note": "La collection complète, les 6 tomes.",
+      "mono": "猫",
+      "image": "/assets/things/chat-des-rues.webp"
+    },
+    {
+      "id": "clan-des-otori",
+      "name": "Le clan des Otori",
+      "brand": "Stéphane Melchior, Benjamin Bachelier",
+      "category": "books",
+      "note": "Les 4 premiers tomes.",
+      "mono": "OT",
+      "image": "/assets/things/clan-des-otori.webp"
+    },
+    {
+      "id": "vent-des-dieux",
+      "name": "Le vent des dieux",
+      "brand": "Cothias, Adamov",
+      "category": "books",
+      "mono": "風",
+      "image": "/assets/things/vent-des-dieux.webp"
+    },
+    {
+      "id": "mr-robot-red-wheelbarrow",
+      "name": "Mr. Robot: Red Wheelbarrow",
+      "brand": "Sam Esmail, Courtney Looney",
+      "category": "books",
+      "note": "Génial.",
+      "favorite": true,
+      "mono": "MR",
+      "image": "/assets/things/mr-robot-red-wheelbarrow.webp"
+    },
+    {
+      "id": "zabardast",
+      "name": "Zabardast",
+      "brand": "Jérôme Tanon",
+      "category": "books",
+      "mono": "ZB",
+      "image": "/assets/things/zabardast.webp"
+    },
+    {
+      "id": "tao-te-king",
+      "name": "Tao-Te-King",
+      "brand": "Lao Tseu",
+      "category": "books",
+      "mono": "道",
+      "image": "/assets/things/tao-te-king.webp"
+    },
+    {
+      "id": "in-the-buddhas-words",
+      "name": "In the Buddha's Words",
+      "brand": "Bhikkhu Bodhi",
+      "category": "books",
+      "mono": "道",
+      "image": "/assets/things/in-the-buddhas-words.webp"
+    },
+    {
+      "id": "atomic-habits",
+      "name": "Atomic Habits",
+      "brand": "James Clear",
+      "category": "books",
+      "mono": "道",
+      "image": "/assets/things/atomic-habits.webp"
     },
     {
       "id": "bosch-gks-85-g",
@@ -222,6 +361,15 @@
       "image": "/assets/things/bosch-gks-85-g.webp"
     },
     {
+      "id": "bosch-fsn-1600",
+      "name": "Rails FSN 1100 + 1600",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "since": "2026",
+      "mono": "FSN",
+      "image": "/assets/things/bosch-fsn-1600.webp"
+    },
+    {
       "id": "bosch-gsb-18v",
       "name": "Perceuse-visseuse GSB 18V-55",
       "brand": "Bosch Professional",
@@ -229,6 +377,14 @@
       "since": "2021",
       "mono": "GSB",
       "image": "/assets/things/bosch-gsb-18v.webp"
+    },
+    {
+      "id": "bosch-visseuse-chocs",
+      "name": "Visseuse à chocs GDR 18V-160",
+      "brand": "Bosch Professional",
+      "category": "outils",
+      "mono": "GDR",
+      "image": "/assets/things/bosch-visseuse-chocs.webp"
     },
     {
       "id": "bosch-gws-18v-10-p",
@@ -257,21 +413,155 @@
       "image": "/assets/things/bosch-gst-160-ce.webp"
     },
     {
-      "id": "bosch-fsn-1600",
-      "name": "Rails FSN 1100 + 1600",
-      "brand": "Bosch Professional",
-      "category": "outils",
-      "since": "2026",
-      "mono": "FSN",
-      "image": "/assets/things/bosch-fsn-1600.webp"
+      "id": "henson-al13",
+      "name": "Rasoir AL13 cuivre et son support",
+      "brand": "Henson Shaving",
+      "category": "objets",
+      "mono": "AL13",
+      "image": "/assets/things/henson-al13.webp"
     },
     {
-      "id": "bosch-visseuse-chocs",
-      "name": "Visseuse à chocs GDR 18V-160",
-      "brand": "Bosch Professional",
-      "category": "outils",
-      "mono": "GDR",
-      "image": "/assets/things/bosch-visseuse-chocs.webp"
+      "id": "daruma",
+      "name": "Daruma",
+      "brand": "Daruma.com",
+      "category": "objets",
+      "image": "/assets/things/daruma.webp"
+    },
+    {
+      "id": "xbox-360",
+      "name": "Xbox 360",
+      "brand": "Microsoft",
+      "category": "gaming",
+      "image": "/assets/things/xbox-360.webp"
+    },
+    {
+      "id": "game-boy-color",
+      "name": "Game Boy Color",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "image": "/assets/things/game-boy-color.webp"
+    },
+    {
+      "id": "manette-pro-switch",
+      "name": "Manette Pro Switch",
+      "brand": "Nintendo",
+      "category": "gaming",
+      "mono": "PRO",
+      "image": "/assets/things/manette-pro-switch.webp"
+    },
+    {
+      "id": "tintin",
+      "name": "Tintin",
+      "brand": "Hergé",
+      "category": "books",
+      "mono": "TT",
+      "image": "/assets/things/tintin.webp"
+    },
+    {
+      "id": "asterix",
+      "name": "Astérix",
+      "brand": "Goscinny, Uderzo",
+      "category": "books",
+      "mono": "AX",
+      "image": "/assets/things/asterix.webp"
+    },
+    {
+      "id": "polars",
+      "name": "Les polars",
+      "brand": "Läckberg, Kepler, Lagercrantz, Kellerman",
+      "category": "books",
+      "mono": "⌕",
+      "image": "/assets/things/polars.webp"
+    },
+    {
+      "id": "logitech-g610",
+      "name": "Clavier G610",
+      "brand": "Logitech",
+      "category": "setup",
+      "image": "/assets/things/logitech-g610.webp"
+    },
+    {
+      "id": "logitech-mx-vertical",
+      "name": "Souris MX Vertical",
+      "brand": "Logitech",
+      "category": "setup",
+      "since": "2024",
+      "mono": "MX",
+      "image": "/assets/things/logitech-mx-vertical.webp"
+    },
+    {
+      "id": "logitech-g602",
+      "name": "Souris G602",
+      "brand": "Logitech",
+      "category": "setup",
+      "mono": "G602",
+      "image": "/assets/things/logitech-g602.webp"
+    },
+    {
+      "id": "airpods",
+      "name": "AirPods",
+      "brand": "Apple",
+      "category": "audio",
+      "image": "/assets/things/airpods.webp"
+    },
+    {
+      "id": "whoop",
+      "name": "Whoop",
+      "brand": "Whoop",
+      "category": "sport",
+      "note": "Plus porté : il ne m'apportait plus grand-chose.",
+      "retired": true,
+      "image": "/assets/things/whoop.webp"
+    },
+    {
+      "id": "limitless",
+      "name": "Pendentif Limitless",
+      "brand": "Limitless",
+      "category": "objets",
+      "note": "Plus porté : le produit a été arrêté.",
+      "retired": true,
+      "image": "/assets/things/limitless.webp"
+    },
+    {
+      "id": "dakine-low-roller",
+      "name": "Housse Low Roller",
+      "brand": "Dakine",
+      "category": "skate",
+      "mono": "BAG",
+      "image": "/assets/things/dakine-low-roller.webp"
+    },
+    {
+      "id": "ssd-externe-samsung",
+      "name": "SSD externe 1 To",
+      "brand": "Samsung",
+      "category": "setup",
+      "note": "Branché au Mac mini par un hub USB-C.",
+      "mono": "SSD"
+    },
+    {
+      "id": "switch-ethernet",
+      "name": "Switch Ethernet",
+      "brand": "",
+      "category": "setup",
+      "note": "Un cadeau de Victor à Noël.",
+      "mono": "ETH",
+      "image": "/assets/things/switch-ethernet.webp"
+    },
+    {
+      "id": "raspberry-pi-3",
+      "name": "Raspberry Pi 3",
+      "brand": "Raspberry Pi",
+      "category": "setup",
+      "since": "2017",
+      "image": "/assets/things/raspberry-pi-3.webp"
+    },
+    {
+      "id": "hp-deskjet-2710",
+      "name": "DeskJet 2710",
+      "brand": "HP",
+      "category": "setup",
+      "mono": "DJ",
+      "image": "/assets/things/hp-deskjet-2710.webp"
     },
     {
       "id": "bosch-marteau",
@@ -306,198 +596,12 @@
       "image": "/assets/things/bosch-gms-120.webp"
     },
     {
-      "id": "stanley-fatmax-etabli",
-      "name": "Établi pliant FATMAX Express",
-      "brand": "STANLEY",
-      "category": "outils",
-      "mono": "FM",
-      "image": "/assets/things/stanley-fatmax-etabli.webp"
-    },
-    {
-      "id": "stanley-etau",
-      "name": "Étau sur rotule",
-      "brand": "STANLEY",
-      "category": "outils",
-      "mono": "ÉTAU",
-      "image": "/assets/things/stanley-etau.webp"
-    },
-    {
-      "id": "stanley-presse-cadre",
-      "name": "Presse à cadre",
-      "brand": "STANLEY",
-      "category": "outils",
-      "mono": "90°",
-      "image": "/assets/things/stanley-presse-cadre.webp"
-    },
-    {
-      "id": "stanley-scie-chantourner",
-      "name": "Scie à chantourner",
-      "brand": "STANLEY",
-      "category": "outils",
-      "mono": "S",
-      "image": "/assets/things/stanley-scie-chantourner.webp"
-    },
-    {
-      "id": "fer-a-souder",
-      "name": "Fer à souder",
-      "brand": "",
-      "category": "outils",
-      "mono": "FER",
-      "image": "/assets/things/fer-a-souder.webp"
-    },
-    {
-      "id": "ps5-manette",
-      "name": "Manette PS5",
-      "brand": "Sony",
-      "category": "gaming",
-      "image": "/assets/things/ps5-manette.webp"
-    },
-    {
-      "id": "switch-animal-crossing",
-      "name": "Switch édition Animal Crossing",
-      "brand": "Nintendo",
-      "category": "gaming",
-      "mono": "SW",
-      "image": "/assets/things/switch-animal-crossing.webp"
-    },
-    {
-      "id": "manette-pro-switch",
-      "name": "Manette Pro Switch",
-      "brand": "Nintendo",
-      "category": "gaming",
-      "mono": "PRO",
-      "image": "/assets/things/manette-pro-switch.webp"
-    },
-    {
-      "id": "ps4",
-      "name": "PS4",
-      "brand": "Sony",
-      "category": "gaming",
-      "image": "/assets/things/ps4.webp"
-    },
-    {
-      "id": "xbox-360",
-      "name": "Xbox 360",
-      "brand": "Microsoft",
-      "category": "gaming",
-      "image": "/assets/things/xbox-360.webp"
-    },
-    {
-      "id": "game-boy-color",
-      "name": "Game Boy Color",
-      "brand": "Nintendo",
-      "category": "gaming",
-      "image": "/assets/things/game-boy-color.webp"
-    },
-    {
-      "id": "kettlebells",
-      "name": "Kettlebells",
-      "brand": "Decathlon",
-      "category": "sport",
-      "note": "4, 8, 12, 16 et 20 kg.",
-      "mono": "KB",
-      "image": "/assets/things/kettlebells.webp"
-    },
-    {
-      "id": "gilet-leste",
-      "name": "Gilet lesté",
-      "brand": "Decathlon",
-      "category": "sport",
-      "image": "/assets/things/gilet-leste.webp"
-    },
-    {
       "id": "anneaux-cts",
       "name": "Anneaux CTS",
       "brand": "Christophe Carrio",
       "category": "sport",
       "note": "Noirs.",
       "mono": "CTS"
-    },
-    {
-      "id": "whoop",
-      "name": "Whoop",
-      "brand": "Whoop",
-      "category": "sport",
-      "note": "Plus porté : il ne m'apportait plus grand-chose.",
-      "retired": true,
-      "image": "/assets/things/whoop.webp"
-    },
-    {
-      "id": "theragun-pro",
-      "name": "Theragun Pro",
-      "brand": "Therabody",
-      "category": "sport",
-      "image": "/assets/things/theragun-pro.webp"
-    },
-    {
-      "id": "tente-forclaz-mt900",
-      "name": "Tente MT900 + popote MH500",
-      "brand": "Forclaz",
-      "category": "sport",
-      "mono": "⛺",
-      "image": "/assets/things/tente-forclaz-mt900.webp"
-    },
-    {
-      "id": "meuble-skate",
-      "name": "Meuble à skate",
-      "brand": "Fait main",
-      "category": "skate",
-      "image": "/assets/things/meuble-skate-3d.webp",
-      "model": "/assets/things/models/meuble-skate.glb",
-      "favorite": true,
-      "mono": "≋",
-      "anim": "/assets/things/meuble-skate-3d-anim.webp",
-      "animFrames": 24
-    },
-    {
-      "id": "primitive-whis",
-      "name": "Deck Whis JB Gillet 8.38\"",
-      "brand": "Primitive x Dragon Ball Super",
-      "category": "skate",
-      "mono": "ウイス",
-      "image": "/assets/things/primitive-whis.webp"
-    },
-    {
-      "id": "powell-anderson-heron",
-      "name": "Andy Anderson Heron Skull",
-      "brand": "Powell Peralta",
-      "category": "skate",
-      "favorite": true,
-      "mono": "AA",
-      "image": "/assets/things/powell-anderson-heron.webp"
-    },
-    {
-      "id": "blue-tomato-white-rabbit",
-      "name": "Deck Follow The White Rabbit 8.5\"",
-      "brand": "Blue Tomato",
-      "category": "skate",
-      "mono": "🐇",
-      "image": "/assets/things/blue-tomato-white-rabbit.webp"
-    },
-    {
-      "id": "powell-cab-dragon-ball",
-      "name": "Deck Caballero Dragon Ball 8.25\"",
-      "brand": "Powell Peralta",
-      "category": "skate",
-      "mono": "CAB",
-      "image": "/assets/things/powell-cab-dragon-ball.webp"
-    },
-    {
-      "id": "enjoi-panda",
-      "name": "Complete Enjoi Panda",
-      "brand": "Enjoi",
-      "category": "skate",
-      "mono": "🐼",
-      "image": "/assets/things/enjoi-panda.webp"
-    },
-    {
-      "id": "decks-uses",
-      "name": "Les decks usés",
-      "brand": "Element, Cliché & co",
-      "category": "skate",
-      "retired": true,
-      "mono": "×6",
-      "image": "/assets/things/decks-uses.webp"
     },
     {
       "id": "olaian-sws500",
@@ -508,195 +612,12 @@
       "mono": "SURF"
     },
     {
-      "id": "burton-custom-flying-v",
-      "name": "Burton Custom Flying V 166 Wide",
-      "brand": "Burton",
-      "category": "skate",
-      "mono": "166W",
-      "image": "/assets/things/burton-custom-flying-v.webp"
-    },
-    {
-      "id": "burton-mission",
-      "name": "Fixations Burton Mission",
-      "brand": "Burton",
-      "category": "skate",
-      "mono": "SNOW",
-      "image": "/assets/things/burton-mission.webp"
-    },
-    {
-      "id": "sony-a6000",
-      "name": "Alpha 6000",
-      "brand": "Sony",
-      "category": "photo",
-      "note": "Avec l'objectif SELP1650 (16-50 mm f/3.5-5.6).",
-      "mono": "α6",
-      "image": "/assets/things/sony-a6000.webp"
-    },
-    {
-      "id": "dakine-low-roller",
-      "name": "Housse Low Roller",
-      "brand": "Dakine",
-      "category": "skate",
-      "mono": "BAG",
-      "image": "/assets/things/dakine-low-roller.webp"
-    },
-    {
-      "id": "berserk",
-      "name": "Berserk",
-      "brand": "Kentaro Miura",
-      "category": "books",
-      "note": "La collection complète.",
-      "mono": "BK",
-      "image": "/assets/things/berserk.webp"
-    },
-    {
-      "id": "chat-des-rues",
-      "name": "Chat des rues",
-      "brand": "Yuri Sonoda",
-      "category": "books",
-      "note": "La collection complète, les 6 tomes.",
-      "mono": "猫",
-      "image": "/assets/things/chat-des-rues.webp"
-    },
-    {
-      "id": "clan-des-otori",
-      "name": "Le clan des Otori",
-      "brand": "Stéphane Melchior, Benjamin Bachelier",
-      "category": "books",
-      "note": "Les 4 premiers tomes.",
-      "mono": "OT",
-      "image": "/assets/things/clan-des-otori.webp"
-    },
-    {
-      "id": "univers-troy",
-      "name": "L'univers de Troy",
-      "brand": "Arleston, Tarquin, Mourier",
-      "category": "books",
-      "note": "Tous les Lanfeust et les Trolls de Troy.",
-      "mono": "LT",
-      "image": "/assets/things/univers-troy.webp"
-    },
-    {
-      "id": "leo-aldebaran",
-      "name": "Les mondes d'Aldébaran",
-      "brand": "Leo",
-      "category": "books",
-      "note": "Namibia et toutes les séries de Leo.",
-      "mono": "ALD",
-      "image": "/assets/things/leo-aldebaran.webp"
-    },
-    {
-      "id": "vent-des-dieux",
-      "name": "Le vent des dieux",
-      "brand": "Cothias, Adamov",
-      "category": "books",
-      "mono": "風",
-      "image": "/assets/things/vent-des-dieux.webp"
-    },
-    {
-      "id": "bilal",
-      "name": "Bilal",
-      "brand": "Enki Bilal",
-      "category": "books",
-      "mono": "EB",
-      "image": "/assets/things/bilal.webp"
-    },
-    {
-      "id": "tintin",
-      "name": "Tintin",
-      "brand": "Hergé",
-      "category": "books",
-      "mono": "TT",
-      "image": "/assets/things/tintin.webp"
-    },
-    {
-      "id": "asterix",
-      "name": "Astérix",
-      "brand": "Goscinny, Uderzo",
-      "category": "books",
-      "mono": "AX",
-      "image": "/assets/things/asterix.webp"
-    },
-    {
-      "id": "polars",
-      "name": "Les polars",
-      "brand": "Läckberg, Kepler, Lagercrantz, Kellerman",
-      "category": "books",
-      "mono": "⌕",
-      "image": "/assets/things/polars.webp"
-    },
-    {
-      "id": "mr-robot-red-wheelbarrow",
-      "name": "Mr. Robot: Red Wheelbarrow",
-      "brand": "Sam Esmail, Courtney Looney",
-      "category": "books",
-      "note": "Génial.",
-      "favorite": true,
-      "mono": "MR",
-      "image": "/assets/things/mr-robot-red-wheelbarrow.webp"
-    },
-    {
-      "id": "zabardast",
-      "name": "Zabardast",
-      "brand": "Jérôme Tanon",
-      "category": "books",
-      "mono": "ZB",
-      "image": "/assets/things/zabardast.webp"
-    },
-    {
-      "id": "utopie",
-      "name": "Utopie",
-      "brand": "Rodolphe, Griffo",
-      "category": "books",
-      "mono": "UT",
-      "image": "/assets/things/utopie.webp"
-    },
-    {
-      "id": "ezechiel",
-      "name": "Ezechiel",
-      "brand": "Rodolphe, Ramón Marcos, Dimitri Fogolin",
-      "category": "books",
-      "mono": "EZ",
-      "image": "/assets/things/ezechiel.webp"
-    },
-    {
-      "id": "livres-sagesse",
-      "name": "Tao-Te-King, In the Buddha's Words, Atomic Habits",
-      "brand": "Lao Tseu, Bouddha, James Clear",
-      "category": "books",
-      "mono": "道",
-      "image": "/assets/things/livres-sagesse.webp"
-    },
-    {
-      "id": "livre-menuiserie",
-      "name": "Le grand livre de la menuiserie",
-      "brand": "Livre",
-      "category": "books",
-      "mono": "GL",
-      "image": "/assets/things/livre-menuiserie.webp"
-    },
-    {
-      "id": "daruma",
-      "name": "Daruma",
-      "brand": "Daruma.com",
-      "category": "objets",
-      "image": "/assets/things/daruma.webp"
-    },
-    {
       "id": "airtags",
-      "name": "AirTags ×4",
+      "name": "AirTags",
       "brand": "Apple",
       "category": "objets",
       "mono": "×4",
       "image": "/assets/things/airtags.webp"
-    },
-    {
-      "id": "henson-al13",
-      "name": "Rasoir AL13 cuivre et son support",
-      "brand": "Henson Shaving",
-      "category": "objets",
-      "mono": "AL13",
-      "image": "/assets/things/henson-al13.webp"
     },
     {
       "id": "panasonic-er-gp82",
@@ -705,66 +626,6 @@
       "category": "objets",
       "mono": "GP82",
       "image": "/assets/things/panasonic-er-gp82.webp"
-    },
-    {
-      "id": "limitless",
-      "name": "Pendentif Limitless",
-      "brand": "Limitless",
-      "category": "objets",
-      "note": "Plus porté : le produit a été arrêté.",
-      "retired": true,
-      "image": "/assets/things/limitless.webp"
-    },
-    {
-      "id": "bosch-lave-vaisselle",
-      "name": "Lave-vaisselle SMV6ECX93E",
-      "brand": "Bosch",
-      "category": "maison",
-      "mono": "S6",
-      "image": "/assets/things/bosch-lave-vaisselle.webp"
-    },
-    {
-      "id": "haier-lave-linge",
-      "name": "Lave-linge HW100-B14367U",
-      "brand": "Haier",
-      "category": "maison",
-      "since": "2026",
-      "mono": "HW",
-      "image": "/assets/things/haier-lave-linge.webp"
-    },
-    {
-      "id": "haier-seche-linge",
-      "name": "Sèche-linge HD100-C367U1",
-      "brand": "Haier",
-      "category": "maison",
-      "since": "2026",
-      "mono": "HD",
-      "image": "/assets/things/haier-seche-linge.webp"
-    },
-    {
-      "id": "ecovacs-t50",
-      "name": "Aspirateur robot T50 Omni",
-      "brand": "Ecovacs",
-      "category": "maison",
-      "mono": "T50",
-      "image": "/assets/things/ecovacs-t50.webp"
-    },
-    {
-      "id": "matelas-emma",
-      "name": "Matelas Emma",
-      "brand": "Emma",
-      "category": "maison",
-      "mono": "Zz",
-      "image": "/assets/things/matelas-emma.webp"
-    },
-    {
-      "id": "philips-65pus7354",
-      "name": "TV 65PUS7354",
-      "brand": "Philips",
-      "category": "maison",
-      "since": "2020",
-      "mono": "65\"",
-      "image": "/assets/things/philips-65pus7354.webp"
     }
   ]
 }
