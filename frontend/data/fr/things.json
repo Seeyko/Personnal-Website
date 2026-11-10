@@ -467,6 +467,22 @@
       "image": "/assets/things/powell-anderson-heron.webp"
     },
     {
+      "id": "blue-tomato-white-rabbit",
+      "name": "Deck Follow The White Rabbit 8.5\"",
+      "brand": "Blue Tomato",
+      "category": "skate",
+      "mono": "🐇",
+      "image": "/assets/things/blue-tomato-white-rabbit.webp"
+    },
+    {
+      "id": "powell-cab-dragon-ball",
+      "name": "Deck Caballero Dragon Ball 8.25\"",
+      "brand": "Powell Peralta",
+      "category": "skate",
+      "mono": "CAB",
+      "image": "/assets/things/powell-cab-dragon-ball.webp"
+    },
+    {
       "id": "enjoi-panda",
       "name": "Complete Enjoi Panda",
       "brand": "Enjoi",
@@ -493,10 +509,10 @@
     },
     {
       "id": "burton-custom-flying-v",
-      "name": "Burton Custom Flying V 158",
+      "name": "Burton Custom Flying V 166 Wide",
       "brand": "Burton",
       "category": "skate",
-      "mono": "158",
+      "mono": "166W",
       "image": "/assets/things/burton-custom-flying-v.webp"
     },
     {
