@@ -30,6 +30,42 @@
     ]
   },
   {
+    "id": "ciboulot",
+    "title": "Ciboulot",
+    "description": "Le cerveau de la maison : une mémoire de la vie du foyer, que des agents IA transforment en faits. Dessus, des apps minimales, un écran et un geste chacune : Popote (les recettes), Marmotti (les courses) et Méli (le journal du jour). Siri et Claude y écrivent aussi, par MCP.",
+    "type": "SYSTÈME IA",
+    "url": "https://ciboulot.tomandrieu.com",
+    "images": [
+      "/assets/ciboulot-systeme.webp",
+      "/assets/ciboulot-popote.webp",
+      "/assets/ciboulot-marmotti.webp",
+      "/assets/ciboulot-meli.webp"
+    ],
+    "tags": [
+      "IA",
+      "SwiftUI",
+      "Bun",
+      "MCP"
+    ]
+  },
+  {
+    "id": "my-little-garden",
+    "title": "My Little Garden",
+    "description": "Une app iOS pour rééduquer son périnée 7 minutes par jour, pendant la grossesse et après bébé. Une voix guide, des mini-jeux à l'aquarelle donnent le rythme, et le jardin pousse à chaque séance.",
+    "type": "APP iOS",
+    "url": "https://mylittlegarden.tomandrieu.com",
+    "images": [
+      "/assets/my-little-garden-jardin.webp",
+      "/assets/my-little-garden-exercices.webp"
+    ],
+    "tags": [
+      "SwiftUI",
+      "iOS",
+      "Santé",
+      "Aquarelle"
+    ]
+  },
+  {
     "id": "skoolbook",
     "title": "Skoolbook",
     "description": "Skoolbook, c'est une appli que j'ai construite avec ma conjointe instit. L'idée : simplifier la gestion des bibliothèques de classe. Les profs peuvent suivre les emprunts facilement, et les élèves gèrent leurs livres en autonomie.",

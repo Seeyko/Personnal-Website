@@ -30,6 +30,42 @@
     ]
   },
   {
+    "id": "ciboulot",
+    "title": "Ciboulot",
+    "description": "The brain of the house: a memory of family life that AI agents turn into facts. On top sit minimal apps, one screen and one gesture each: Popote (recipes), Marmotti (shopping) and Méli (a daily journal). Siri and Claude write to it too, over MCP.",
+    "type": "AI SYSTEM",
+    "url": "https://ciboulot.tomandrieu.com",
+    "images": [
+      "/assets/ciboulot-systeme.webp",
+      "/assets/ciboulot-popote.webp",
+      "/assets/ciboulot-marmotti.webp",
+      "/assets/ciboulot-meli.webp"
+    ],
+    "tags": [
+      "AI",
+      "SwiftUI",
+      "Bun",
+      "MCP"
+    ]
+  },
+  {
+    "id": "my-little-garden",
+    "title": "My Little Garden",
+    "description": "An iOS app to rehab your pelvic floor 7 minutes a day, during pregnancy and after baby. A voice guides you, watercolour mini-games set the pace, and your garden grows with every session.",
+    "type": "iOS APP",
+    "url": "https://mylittlegarden.tomandrieu.com",
+    "images": [
+      "/assets/my-little-garden-jardin.webp",
+      "/assets/my-little-garden-exercices.webp"
+    ],
+    "tags": [
+      "SwiftUI",
+      "iOS",
+      "Health",
+      "Watercolour"
+    ]
+  },
+  {
     "id": "skoolbook",
     "title": "Skoolbook",
     "description": "Skoolbook is a platform I designed with my partner, a school teacher, to optimize school library management. It offers an intuitive interface for teachers, simplifies book loan tracking, and encourages student autonomy.",
