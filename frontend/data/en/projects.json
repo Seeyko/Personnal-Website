@@ -32,7 +32,7 @@
   {
     "id": "ciboulot",
     "title": "Ciboulot",
-    "description": "The system behind Popote, Marmotti and Méli. Whatever we tell Siri, Claude or the apps lands in one shared memory, and each app shows only its own slice: recipes, groceries, the daily journal.",
+    "description": "The system behind Popote, Marmotti and Méli. What we tell Siri, Claude or the apps goes into one shared memory, and each app shows a slice of it.",
     "type": "AI SYSTEM",
     "url": "https://ciboulot.tomandrieu.com",
     "images": [
@@ -46,12 +46,38 @@
       "SwiftUI",
       "Bun",
       "MCP"
-    ]
+    ],
+    "themeImages": {
+      "default": [
+        "/assets/projects/default/ciboulot-1.webp",
+        "/assets/projects/default/ciboulot-2.webp",
+        "/assets/projects/default/ciboulot-3.webp",
+        "/assets/projects/default/ciboulot-4.webp"
+      ],
+      "terminal": [
+        "/assets/projects/terminal/ciboulot-1.webp",
+        "/assets/projects/terminal/ciboulot-2.webp",
+        "/assets/projects/terminal/ciboulot-3.webp",
+        "/assets/projects/terminal/ciboulot-4.webp"
+      ],
+      "blueprint": [
+        "/assets/projects/blueprint/ciboulot-1.webp",
+        "/assets/projects/blueprint/ciboulot-2.webp",
+        "/assets/projects/blueprint/ciboulot-3.webp",
+        "/assets/projects/blueprint/ciboulot-4.webp"
+      ],
+      "retro90s": [
+        "/assets/projects/retro90s/ciboulot-1.webp",
+        "/assets/projects/retro90s/ciboulot-2.webp",
+        "/assets/projects/retro90s/ciboulot-3.webp",
+        "/assets/projects/retro90s/ciboulot-4.webp"
+      ]
+    }
   },
   {
     "id": "my-little-garden",
     "title": "My Little Garden",
-    "description": "An iOS app for pelvic floor rehab, during pregnancy and after the baby. 7 minutes a day, voice-guided, with a frog, a watering can and a butterfly painted in watercolour. The garden grows after every session.",
+    "description": "An iOS app for pelvic floor rehab, during pregnancy and after the baby. 7 minutes a day, voice-guided, in a garden painted in watercolour.",
     "type": "iOS APP",
     "url": "https://mylittlegarden.tomandrieu.com",
     "images": [
@@ -63,7 +89,25 @@
       "iOS",
       "Health",
       "Watercolour"
-    ]
+    ],
+    "themeImages": {
+      "default": [
+        "/assets/projects/default/my-little-garden-1.webp",
+        "/assets/projects/default/my-little-garden-2.webp"
+      ],
+      "terminal": [
+        "/assets/projects/terminal/my-little-garden-1.webp",
+        "/assets/projects/terminal/my-little-garden-2.webp"
+      ],
+      "blueprint": [
+        "/assets/projects/blueprint/my-little-garden-1.webp",
+        "/assets/projects/blueprint/my-little-garden-2.webp"
+      ],
+      "retro90s": [
+        "/assets/projects/retro90s/my-little-garden-1.webp",
+        "/assets/projects/retro90s/my-little-garden-2.webp"
+      ]
+    }
   },
   {
     "id": "skoolbook",

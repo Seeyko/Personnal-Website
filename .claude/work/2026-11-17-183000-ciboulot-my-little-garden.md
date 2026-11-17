@@ -17,5 +17,8 @@ Ajouter deux cards projet : Ciboulot (le système, avec Popote, Marmotti et Mél
 - [x] Cards FR + EN
 - [x] Testé : default, terminal, blueprint, retro90s (fps ne charge aucune image de projet, déjà le cas avant)
 
+- [x] Textes réécrits plus simples (guide clean-copy de Tom)
+- [x] Visuels propres à chaque thème : `themeImages.{theme}` dans projects.json, lu par content-loader.js ; fichiers dans assets/projects/{theme}/ (fps garde `images`)
+
 ## Notes/Discoveries
 - Les visuels viennent des captures App Store, des mascottes et des maquettes des deux repos ; le schéma Ciboulot et la planche Méli sont des pages HTML capturées avec Playwright.

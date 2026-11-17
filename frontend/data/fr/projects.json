@@ -32,7 +32,7 @@
   {
     "id": "ciboulot",
     "title": "Ciboulot",
-    "description": "Le système derrière Popote, Marmotti et Méli. Tout ce qu'on dit à Siri, à Claude ou dans les apps finit dans une seule mémoire, et chaque app n'en affiche qu'un bout : les recettes, les courses, le journal du jour.",
+    "description": "Le système derrière Popote, Marmotti et Méli. Ce qu'on dit à Siri, à Claude ou aux apps va dans une seule mémoire, et chaque app en montre un bout.",
     "type": "SYSTÈME IA",
     "url": "https://ciboulot.tomandrieu.com",
     "images": [
@@ -46,12 +46,38 @@
       "SwiftUI",
       "Bun",
       "MCP"
-    ]
+    ],
+    "themeImages": {
+      "default": [
+        "/assets/projects/default/ciboulot-1.webp",
+        "/assets/projects/default/ciboulot-2.webp",
+        "/assets/projects/default/ciboulot-3.webp",
+        "/assets/projects/default/ciboulot-4.webp"
+      ],
+      "terminal": [
+        "/assets/projects/terminal/ciboulot-1.webp",
+        "/assets/projects/terminal/ciboulot-2.webp",
+        "/assets/projects/terminal/ciboulot-3.webp",
+        "/assets/projects/terminal/ciboulot-4.webp"
+      ],
+      "blueprint": [
+        "/assets/projects/blueprint/ciboulot-1.webp",
+        "/assets/projects/blueprint/ciboulot-2.webp",
+        "/assets/projects/blueprint/ciboulot-3.webp",
+        "/assets/projects/blueprint/ciboulot-4.webp"
+      ],
+      "retro90s": [
+        "/assets/projects/retro90s/ciboulot-1.webp",
+        "/assets/projects/retro90s/ciboulot-2.webp",
+        "/assets/projects/retro90s/ciboulot-3.webp",
+        "/assets/projects/retro90s/ciboulot-4.webp"
+      ]
+    }
   },
   {
     "id": "my-little-garden",
     "title": "My Little Garden",
-    "description": "Une app iOS de rééducation du périnée, pendant la grossesse et après bébé. 7 minutes par jour, guidées à la voix, avec une grenouille, un arrosoir et un papillon peints à l'aquarelle. Le jardin pousse à chaque séance.",
+    "description": "Une app iOS de rééducation du périnée, pendant la grossesse et après bébé. 7 minutes par jour, guidées à la voix, dans un jardin peint à l'aquarelle.",
     "type": "APP iOS",
     "url": "https://mylittlegarden.tomandrieu.com",
     "images": [
@@ -63,7 +89,25 @@
       "iOS",
       "Santé",
       "Aquarelle"
-    ]
+    ],
+    "themeImages": {
+      "default": [
+        "/assets/projects/default/my-little-garden-1.webp",
+        "/assets/projects/default/my-little-garden-2.webp"
+      ],
+      "terminal": [
+        "/assets/projects/terminal/my-little-garden-1.webp",
+        "/assets/projects/terminal/my-little-garden-2.webp"
+      ],
+      "blueprint": [
+        "/assets/projects/blueprint/my-little-garden-1.webp",
+        "/assets/projects/blueprint/my-little-garden-2.webp"
+      ],
+      "retro90s": [
+        "/assets/projects/retro90s/my-little-garden-1.webp",
+        "/assets/projects/retro90s/my-little-garden-2.webp"
+      ]
+    }
   },
   {
     "id": "skoolbook",
