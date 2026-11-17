@@ -30,6 +30,86 @@
     ]
   },
   {
+    "id": "ciboulot",
+    "title": "Ciboulot",
+    "description": "Le système derrière Popote, Marmotti et Méli. Ce qu'on dit à Siri, à Claude ou aux apps va dans une seule mémoire, et chaque app en montre un bout.",
+    "type": "SYSTÈME IA",
+    "url": "https://ciboulot.tomandrieu.com",
+    "images": [
+      "/assets/ciboulot-systeme.webp",
+      "/assets/ciboulot-popote.webp",
+      "/assets/ciboulot-marmotti.webp",
+      "/assets/ciboulot-meli.webp"
+    ],
+    "tags": [
+      "IA",
+      "SwiftUI",
+      "Bun",
+      "MCP"
+    ],
+    "themeImages": {
+      "default": [
+        "/assets/projects/default/ciboulot-1.webp",
+        "/assets/projects/default/ciboulot-2.webp",
+        "/assets/projects/default/ciboulot-3.webp",
+        "/assets/projects/default/ciboulot-4.webp"
+      ],
+      "terminal": [
+        "/assets/projects/terminal/ciboulot-1.webp",
+        "/assets/projects/terminal/ciboulot-2.webp",
+        "/assets/projects/terminal/ciboulot-3.webp",
+        "/assets/projects/terminal/ciboulot-4.webp"
+      ],
+      "blueprint": [
+        "/assets/projects/blueprint/ciboulot-1.webp",
+        "/assets/projects/blueprint/ciboulot-2.webp",
+        "/assets/projects/blueprint/ciboulot-3.webp",
+        "/assets/projects/blueprint/ciboulot-4.webp"
+      ],
+      "retro90s": [
+        "/assets/projects/retro90s/ciboulot-1.webp",
+        "/assets/projects/retro90s/ciboulot-2.webp",
+        "/assets/projects/retro90s/ciboulot-3.webp",
+        "/assets/projects/retro90s/ciboulot-4.webp"
+      ]
+    }
+  },
+  {
+    "id": "my-little-garden",
+    "title": "My Little Garden",
+    "description": "Une app iOS de rééducation du périnée, pendant la grossesse et après bébé. 7 minutes par jour, guidées à la voix, dans un jardin peint à l'aquarelle.",
+    "type": "APP iOS",
+    "url": "https://mylittlegarden.tomandrieu.com",
+    "images": [
+      "/assets/my-little-garden-jardin.webp",
+      "/assets/my-little-garden-exercices.webp"
+    ],
+    "tags": [
+      "SwiftUI",
+      "iOS",
+      "Santé",
+      "Aquarelle"
+    ],
+    "themeImages": {
+      "default": [
+        "/assets/projects/default/my-little-garden-1.webp",
+        "/assets/projects/default/my-little-garden-2.webp"
+      ],
+      "terminal": [
+        "/assets/projects/terminal/my-little-garden-1.webp",
+        "/assets/projects/terminal/my-little-garden-2.webp"
+      ],
+      "blueprint": [
+        "/assets/projects/blueprint/my-little-garden-1.webp",
+        "/assets/projects/blueprint/my-little-garden-2.webp"
+      ],
+      "retro90s": [
+        "/assets/projects/retro90s/my-little-garden-1.webp",
+        "/assets/projects/retro90s/my-little-garden-2.webp"
+      ]
+    }
+  },
+  {
     "id": "skoolbook",
     "title": "Skoolbook",
     "description": "Skoolbook, c'est une appli que j'ai construite avec ma conjointe instit. L'idée : simplifier la gestion des bibliothèques de classe. Les profs peuvent suivre les emprunts facilement, et les élèves gèrent leurs livres en autonomie.",
