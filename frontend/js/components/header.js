@@ -17,7 +17,6 @@ const HeaderComponent = (() => {
     const DEFAULT_NAV_ITEMS = [
         { href: '/#now', section: '01', i18nKey: 'nav.now', text: 'Now' },
         { href: '/#work', section: '02', i18nKey: 'nav.work', text: 'Work' },
-        { href: '/#writing', section: '03', i18nKey: 'nav.writing', text: 'Writing' },
         { href: '/#timeline', section: '04', i18nKey: 'nav.history', text: 'History' },
         { href: '/#about', section: '05', i18nKey: 'nav.about', text: 'About' },
         { href: '/#contact', section: '06', i18nKey: 'nav.contact', text: 'Contact' }
@@ -27,7 +26,6 @@ const HeaderComponent = (() => {
     const LANDING_NAV_ITEMS = [
         { href: '#now', section: '01', i18nKey: 'nav.now', text: 'Now' },
         { href: '#work', section: '02', i18nKey: 'nav.work', text: 'Work' },
-        { href: '#writing', section: '03', i18nKey: 'nav.writing', text: 'Writing' },
         { href: '#timeline', section: '04', i18nKey: 'nav.history', text: 'History' },
         { href: '#about', section: '05', i18nKey: 'nav.about', text: 'About' },
         { href: '#contact', section: '06', i18nKey: 'nav.contact', text: 'Contact' }
