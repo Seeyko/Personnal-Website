@@ -32,7 +32,7 @@
   {
     "id": "ciboulot",
     "title": "Ciboulot",
-    "description": "The brain of the house: a memory of family life that AI agents turn into facts. On top sit minimal apps, one screen and one gesture each: Popote (recipes), Marmotti (shopping) and Méli (a daily journal). Siri and Claude write to it too, over MCP.",
+    "description": "The system behind Popote, Marmotti and Méli. Whatever we tell Siri, Claude or the apps lands in one shared memory, and each app shows only its own slice: recipes, groceries, the daily journal.",
     "type": "AI SYSTEM",
     "url": "https://ciboulot.tomandrieu.com",
     "images": [
@@ -51,7 +51,7 @@
   {
     "id": "my-little-garden",
     "title": "My Little Garden",
-    "description": "An iOS app to rehab your pelvic floor 7 minutes a day, during pregnancy and after baby. A voice guides you, watercolour mini-games set the pace, and your garden grows with every session.",
+    "description": "An iOS app for pelvic floor rehab, during pregnancy and after the baby. 7 minutes a day, voice-guided, with a frog, a watering can and a butterfly painted in watercolour. The garden grows after every session.",
     "type": "iOS APP",
     "url": "https://mylittlegarden.tomandrieu.com",
     "images": [

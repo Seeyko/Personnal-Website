@@ -32,7 +32,7 @@
   {
     "id": "ciboulot",
     "title": "Ciboulot",
-    "description": "Le cerveau de la maison : une mémoire de la vie du foyer, que des agents IA transforment en faits. Dessus, des apps minimales, un écran et un geste chacune : Popote (les recettes), Marmotti (les courses) et Méli (le journal du jour). Siri et Claude y écrivent aussi, par MCP.",
+    "description": "Le système derrière Popote, Marmotti et Méli. Tout ce qu'on dit à Siri, à Claude ou dans les apps finit dans une seule mémoire, et chaque app n'en affiche qu'un bout : les recettes, les courses, le journal du jour.",
     "type": "SYSTÈME IA",
     "url": "https://ciboulot.tomandrieu.com",
     "images": [
@@ -51,7 +51,7 @@
   {
     "id": "my-little-garden",
     "title": "My Little Garden",
-    "description": "Une app iOS pour rééduquer son périnée 7 minutes par jour, pendant la grossesse et après bébé. Une voix guide, des mini-jeux à l'aquarelle donnent le rythme, et le jardin pousse à chaque séance.",
+    "description": "Une app iOS de rééducation du périnée, pendant la grossesse et après bébé. 7 minutes par jour, guidées à la voix, avec une grenouille, un arrosoir et un papillon peints à l'aquarelle. Le jardin pousse à chaque séance.",
     "type": "APP iOS",
     "url": "https://mylittlegarden.tomandrieu.com",
     "images": [

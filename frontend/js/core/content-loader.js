@@ -200,9 +200,12 @@ const ContentLoader = (() => {
         const response = await fetch(`/data/${lang}/projects.json`);
         if (!response.ok) throw new Error('Failed to fetch projects');
 
+        // A project can ship visuals drawn for each theme (themeImages.{theme});
+        // switching theme reloads the page, so picking them once here is enough.
+        const theme = document.body.dataset.theme || (typeof ThemeManager !== 'undefined' ? ThemeManager.getCurrentThemeId() : null);
         projects = (await response.json()).map(p => ({
             ...p,
-            images: p.images?.map(img => img.startsWith('/') ? img : `/assets/${img.replace('assets/', '')}`),
+            images: (p.themeImages?.[theme] || p.images)?.map(img => img.startsWith('/') ? img : `/assets/${img.replace('assets/', '')}`),
             video: p.video ? (p.video.startsWith('/') ? p.video : `/assets/${p.video.replace('assets/', '')}`) : null
         }));
 
