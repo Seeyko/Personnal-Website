@@ -30,6 +30,8 @@ window.APP_CONFIG = {
     window.APP_CONFIG.IS_PRODUCTION = isProd;
     window.APP_CONFIG.FEATURES = {
         articlesApi: isProd,
-        analytics: isProd
+        analytics: isProd,
+        // /posts renders tweets with react-xeet through the backend (GET /api/xeet/{id}).
+        xeet: isProd
     };
 })();

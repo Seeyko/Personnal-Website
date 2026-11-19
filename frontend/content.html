@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mon contenu - Tom Andrieu</title>
-  <meta name="description" content="Tout ce que Tom Andrieu publie hors du blog : posts et réponses sur X, et bientôt ses vidéos." />
-  <link rel="canonical" href="https://tomandrieu.com/contenu" />
+  <title>Posts - Tom Andrieu</title>
+  <meta name="description" content="Tous les posts, réponses et threads de Tom Andrieu sur X, au même endroit." />
+  <link rel="canonical" href="https://tomandrieu.com/posts" />
 
   <!-- Social / Open Graph -->
-  <meta property="og:title" content="Mon contenu — Tom Andrieu" />
+  <meta property="og:title" content="Posts — Tom Andrieu" />
   <meta property="og:description" content="Tous mes posts, réponses et threads sur X, archivés au même endroit." />
   <meta property="og:image" content="https://tomandrieu.com/assets/brand/og-image.png" />
-  <meta property="og:url" content="https://tomandrieu.com/contenu" />
+  <meta property="og:url" content="https://tomandrieu.com/posts" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://tomandrieu.com/assets/brand/og-image.png" />
@@ -33,8 +33,7 @@
 
   <!-- Skin tokens (--t-*) shared with /things, then this page's layout -->
   <link rel="stylesheet" href="/css/things.css?v=2026-11-19a" />
-  <link rel="stylesheet" href="/css/components/writing-tabs.css?v=2026-11-19a" />
-  <link rel="stylesheet" href="/css/my-content.css?v=2026-11-19a" />
+  <link rel="stylesheet" href="/css/my-content.css?v=2026-11-19b" />
 
   <!-- Blip (the site's cursor agent: lives on the page, draws it as you scroll) -->
   <link rel="stylesheet" href="/css/blip-cursor.css?v=2026-10-15-perf" />
@@ -116,7 +115,7 @@
 
 <main id="main-content">
   <!-- Header — same links, order and numbers as the home nav (index.html),
-       nothing marked: this page lives under « Écrits » (see the tabs below). -->
+       Posts marked as the current page. -->
   <header class="header" role="banner">
     <div class="header-brand">
       <a href="/" class="brand-link" aria-label="Go to homepage">
@@ -152,6 +151,10 @@
           <span class="nav-prefix"></span>
           <span class="nav-text" data-i18n="nav.things">Things</span>
         </a>
+        <a href="/posts" class="nav-link active" data-section="07" aria-current="page">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.posts">Posts</span>
+        </a>
       </nav>
       <!-- Theme and language switchers will be inserted here by JS -->
       <div class="header-controls" id="header-controls">
@@ -167,18 +170,14 @@
   </header>
 
   <section id="my-content" class="mc-page" aria-labelledby="mc-title">
-    <nav class="writing-tabs" aria-label="Écrits">
-      <a class="writing-tab" href="/blog/" data-i18n="writingTabs.articles">Articles</a>
-      <a class="writing-tab is-active" href="/contenu" aria-current="page" data-i18n="writingTabs.content">Mon contenu</a>
-    </nav>
 
     <header class="mc-hero">
       <p class="mc-kicker">
-        <span class="mc-kicker-path">~/contenu</span>
+        <span class="mc-kicker-path">~/posts</span>
         <span class="mc-kicker-count" id="mc-total" aria-live="polite"></span>
       </p>
-      <h1 class="mc-title" id="mc-title" data-i18n="myContent.title">Mon contenu</h1>
-      <p class="mc-intro" id="mc-intro" data-i18n="myContent.intro">Tout ce que je publie hors du blog : posts, réponses et threads sur X. Les vidéos arrivent.</p>
+      <h1 class="mc-title" id="mc-title" data-i18n="myContent.title">Posts</h1>
+      <p class="mc-intro" id="mc-intro" data-i18n="myContent.intro">Mes posts, réponses et threads sur X, tous au même endroit.</p>
     </header>
 
     <div class="mc-filters" id="mc-filters" role="tablist" aria-label="Filtres"></div>
@@ -236,8 +235,8 @@
   if (window.BlipDraw) BlipDraw.init();
 </script>
 
-<!-- Mon contenu -->
-<script src="/js/my-content.js?v=2026-11-19a"></script>
+<!-- Posts (tweets rendered with react-xeet, loaded on demand by my-content.js) -->
+<script src="/js/my-content.js?v=2026-11-19b"></script>
 
 <!-- Theme JS (dynamically loaded) -->
 <script id="theme-js" src=""></script>

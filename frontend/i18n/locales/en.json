@@ -52,6 +52,7 @@
     "blog": "Blog",
     "contact": "Contact",
     "things": "Things",
+    "posts": "Posts",
     "history": "History"
   },
   "sections": {
@@ -251,13 +252,9 @@
   "writing": {
     "intro": "Notes, posts, and what I'm learning while building."
   },
-  "writingTabs": {
-    "articles": "Articles",
-    "content": "My content"
-  },
   "myContent": {
-    "title": "My content",
-    "intro": "Everything I publish outside the blog: posts, replies and threads on X. Videos are coming.",
+    "title": "Posts",
+    "intro": "My posts, replies and threads on X, all in one place.",
     "all": "All",
     "post": "post",
     "posts": "posts",

@@ -135,6 +135,7 @@ func main() {
 	articleHandler := handlers.NewArticleHandler(articleService, jwtService, shareLinkService, accessLogService, posthogService)
 	adminHandler := handlers.NewAdminHandler(articleService, shareLinkService, accessLogService)
 	ssrHandler := handlers.NewSSRHandler(articleService, shareLinkService, frontendURL, apiURL)
+	xeetHandler := handlers.NewXeetHandler()
 
 	// Initialize admin auth middleware
 	adminAuth := custommiddleware.NewAdminAuthMiddleware(adminAPIKey, adminAllowedIPs)
@@ -190,6 +191,9 @@ func main() {
 		r.Get("/articles/{slug}/", articleHandler.GetArticle)
 		r.Get("/articles/{slug}/image/{filename}", articleHandler.ServeImage)
 
+		// Tweet data for the /posts page (react-xeet), proxied from X's syndication API
+		r.Get("/xeet/{id}", xeetHandler.GetXeet)
+
 		// Apply rate limiting middleware to unlock endpoint
 		r.With(rateLimitMW.UnlockRateLimit).Post("/articles/{slug}/unlock", articleHandler.UnlockArticle)
 
@@ -236,6 +240,7 @@ func main() {
 	log.Printf("  GET  /api/articles             - List articles")
 	log.Printf("  GET  /api/articles/{slug}      - Get article by slug")
 	log.Printf("  GET  /api/articles/{slug}/image/{filename} - Serve image")
+	log.Printf("  GET  /api/xeet/{id}             - Tweet data for /posts (react-xeet)")
 	log.Printf("  POST /api/articles/{slug}/unlock - Unlock private article (rate limited)")
 	log.Printf("  POST /api/refresh              - Refresh cache")
 	log.Printf("  [ADMIN] GET/POST/DELETE /api/%s/* - Admin endpoints (auth required)", adminSecretPath)

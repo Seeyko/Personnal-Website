@@ -31,8 +31,8 @@ class SPAHandler(http.server.SimpleHTTPRequestHandler):
             # Otherwise serve blog.html
             self.path = '/blog.html'
 
-        # /contenu -> content.html
-        if path.rstrip('/') == '/contenu':
+        # /posts -> content.html (/contenu is its old address)
+        if path.rstrip('/') in ('/posts', '/contenu'):
             self.path = '/content.html'
 
         # /things -> things.html

@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
-   MON CONTENU — /contenu
-   The feed of everything published outside the blog (X today).
+   POSTS — /posts (was « Mon contenu », /contenu)
+   The feed of every post on X, rendered with react-xeet.
    Skin tokens (--t-*) come from css/things.css: each theme sets
    them on .mc-page, this file only lays the page out.
    ═══════════════════════════════════════════════════════════════ */
@@ -14,7 +14,6 @@
   min-height: 100vh;
 }
 
-.mc-page .writing-tabs { justify-content: flex-start; margin-left: -0.9rem; }
 .mc-page a { color: inherit; }
 
 /* ─── Hero ─── */
@@ -269,7 +268,6 @@ body[data-theme="fps"] .mc-kicker,
 body[data-theme="fps"] .mc-month h2,
 body[data-theme="fps"] .mc-updated { color: var(--ink-dim); }
 body[data-theme="fps"] .mc-kicker-path { color: var(--rust); }
-body[data-theme="fps"] .mc-page .writing-tabs { color: var(--ink); }
 body[data-theme="fps"] .mc-filter {
   background: var(--t-pill);
   backdrop-filter: blur(10px);
@@ -285,3 +283,30 @@ body[data-theme="fps"] .mc-filter[aria-selected="true"] { background: #e8a33d; b
 @media (prefers-reduced-motion: reduce) {
   .mc-post, .mc-filter { transition: none; }
 }
+
+/* ─── Xeets (react-xeet) ───
+   The archive card (.mc-fallback) shows until the xeet is loaded, then the
+   xeet takes its place; the li drops its own card skin. */
+
+.mc-post.has-xeet {
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.mc-post.has-xeet .mc-fallback { display: none; }
+
+.mc-xeet { text-transform: none; letter-spacing: normal; }
+.mc-xeet .react-xeet-theme {
+  --xeet-container-margin: 0;
+  --xeet-body-font-size: 1.0625rem;
+  --xeet-body-line-height: 1.5rem;
+  max-width: none;
+  min-width: 0;
+}
+/* Not shown until loaded (the archive card stands in meanwhile). */
+.mc-post:not(.has-xeet) .mc-xeet { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+
+body[data-theme="retro90s"] .mc-xeet .react-xeet-theme { border-radius: 0; border: 2px outset #dfdfdf; }
+body[data-theme="terminal"] .mc-xeet .react-xeet-theme { --xeet-bg-color: #0d0d0d; --xeet-bg-color-hover: #111; --xeet-border: 1px solid #1f521f; }
+body[data-theme="blueprint"] .mc-xeet .react-xeet-theme { --xeet-bg-color: rgba(0, 34, 68, 0.85); --xeet-bg-color-hover: rgba(0, 44, 88, 0.9); --xeet-border: 1px dashed rgba(255, 255, 255, 0.3); }
