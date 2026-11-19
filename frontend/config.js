@@ -44,6 +44,8 @@ window.APP_CONFIG = {
         articlesApi: isProd,
         // Analytics is additionally host-gated in analytics.js (it loads before
         // this file), this flag mirrors the intent for any later consumer.
-        analytics: isProd
+        analytics: isProd,
+        // /posts renders tweets with react-xeet through the backend (GET /api/xeet/{id}).
+        xeet: isProd
     };
 })();

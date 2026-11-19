@@ -76,7 +76,6 @@
 
   <!-- Blog Styles -->
   <link rel="stylesheet" href="/css/blog.css" />
-  <link rel="stylesheet" href="/css/components/writing-tabs.css?v=2026-11-19a" />
 
   <!-- Auth Modal Styles (for private articles) -->
   <link rel="stylesheet" href="/css/auth-modal.css" />
@@ -158,7 +157,7 @@
 
 <main id="main-content">
   <!-- Header — same links, order and numbers as the home nav (index.html),
-       plus the blog itself, last and marked as the current page.
+       nothing marked: the blog is hidden from the menu.
        Keep in sync with frontend/blog.html (ssr_test.go checks it). -->
   <header class="header" role="banner">
     <div class="header-brand">
@@ -191,9 +190,13 @@
           <span class="nav-prefix"></span>
           <span class="nav-text" data-i18n="nav.contact">Contact</span>
         </a>
-        <a href="/blog" class="nav-link active" data-section="06" aria-current="page">
+        <a href="/things" class="nav-link" data-section="06">
           <span class="nav-prefix"></span>
-          <span class="nav-text" data-i18n="nav.writing">Writing</span>
+          <span class="nav-text" data-i18n="nav.things">Things</span>
+        </a>
+        <a href="/posts" class="nav-link" data-section="07">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.posts">Posts</span>
         </a>
       </nav>
       <!-- Theme and language switchers will be inserted here by JS -->
@@ -214,10 +217,6 @@
     <div class="blog-page-header">
       <h1 class="blog-page-title" data-i18n="sections.blog">BLOG</h1>
       <p class="blog-page-subtitle" data-i18n="blog.subtitle">Thoughts on product engineering, building meaningful products, and technology.</p>
-      <nav class="writing-tabs" aria-label="Écrits">
-        <a class="writing-tab is-active" href="/blog/" aria-current="page" data-i18n="writingTabs.articles">Articles</a>
-        <a class="writing-tab" href="/contenu" data-i18n="writingTabs.content">Mon contenu</a>
-      </nav>
     </div>
 
     <div id="blog-list" class="blog-list">

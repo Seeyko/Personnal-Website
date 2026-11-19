@@ -1,6 +1,7 @@
 # Archive des publications (`posts.json`)
 
-Source de la page **Mon contenu** (`/contenu`, onglet de « Écrits » à côté des articles).
+Source de la page **Posts** (`/posts`, son propre onglet dans le menu ; ancienne adresse `/contenu`, redirigée).
+Chaque post X y est affiché avec [react-xeet](https://react-xeet.vercel.app) via `GET {API_URL}/api/xeet/{id}` (backend Go), la carte construite depuis cette archive restant affichée si le tweet ne charge pas.
 Servi tel quel sur `https://tomandrieu.com/data/social/posts.json`.
 
 Un seul fichier pour toutes les plateformes. Aujourd'hui X ; YouTube et TikTok

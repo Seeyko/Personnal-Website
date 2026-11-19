@@ -89,11 +89,12 @@ func TestBlogTemplateMatchesFrontendPage(t *testing.T) {
 		for _, m := range nav {
 			hrefs = append(hrefs, m[1])
 		}
-		if got := strings.Join(hrefs, " "); got != "/#now /#work /#timeline /#about /#contact /blog" {
+		if got := strings.Join(hrefs, " "); got != "/#now /#work /#timeline /#about /#contact /things /posts" {
 			t.Errorf("%s: nav links = %q", path, got)
 		}
-		if !strings.Contains(html, `<a href="/blog" class="nav-link active" data-section="06" aria-current="page">`) {
-			t.Errorf("%s: Writing is not marked as the current page", path)
+		// The blog is hidden from the menu: no link is marked as the current page.
+		if strings.Contains(html, `nav-link active`) {
+			t.Errorf("%s: a nav link is marked as the current page", path)
 		}
 
 		for _, s := range []string{

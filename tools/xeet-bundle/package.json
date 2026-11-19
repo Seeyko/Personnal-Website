@@ -1,0 +1,17 @@
+{
+  "name": "xeet-bundle",
+  "private": true,
+  "description": "Builds frontend/assets/vendor/xeet/ (react-xeet + React as one self-hosted browser script). Run: npm ci && npm run build",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-xeet": "1.0.2"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.2"
+  }
+}

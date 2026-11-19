@@ -1,5 +1,6 @@
 /**
- * Mon contenu — everything Tom publishes outside the blog (X today, videos later).
+ * Posts (/posts) — everything Tom publishes on X (videos later), its own tab
+ * in the main nav.
  *
  * Data: /data/social/posts.json, the archive kept up to date by the X sync
  * (format documented in /data/social/README.md). One feed for every platform:
@@ -9,10 +10,21 @@
  * The page shows the feed newest first, grouped by month, with filters on the
  * kind of post (and on the platform once there is more than one), and loads
  * PAGE_SIZE posts at a time.
+ *
+ * X posts are rendered with react-xeet (assets/vendor/xeet, built from
+ * tools/xeet-bundle): the real tweet card, with avatar, media and live counts,
+ * fed by our backend (GET {API_URL}/api/xeet/{id}). Each post first shows the
+ * card built from the archive; the xeet replaces it once it is on screen and
+ * loaded, and the archive card stays when it can't (deleted tweet, X down,
+ * local dev without the backend).
  */
 (() => {
     const DATA_URL = '/data/social/posts.json';
     const PAGE_SIZE = 30;
+    const XEET_JS = '/assets/vendor/xeet/xeet.js?v=1.0.2';
+    const XEET_CSS = '/assets/vendor/xeet/xeet.css?v=1.0.2';
+    // The backend only runs in production; ?xeet=1 turns it on locally (with the Go API on API_URL).
+    const XEET_ON = Boolean(window.APP_CONFIG?.FEATURES?.xeet || new URLSearchParams(location.search).has('xeet'));
 
     const $ = sel => document.querySelector(sel);
     const els = {
@@ -133,7 +145,9 @@
             ? `<a class="mc-thumb" href="${esc(p.url)}" target="_blank" rel="noopener"><img src="${esc(p.thumbnail)}" alt="" loading="lazy" decoding="async"></a>`
             : '';
         const flags = [p.hasMedia && tr('hasMedia', 'média'), p.hasLink && tr('hasLink', 'lien')].filter(Boolean);
-        return `<li class="mc-post" data-kind="${esc(p.kind)}" data-platform="${esc(p.platform)}" lang="${esc(p.lang || '')}">
+        const xeetId = p.platform === 'x' ? xeetIdOf(p) : '';
+        return `<li class="mc-post" data-kind="${esc(p.kind)}" data-platform="${esc(p.platform)}" lang="${esc(p.lang || '')}"${xeetId ? ` data-xeet="${esc(xeetId)}"` : ''}>
+            <div class="mc-fallback">
             <div class="mc-post-head">
                 <span class="mc-badge" data-kind="${esc(p.kind)}">${esc(kindLabel(p))}</span>
                 <span class="mc-platform">${esc(pf)}</span>
@@ -145,6 +159,7 @@
                 <span class="mc-metrics">${metricsHTML(p.metrics)}</span>
                 ${flags.length ? `<span class="mc-flags">${esc(flags.join(' · '))}</span>` : ''}
                 <a class="mc-open" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(tr('open', 'Voir sur'))} ${esc(pf)} <span aria-hidden="true">↗</span></a>
+            </div>
             </div>
         </li>`;
     }
@@ -162,9 +177,88 @@
             }
             html.push(card(p));
         });
+        unmountXeets();
         els.feed.innerHTML = html.join('') || `<li class="mc-empty">${esc(tr('empty', 'Rien ici pour l’instant.'))}</li>`;
         els.more.hidden = list.length <= shown;
         els.more.textContent = `${tr('more', 'Voir plus')} (${list.length - Math.min(shown, list.length)})`;
+        observeXeets();
+    }
+
+    // ─── Xeets ───
+
+    const xeetIdOf = p => (/^x:(\d+)$/.exec(p.id) || /\/status\/(\d+)/.exec(p.url || '') || [])[1] || '';
+
+    let xeetLib = null;
+    function loadXeetLib() {
+        if (xeetLib) return xeetLib;
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = XEET_CSS;
+        document.head.appendChild(css);
+        xeetLib = new Promise((resolve, reject) => {
+            const js = document.createElement('script');
+            js.src = XEET_JS;
+            js.async = true;
+            js.onload = () => (window.XeetEmbed ? resolve(window.XeetEmbed) : reject(new Error('XeetEmbed missing')));
+            js.onerror = () => reject(new Error('xeet.js failed to load'));
+            document.head.appendChild(js);
+        });
+        return xeetLib;
+    }
+
+    // Xeets come in X's light or dark skin: pick the one closest to the theme's cards.
+    function xeetScheme() {
+        const probe = document.createElement('div');
+        probe.style.cssText = 'position:absolute;width:0;height:0;background:var(--t-card)';
+        els.feed.appendChild(probe);
+        const m = getComputedStyle(probe).backgroundColor.match(/[\d.]+/g);
+        probe.remove();
+        if (!m) return 'light';
+        const [r, g, b] = m.map(Number);
+        return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 < 0.5 ? 'dark' : 'light';
+    }
+
+    const unmounts = new Set();
+    let io = null;
+    function unmountXeets() {
+        io?.disconnect();
+        unmounts.forEach(fn => fn());
+        unmounts.clear();
+    }
+
+    function mountXeet(li, lib) {
+        const id = li.dataset.xeet;
+        const box = document.createElement('div');
+        box.className = `mc-xeet ${xeetScheme()}`;
+        li.appendChild(box);
+        const api = (window.APP_CONFIG?.API_URL || '').replace(/\/$/, '');
+        let unmount = null;
+        const drop = () => { unmount?.(); unmounts.delete(drop); box.remove(); li.classList.remove('has-xeet'); };
+        unmount = lib.mount(box, id, {
+            apiUrl: `${api}/api/xeet/${id}`,
+            onLoad: () => li.classList.add('has-xeet'),
+            onError: () => drop(),
+        });
+        unmounts.add(drop);
+    }
+
+    function observeXeets() {
+        if (!XEET_ON) return;
+        const items = [...els.feed.querySelectorAll('.mc-post[data-xeet]:not([data-xeet-seen])')];
+        if (!items.length) return;
+        io = io || new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (!e.isIntersecting) return;
+                io.unobserve(e.target);
+                loadXeetLib().then(lib => mountXeet(e.target, lib)).catch(err => console.warn('[posts] xeet', err.message));
+            });
+        }, { rootMargin: '800px 0px' });
+        items.forEach(li => { li.dataset.xeetSeen = ''; io.observe(li); });
+    }
+
+    function rescheme() {
+        const scheme = xeetScheme();
+        els.feed.querySelectorAll('.mc-xeet').forEach(box => { box.className = `mc-xeet ${scheme}`; });
     }
 
     function renderMeta() {
@@ -216,6 +310,9 @@
             renderFeed();
         });
         window.addEventListener('languageChanged', () => { if (data) render(); });
+        // Theme switch: re-skin the xeets once the new theme CSS is in.
+        new MutationObserver(() => setTimeout(rescheme, 400))
+            .observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
     }
 
     async function init() {
@@ -225,7 +322,7 @@
             await load();
             render();
         } catch (err) {
-            console.error('[my-content]', err);
+            console.error('[posts]', err);
             els.feed.innerHTML = `<li class="mc-empty">${esc(tr('error', 'Impossible de charger l’archive.'))}</li>`;
         }
         document.body.classList.add('mc-ready');

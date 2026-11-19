@@ -42,8 +42,8 @@ const server = http.createServer((req, res) => {
         url = '/blog.html';
     }
 
-    // /contenu -> content.html (Mon contenu)
-    if (url === '/contenu' || url === '/contenu/') {
+    // /posts -> content.html (/contenu is its old address)
+    if (url === '/posts' || url === '/posts/' || url === '/contenu' || url === '/contenu/') {
         url = '/content.html';
     }
 
