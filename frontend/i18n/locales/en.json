@@ -251,6 +251,47 @@
   "writing": {
     "intro": "Notes, posts, and what I'm learning while building."
   },
+  "writingTabs": {
+    "articles": "Articles",
+    "content": "My content"
+  },
+  "myContent": {
+    "title": "My content",
+    "intro": "Everything I publish outside the blog: posts, replies and threads on X. Videos are coming.",
+    "all": "All",
+    "post": "post",
+    "posts": "posts",
+    "kinds": {
+      "post": "Posts",
+      "thread": "Threads",
+      "quote": "Quotes",
+      "reply": "Replies",
+      "video": "Videos",
+      "threadOne": "Thread"
+    },
+    "kind": {
+      "post": "Post",
+      "thread": "Thread",
+      "quote": "Quote",
+      "reply": "Reply",
+      "video": "Video"
+    },
+    "replyTo": "Replying to",
+    "open": "View on",
+    "more": "Show more",
+    "hasMedia": "media",
+    "hasLink": "link",
+    "metrics": {
+      "views": "Views",
+      "likes": "Likes",
+      "replies": "Replies",
+      "reposts": "Reposts",
+      "bookmarks": "Bookmarks"
+    },
+    "updated": "Archive updated on",
+    "empty": "Nothing here yet.",
+    "error": "Could not load the archive."
+  },
   "things": {
     "title": "Things",
     "all": "All",

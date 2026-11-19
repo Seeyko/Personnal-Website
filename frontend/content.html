@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon contenu - Tom Andrieu</title>
+  <meta name="description" content="Tout ce que Tom Andrieu publie hors du blog : posts et réponses sur X, et bientôt ses vidéos." />
+  <link rel="canonical" href="https://tomandrieu.com/contenu" />
+
+  <!-- Social / Open Graph -->
+  <meta property="og:title" content="Mon contenu — Tom Andrieu" />
+  <meta property="og:description" content="Tous mes posts, réponses et threads sur X, archivés au même endroit." />
+  <meta property="og:image" content="https://tomandrieu.com/assets/brand/og-image.png" />
+  <meta property="og:url" content="https://tomandrieu.com/contenu" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://tomandrieu.com/assets/brand/og-image.png" />
+
+  <!-- PostHog Analytics (centralized) -->
+  <script src="/js/analytics.js"></script>
+
+  <!-- Base Styles (always loaded) -->
+  <link rel="stylesheet" href="/css/base.css?v=2026-10-16" />
+
+  <!-- CRO Styles (conversion optimization) -->
+  <link rel="stylesheet" href="/css/cro.css?v=2026-10-15-perf" />
+
+  <!-- Theme Switcher UI Styles -->
+  <link rel="stylesheet" href="/css/theme-switcher.css" />
+
+  <!-- Language Switcher UI Styles -->
+  <link rel="stylesheet" href="/css/language-switcher.css" />
+
+  <!-- Skin tokens (--t-*) shared with /things, then this page's layout -->
+  <link rel="stylesheet" href="/css/things.css?v=2026-11-19a" />
+  <link rel="stylesheet" href="/css/components/writing-tabs.css?v=2026-11-19a" />
+  <link rel="stylesheet" href="/css/my-content.css?v=2026-11-19a" />
+
+  <!-- Blip (the site's cursor agent: lives on the page, draws it as you scroll) -->
+  <link rel="stylesheet" href="/css/blip-cursor.css?v=2026-10-15-perf" />
+
+  <!-- Theme CSS (dynamically loaded) -->
+  <link id="theme-css" rel="stylesheet" href="" />
+
+  <!-- Fonts — self-hosted, same file as index.html (no third-party font requests). -->
+  <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+
+  <!-- Critical CSS -->
+  <style id="critical-css">
+    body.loading #main-content,
+    body.loading .theme-overlay,
+    body.loading .theme-switcher {
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #f8f7f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 2px solid rgba(61, 122, 115, 0.15);
+      border-top-color: #3d7a73;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+      margin-top: 1.25rem;
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 0.8125rem;
+      color: #8a8279;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    body:not(.loading) #main-content,
+    body:not(.loading) .theme-overlay,
+    body:not(.loading) .theme-switcher {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.4s ease;
+    }
+  </style>
+</head>
+<body class="loading" data-theme="default">
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading...</div>
+</div>
+
+<!-- Theme Overlay -->
+<div id="theme-overlay" class="theme-overlay"></div>
+
+<main id="main-content">
+  <!-- Header — same links, order and numbers as the home nav (index.html),
+       nothing marked: this page lives under « Écrits » (see the tabs below). -->
+  <header class="header" role="banner">
+    <div class="header-brand">
+      <a href="/" class="brand-link" aria-label="Go to homepage">
+        <span class="brand-prefix"></span>
+        <span class="brand-name" data-content="meta.name">TOM ANDRIEU</span>
+        <span class="brand-suffix"></span>
+      </a>
+    </div>
+    <div class="header-right">
+      <nav class="nav" id="main-nav" role="navigation" aria-label="Main navigation">
+        <a href="/#now" class="nav-link" data-section="01">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.now">Now</span>
+        </a>
+        <a href="/#work" class="nav-link" data-section="02">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.work">Work</span>
+        </a>
+        <a href="/#timeline" class="nav-link" data-section="03">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.history">History</span>
+        </a>
+        <a href="/#about" class="nav-link" data-section="04">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.about">About</span>
+        </a>
+        <!-- #contact lives in the home footer (#site-footer) -->
+        <a href="/#contact" class="nav-link" data-section="05">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.contact">Contact</span>
+        </a>
+        <a href="/things" class="nav-link" data-section="06">
+          <span class="nav-prefix"></span>
+          <span class="nav-text" data-i18n="nav.things">Things</span>
+        </a>
+      </nav>
+      <!-- Theme and language switchers will be inserted here by JS -->
+      <div class="header-controls" id="header-controls">
+        <!-- Theme switcher and language switcher moved here on mobile -->
+      </div>
+      <!-- Mobile hamburger menu button -->
+      <button class="hamburger-menu" id="hamburger-menu" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </div>
+  </header>
+
+  <section id="my-content" class="mc-page" aria-labelledby="mc-title">
+    <nav class="writing-tabs" aria-label="Écrits">
+      <a class="writing-tab" href="/blog/" data-i18n="writingTabs.articles">Articles</a>
+      <a class="writing-tab is-active" href="/contenu" aria-current="page" data-i18n="writingTabs.content">Mon contenu</a>
+    </nav>
+
+    <header class="mc-hero">
+      <p class="mc-kicker">
+        <span class="mc-kicker-path">~/contenu</span>
+        <span class="mc-kicker-count" id="mc-total" aria-live="polite"></span>
+      </p>
+      <h1 class="mc-title" id="mc-title" data-i18n="myContent.title">Mon contenu</h1>
+      <p class="mc-intro" id="mc-intro" data-i18n="myContent.intro">Tout ce que je publie hors du blog : posts, réponses et threads sur X. Les vidéos arrivent.</p>
+    </header>
+
+    <div class="mc-filters" id="mc-filters" role="tablist" aria-label="Filtres"></div>
+
+    <ol class="mc-feed" id="mc-feed" aria-live="polite"></ol>
+
+    <div class="mc-more-wrap">
+      <button class="mc-more" id="mc-more" type="button" hidden data-i18n="myContent.more">Voir plus</button>
+    </div>
+
+    <p class="mc-updated" id="mc-updated"></p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer things-footer mc-footer">
+    <div class="footer-content">
+      <div class="footer-copyright">
+        &copy; 2026 TOM ANDRIEU
+      </div>
+    </div>
+  </footer>
+</main>
+
+<!-- GSAP for animations — self-hosted, same files as index.html (no third-party CDN request). -->
+<script src="/assets/vendor/gsap.min.js"></script>
+<script src="/assets/vendor/ScrollTrigger.min.js"></script>
+
+<!-- App Config (must load before other scripts) -->
+<script src="/config.js"></script>
+
+<!-- Core Modules -->
+<script src="/js/core/utils.js"></script>
+<script src="/js/core/content-loader.js"></script>
+<script src="/js/core/card-renderer.js?v=2026-10-16"></script>
+<script src="/js/core/effects/header-scroll.js"></script>
+<script src="/js/core/effects/mobile-menu.js"></script>
+<script src="/js/core/theme-init.js?v=2026-10-05"></script>
+
+<!-- i18n / Language Manager -->
+<script src="/i18n/language-manager.js?v=2026-10-05"></script>
+
+<!-- Theme Manager (loads before language-switcher for correct order) -->
+<script src="/js/theme-manager.js?v=2026-11-09b"></script>
+
+<!-- Language Switcher UI -->
+<script src="/i18n/language-switcher.js?v=2026-10-05"></script>
+
+<!-- Blip: the cursor agent who draws the page (cursor sprites, Blip, scroll drawing) -->
+<script src="/js/core/effects/cursor-sprites.js?v=2026-10-15"></script>
+<script src="/js/core/effects/data-trail.js?v=2026-10-15-perf"></script>
+<script src="/js/core/effects/blip-cursor.js?v=2026-10-15-perf"></script>
+<script src="/js/core/effects/blip-draw.js?v=2026-10-15-perf"></script>
+<script>
+  if (window.BlipCursor) BlipCursor.init();
+  if (window.BlipDraw) BlipDraw.init();
+</script>
+
+<!-- Mon contenu -->
+<script src="/js/my-content.js?v=2026-11-19a"></script>
+
+<!-- Theme JS (dynamically loaded) -->
+<script id="theme-js" src=""></script>
+</body>
+</html>

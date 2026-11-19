@@ -42,6 +42,11 @@ const server = http.createServer((req, res) => {
         url = '/blog.html';
     }
 
+    // /contenu -> content.html (Mon contenu)
+    if (url === '/contenu' || url === '/contenu/') {
+        url = '/content.html';
+    }
+
     // Default to index.html for root
     if (url === '/') {
         url = '/index.html';

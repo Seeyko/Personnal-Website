@@ -251,6 +251,47 @@
   "writing": {
     "intro": "Notes, posts, et ce que j'apprends en construisant."
   },
+  "writingTabs": {
+    "articles": "Articles",
+    "content": "Mon contenu"
+  },
+  "myContent": {
+    "title": "Mon contenu",
+    "intro": "Tout ce que je publie hors du blog : posts, réponses et threads sur X. Les vidéos arrivent.",
+    "all": "Tout",
+    "post": "publication",
+    "posts": "publications",
+    "kinds": {
+      "post": "Posts",
+      "thread": "Threads",
+      "quote": "Citations",
+      "reply": "Réponses",
+      "video": "Vidéos",
+      "threadOne": "Thread"
+    },
+    "kind": {
+      "post": "Post",
+      "thread": "Thread",
+      "quote": "Citation",
+      "reply": "Réponse",
+      "video": "Vidéo"
+    },
+    "replyTo": "En réponse à",
+    "open": "Voir sur",
+    "more": "Voir plus",
+    "hasMedia": "média",
+    "hasLink": "lien",
+    "metrics": {
+      "views": "Vues",
+      "likes": "J’aime",
+      "replies": "Réponses",
+      "reposts": "Reposts",
+      "bookmarks": "Signets"
+    },
+    "updated": "Archive mise à jour le",
+    "empty": "Rien ici pour l’instant.",
+    "error": "Impossible de charger l’archive."
+  },
   "things": {
     "title": "Things",
     "all": "Tout",
