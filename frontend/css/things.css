@@ -2,9 +2,11 @@
    THINGS — /things
    One layout, five skins: every theme only sets the --t-* tokens
    below, the structure and the motion are shared.
+   The --t-* tokens are shared with /contenu (.mc-page, css/my-content.css).
    ═══════════════════════════════════════════════════════════════ */
 
 .things-page,
+.mc-page,
 .thing,
 .things-sheet {
   /* default skin (also the fallback before a theme loads) */
@@ -564,6 +566,7 @@ body.loaded.things-ready .things-filters { animation-delay: 360ms; }
 
 /* ─── terminal: phosphor on CRT black, square, no shadows ─── */
 body[data-theme="terminal"] .things-page,
+body[data-theme="terminal"] .mc-page,
 body[data-theme="terminal"] .thing,
 body[data-theme="terminal"] .things-sheet {
   --t-ink: #33ff00;
@@ -601,6 +604,7 @@ body[data-theme="terminal"] .things-empty-tag { color: #ffb000; }
 
 /* ─── blueprint: white ink on drafting blue, dashed construction lines ─── */
 body[data-theme="blueprint"] .things-page,
+body[data-theme="blueprint"] .mc-page,
 body[data-theme="blueprint"] .thing,
 body[data-theme="blueprint"] .things-sheet {
   --t-ink: rgba(255, 255, 255, 0.95);
@@ -645,6 +649,7 @@ body[data-theme="blueprint"] .things-sheet-card { background: #002a55; }
 
 /* ─── retro90s: grey bevelled windows, Tahoma, primary colours ─── */
 body[data-theme="retro90s"] .things-page,
+body[data-theme="retro90s"] .mc-page,
 body[data-theme="retro90s"] .thing,
 body[data-theme="retro90s"] .things-sheet {
   --t-ink: #000000;
@@ -692,6 +697,7 @@ body[data-theme="retro90s"] .things-updated { color: #000; }
 
 /* ─── fps: warm glass HUD panels, condensed caps ─── */
 body[data-theme="fps"] .things-page,
+body[data-theme="fps"] .mc-page,
 body[data-theme="fps"] .thing,
 body[data-theme="fps"] .things-sheet {
   --t-ink: #f4efe5;
