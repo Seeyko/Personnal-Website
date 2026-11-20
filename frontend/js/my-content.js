@@ -21,8 +21,8 @@
 (() => {
     const DATA_URL = '/data/social/posts.json';
     const PAGE_SIZE = 30;
-    const XEET_JS = '/assets/vendor/xeet/xeet.js?v=1.0.2-3';
-    const XEET_CSS = '/assets/vendor/xeet/xeet.css?v=1.0.2-3';
+    const XEET_JS = '/assets/vendor/xeet/xeet.js?v=1.0.2-4';
+    const XEET_CSS = '/assets/vendor/xeet/xeet.css?v=1.0.2-4';
     const XEET_PUBLIC_API = 'https://react-xeet.vercel.app/api/xeet';
     // The backend only runs in production; ?xeet=1 turns it on locally (with the Go API on API_URL).
     const XEET_ON = Boolean(window.APP_CONFIG?.FEATURES?.xeet || new URLSearchParams(location.search).has('xeet'));
@@ -245,7 +245,7 @@
             // Our backend first; react-xeet's public endpoint if it can't answer.
             apiUrls: [`${api}/api/xeet`, XEET_PUBLIC_API],
             onLoad: () => li.classList.add('has-xeet'),
-            onError: err => { reportXeetFailure(ids[0], err); drop(); },
+            onError: err => { reportXeetFailure(ids[0], err); showXeetFailure(li, err); drop(); },
         });
         unmounts.add(drop);
     }
@@ -264,6 +264,18 @@
         } catch { /* analytics must never break the page */ }
     }
 
+    // /posts?xeetdebug=1 writes on each card why the tweet didn't load.
+    const XEET_DEBUG = new URLSearchParams(location.search).has('xeetdebug');
+    function showXeetFailure(li, err) {
+        const why = `${err?.message || err} ${JSON.stringify(err?.attempts || [])}`;
+        console.warn('[posts] xeet', li.dataset.xeet, why);
+        if (!XEET_DEBUG) return;
+        const p = document.createElement('p');
+        p.className = 'mc-xeet-debug';
+        p.textContent = `xeet: ${why}`;
+        li.appendChild(p);
+    }
+
     function observeXeets() {
         if (!XEET_ON) return;
         const items = [...els.feed.querySelectorAll('.mc-post[data-xeet]:not([data-xeet-seen])')];
@@ -272,7 +284,7 @@
             entries.forEach(e => {
                 if (!e.isIntersecting) return;
                 io.unobserve(e.target);
-                loadXeetLib().then(lib => mountXeet(e.target, lib)).catch(err => console.warn('[posts] xeet', err.message));
+                loadXeetLib().then(lib => mountXeet(e.target, lib)).catch(err => showXeetFailure(e.target, err));
             });
         }, { rootMargin: '800px 0px' });
         items.forEach(li => { li.dataset.xeetSeen = ''; io.observe(li); });

@@ -16,7 +16,7 @@
  * own card instead.
  */
 import { createRoot } from 'react-dom/client';
-import { useEffect, useState } from 'react';
+import { Component, useEffect, useState } from 'react';
 import {
     enrichXeet,
     XeetContainer,
@@ -60,13 +60,90 @@ async function fetchXeet(id, apiUrls) {
     return job;
 }
 
+// X hides from the text the link that the card previews and the link to the
+// quoted tweet when they end the tweet: do the same.
+function trimTrailingLinks(t) {
+    const range = [...(t.display_text_range || [0, Array.from(t.text || '').length])];
+    const ent = t.entities || {};
+    const urls = [...(ent.urls || [])].sort((a, b) => b.indices[0] - a.indices[0]);
+    const cardUrl = t.card && t.card.url;
+    const quoted = t.quoted_tweet && t.quoted_tweet.id_str;
+    const hidden = new Set();
+    const text = Array.from(t.text || '');
+    const trim = () => { while (range[1] > range[0] && /\s/.test(text[range[1] - 1] || '')) range[1]--; };
+    trim();
+    for (const u of urls) {
+        if (u.indices[1] < range[1]) break;
+        const isCard = cardUrl && (u.url === cardUrl || u.expanded_url === cardUrl);
+        const status = ((u.expanded_url || '').match(/\/status\/(\d+)/) || [])[1];
+        const isQuote = quoted && status === quoted;
+        if (!isCard && !isQuote) break;
+        hidden.add(u);
+        range[1] = u.indices[0];
+        trim();
+    }
+    return {
+        ...t,
+        display_text_range: range,
+        entities: {
+            hashtags: ent.hashtags || [],
+            user_mentions: ent.user_mentions || [],
+            symbols: ent.symbols || [],
+            ...(ent.media ? { media: ent.media } : {}),
+            urls: (ent.urls || []).filter(u => !hidden.has(u)),
+        },
+    };
+}
+
 const safeEnrich = t => {
     try {
-        return enrichXeet({ ...t, display_text_range: [...(t.display_text_range || [0, Array.from(t.text || '').length])], entities: t.entities || {} });
+        return enrichXeet(trimTrailingLinks(t));
     } catch {
         return null;
     }
 };
+
+// Link preview, like X's cards: big image on top (summary_large_image) or a
+// thumbnail beside the text (summary and the rest).
+const bv = (card, key) => {
+    const v = card.binding_values && card.binding_values[key];
+    return v ? v.string_value || (v.image_value && v.image_value.url) || '' : '';
+};
+function LinkCard({ xeet, small }) {
+    // Inside a compact tweet (already a link) the card can't be a link itself.
+    const Tag = small ? 'span' : 'a';
+    const card = xeet.card;
+    if (!card || !card.binding_values) return null;
+    const title = bv(card, 'title');
+    if (!title) return null;
+    const u = ((xeet.entities && xeet.entities.urls) || []).find(e => e.url === card.url);
+    const href = (u && u.expanded_url) || bv(card, 'card_url') || card.url;
+    let domain = bv(card, 'domain') || bv(card, 'vanity_url');
+    if (!domain) { try { domain = new URL(href).hostname.replace(/^www\./, ''); } catch { domain = ''; } }
+    const large = !small && /large_image/.test(card.name || '');
+    const img = large
+        ? bv(card, 'summary_photo_image_large') || bv(card, 'photo_image_full_size_large') || bv(card, 'thumbnail_image_large')
+        : bv(card, 'thumbnail_image') || bv(card, 'thumbnail_image_small') || bv(card, 'summary_photo_image_small');
+    const desc = bv(card, 'description');
+    return (
+        <Tag className={`mcx-card${large ? ' mcx-card-large' : ''}${small ? ' mcx-card-small' : ''}`} {...(small ? {} : { href, target: '_blank', rel: 'noopener noreferrer' })}>
+            {img && <span className="mcx-card-img"><img src={img} alt="" loading="lazy" /></span>}
+            <span className="mcx-card-text">
+                {domain && <span className="mcx-card-domain">{domain}</span>}
+                <span className="mcx-card-title">{title}</span>
+                {desc && <span className="mcx-card-desc">{desc}</span>}
+            </span>
+        </Tag>
+    );
+}
+
+// A render crash in one tweet must not take the whole card down.
+class Guard extends Component {
+    constructor(props) { super(props); this.state = { failed: false }; }
+    static getDerivedStateFromError() { return { failed: true }; }
+    componentDidCatch(err) { this.props.onCrash && this.props.onCrash(err); }
+    render() { return this.state.failed ? null : this.props.children; }
+}
 
 const fmtDate = iso => {
     try {
@@ -80,7 +157,7 @@ const fmtDate = iso => {
 function Compact({ xeet: raw, kind }) {
     const t = safeEnrich(raw);
     if (!t) return null;
-    const media = (t.mediaDetails || []).filter(m => m.type === 'photo' || m.media_url_https).slice(0, 4);
+    const media = (t.mediaDetails || []).filter(m => m.media_url_https).slice(0, 4);
     return (
         <a className={`mcx-compact mcx-${kind}`} href={t.url} target="_blank" rel="noopener noreferrer">
             <span className="mcx-compact-head">
@@ -96,6 +173,7 @@ function Compact({ xeet: raw, kind }) {
                     {media.map(m => <img key={m.media_url_https} src={`${m.media_url_https}?name=small`} alt={m.ext_alt_text || ''} loading="lazy" />)}
                 </span>
             )}
+            {!media.length && <LinkCard xeet={raw} small />}
         </a>
     );
 }
@@ -115,6 +193,7 @@ function Item({ xeet: raw, index, total }) {
                 {t.in_reply_to_status_id_str && index === 0 && !showParent && <XeetInReplyTo xeet={t} />}
                 <XeetBody xeet={t} />
                 {t.mediaDetails?.length ? <XeetMedia xeet={t} /> : null}
+                {!t.mediaDetails?.length && <LinkCard xeet={raw} />}
                 {raw.quoted_tweet && raw.quoted_tweet.user && <Compact xeet={raw.quoted_tweet} kind="quoted" />}
                 <XeetInfo xeet={t} />
                 {last && <XeetActions xeet={t} />}
@@ -143,7 +222,11 @@ function Post({ ids, apiUrls, onLoad, onError }) {
     if (!xeets) return null;
     return (
         <XeetContainer className={xeets.length > 1 ? 'mcx-thread' : undefined}>
-            {xeets.map((x, i) => <Item key={x.id_str} xeet={x} index={i} total={xeets.length} />)}
+            {xeets.map((x, i) => (
+                <Guard key={x.id_str} onCrash={err => i === 0 && setTimeout(() => onError?.(Object.assign(new Error('render failed: ' + (err && err.message)), { attempts: [] })))}>
+                    <Item xeet={x} index={i} total={xeets.length} />
+                </Guard>
+            ))}
         </XeetContainer>
     );
 }
