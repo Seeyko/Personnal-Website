@@ -310,3 +310,23 @@ body[data-theme="fps"] .mc-filter[aria-selected="true"] { background: #e8a33d; b
 body[data-theme="retro90s"] .mc-xeet .react-xeet-theme { border-radius: 0; border: 2px outset #dfdfdf; }
 body[data-theme="terminal"] .mc-xeet .react-xeet-theme { --xeet-bg-color: #0d0d0d; --xeet-bg-color-hover: #111; --xeet-border: 1px solid #1f521f; }
 body[data-theme="blueprint"] .mc-xeet .react-xeet-theme { --xeet-bg-color: rgba(0, 34, 68, 0.85); --xeet-bg-color-hover: rgba(0, 44, 88, 0.9); --xeet-border: 1px dashed rgba(255, 255, 255, 0.3); }
+
+/* ─── Threads (archive card): every post under the first, linked by a line ─── */
+
+.mc-thread-item {
+  position: relative;
+  padding-left: 1.1rem;
+}
+.mc-thread-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  bottom: -0.55rem;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--t-line-strong);
+}
+.mc-thread-item:not(:has(+ .mc-thread-item))::before { bottom: 0.35rem; }
+.mc-thread-item + .mc-thread-item { margin-top: 0.85rem; }
+.mc-thread-item .mc-text { margin: 0; }

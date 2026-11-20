@@ -5,40 +5,149 @@
  * The site has no build step, so this is bundled once (build.mjs) into
  * frontend/assets/vendor/xeet/xeet.{js,css} and exposes:
  *
- *   XeetEmbed.mount(el, id, { apiUrl, onError }) -> unmount()
+ *   XeetEmbed.mountPost(el, ids, { apiUrls, onLoad, onError }) -> unmount()
  *
- * apiUrl answers { data: <syndication tweet> } (our Go backend: GET /api/xeet/{id}).
- * onError(err) fires when the tweet can't be loaded (deleted, network...), so the
- * page can keep its own fallback card instead of the "not found" box.
+ * ids: one tweet, or every tweet of a thread in order (rendered as one card,
+ * like a thread on X). Each id is fetched from the first of apiUrls that
+ * answers (`${apiUrl}/${id}` -> { data: <syndication tweet> }).
+ * The card also shows the tweet a reply answers (parent) and the quoted tweet,
+ * both compact, like X does.
+ * onError fires when the first tweet can't be loaded, so the page keeps its
+ * own card instead.
  */
 import { createRoot } from 'react-dom/client';
-import { useEffect } from 'react';
-import { Xeet } from 'react-xeet';
+import { useEffect, useState } from 'react';
+import {
+    enrichXeet,
+    XeetContainer,
+    XeetHeader,
+    XeetInReplyTo,
+    XeetBody,
+    XeetMedia,
+    XeetInfo,
+    XeetActions,
+    XeetReplies,
+} from 'react-xeet';
+import './post.css';
 
-function mount(el, id, { apiUrl, onError, onLoad } = {}) {
-    const NotFound = ({ error }) => {
-        useEffect(() => { onError?.(error); }, [error]);
-        return null;
-    };
-    const root = createRoot(el);
-    root.render(
-        <Xeet
-            id={id}
-            apiUrl={apiUrl}
-            components={{ XeetNotFound: NotFound }}
-            fallback={null}
-            onError={err => err}
-        />
-    );
-    // Tell the page once the xeet is in the DOM.
-    const obs = new MutationObserver(() => {
-        if (el.querySelector('.react-xeet-theme')) {
-            obs.disconnect();
-            onLoad?.();
+const cache = new Map();
+
+async function fetchXeet(id, apiUrls) {
+    if (cache.has(id)) return cache.get(id);
+    const job = (async () => {
+        let lastErr;
+        for (const base of apiUrls) {
+            try {
+                const res = await fetch(`${base}/${id}`);
+                const json = await res.json().catch(() => null);
+                // { data: null }: the tweet is gone. Any other failure (route
+                // missing, X down...): try the next endpoint.
+                if (json && 'data' in json && (res.ok || res.status === 404)) {
+                    return json.data && json.data.id_str ? json.data : null;
+                }
+                throw new Error(`HTTP ${res.status}`);
+            } catch (err) {
+                lastErr = err;
+            }
         }
-    });
-    obs.observe(el, { childList: true, subtree: true });
-    return () => { obs.disconnect(); root.unmount(); };
+        throw lastErr || new Error('no api');
+    })();
+    cache.set(id, job);
+    job.catch(() => cache.delete(id));
+    return job;
 }
 
-window.XeetEmbed = { mount };
+const safeEnrich = t => {
+    try {
+        return enrichXeet({ ...t, display_text_range: [...(t.display_text_range || [0, Array.from(t.text || '').length])], entities: t.entities || {} });
+    } catch {
+        return null;
+    }
+};
+
+const fmtDate = iso => {
+    try {
+        return new Date(iso).toLocaleDateString(document.documentElement.lang || undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch {
+        return '';
+    }
+};
+
+// A tweet shown small inside another one: the quoted tweet, or the tweet a reply answers.
+function Compact({ xeet: raw, kind }) {
+    const t = safeEnrich(raw);
+    if (!t) return null;
+    const media = (t.mediaDetails || []).filter(m => m.type === 'photo' || m.media_url_https).slice(0, 4);
+    return (
+        <a className={`mcx-compact mcx-${kind}`} href={t.url} target="_blank" rel="noopener noreferrer">
+            <span className="mcx-compact-head">
+                <img className="mcx-compact-avatar" src={t.user.profile_image_url_https} alt="" loading="lazy" />
+                <b className="mcx-compact-name">{t.user.name}</b>
+                <span className="mcx-compact-meta">@{t.user.screen_name} · {fmtDate(t.created_at)}</span>
+            </span>
+            <span className="mcx-compact-body">
+                <XeetBody xeet={t} />
+            </span>
+            {media.length > 0 && (
+                <span className={`mcx-compact-media n${media.length}`}>
+                    {media.map(m => <img key={m.media_url_https} src={`${m.media_url_https}?name=small`} alt={m.ext_alt_text || ''} loading="lazy" />)}
+                </span>
+            )}
+        </a>
+    );
+}
+
+// One tweet of the card. In a thread, every tweet but the last keeps the line
+// that links the avatars, and only the last one gets the actions.
+function Item({ xeet: raw, index, total }) {
+    const t = safeEnrich(raw);
+    if (!t) return null;
+    const last = index === total - 1;
+    const showParent = index === 0 && raw.parent && raw.parent.id_str && raw.parent.user;
+    return (
+        <div className={`mcx-item${total > 1 ? ' mcx-in-thread' : ''}${last ? ' mcx-last' : ''}`}>
+            {showParent && <Compact xeet={raw.parent} kind="parent" />}
+            <XeetHeader xeet={t} />
+            <div className="mcx-content">
+                {t.in_reply_to_status_id_str && index === 0 && !showParent && <XeetInReplyTo xeet={t} />}
+                <XeetBody xeet={t} />
+                {t.mediaDetails?.length ? <XeetMedia xeet={t} /> : null}
+                {raw.quoted_tweet && raw.quoted_tweet.user && <Compact xeet={raw.quoted_tweet} kind="quoted" />}
+                <XeetInfo xeet={t} />
+                {last && <XeetActions xeet={t} />}
+                {last && total === 1 && <XeetReplies xeet={t} />}
+            </div>
+        </div>
+    );
+}
+
+function Post({ ids, apiUrls, onLoad, onError }) {
+    const [xeets, setXeets] = useState(null);
+    useEffect(() => {
+        let alive = true;
+        Promise.all(ids.map(id => fetchXeet(id, apiUrls).catch(() => null))).then(list => {
+            if (!alive) return;
+            if (!list[0]) {
+                onError?.(new Error('not found'));
+                return;
+            }
+            setXeets(list.filter(Boolean));
+        });
+        return () => { alive = false; };
+    }, [ids.join(',')]);
+    useEffect(() => { if (xeets) onLoad?.(); }, [xeets]);
+    if (!xeets) return null;
+    return (
+        <XeetContainer className={xeets.length > 1 ? 'mcx-thread' : undefined}>
+            {xeets.map((x, i) => <Item key={x.id_str} xeet={x} index={i} total={xeets.length} />)}
+        </XeetContainer>
+    );
+}
+
+function mountPost(el, ids, { apiUrls = [], onLoad, onError } = {}) {
+    const root = createRoot(el);
+    root.render(<Post ids={[].concat(ids)} apiUrls={apiUrls} onLoad={onLoad} onError={onError} />);
+    return () => root.unmount();
+}
+
+window.XeetEmbed = { mountPost };

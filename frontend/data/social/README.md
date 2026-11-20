@@ -26,7 +26,7 @@ s'ajoutent avec le même format, la page affiche alors un filtre par plateforme.
       "lang": "en",                             // fr | en
       "text": "@davekiss Thanks for writing this…", // texte brut, \n pour les retours à la ligne
       "inReplyTo": ["davekiss"],                // optionnel, handles sans @ (kind = reply)
-      "thread": { "title": "refonte RMP", "index": 1, "total": 5 }, // optionnel
+      "thread": { "id": "x:2104…", "index": 1, "total": 5 }, // optionnel : id = premier post du thread (calculé par x_to_posts.py), la page en fait une seule carte
       "hasMedia": false,                        // optionnel
       "hasLink": false,                         // optionnel
       "title": "…",                             // optionnel, vidéos
