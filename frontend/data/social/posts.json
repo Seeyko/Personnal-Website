@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-19T17:56:07Z",
+  "updated": "2026-11-20T01:34:46Z",
   "accounts": {
     "x": {
       "handle": "TomAndrieu96707",
@@ -104,6 +104,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2122103497185435760",
+        "index": 2,
+        "total": 2
       }
     },
     {
@@ -122,6 +127,11 @@
         "replies": 2,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2122103497185435760",
+        "index": 1,
+        "total": 2
       }
     },
     {
@@ -161,6 +171,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2119927248761258305",
+        "index": 2,
+        "total": 2
       }
     },
     {
@@ -179,6 +194,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2119927248761258305",
+        "index": 1,
+        "total": 2
       }
     },
     {
@@ -197,6 +217,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2118858945280520405",
+        "index": 10,
+        "total": 10
       }
     },
     {
@@ -215,6 +240,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2118858945280520405",
+        "index": 9,
+        "total": 10
       }
     },
     {
@@ -222,7 +252,7 @@
       "platform": "x",
       "kind": "thread",
       "url": "https://x.com/TomAndrieu96707/status/2118858970882343303",
-      "text": "8/9 : pour l’instant, une PR passe du push au vert en ~10 min au lieu de 45 (file vide), et main -&gt; deploy en 27 min au lieu de 70-96\n\nc'est pas autant impressionnant que l'article mais c'est déjà huge pour moi en une seule journée.\nIl faudrait plusieurs machines pour vrmt opti",
+      "text": "8/9 : pour l’instant, une PR passe du push au vert en ~10 min au lieu de 45 (file vide), et main -> deploy en 27 min au lieu de 70-96\n\nc'est pas autant impressionnant que l'article mais c'est déjà huge pour moi en une seule journée.\nIl faudrait plusieurs machines pour vrmt opti",
       "lang": "fr",
       "publishedAt": "2026-11-07T00:11:59.000Z",
       "hasMedia": false,
@@ -233,6 +263,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2118858945280520405",
+        "index": 8,
+        "total": 10
       }
     },
     {
@@ -251,6 +286,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2118858945280520405",
+        "index": 7,
+        "total": 10
       }
     },
     {
@@ -258,7 +298,7 @@
       "platform": "x",
       "kind": "thread",
       "url": "https://x.com/TomAndrieu96707/status/2118858966323126567",
-      "text": "6/9 : tests d’intégration Go/Postgres : 13,5 -&gt; 5,5 min\n\n- migrations dans une seule session psql au lieu d’une par fichier (116 s -&gt; 13 s)\n- bases modèles gardées entre les runs\n- synchronous_commit=off en test",
+      "text": "6/9 : tests d’intégration Go/Postgres : 13,5 -> 5,5 min\n\n- migrations dans une seule session psql au lieu d’une par fichier (116 s -> 13 s)\n- bases modèles gardées entre les runs\n- synchronous_commit=off en test",
       "lang": "fr",
       "publishedAt": "2026-11-07T00:11:58.000Z",
       "hasMedia": false,
@@ -269,6 +309,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2118858945280520405",
+        "index": 6,
+        "total": 10
       }
     },
     {
@@ -276,7 +321,7 @@
       "platform": "x",
       "kind": "thread",
       "url": "https://x.com/TomAndrieu96707/status/2118858963215376854",
-      "text": "5/9 : la file des runners\nUn seul runner e2e natif pour main ET les PR, donc chaque PR pouvait bloquer main -&gt; deploy. Après un merge, le deploy pouvait mettre 70 à 96 min à partir…\nmain a sa propre voie maintenant : 27 min, gate e2e complet compris https://t.co/YbI3azVyhr",
+      "text": "5/9 : la file des runners\nUn seul runner e2e natif pour main ET les PR, donc chaque PR pouvait bloquer main -> deploy. Après un merge, le deploy pouvait mettre 70 à 96 min à partir…\nmain a sa propre voie maintenant : 27 min, gate e2e complet compris https://t.co/YbI3azVyhr",
       "lang": "fr",
       "publishedAt": "2026-11-07T00:11:57.000Z",
       "hasMedia": true,
@@ -287,6 +332,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2118858945280520405",
+        "index": 5,
+        "total": 10
       }
     },
     {
@@ -294,7 +344,7 @@
       "platform": "x",
       "kind": "thread",
       "url": "https://x.com/TomAndrieu96707/status/2118858958006096382",
-      "text": "4/9 : les tests e2e\nChaque PR jouait le même cœur de ~470 tests, peu importe le diff. Là elle joue les specs touchées par son diff (graphe d’imports, domaines, clés i18n)\nla fixture vidait ~157 tables avant chaque test, même vides. Plus que celles avec des lignes : 467 -&gt; 50 ms https://t.co/4WDrmV1gaa",
+      "text": "4/9 : les tests e2e\nChaque PR jouait le même cœur de ~470 tests, peu importe le diff. Là elle joue les specs touchées par son diff (graphe d’imports, domaines, clés i18n)\nla fixture vidait ~157 tables avant chaque test, même vides. Plus que celles avec des lignes : 467 -> 50 ms https://t.co/4WDrmV1gaa",
       "lang": "fr",
       "publishedAt": "2026-11-07T00:11:56.000Z",
       "hasMedia": true,
@@ -305,6 +355,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2118858945280520405",
+        "index": 4,
+        "total": 10
       }
     },
     {
@@ -312,7 +367,7 @@
       "platform": "x",
       "kind": "thread",
       "url": "https://x.com/TomAndrieu96707/status/2118858953656573989",
-      "text": "3/9 :\n- typecheck : 9 min médiane -&gt; bun check : 6 s\n- lint : 47 s médiane, 9 min sans cache. Testé Oxlint mais les règles React Compiler me bloquent :’( donc clé du cache ESLint corrigée (elle hachait tout bun.lock) : 1 s à chaud\n- vitest isolate false : 116 s -&gt; 36 s https://t.co/SmC3vOpOjD",
+      "text": "3/9 :\n- typecheck : 9 min médiane -> bun check : 6 s\n- lint : 47 s médiane, 9 min sans cache. Testé Oxlint mais les règles React Compiler me bloquent :’( donc clé du cache ESLint corrigée (elle hachait tout bun.lock) : 1 s à chaud\n- vitest isolate false : 116 s -> 36 s https://t.co/SmC3vOpOjD",
       "lang": "fr",
       "publishedAt": "2026-11-07T00:11:55.000Z",
       "hasMedia": true,
@@ -323,6 +378,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2118858945280520405",
+        "index": 3,
+        "total": 10
       }
     },
     {
@@ -341,6 +401,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2118858945280520405",
+        "index": 2,
+        "total": 10
       }
     },
     {
@@ -359,6 +424,11 @@
         "replies": 2,
         "reposts": 0,
         "bookmarks": 1
+      },
+      "thread": {
+        "id": "x:2118858945280520405",
+        "index": 1,
+        "total": 10
       }
     },
     {
@@ -638,6 +708,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2115543688344736068",
+        "index": 5,
+        "total": 5
       }
     },
     {
@@ -656,6 +731,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2115543688344736068",
+        "index": 4,
+        "total": 5
       }
     },
     {
@@ -674,6 +754,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2115543688344736068",
+        "index": 3,
+        "total": 5
       }
     },
     {
@@ -692,6 +777,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2115543688344736068",
+        "index": 2,
+        "total": 5
       }
     },
     {
@@ -710,6 +800,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2115543688344736068",
+        "index": 1,
+        "total": 5
       }
     },
     {
@@ -893,6 +988,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2113374582262415405",
+        "index": 2,
+        "total": 2
       }
     },
     {
@@ -911,6 +1011,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2113374582262415405",
+        "index": 1,
+        "total": 2
       }
     },
     {
@@ -954,7 +1059,7 @@
       "platform": "x",
       "kind": "quote",
       "url": "https://x.com/TomAndrieu96707/status/2113230382116028445",
-      "text": "&gt; another banger\n&gt; only in US\n😭😭😭 https://t.co/wJiK7uNgru",
+      "text": "> another banger\n> only in US\n😭😭😭 https://t.co/wJiK7uNgru",
       "lang": "en",
       "publishedAt": "2026-10-22T11:25:59.000Z",
       "hasMedia": false,
@@ -1004,6 +1109,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2113229783223955511",
+        "index": 2,
+        "total": 2
       }
     },
     {
@@ -1022,6 +1132,11 @@
         "replies": 2,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2113229783223955511",
+        "index": 1,
+        "total": 2
       }
     },
     {
@@ -1184,7 +1299,7 @@
     {
       "id": "x:2112091140979921403",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/2112091140979921403",
       "text": "@MankyRivet @felixrieseberg @posthog La majorité du temps les agents clotures après un certains temps d'inactivité, ou quand il pense avoir corrigé, et ensuite il font un suivi quotidien voir si ça repop ou pas",
       "lang": "fr",
@@ -1197,12 +1312,17 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "MankyRivet",
+        "felixrieseberg",
+        "posthog"
+      ]
     },
     {
       "id": "x:2112080589813899707",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/2112080589813899707",
       "text": "@MankyRivet @felixrieseberg @posthog Un mix des deux",
       "lang": "fr",
@@ -1215,12 +1335,17 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "MankyRivet",
+        "felixrieseberg",
+        "posthog"
+      ]
     },
     {
       "id": "x:2111584605476425865",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/2111584605476425865",
       "text": "@thecheatcode_1 Quand ça cassait en prod avant je debuggais sur le code d’autres devs qui avaient bien moins taffé que Opus 5.5 😅\n\nL’auth et les paiements je les blinde et run des checks ultra régulièrement pour les sécurisé/améliorer en continue.",
       "lang": "fr",
@@ -1233,7 +1358,10 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "thecheatcode_1"
+      ]
     },
     {
       "id": "x:2111537549173051707",
@@ -1259,7 +1387,7 @@
     {
       "id": "x:2111478035337908490",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/2111478035337908490",
       "text": "@romainbiava Pour l’instant c’est par objectif. Je pars du principe que c’est une évolution du /goal\nC’est un /goal mais avec une durée indéterminée, un besoin de suivi régulier et plusieurs étapes possible.",
       "lang": "fr",
@@ -1272,12 +1400,15 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "romainbiava"
+      ]
     },
     {
       "id": "x:2111449141218062453",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/2111449141218062453",
       "text": "@thecheatcode_1 Je relis pas chaque PR c’est Claude qui s’en occupe. Je ne fais qu’un suivi journalier je lis les améliorations et demande l’étendu de ce qui à été merge, des conséquences, flux de données, archi choisi etc..\nÇa fais un bail je relis plus le code mdr",
       "lang": "fr",
@@ -1290,7 +1421,10 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "thecheatcode_1"
+      ]
     },
     {
       "id": "x:2111420652997779548",
@@ -1308,6 +1442,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2111420499053994386",
+        "index": 6,
+        "total": 6
       }
     },
     {
@@ -1326,6 +1465,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2111420499053994386",
+        "index": 5,
+        "total": 6
       }
     },
     {
@@ -1344,6 +1488,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2111420499053994386",
+        "index": 4,
+        "total": 6
       }
     },
     {
@@ -1362,6 +1511,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2111420499053994386",
+        "index": 3,
+        "total": 6
       }
     },
     {
@@ -1380,6 +1534,11 @@
         "replies": 3,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2111420499053994386",
+        "index": 2,
+        "total": 6
       }
     },
     {
@@ -1398,6 +1557,11 @@
         "replies": 3,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2111420499053994386",
+        "index": 1,
+        "total": 6
       }
     },
     {
@@ -1663,6 +1827,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2108543800931152101",
+        "index": 3,
+        "total": 3
       }
     },
     {
@@ -1681,6 +1850,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2108543800931152101",
+        "index": 2,
+        "total": 3
       }
     },
     {
@@ -1699,6 +1873,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2108543800931152101",
+        "index": 1,
+        "total": 3
       }
     },
     {
@@ -2115,6 +2294,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2105419754311713112",
+        "index": 2,
+        "total": 2
       }
     },
     {
@@ -2133,6 +2317,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2105419754311713112",
+        "index": 1,
+        "total": 2
       }
     },
     {
@@ -2342,7 +2531,7 @@
     {
       "id": "x:2105033216872923439",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/2105033216872923439",
       "text": "@raroque i need Moonjaar 😅",
       "lang": "en",
@@ -2355,7 +2544,10 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "raroque"
+      ]
     },
     {
       "id": "x:2105030044141887641",
@@ -2472,6 +2664,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2104687240941011379",
+        "index": 2,
+        "total": 2
       }
     },
     {
@@ -2490,6 +2687,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2104687240941011379",
+        "index": 1,
+        "total": 2
       }
     },
     {
@@ -2677,7 +2879,7 @@
       "platform": "x",
       "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/2104121658533630362",
-      "text": "@davekiss &gt; Publish your work without strings attached. Share your decisions with others. Pick one person and teach them one thing, on purpose.\n\nThanks for writing this at the right time. With knowledge at our fingertips more than ever, It’s needed to help juniors understand our paths.",
+      "text": "@davekiss > Publish your work without strings attached. Share your decisions with others. Pick one person and teach them one thing, on purpose.\n\nThanks for writing this at the right time. With knowledge at our fingertips more than ever, It’s needed to help juniors understand our paths.",
       "lang": "en",
       "publishedAt": "2026-09-27T08:11:10.000Z",
       "hasMedia": false,
@@ -2833,6 +3035,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2103806275788444008",
+        "index": 2,
+        "total": 2
       }
     },
     {
@@ -2851,6 +3058,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2103806275788444008",
+        "index": 1,
+        "total": 2
       }
     },
     {
@@ -2887,6 +3099,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2103457765599662524",
+        "index": 3,
+        "total": 3
       }
     },
     {
@@ -2905,6 +3122,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2103457765599662524",
+        "index": 2,
+        "total": 3
       }
     },
     {
@@ -2923,6 +3145,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2103457765599662524",
+        "index": 1,
+        "total": 3
       }
     },
     {
@@ -2941,6 +3168,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2103411144899875264",
+        "index": 2,
+        "total": 2
       }
     },
     {
@@ -2959,6 +3191,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2103411144899875264",
+        "index": 1,
+        "total": 2
       }
     },
     {
@@ -3237,6 +3474,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2087365871639408946",
+        "index": 2,
+        "total": 2
       }
     },
     {
@@ -3255,6 +3497,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2087365871639408946",
+        "index": 1,
+        "total": 2
       }
     },
     {
@@ -3577,7 +3824,7 @@
       "platform": "x",
       "kind": "quote",
       "url": "https://x.com/TomAndrieu96707/status/2086712751892623803",
-      "text": "Je pense que les gens confondent “ne pas review le code” et “one prompt feature -&gt; prod”\nC’est OK pour des fix ou petits évolutions. Mais pour les features je passe souvent 1/2 journée à coconcevoir avec l’IA.\nEt souvent  elle a tort sur sa première proposition. https://t.co/AD04Ds1Han",
+      "text": "Je pense que les gens confondent “ne pas review le code” et “one prompt feature -> prod”\nC’est OK pour des fix ou petits évolutions. Mais pour les features je passe souvent 1/2 journée à coconcevoir avec l’IA.\nEt souvent  elle a tort sur sa première proposition. https://t.co/AD04Ds1Han",
       "lang": "fr",
       "publishedAt": "2026-08-10T07:14:23.000Z",
       "hasMedia": false,
@@ -3595,7 +3842,7 @@
       "platform": "x",
       "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/2086711008609894697",
-      "text": "@S0NCHAU @grichadev Wrong data structure &gt; this is architectural and thus need to be review BEFORE coding. With diagrams and shit that agents can’t produce and that you can iterate with them on it before reviewing their code.",
+      "text": "@S0NCHAU @grichadev Wrong data structure > this is architectural and thus need to be review BEFORE coding. With diagrams and shit that agents can’t produce and that you can iterate with them on it before reviewing their code.",
       "lang": "en",
       "publishedAt": "2026-08-10T07:07:28.000Z",
       "hasMedia": false,
@@ -3930,6 +4177,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2086491116082249919",
+        "index": 5,
+        "total": 5
       }
     },
     {
@@ -3948,6 +4200,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2086491116082249919",
+        "index": 4,
+        "total": 5
       }
     },
     {
@@ -3966,6 +4223,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2086491116082249919",
+        "index": 3,
+        "total": 5
       }
     },
     {
@@ -3984,6 +4246,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2086491116082249919",
+        "index": 2,
+        "total": 5
       }
     },
     {
@@ -4002,6 +4269,11 @@
         "replies": 1,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2086491116082249919",
+        "index": 1,
+        "total": 5
       }
     },
     {
@@ -4453,7 +4725,7 @@
     {
       "id": "x:1754536953767231689",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/1754536953767231689",
       "text": "@business_solo Nowadays ok-ish form, and ok design is easier and more achievable for designers than developers with no-code solutions.\nThus why designers seems to have less needs for developers. Except if you want good form and good design (and good marketing lets not talk about it ahah)",
       "lang": "en",
@@ -4466,7 +4738,10 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "business_solo"
+      ]
     },
     {
       "id": "x:1754505458306445790",
@@ -4484,6 +4759,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:1754503468193075471",
+        "index": 2,
+        "total": 2
       }
     },
     {
@@ -4502,6 +4782,11 @@
         "replies": 2,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:1754503468193075471",
+        "index": 1,
+        "total": 2
       }
     },
     {
@@ -4740,7 +5025,7 @@
       "platform": "x",
       "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/1742479971916918981",
-      "text": "@iSamyadeep @quectoapp The feature sections is much better. I think the numbered list design is better if you have &gt; 4 features. Here the grid design is simplier and straighforward",
+      "text": "@iSamyadeep @quectoapp The feature sections is much better. I think the numbered list design is better if you have > 4 features. Here the grid design is simplier and straighforward",
       "lang": "en",
       "publishedAt": "2024-01-03T09:36:13.000Z",
       "hasMedia": false,
@@ -5073,7 +5358,7 @@
     {
       "id": "x:1733454446762262904",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/1733454446762262904",
       "text": "@Juanchaustrev Hey Juan, I haven’t receive anything",
       "lang": "en",
@@ -5086,7 +5371,10 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "Juanchaustrev"
+      ]
     },
     {
       "id": "x:1733420075783163949",
@@ -5340,7 +5628,7 @@
       "platform": "x",
       "kind": "quote",
       "url": "https://x.com/TomAndrieu96707/status/1730328201837133862",
-      "text": "Who else had issue with OpenAI API the last few days ? \n\nI kept getting response time &gt; 10 seconds.\n\nSo i decide to switch to streaming request !\nTought🤔to ship on production 🚀 in less than an hour.\n\nI love being a #solopreneur for this !\n\n#buildinpublic #indiehackers https://t.co/tytpaiPotY",
+      "text": "Who else had issue with OpenAI API the last few days ? \n\nI kept getting response time > 10 seconds.\n\nSo i decide to switch to streaming request !\nTought🤔to ship on production 🚀 in less than an hour.\n\nI love being a #solopreneur for this !\n\n#buildinpublic #indiehackers https://t.co/tytpaiPotY",
       "lang": "en",
       "publishedAt": "2023-11-30T20:49:25.000Z",
       "hasMedia": true,
@@ -5356,7 +5644,7 @@
     {
       "id": "x:1730298143260975216",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/1730298143260975216",
       "text": "@constantout Ahah, i'm a a new light mode fan. Came back from the dark mode a few month ago 😅 Reading black text on white bg is easier for my eyes (feel old saying this ahah)\n\nThanks for the motivation mate 💪Let's keep shipping",
       "lang": "en",
@@ -5369,7 +5657,10 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "constantout"
+      ]
     },
     {
       "id": "x:1730291470496682325",
@@ -5507,6 +5798,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:1729622105317118359",
+        "index": 3,
+        "total": 3
       }
     },
     {
@@ -5525,6 +5821,11 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:1729622105317118359",
+        "index": 2,
+        "total": 3
       }
     },
     {
@@ -5543,6 +5844,11 @@
         "replies": 2,
         "reposts": 0,
         "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:1729622105317118359",
+        "index": 1,
+        "total": 3
       }
     },
     {
@@ -6071,7 +6377,7 @@
     {
       "id": "x:1727404710385057877",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/1727404710385057877",
       "text": "@GetDozer Yeah you're right, it all comes down to finding the balance. I will ask my future clients about what they prefer.",
       "lang": "en",
@@ -6084,7 +6390,10 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "GetDozer"
+      ]
     },
     {
       "id": "x:1727404233581007153",
@@ -6768,7 +7077,7 @@
     {
       "id": "x:1726531406694863078",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/1726531406694863078",
       "text": "@franklyonbrand Thanks! Yeah, i use it to ship faster and not worry about the style overall and go straight to the point. It's pretty usefull 👍",
       "lang": "en",
@@ -6781,7 +7090,10 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "franklyonbrand"
+      ]
     },
     {
       "id": "x:1726528127554445642",
@@ -7006,7 +7318,7 @@
     {
       "id": "x:1726213536777437394",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/1726213536777437394",
       "text": "@stepan_romankov @ray_kovalev Either way it’s a matter of time until I implement multilingual and I will see from there. Currently no multilingual so all the interface are in French.",
       "lang": "en",
@@ -7019,12 +7331,16 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "stepan_romankov",
+        "ray_kovalev"
+      ]
     },
     {
       "id": "x:1726213294753792245",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/1726213294753792245",
       "text": "@stepan_romankov @ray_kovalev It could be mapped, but my clients are French so i make features for they need. I don’t know how other countries work in this field (education)",
       "lang": "en",
@@ -7037,12 +7353,16 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "stepan_romankov",
+        "ray_kovalev"
+      ]
     },
     {
       "id": "x:1725904410977382781",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/1725904410977382781",
       "text": "@ray_kovalev Yeah you are right… I should post in English for the tech people. That what’s interesting here, I don’t want to just sell my products 🙏",
       "lang": "en",
@@ -7055,12 +7375,15 @@
         "replies": 0,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "ray_kovalev"
+      ]
     },
     {
       "id": "x:1725496241599946765",
       "platform": "x",
-      "kind": "thread",
+      "kind": "reply",
       "url": "https://x.com/TomAndrieu96707/status/1725496241599946765",
       "text": "@ray_kovalev Yeah I know but I build tools in French for French audience so… I guessed targeting French people would be more profitable for me",
       "lang": "en",
@@ -7073,7 +7396,10 @@
         "replies": 2,
         "reposts": 0,
         "bookmarks": 0
-      }
+      },
+      "inReplyTo": [
+        "ray_kovalev"
+      ]
     },
     {
       "id": "x:1725466548268114415",

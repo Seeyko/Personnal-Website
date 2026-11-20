@@ -21,8 +21,9 @@
 (() => {
     const DATA_URL = '/data/social/posts.json';
     const PAGE_SIZE = 30;
-    const XEET_JS = '/assets/vendor/xeet/xeet.js?v=1.0.2';
-    const XEET_CSS = '/assets/vendor/xeet/xeet.css?v=1.0.2';
+    const XEET_JS = '/assets/vendor/xeet/xeet.js?v=1.0.2-2';
+    const XEET_CSS = '/assets/vendor/xeet/xeet.css?v=1.0.2-2';
+    const XEET_PUBLIC_API = 'https://react-xeet.vercel.app/api/xeet';
     // The backend only runs in production; ?xeet=1 turns it on locally (with the Go API on API_URL).
     const XEET_ON = Boolean(window.APP_CONFIG?.FEATURES?.xeet || new URLSearchParams(location.search).has('xeet'));
 
@@ -56,16 +57,17 @@
     function filterList() {
         const kinds = [
             ['post', tr('kinds.post', 'Posts')],
-            ['thread', tr('kinds.thread', 'Threads')],
+            ['thread', tr('kinds.thread', 'Threads')], // a thread = its first post, see buildFeed
             ['quote', tr('kinds.quote', 'Citations')],
             ['reply', tr('kinds.reply', 'Réponses')],
             ['video', tr('kinds.video', 'Vidéos')],
         ];
         const list = [{ id: 'all', label: tr('all', 'Tout'), match: () => true }];
         for (const [kind, label] of kinds) {
-            if (data.posts.some(p => p.kind === kind)) list.push({ id: kind, label, match: p => p.kind === kind });
+            const match = kind === 'thread' ? p => p.members.length > 1 : p => p.kind === kind;
+            if (data.feed.some(match)) list.push({ id: kind, label, match });
         }
-        const platforms = [...new Set(data.posts.map(p => p.platform))];
+        const platforms = [...new Set(data.feed.map(p => p.platform))];
         if (platforms.length > 1) {
             for (const pf of platforms) {
                 list.push({ id: `pf:${pf}`, label: PLATFORMS[pf]?.label || pf, match: p => p.platform === pf });
@@ -78,7 +80,7 @@
         const list = filterList();
         if (!list.some(f => f.id === active)) active = 'all';
         els.filters.innerHTML = list.map(f => {
-            const n = data.posts.filter(f.match).length;
+            const n = data.feed.filter(f.match).length;
             const on = f.id === active;
             return `<button class="mc-filter" type="button" role="tab" data-filter="${esc(f.id)}"
                 aria-selected="${on}" tabindex="${on ? 0 : -1}">${esc(f.label)}<span class="mc-filter-count">${n}</span></button>`;
@@ -129,7 +131,7 @@
     }
 
     function kindLabel(p) {
-        if (p.thread) return `${tr('kinds.threadOne', 'Thread')} ${p.thread.index}/${p.thread.total}`;
+        if (p.members.length > 1) return `${tr('kinds.threadOne', 'Thread')} · ${p.members.length}`;
         return tr(`kind.${p.kind}`, p.kind);
     }
 
@@ -140,13 +142,17 @@
                 `<a href="${PLATFORMS[p.platform]?.profile(h) || '#'}" target="_blank" rel="noopener nofollow">@${esc(h)}</a>`).join(' ')}</p>`
             : '';
         const thread = p.thread?.title ? `<p class="mc-context">${esc(p.thread.title)}</p>` : '';
+        // A thread reads like on X: every post under the first one, linked by a line.
+        const more = p.members.slice(1).map(m => `<div class="mc-thread-item">
+                <div class="mc-text"><p>${richText(m.text, m.platform)}</p></div>
+            </div>`).join('');
         const title = p.title ? `<h3 class="mc-post-title">${esc(p.title)}</h3>` : '';
         const thumb = p.thumbnail
             ? `<a class="mc-thumb" href="${esc(p.url)}" target="_blank" rel="noopener"><img src="${esc(p.thumbnail)}" alt="" loading="lazy" decoding="async"></a>`
             : '';
         const flags = [p.hasMedia && tr('hasMedia', 'média'), p.hasLink && tr('hasLink', 'lien')].filter(Boolean);
-        const xeetId = p.platform === 'x' ? xeetIdOf(p) : '';
-        return `<li class="mc-post" data-kind="${esc(p.kind)}" data-platform="${esc(p.platform)}" lang="${esc(p.lang || '')}"${xeetId ? ` data-xeet="${esc(xeetId)}"` : ''}>
+        const xeetIds = p.platform === 'x' ? p.members.map(xeetIdOf).filter(Boolean).join(',') : '';
+        return `<li class="mc-post" data-kind="${esc(p.kind)}" data-platform="${esc(p.platform)}" lang="${esc(p.lang || '')}"${xeetIds ? ` data-xeet="${esc(xeetIds)}"` : ''}>
             <div class="mc-fallback">
             <div class="mc-post-head">
                 <span class="mc-badge" data-kind="${esc(p.kind)}">${esc(kindLabel(p))}</span>
@@ -154,7 +160,8 @@
                 <time class="mc-date" datetime="${esc(p.publishedAt)}">${esc(fmtDate(p.publishedAt))}</time>
             </div>
             ${replyTo}${thread}${title}${thumb}
-            <div class="mc-text"><p>${richText(bodyText(p), p.platform)}</p></div>
+            <div class="mc-text${more ? ' mc-thread-item' : ''}"><p>${richText(bodyText(p), p.platform)}</p></div>
+            ${more}
             <div class="mc-post-foot">
                 <span class="mc-metrics">${metricsHTML(p.metrics)}</span>
                 ${flags.length ? `<span class="mc-flags">${esc(flags.join(' · '))}</span>` : ''}
@@ -166,7 +173,7 @@
 
     function renderFeed() {
         const match = filterList().find(f => f.id === active)?.match || (() => true);
-        const list = data.posts.filter(match);
+        const list = data.feed.filter(match);
         let month = '';
         const html = [];
         list.slice(0, shown).forEach(p => {
@@ -227,15 +234,16 @@
     }
 
     function mountXeet(li, lib) {
-        const id = li.dataset.xeet;
+        const ids = li.dataset.xeet.split(',');
         const box = document.createElement('div');
         box.className = `mc-xeet ${xeetScheme()}`;
         li.appendChild(box);
         const api = (window.APP_CONFIG?.API_URL || '').replace(/\/$/, '');
         let unmount = null;
         const drop = () => { unmount?.(); unmounts.delete(drop); box.remove(); li.classList.remove('has-xeet'); };
-        unmount = lib.mount(box, id, {
-            apiUrl: `${api}/api/xeet/${id}`,
+        unmount = lib.mountPost(box, ids, {
+            // Our backend first; react-xeet's public endpoint if it can't answer.
+            apiUrls: [`${api}/api/xeet`, XEET_PUBLIC_API],
             onLoad: () => li.classList.add('has-xeet'),
             onError: () => drop(),
         });
@@ -284,6 +292,26 @@
         else if (!res.ok) throw new Error(`HTTP ${res.status}`);
         else data = await res.json();
         data.posts = (data.posts || []).slice().sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+        buildFeed();
+    }
+
+    // One entry per thread (its first post, with every post of the thread in
+    // `members`, in order), one per post otherwise.
+    function buildFeed() {
+        const threads = new Map();
+        for (const p of data.posts) {
+            if (p.thread?.id && p.thread.total > 1) {
+                if (!threads.has(p.thread.id)) threads.set(p.thread.id, []);
+                threads.get(p.thread.id).push(p);
+            }
+        }
+        data.feed = [];
+        for (const p of data.posts) {
+            const group = p.thread?.id ? threads.get(p.thread.id) : null;
+            if (!group) { data.feed.push({ ...p, members: [p] }); continue; }
+            if (p.id !== p.thread.id) continue;
+            data.feed.push({ ...p, members: group.slice().sort((a, b) => a.thread.index - b.thread.index) });
+        }
     }
 
     function setFilter(id) {
