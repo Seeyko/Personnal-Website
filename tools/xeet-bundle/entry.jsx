@@ -32,25 +32,28 @@ import './post.css';
 
 const cache = new Map();
 
+// Tries every endpoint until one has the tweet. `null` only when they all
+// say it is gone; otherwise the error lists what each endpoint answered.
 async function fetchXeet(id, apiUrls) {
     if (cache.has(id)) return cache.get(id);
     const job = (async () => {
-        let lastErr;
+        const attempts = [];
+        let gone = 0;
         for (const base of apiUrls) {
             try {
                 const res = await fetch(`${base}/${id}`);
                 const json = await res.json().catch(() => null);
-                // { data: null }: the tweet is gone. Any other failure (route
-                // missing, X down...): try the next endpoint.
-                if (json && 'data' in json && (res.ok || res.status === 404)) {
-                    return json.data && json.data.id_str ? json.data : null;
-                }
-                throw new Error(`HTTP ${res.status}`);
+                if (json && json.data && json.data.id_str) return json.data;
+                if (json && 'data' in json && (res.ok || res.status === 404)) gone++;
+                attempts.push({ api: base, status: res.status });
             } catch (err) {
-                lastErr = err;
+                attempts.push({ api: base, error: String(err && err.message || err) });
             }
         }
-        throw lastErr || new Error('no api');
+        if (gone === apiUrls.length) return null;
+        const err = new Error('xeet unavailable');
+        err.attempts = attempts;
+        throw err;
     })();
     cache.set(id, job);
     job.catch(() => cache.delete(id));
@@ -125,10 +128,11 @@ function Post({ ids, apiUrls, onLoad, onError }) {
     const [xeets, setXeets] = useState(null);
     useEffect(() => {
         let alive = true;
-        Promise.all(ids.map(id => fetchXeet(id, apiUrls).catch(() => null))).then(list => {
+        let firstErr = null;
+        Promise.all(ids.map((id, i) => fetchXeet(id, apiUrls).catch(err => { if (i === 0) firstErr = err; return null; }))).then(list => {
             if (!alive) return;
             if (!list[0]) {
-                onError?.(new Error('not found'));
+                onError?.(firstErr || new Error('not found'));
                 return;
             }
             setXeets(list.filter(Boolean));
