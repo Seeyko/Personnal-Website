@@ -330,3 +330,4 @@ body[data-theme="blueprint"] .mc-xeet .react-xeet-theme { --xeet-bg-color: rgba(
 .mc-thread-item:not(:has(+ .mc-thread-item))::before { bottom: 0.35rem; }
 .mc-thread-item + .mc-thread-item { margin-top: 0.85rem; }
 .mc-thread-item .mc-text { margin: 0; }
+.mc-xeet-debug { font: 12px/1.4 monospace; color: #c33; word-break: break-all; margin: 0.5rem 0 0; }
