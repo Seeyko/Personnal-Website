@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math"
 	"net/http"
 	"regexp"
@@ -148,6 +149,7 @@ func (h *XeetHandler) GetXeet(w http.ResponseWriter, r *http.Request) {
 		body, status, err := h.fetch(id)
 		switch {
 		case err != nil || status >= 500 || status == http.StatusTooManyRequests:
+			log.Printf("xeet %s: X unavailable: status %d, err %v", id, status, err)
 			// X is down or rate limiting: serve the stale copy if there is one.
 			if ok && e.body != nil {
 				break
@@ -157,9 +159,19 @@ func (h *XeetHandler) GetXeet(w http.ResponseWriter, r *http.Request) {
 			return
 		case status == http.StatusOK && json.Valid(body) && !isTombstone(body):
 			e = xeetEntry{body: body, expires: now.Add(h.ttl)}
-		default:
-			// 404, deleted or protected tweet.
+		case status == http.StatusNotFound || (status == http.StatusOK && json.Valid(body) && isTombstone(body)):
+			// Deleted or protected tweet.
 			e = xeetEntry{body: nil, expires: now.Add(h.notFound)}
+		default:
+			// Anything else (empty 200, 403 from X, bad token...) is X refusing
+			// us, not a missing tweet: don't cache it, let the page try elsewhere.
+			log.Printf("xeet %s: unexpected answer from X: status %d, %d bytes", id, status, len(body))
+			if ok && e.body != nil {
+				break
+			}
+			w.WriteHeader(http.StatusBadGateway)
+			w.Write([]byte(`{"error":"upstream refused"}`))
+			return
 		}
 		h.store(id, e)
 	}

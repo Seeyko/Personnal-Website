@@ -21,8 +21,8 @@
 (() => {
     const DATA_URL = '/data/social/posts.json';
     const PAGE_SIZE = 30;
-    const XEET_JS = '/assets/vendor/xeet/xeet.js?v=1.0.2-2';
-    const XEET_CSS = '/assets/vendor/xeet/xeet.css?v=1.0.2-2';
+    const XEET_JS = '/assets/vendor/xeet/xeet.js?v=1.0.2-3';
+    const XEET_CSS = '/assets/vendor/xeet/xeet.css?v=1.0.2-3';
     const XEET_PUBLIC_API = 'https://react-xeet.vercel.app/api/xeet';
     // The backend only runs in production; ?xeet=1 turns it on locally (with the Go API on API_URL).
     const XEET_ON = Boolean(window.APP_CONFIG?.FEATURES?.xeet || new URLSearchParams(location.search).has('xeet'));
@@ -245,9 +245,23 @@
             // Our backend first; react-xeet's public endpoint if it can't answer.
             apiUrls: [`${api}/api/xeet`, XEET_PUBLIC_API],
             onLoad: () => li.classList.add('has-xeet'),
-            onError: () => drop(),
+            onError: err => { reportXeetFailure(ids[0], err); drop(); },
         });
         unmounts.add(drop);
+    }
+
+    // Tell PostHog (already on the page) why a tweet didn't load, a few times
+    // per visit: the only way to see what visitors' browsers get from the APIs.
+    let reported = 0;
+    function reportXeetFailure(id, err) {
+        if (reported++ >= 3 || !window.posthog?.capture) return;
+        try {
+            window.posthog.capture('posts_xeet_failed', {
+                tweet_id: id,
+                message: String(err?.message || err),
+                attempts: JSON.stringify(err?.attempts || []),
+            });
+        } catch { /* analytics must never break the page */ }
     }
 
     function observeXeets() {

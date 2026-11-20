@@ -118,3 +118,17 @@ func TestGetXeetUpstreamDown(t *testing.T) {
 		t.Fatalf("status %d", rec.Code)
 	}
 }
+
+func TestGetXeetUpstreamRefusesIsNotNotFound(t *testing.T) {
+	_, r, calls := newTestXeetServer(t, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK) // empty body, as X sends to some clients
+	})
+	for i := 0; i < 2; i++ {
+		if rec := getXeetPath(r, "/api/xeet/7"); rec.Code != http.StatusBadGateway {
+			t.Fatalf("status %d, want 502", rec.Code)
+		}
+	}
+	if *calls != 2 {
+		t.Fatalf("upstream called %d times, want 2 (refusals are not cached)", *calls)
+	}
+}
