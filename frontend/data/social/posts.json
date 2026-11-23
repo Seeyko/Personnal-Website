@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-20T01:34:46Z",
+  "updated": "2026-11-23T07:44:19Z",
   "accounts": {
     "x": {
       "handle": "TomAndrieu96707",
@@ -7,6 +7,52 @@
     }
   },
   "posts": [
+    {
+      "id": "x:2123851711282356496",
+      "platform": "x",
+      "kind": "thread",
+      "url": "https://x.com/TomAndrieu96707/status/2123851711282356496",
+      "text": "Thankfully Claude is here to take me by the hand, i’m trying to spend as little as possible to see how much I can do on my own during one full month in december",
+      "lang": "en",
+      "publishedAt": "2026-11-20T18:51:21.000Z",
+      "hasMedia": false,
+      "hasLink": false,
+      "metrics": {
+        "views": 9,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2123851707973284334",
+        "index": 2,
+        "total": 2
+      }
+    },
+    {
+      "id": "x:2123851707973284334",
+      "platform": "x",
+      "kind": "post",
+      "url": "https://x.com/TomAndrieu96707/status/2123851707973284334",
+      "text": "Already more than 20k views after 2 weeks of learning UGC and social content creation for brands and how to drive more traffic to my apps. I’m starting to go deep into the rabbit hole \n\nI had already enough with SEO, SEA, ASO, SXO, CRO, AIO, VEO etc… 😭",
+      "lang": "en",
+      "publishedAt": "2026-11-20T18:51:21.000Z",
+      "hasMedia": false,
+      "hasLink": false,
+      "metrics": {
+        "views": 36,
+        "likes": 1,
+        "replies": 1,
+        "reposts": 0,
+        "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2123851707973284334",
+        "index": 1,
+        "total": 2
+      }
+    },
     {
       "id": "x:2123466113795432648",
       "platform": "x",
@@ -18,7 +64,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 14,
+        "views": 41,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
@@ -39,7 +85,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 112,
+        "views": 121,
         "likes": 1,
         "replies": 1,
         "reposts": 0,
@@ -57,7 +103,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 37,
+        "views": 38,
         "likes": 1,
         "replies": 0,
         "reposts": 0,
@@ -78,7 +124,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 238,
+        "views": 244,
         "likes": 0,
         "replies": 1,
         "reposts": 0,
@@ -99,7 +145,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 8,
+        "views": 9,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
@@ -122,7 +168,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 34,
+        "views": 37,
         "likes": 0,
         "replies": 2,
         "reposts": 0,
@@ -145,7 +191,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 59,
+        "views": 60,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
@@ -189,7 +235,7 @@
       "hasMedia": false,
       "hasLink": true,
       "metrics": {
-        "views": 51,
+        "views": 52,
         "likes": 1,
         "replies": 1,
         "reposts": 0,
@@ -481,7 +527,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 31,
+        "views": 32,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
@@ -583,7 +629,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 118,
+        "views": 119,
         "likes": 0,
         "replies": 1,
         "reposts": 0,
@@ -1268,7 +1314,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 22,
+        "views": 23,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
@@ -1654,7 +1700,7 @@
       "hasMedia": false,
       "hasLink": true,
       "metrics": {
-        "views": 96,
+        "views": 97,
         "likes": 1,
         "replies": 1,
         "reposts": 0,
