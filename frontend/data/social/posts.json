@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-20T01:34:46Z",
+  "updated": "2026-11-26T07:44:27Z",
   "accounts": {
     "x": {
       "handle": "TomAndrieu96707",
@@ -7,6 +7,117 @@
     }
   },
   "posts": [
+    {
+      "id": "x:2125636961335697729",
+      "platform": "x",
+      "kind": "reply",
+      "url": "https://x.com/TomAndrieu96707/status/2125636961335697729",
+      "text": "@Rahfaruto @jules_427 Je capte pas comment ils amortissent le coût ou alors il est grave mal payé ? @jules_427 éclaire nos lanternes",
+      "lang": "fr",
+      "publishedAt": "2026-11-25T17:05:18.000Z",
+      "hasMedia": false,
+      "hasLink": false,
+      "metrics": {
+        "views": 24,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "bookmarks": 0
+      },
+      "inReplyTo": [
+        "Rahfaruto",
+        "jules_427"
+      ]
+    },
+    {
+      "id": "x:2125167963649278181",
+      "platform": "x",
+      "kind": "reply",
+      "url": "https://x.com/TomAndrieu96707/status/2125167963649278181",
+      "text": "@illyism My agents are kinda going crazy trying to reduce the number of request thrown at my apps with cloudflare rules etc... \nBut yeah i'm pretty sure 90% of them are total waste and not a menace but i'm still a tad paranoid, at least it make things more secure",
+      "lang": "en",
+      "publishedAt": "2026-11-24T10:01:40.000Z",
+      "hasMedia": false,
+      "hasLink": false,
+      "metrics": {
+        "views": 134,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "bookmarks": 0
+      },
+      "inReplyTo": [
+        "illyism"
+      ]
+    },
+    {
+      "id": "x:2124987351973941707",
+      "platform": "x",
+      "kind": "reply",
+      "url": "https://x.com/TomAndrieu96707/status/2124987351973941707",
+      "text": "@SebastianRoehl @HabitKit Was using postiz but just rebuild it to use less ressources and have complete MCP tooling :) \n\nI use it to schedule @RideMyPark networks : https://t.co/u5VUk45FMa",
+      "lang": "en",
+      "publishedAt": "2026-11-23T22:03:59.000Z",
+      "hasMedia": false,
+      "hasLink": true,
+      "metrics": {
+        "views": 22,
+        "likes": 1,
+        "replies": 0,
+        "reposts": 0,
+        "bookmarks": 0
+      },
+      "inReplyTo": [
+        "SebastianRoehl",
+        "HabitKit"
+      ]
+    },
+    {
+      "id": "x:2123851711282356496",
+      "platform": "x",
+      "kind": "thread",
+      "url": "https://x.com/TomAndrieu96707/status/2123851711282356496",
+      "text": "Thankfully Claude is here to take me by the hand, i’m trying to spend as little as possible to see how much I can do on my own during one full month in december",
+      "lang": "en",
+      "publishedAt": "2026-11-20T18:51:21.000Z",
+      "hasMedia": false,
+      "hasLink": false,
+      "metrics": {
+        "views": 14,
+        "likes": 0,
+        "replies": 0,
+        "reposts": 0,
+        "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2123851707973284334",
+        "index": 2,
+        "total": 2
+      }
+    },
+    {
+      "id": "x:2123851707973284334",
+      "platform": "x",
+      "kind": "post",
+      "url": "https://x.com/TomAndrieu96707/status/2123851707973284334",
+      "text": "Already more than 20k views after 2 weeks of learning UGC and social content creation for brands and how to drive more traffic to my apps. I’m starting to go deep into the rabbit hole \n\nI had already enough with SEO, SEA, ASO, SXO, CRO, AIO, VEO etc… 😭",
+      "lang": "en",
+      "publishedAt": "2026-11-20T18:51:21.000Z",
+      "hasMedia": false,
+      "hasLink": false,
+      "metrics": {
+        "views": 44,
+        "likes": 1,
+        "replies": 1,
+        "reposts": 0,
+        "bookmarks": 0
+      },
+      "thread": {
+        "id": "x:2123851707973284334",
+        "index": 1,
+        "total": 2
+      }
+    },
     {
       "id": "x:2123466113795432648",
       "platform": "x",
@@ -18,7 +129,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 14,
+        "views": 42,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
@@ -39,7 +150,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 112,
+        "views": 132,
         "likes": 1,
         "replies": 1,
         "reposts": 0,
@@ -57,7 +168,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 37,
+        "views": 39,
         "likes": 1,
         "replies": 0,
         "reposts": 0,
@@ -78,7 +189,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 238,
+        "views": 249,
         "likes": 0,
         "replies": 1,
         "reposts": 0,
@@ -99,7 +210,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 8,
+        "views": 9,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
@@ -122,7 +233,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 34,
+        "views": 37,
         "likes": 0,
         "replies": 2,
         "reposts": 0,
@@ -145,7 +256,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 59,
+        "views": 60,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
@@ -189,7 +300,7 @@
       "hasMedia": false,
       "hasLink": true,
       "metrics": {
-        "views": 51,
+        "views": 52,
         "likes": 1,
         "replies": 1,
         "reposts": 0,
@@ -481,7 +592,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 31,
+        "views": 32,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
@@ -520,7 +631,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 18,
+        "views": 19,
         "likes": 0,
         "replies": 1,
         "reposts": 0,
@@ -583,7 +694,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 118,
+        "views": 119,
         "likes": 0,
         "replies": 1,
         "reposts": 0,
@@ -661,7 +772,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 17,
+        "views": 18,
         "likes": 1,
         "replies": 0,
         "reposts": 0,
@@ -1083,7 +1194,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 195,
+        "views": 196,
         "likes": 0,
         "replies": 0,
         "reposts": 1,
@@ -1268,7 +1379,7 @@
       "hasMedia": false,
       "hasLink": false,
       "metrics": {
-        "views": 22,
+        "views": 23,
         "likes": 0,
         "replies": 0,
         "reposts": 0,
@@ -1654,7 +1765,7 @@
       "hasMedia": false,
       "hasLink": true,
       "metrics": {
-        "views": 96,
+        "views": 97,
         "likes": 1,
         "replies": 1,
         "reposts": 0,
